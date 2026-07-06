@@ -3,6 +3,8 @@ import routes from "./routes/index.js";
 import globalErrorHandler from "./middleware/error.middleware.js";
 import notFound from "./middleware/notFound.middleware.js";
 import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger.js";
 
 const app = express();
 
@@ -13,9 +15,8 @@ app.use(cookieParser());
 // Routes
 app.use("/api/v1", routes);
 
-app.use(notFound);
-
-app.use(globalErrorHandler);
+// Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Test Route
 app.get("/", (req, res) => {
@@ -25,4 +26,9 @@ app.get("/", (req, res) => {
   });
 });
 
+// 404
+app.use(notFound);
+
+// Error Handler
+app.use(globalErrorHandler);
 export default app;

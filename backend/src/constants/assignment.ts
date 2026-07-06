@@ -1,0 +1,5 @@
+export const ASSIGNMENT_STATUS = {
+  ACTIVE: "ACTIVE",
+  COMPLETED: "COMPLETED",
+  CANCELLED: "CANCELLED",
+} as const;
