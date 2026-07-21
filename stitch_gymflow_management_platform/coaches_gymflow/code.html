@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Coaches Management - GymFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error": "#690005",
+                      "secondary-fixed-dim": "#c5c6cc",
+                      "inverse-primary": "#006d32",
+                      "surface": "#101415",
+                      "error": "#ffb4ab",
+                      "on-tertiary": "#2d3137",
+                      "surface-container-high": "#272a2c",
+                      "outline-variant": "#3d4a3e",
+                      "on-primary-container": "#00642d",
+                      "surface-dim": "#101415",
+                      "on-background": "#e0e3e5",
+                      "outline": "#869486",
+                      "on-primary-fixed-variant": "#005224",
+                      "on-error-container": "#ffdad6",
+                      "tertiary": "#e4e7f0",
+                      "on-surface-variant": "#bccaba",
+                      "on-primary": "#003917",
+                      "surface-bright": "#363a3b",
+                      "primary": "#90ffa8",
+                      "on-secondary-fixed-variant": "#44474c",
+                      "surface-container-highest": "#323537",
+                      "surface-tint": "#55e07f",
+                      "on-secondary-fixed": "#191c20",
+                      "on-tertiary-container": "#52565d",
+                      "surface-container": "#1d2022",
+                      "surface-container-low": "#191c1e",
+                      "error-container": "#93000a",
+                      "tertiary-fixed": "#dfe2eb",
+                      "surface-container-lowest": "#0b0f10",
+                      "tertiary-container": "#c8cbd3",
+                      "inverse-surface": "#e0e3e5",
+                      "secondary-container": "#44474c",
+                      "primary-container": "#5be584",
+                      "on-surface": "#e0e3e5",
+                      "primary-fixed": "#74fd99",
+                      "on-tertiary-fixed": "#181c22",
+                      "on-secondary-container": "#b3b5ba",
+                      "on-secondary": "#2e3135",
+                      "secondary": "#c5c6cc",
+                      "secondary-fixed": "#e1e2e8",
+                      "inverse-on-surface": "#2d3133",
+                      "primary-fixed-dim": "#55e07f",
+                      "on-tertiary-fixed-variant": "#43474e",
+                      "tertiary-fixed-dim": "#c3c6cf",
+                      "on-primary-fixed": "#00210b",
+                      "background": "#101415",
+                      "surface-variant": "#323537"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "max-content-width": "1440px",
+                      "3xl": "64px",
+                      "2xl": "48px",
+                      "sm": "12px",
+                      "md": "16px",
+                      "xs": "8px",
+                      "xl": "32px",
+                      "lg": "24px",
+                      "base": "4px",
+                      "sidebar-width": "260px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Inter"],
+                      "body-md": ["Inter"],
+                      "mono-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "title-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "mono-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "title-md": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232833;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d4a3e;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-x-hidden flex h-screen">
+<!-- SideNavBar -->
+<aside class="bg-surface-container dark:bg-surface-container fixed left-0 top-0 h-full w-[260px] border-r border-outline-variant dark:border-outline-variant flex flex-col gap-xs py-lg z-50 hidden md:flex transition-all duration-200 ease-in-out">
+<div class="px-lg pb-md mb-md">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-md bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-background text-[20px]" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+</div>
+<div>
+<h1 class="text-title-md font-title-md font-bold text-primary dark:text-primary">GymFlow</h1>
+<p class="text-mono-sm font-mono-sm text-on-surface-variant uppercase tracking-wider text-[10px]">Management Pro</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto px-xs flex flex-col gap-base">
+<a class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-label-md font-label-md">Members</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-md py-sm rounded-lg bg-surface-container-high text-primary font-bold border-l-2 border-primary pl-4 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="text-label-md font-label-md">Coaches</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">exercise</span>
+<span class="text-label-md font-label-md">Exercises</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">sports_gymnastics</span>
+<span class="text-label-md font-label-md">Workouts</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+<span class="text-label-md font-label-md">Assignments</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+<span class="text-label-md font-label-md">Logs</span>
+</a>
+<a class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">bar_chart</span>
+<span class="text-label-md font-label-md">Reports</span>
+</a>
+<div class="mt-auto pt-md border-t border-outline-variant/30">
+<a class="flex items-center gap-md py-sm rounded-lg text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</div>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-[260px] w-full md:w-[calc(100%-260px)] min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface/80 dark:bg-surface/80 backdrop-blur-md docked full-width top-0 sticky z-40 border-b border-outline-variant dark:border-outline-variant flex justify-between items-center h-16 px-xl shrink-0">
+<div class="flex-1 flex items-center">
+<div class="relative hidden sm:block w-96">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant text-on-surface rounded-md py-[6px] pl-xl pr-md text-body-md font-body-md focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all placeholder:text-on-surface-variant/50" placeholder="Search members, coaches, or workouts..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-full p-xs scale-95 active:scale-100 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-full p-xs scale-95 active:scale-100 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full border border-outline-variant overflow-hidden ml-sm cursor-pointer hover:border-primary transition-colors">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a SaaS application user in a high-contrast dark studio environment. Soft rim lighting emphasizes sharp features against a pure black background. Professional, minimalist, tech-oriented aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2jrO8AEn1WKE2OBpaPxO4IpNcycHiatnpMKkQDADLVt3jkAYuf9t6xFGKH8eK8lXRZ04nBrQ26dTe8AdIDMzhTtzersbsnnAPlcWui_GwrgHVBFa0DVtBsORwpWQVGlgOAYYZT3UJUPDS0BvkpCxk3C1SEWySuLvryQsXyr5J_S-0PuSVtErH3JqZzR_XtGUXuR_Ukl_ATPx7UKy4Vyy7mSz2lZeX-D_D9ERCkC5W_LwMW2iyXMXp"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 p-md md:p-xl overflow-y-auto bg-background">
+<div class="max-w-[1440px] mx-auto w-full flex flex-col gap-xl">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-md pb-md border-b border-outline-variant/30">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">Coaches</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1">Manage training staff, monitor performance, and assign members.</p>
+</div>
+<button class="bg-primary-container text-background font-bold text-label-md font-label-md px-lg py-[8px] rounded-md hover:bg-primary-fixed transition-colors flex items-center gap-xs shadow-sm scale-95 active:scale-100 shrink-0">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Add Coach
+                    </button>
+</div>
+<!-- Filters & Controls -->
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-xs px-md py-[6px] border border-outline-variant rounded-md text-label-md font-label-md text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[16px]">filter_list</span> Filter
+                    </button>
+<div class="flex gap-sm">
+<span class="px-sm py-[4px] rounded-full bg-surface-container-high text-on-surface text-mono-sm font-mono-sm border border-outline-variant/50 cursor-pointer hover:border-primary/50 transition-colors">All</span>
+<span class="px-sm py-[4px] rounded-full text-on-surface-variant text-mono-sm font-mono-sm cursor-pointer hover:text-on-surface transition-colors">Strength</span>
+<span class="px-sm py-[4px] rounded-full text-on-surface-variant text-mono-sm font-mono-sm cursor-pointer hover:text-on-surface transition-colors">Cardio</span>
+</div>
+</div>
+<!-- Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-lg pb-xl">
+<!-- Card 1 -->
+<div class="bg-surface-container dark:bg-surface-container border border-outline-variant rounded-lg p-lg flex flex-col gap-md relative overflow-hidden group hover:border-outline transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-primary/5">
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="flex justify-between items-start">
+<div class="w-14 h-14 rounded-full border-2 border-surface-container-highest overflow-hidden bg-surface flex-shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="A dynamic, high-contrast portrait of a male strength coach in a dimly lit, high-end gym facility. Dramatic cool lighting highlights muscle definition and a serious, focused expression. Premium B2B SaaS aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDwdzw7UFXI16PB00gF2xNBWRn_CbEkUVfwXNnliBVvYihI90cPGFeirbhai11g7SlPPKJ7zWkTQexQpWVIkc2J_DuGh_QfZ6WGnFjftkuCoavhAljR8kHQDfmuItDp0slqxaKt0arMF9RPuHU3eibcLk6yBSWJ35hwzS4MUE3adba7N-IliaN9qJJQ9Hvcfy-XqJlnS1Tnd6117PiiS-rAMpZfpV1GzKH1uH3qoEVuH3OIGgekcqP"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-primary rounded-full border-2 border-surface-container"></div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-xs rounded-md hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="text-title-md font-title-md text-on-surface font-semibold">Marcus Vance</h3>
+<p class="text-body-md font-body-md text-primary mt-base">Strength &amp; Conditioning</p>
+</div>
+<div class="flex-1"></div>
+<div class="grid grid-cols-2 gap-md border-t border-outline-variant/40 pt-md mt-sm">
+<div>
+<p class="text-mono-sm font-mono-sm text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Members</p>
+<p class="text-headline-md font-headline-md text-on-surface leading-none">42</p>
+</div>
+<div>
+<p class="text-mono-sm font-mono-sm text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Satisfaction</p>
+<div class="flex items-end gap-xs">
+<p class="text-headline-md font-headline-md text-on-surface leading-none">98<span class="text-title-md">%</span></p>
+<span class="material-symbols-outlined text-primary text-[16px] mb-[2px]">trending_up</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container dark:bg-surface-container border border-outline-variant rounded-lg p-lg flex flex-col gap-md relative overflow-hidden group hover:border-outline transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-primary/5">
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="flex justify-between items-start">
+<div class="w-14 h-14 rounded-full border-2 border-surface-container-highest overflow-hidden bg-surface flex-shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="A striking portrait of a female mobility coach in a sleek, minimalist studio. Soft, ambient lighting creates a serene yet professional atmosphere. Dark background with subtle architectural lines. B2B fitness software style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqKykFlEV_kP461BbxI6le2w8UvgggUR6Vf3tjW4yj4EPYiAFfrmwUqB6N6rP7Uzp23Em6Zgsvdetlaai0yqj4USRozv_mWYnX5sbG3JwzfFld3iJFMBRKaYsCz1w3jlHc935oX7QF2EzNBHKdMoFYrqQ92TuknsTLqFj63nWq_Rv924z2-LTO8dQSyba1ak6e4V4aoHCdLNw4nvNVRD0ncWOUYmt2VM9DOcoOUg__LSJuCoBH5eji"/>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-xs rounded-md hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="text-title-md font-title-md text-on-surface font-semibold">Elena Rostova</h3>
+<p class="text-body-md font-body-md text-primary mt-base">Mobility &amp; Rehab</p>
+</div>
+<div class="flex-1"></div>
+<div class="grid grid-cols-2 gap-md border-t border-outline-variant/40 pt-md mt-sm">
+<div>
+<p class="text-mono-sm font-mono-sm text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Members</p>
+<p class="text-headline-md font-headline-md text-on-surface leading-none">28</p>
+</div>
+<div>
+<p class="text-mono-sm font-mono-sm text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Satisfaction</p>
+<div class="flex items-end gap-xs">
+<p class="text-headline-md font-headline-md text-on-surface leading-none">95<span class="text-title-md">%</span></p>
+<span class="material-symbols-outlined text-primary text-[16px] mb-[2px]">trending_up</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container dark:bg-surface-container border border-outline-variant rounded-lg p-lg flex flex-col gap-md relative overflow-hidden group hover:border-outline transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-primary/5">
+<div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+<div class="flex justify-between items-start">
+<div class="w-14 h-14 rounded-full border-2 border-surface-container-highest overflow-hidden bg-surface flex-shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="A focused headshot of a male endurance coach against a pure black background. A single, intense rim light from the side highlights his jawline and athletic build. The image conveys performance, data-driven methodology, and premium software aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-fNDK2y4jmJh1x4_gwQlrAOBD1934yyGIa5KwOPZ8O3FULZ4IPk_iI9QipXCmygoSLF-sETCsBw44ML0SNG8LJ1NhJRUquOuSlHGfUVUy4dwWrccr0GgAMQFai89RfcvqWUU75haXG0WYIhuV13tWSNstyfbR5kKIQ3TQaiuHrN_p5rieQRMYB9ASvdB25BDrm8__htDSthFAEZZGbGqOsfnnvUaIwYlUCioBbaAEzJR-LERuidGp"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-error rounded-full border-2 border-surface-container"></div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-xs rounded-md hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+<div>
+<h3 class="text-title-md font-title-md text-on-surface font-semibold">Julian Hayes</h3>
+<p class="text-body-md font-body-md text-primary mt-base">Endurance &amp; Cardio</p>
+</div>
+<div class="flex-1"></div>
+<div class="grid grid-cols-2 gap-md border-t border-outline-variant/40 pt-md mt-sm">
+<div>
+<p class="text-mono-sm font-mono-sm text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Members</p>
+<p class="text-headline-md font-headline-md text-on-surface leading-none">56</p>
+</div>
+<div>
+<p class="text-mono-sm font-mono-sm text-on-surface-variant uppercase tracking-wider text-[10px] mb-1">Satisfaction</p>
+<div class="flex items-end gap-xs">
+<p class="text-headline-md font-headline-md text-on-surface leading-none">88<span class="text-title-md">%</span></p>
+<span class="material-symbols-outlined text-outline text-[16px] mb-[2px]">trending_flat</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4 (Empty State / Placeholder) -->
+<div class="bg-surface-container-low dark:bg-surface-container-low border border-dashed border-outline-variant rounded-lg p-lg flex flex-col items-center justify-center gap-md hover:border-primary/50 hover:bg-surface-container transition-all cursor-pointer group min-h-[240px]">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary-container/20 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors text-[24px]">person_add</span>
+</div>
+<div class="text-center">
+<h3 class="text-title-md font-title-md text-on-surface">Add New Coach</h3>
+<p class="text-body-md font-body-md text-on-surface-variant mt-xs">Expand your training roster.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

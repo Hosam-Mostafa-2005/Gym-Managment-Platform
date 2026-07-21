@@ -63,6 +63,11 @@ class WorkoutService {
       throw new AppError("Workout not found.", 404);
     }
 
+    // ✅ Explicitly sort the embedded array by 'order' before returning
+    if (workout.exercises && workout.exercises.length > 0) {
+      workout.exercises.sort((a, b) => a.order - b.order);
+    }
+
     return workout;
   }
 
@@ -92,6 +97,11 @@ class WorkoutService {
     Object.assign(workout, data);
 
     await workout.save();
+
+    // ✅ Sort before returning the updated document
+    if (workout.exercises && workout.exercises.length > 0) {
+      workout.exercises.sort((a, b) => a.order - b.order);
+    }
 
     return workout;
   }

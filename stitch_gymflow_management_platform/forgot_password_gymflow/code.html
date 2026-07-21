@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Forgot Password - GymFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#690005",
+                    "secondary-fixed-dim": "#c5c6cc",
+                    "inverse-primary": "#006d32",
+                    "surface": "#101415",
+                    "error": "#ffb4ab",
+                    "on-tertiary": "#2d3137",
+                    "surface-container-high": "#272a2c",
+                    "outline-variant": "#3d4a3e",
+                    "on-primary-container": "#00642d",
+                    "surface-dim": "#101415",
+                    "on-background": "#e0e3e5",
+                    "outline": "#869486",
+                    "on-primary-fixed-variant": "#005224",
+                    "on-error-container": "#ffdad6",
+                    "tertiary": "#e4e7f0",
+                    "on-surface-variant": "#bccaba",
+                    "on-primary": "#003917",
+                    "surface-bright": "#363a3b",
+                    "primary": "#90ffa8",
+                    "on-secondary-fixed-variant": "#44474c",
+                    "surface-container-highest": "#323537",
+                    "surface-tint": "#55e07f",
+                    "on-secondary-fixed": "#191c20",
+                    "on-tertiary-container": "#52565d",
+                    "surface-container": "#1d2022",
+                    "surface-container-low": "#191c1e",
+                    "error-container": "#93000a",
+                    "tertiary-fixed": "#dfe2eb",
+                    "surface-container-lowest": "#0b0f10",
+                    "tertiary-container": "#c8cbd3",
+                    "inverse-surface": "#e0e3e5",
+                    "secondary-container": "#44474c",
+                    "primary-container": "#5be584",
+                    "on-surface": "#e0e3e5",
+                    "primary-fixed": "#74fd99",
+                    "on-tertiary-fixed": "#181c22",
+                    "on-secondary-container": "#b3b5ba",
+                    "on-secondary": "#2e3135",
+                    "secondary": "#c5c6cc",
+                    "secondary-fixed": "#e1e2e8",
+                    "inverse-on-surface": "#2d3133",
+                    "primary-fixed-dim": "#55e07f",
+                    "on-tertiary-fixed-variant": "#43474e",
+                    "tertiary-fixed-dim": "#c3c6cf",
+                    "on-primary-fixed": "#00210b",
+                    "background": "#101415",
+                    "surface-variant": "#323537"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "max-content-width": "1440px",
+                    "3xl": "64px",
+                    "2xl": "48px",
+                    "sm": "12px",
+                    "md": "16px",
+                    "xs": "8px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "base": "4px",
+                    "sidebar-width": "260px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "mono-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "title-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                    "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                    "mono-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                    "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                    "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                    "title-md": ["18px", { "lineHeight": "28px", "fontWeight": "500" }],
+                    "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                    "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md text-body-md antialiased min-h-screen flex flex-col items-center justify-center p-md md:p-xl relative overflow-hidden">
+<!-- Ambient Background Lighting -->
+<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+<div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary-container/5 rounded-full blur-[100px] mix-blend-screen opacity-50"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-surface-tint/5 rounded-full blur-[120px] mix-blend-screen opacity-50"></div>
+</div>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-md z-10 relative">
+<!-- Brand Header -->
+<div class="flex justify-center mb-xl">
+<h1 class="text-display-lg font-display-lg tracking-tighter text-on-surface font-bold">GymFlow</h1>
+</div>
+<!-- Auth Card -->
+<div class="bg-surface-container border border-outline-variant rounded-xl p-lg md:p-[32px] shadow-2xl backdrop-blur-sm relative overflow-hidden">
+<!-- View 1: Form State -->
+<div class="block opacity-100 transition-opacity duration-300 ease-in-out" id="form-view">
+<div class="text-center mb-xl">
+<h2 class="text-headline-md font-headline-md text-on-surface mb-xs">Forgot Password</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant">Enter your email address and we'll send you a link to reset your password.</p>
+</div>
+<form class="space-y-lg" id="reset-form">
+<div class="space-y-xs">
+<label class="block text-label-md font-label-md text-on-surface-variant" for="email">Work Email</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] group-focus-within:text-primary-container transition-colors">mail</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg pl-[40px] pr-md py-sm text-body-lg font-body-lg text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 transition-all" id="email" name="email" placeholder="name@company.com" required="" type="email"/>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container text-title-md font-title-md font-bold py-sm px-lg rounded-lg hover:brightness-110 active:scale-[0.98] transition-all flex justify-center items-center gap-xs" type="submit">
+<span>Send Reset Link</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</form>
+<div class="mt-xl text-center">
+<a class="inline-flex items-center gap-xs text-body-md font-body-md text-on-surface-variant hover:text-on-surface transition-colors group" href="#">
+<span class="material-symbols-outlined text-[16px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+<span>Back to login</span>
+</a>
+</div>
+</div>
+<!-- View 2: Success State (Hidden by default) -->
+<div class="hidden opacity-0 transition-opacity duration-300 ease-in-out text-center" id="success-view">
+<!-- Success Illustration -->
+<div class="flex justify-center mb-xl">
+<div class="relative w-2xl h-2xl rounded-full bg-surface-container-highest flex items-center justify-center">
+<div class="absolute inset-0 rounded-full bg-primary-container/10 animate-pulse"></div>
+<span class="material-symbols-outlined text-primary-container text-[40px] z-10" style="font-variation-settings: 'FILL' 1;">mark_email_read</span>
+</div>
+</div>
+<div class="mb-xl">
+<h2 class="text-headline-md font-headline-md text-on-surface mb-sm">Check Your Inbox</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant">
+                        We've sent a password reset link to<br/>
+<strong class="text-on-surface font-medium" id="display-email"></strong>
+</p>
+</div>
+<div class="space-y-sm">
+<button class="w-full bg-transparent border border-outline-variant text-on-surface text-title-md font-title-md font-medium py-sm px-lg rounded-lg hover:bg-surface-container-high active:scale-[0.98] transition-all flex justify-center items-center" onclick="resetToForm()">
+                        Return to Login
+                    </button>
+<p class="text-body-md font-body-md text-on-surface-variant pt-sm">
+                        Didn't receive the email? <button class="text-primary-container hover:underline focus:outline-none" onclick="resetToForm()">Click to resend</button>
+</p>
+</div>
+</div>
+</div>
+<!-- Footer Links -->
+<div class="mt-xl flex justify-center gap-lg text-label-md font-label-md text-on-surface-variant">
+<a class="hover:text-on-surface transition-colors" href="#">Privacy Policy</a>
+<span class="text-outline-variant">•</span>
+<a class="hover:text-on-surface transition-colors" href="#">Terms of Service</a>
+<span class="text-outline-variant">•</span>
+<a class="hover:text-on-surface transition-colors" href="#">Contact Support</a>
+</div>
+</main>
+<script>
+        const formView = document.getElementById('form-view');
+        const successView = document.getElementById('success-view');
+        const form = document.getElementById('reset-form');
+        const emailInput = document.getElementById('email');
+        const displayEmail = document.getElementById('display-email');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Set the email in the success view
+            displayEmail.textContent = emailInput.value;
+
+            // Transition: Fade out form
+            formView.classList.replace('opacity-100', 'opacity-0');
+            
+            setTimeout(() => {
+                // Hide form, show success (but keep transparent)
+                formView.classList.replace('block', 'hidden');
+                successView.classList.replace('hidden', 'block');
+                
+                // Trigger reflow to ensure transition happens
+                void successView.offsetWidth;
+                
+                // Fade in success
+                successView.classList.replace('opacity-0', 'opacity-100');
+            }, 300); // Wait for fade out to complete
+        });
+
+        function resetToForm() {
+            // Reset input
+            emailInput.value = '';
+
+            // Transition: Fade out success
+            successView.classList.replace('opacity-100', 'opacity-0');
+
+            setTimeout(() => {
+                // Hide success, show form (but keep transparent)
+                successView.classList.replace('block', 'hidden');
+                formView.classList.replace('hidden', 'block');
+                
+                // Trigger reflow
+                void formView.offsetWidth;
+
+                // Fade in form
+                formView.classList.replace('opacity-0', 'opacity-100');
+            }, 300);
+        }
+    </script>
+</body></html>

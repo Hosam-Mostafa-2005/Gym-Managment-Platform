@@ -12,13 +12,6 @@ export const register: RequestHandler = catchAsync(async (req, res) => {
     statusCode: 201,
     res,
   });
-
-  res.status(201).json({
-    status: "success",
-    data: {
-      user,
-    },
-  });
 });
 
 export const login: RequestHandler = catchAsync(async (req, res) => {

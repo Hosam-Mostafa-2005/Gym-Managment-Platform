@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GymFlow - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error": "#690005",
+                      "secondary-fixed-dim": "#c5c6cc",
+                      "inverse-primary": "#006d32",
+                      "surface": "#101415",
+                      "error": "#ffb4ab",
+                      "on-tertiary": "#2d3137",
+                      "surface-container-high": "#272a2c",
+                      "outline-variant": "#3d4a3e",
+                      "on-primary-container": "#00642d",
+                      "surface-dim": "#101415",
+                      "on-background": "#e0e3e5",
+                      "outline": "#869486",
+                      "on-primary-fixed-variant": "#005224",
+                      "on-error-container": "#ffdad6",
+                      "tertiary": "#e4e7f0",
+                      "on-surface-variant": "#bccaba",
+                      "on-primary": "#003917",
+                      "surface-bright": "#363a3b",
+                      "primary": "#90ffa8",
+                      "on-secondary-fixed-variant": "#44474c",
+                      "surface-container-highest": "#323537",
+                      "surface-tint": "#55e07f",
+                      "on-secondary-fixed": "#191c20",
+                      "on-tertiary-container": "#52565d",
+                      "surface-container": "#1d2022",
+                      "surface-container-low": "#191c1e",
+                      "error-container": "#93000a",
+                      "tertiary-fixed": "#dfe2eb",
+                      "surface-container-lowest": "#0b0f10",
+                      "tertiary-container": "#c8cbd3",
+                      "inverse-surface": "#e0e3e5",
+                      "secondary-container": "#44474c",
+                      "primary-container": "#5be584",
+                      "on-surface": "#e0e3e5",
+                      "primary-fixed": "#74fd99",
+                      "on-tertiary-fixed": "#181c22",
+                      "on-secondary-container": "#b3b5ba",
+                      "on-secondary": "#2e3135",
+                      "secondary": "#c5c6cc",
+                      "secondary-fixed": "#e1e2e8",
+                      "inverse-on-surface": "#2d3133",
+                      "primary-fixed-dim": "#55e07f",
+                      "on-tertiary-fixed-variant": "#43474e",
+                      "tertiary-fixed-dim": "#c3c6cf",
+                      "on-primary-fixed": "#00210b",
+                      "background": "#101415",
+                      "surface-variant": "#323537"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "max-content-width": "1440px",
+                      "3xl": "64px",
+                      "2xl": "48px",
+                      "sm": "12px",
+                      "md": "16px",
+                      "xs": "8px",
+                      "xl": "32px",
+                      "lg": "24px",
+                      "base": "4px",
+                      "sidebar-width": "260px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "mono-sm": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "mono-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-md": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { background-color: #090B0F; color: #F8FAFC; }
+        .surface-card { background-color: #171B21; border: 1px solid #232833; }
+        .btn-primary { background-color: #5BE584; color: #090B0F; font-weight: bold; transition: transform 0.1s ease; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-secondary { background-color: transparent; border: 1px solid #232833; color: #F8FAFC; transition: background-color 0.2s ease; }
+        .btn-secondary:hover { background-color: #171B21; }
+        .text-muted { color: #94A3B8; }
+        
+        /* Sparkline simple animation */
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+        .sparkline path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawLine 1.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col gap-xs py-lg bg-surface-container dark:bg-surface-container text-primary dark:text-primary fixed left-0 top-0 h-full w-[260px] border-r border-outline-variant dark:border-outline-variant z-50">
+<div class="px-lg mb-xl">
+<h1 class="text-title-md font-title-md font-bold text-primary dark:text-primary">GymFlow</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">Management Pro</p>
+</div>
+<div class="flex-1 overflow-y-auto w-full">
+<ul class="flex flex-col gap-sm w-full">
+<li>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out w-full text-primary font-bold border-l-2 border-primary pl-4" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out w-full text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-label-md font-label-md">Members</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out w-full text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="text-label-md font-label-md">Coaches</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out w-full text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined" data-icon="exercise">exercise</span>
+<span class="text-label-md font-label-md">Exercises</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out w-full text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined" data-icon="sports_gymnastics">sports_gymnastics</span>
+<span class="text-label-md font-label-md">Workouts</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out w-full text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="text-label-md font-label-md">Assignments</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out w-full text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="text-label-md font-label-md">Logs</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out w-full text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="text-label-md font-label-md">Reports</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto w-full pt-xl">
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out w-full text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-[260px] min-h-screen">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center h-16 px-xl bg-surface/80 dark:bg-surface/80 backdrop-blur-md text-primary dark:text-primary docked full-width top-0 sticky z-40 border-b border-outline-variant dark:border-outline-variant">
+<div class="flex items-center gap-lg">
+<h2 class="text-headline-md font-headline-md font-bold text-on-surface hidden md:block">GymFlow</h2>
+<!-- Search (on_left as per JSON, but putting next to brand for cleaner look) -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="bg-[#090B0F] border border-[#232833] text-[#F8FAFC] placeholder-[#94A3B8] rounded-full pl-10 pr-4 py-1.5 focus:border-[#5BE584] focus:ring-1 focus:ring-[#5BE584]/20 focus:outline-none transition-all text-sm w-64" placeholder="Search members, workouts..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-full text-on-surface-variant scale-95 active:scale-100 transition-transform">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-full text-on-surface-variant scale-95 active:scale-100 transition-transform">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant ml-2">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A sleek, minimalist corporate avatar portrait of a modern professional in a high-tech studio environment, dramatic rim lighting on dark background, ultra sharp focus, professional B2B aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVrg6p2mWbcNU2Ti6v5hribMiIsrp7jQ_yl1iBmACqViPCKMyAA1ytzUJ8ormk3pFMU3QhpUwrUs5eFDmJkziFbckOM42rXjNRq7Xdgj7jkfpHkQyU2y1YRgSEm6R2zx3D5U1S7XBjFIpav1VtCSo3G8-2YUKp1QQpbsxhhjG4r5SHQt54ZaRMZ0G4RHeRl4_nxozco2iLN6COidfiHEs4SY78_C3QIQmhYrMeSS7srLrGkyHN2lyx"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<main class="flex-1 p-md md:p-xl overflow-y-auto w-full max-w-max-content-width mx-auto">
+<!-- Welcome Header & Quick Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-lg mb-xl">
+<div>
+<h1 class="text-display-lg font-display-lg text-on-surface mb-2">Good morning, Alex</h1>
+<p class="text-body-lg font-body-lg text-muted">Here's what's happening at your facility today.</p>
+</div>
+<div class="flex flex-wrap gap-md">
+<button class="btn-secondary px-lg py-sm rounded-lg text-label-md font-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">edit_calendar</span>
+                        Log Session
+                    </button>
+<button class="btn-secondary px-lg py-sm rounded-lg text-label-md font-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">fitness_center</span>
+                        Create Workout
+                    </button>
+<button class="btn-primary px-lg py-sm rounded-lg text-label-md font-label-md flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">person_add</span>
+                        Add Member
+                    </button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg mb-xl">
+<!-- Stat 1 -->
+<div class="surface-card rounded-xl p-lg flex flex-col justify-between h-32 relative overflow-hidden group">
+<div class="flex justify-between items-start z-10 relative">
+<span class="text-label-md font-label-md text-muted uppercase tracking-wider">Total Members</span>
+<span class="material-symbols-outlined text-[#5BE584] text-lg">group</span>
+</div>
+<div class="z-10 relative">
+<div class="text-headline-lg font-headline-lg text-on-surface">2,481</div>
+<div class="text-label-md font-label-md text-[#5BE584] flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> +12% this month
+                        </div>
+</div>
+<!-- Minimal Sparkline Background -->
+<svg class="absolute bottom-0 left-0 w-full h-16 text-[#5BE584] opacity-10 sparkline" preserveaspectratio="none" viewbox="0 0 100 30">
+<path d="M0,30 L10,25 L20,28 L30,15 L40,18 L50,10 L60,15 L70,5 L80,8 L90,2 L100,0" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+<!-- Stat 2 -->
+<div class="surface-card rounded-xl p-lg flex flex-col justify-between h-32 relative overflow-hidden">
+<div class="flex justify-between items-start z-10 relative">
+<span class="text-label-md font-label-md text-muted uppercase tracking-wider">Active Sessions</span>
+<span class="material-symbols-outlined text-[#5BE584] text-lg">directions_run</span>
+</div>
+<div class="z-10 relative">
+<div class="text-headline-lg font-headline-lg text-on-surface">42</div>
+<div class="text-label-md font-label-md text-muted flex items-center gap-1 mt-1">
+                            Currently checked in
+                        </div>
+</div>
+<svg class="absolute bottom-0 left-0 w-full h-16 text-[#5BE584] opacity-10 sparkline" preserveaspectratio="none" viewbox="0 0 100 30">
+<path d="M0,20 L15,22 L30,10 L45,15 L60,5 L75,8 L90,2 L100,5" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+<!-- Stat 3 -->
+<div class="surface-card rounded-xl p-lg flex flex-col justify-between h-32 relative overflow-hidden">
+<div class="flex justify-between items-start z-10 relative">
+<span class="text-label-md font-label-md text-muted uppercase tracking-wider">Monthly Growth</span>
+<span class="material-symbols-outlined text-[#5BE584] text-lg">monitoring</span>
+</div>
+<div class="z-10 relative">
+<div class="text-headline-lg font-headline-lg text-on-surface">$124.5k</div>
+<div class="text-label-md font-label-md text-[#5BE584] flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-xs">trending_up</span> +8.4% MRR
+                        </div>
+</div>
+<svg class="absolute bottom-0 left-0 w-full h-16 text-[#5BE584] opacity-10 sparkline" preserveaspectratio="none" viewbox="0 0 100 30">
+<path d="M0,30 L20,25 L40,15 L60,18 L80,5 L100,2" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+<!-- Stat 4 -->
+<div class="surface-card rounded-xl p-lg flex flex-col justify-between h-32 relative overflow-hidden">
+<div class="flex justify-between items-start z-10 relative">
+<span class="text-label-md font-label-md text-muted uppercase tracking-wider">Coach Perf</span>
+<span class="material-symbols-outlined text-[#5BE584] text-lg">military_tech</span>
+</div>
+<div class="z-10 relative">
+<div class="text-headline-lg font-headline-lg text-on-surface">94%</div>
+<div class="text-label-md font-label-md text-muted flex items-center gap-1 mt-1">
+                            Client satisfaction score
+                        </div>
+</div>
+<svg class="absolute bottom-0 left-0 w-full h-16 text-[#5BE584] opacity-10 sparkline" preserveaspectratio="none" viewbox="0 0 100 30">
+<path d="M0,10 L25,12 L50,5 L75,8 L100,2" fill="none" stroke="currentColor" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Bento Grid Layout for Main Content -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Left Column (Wider) -->
+<div class="lg:col-span-2 flex flex-col gap-lg">
+<!-- Today's Sessions -->
+<div class="surface-card rounded-xl p-lg flex flex-col h-full min-h-[400px]">
+<div class="flex justify-between items-center mb-md pb-md border-b border-[#232833]">
+<h3 class="text-title-md font-title-md text-on-surface">Today's Sessions</h3>
+<button class="text-label-md font-label-md text-primary hover:underline">View Schedule</button>
+</div>
+<div class="flex-1 overflow-y-auto pr-2">
+<div class="flex flex-col gap-sm">
+<!-- Session Item -->
+<div class="flex items-center justify-between p-md rounded-lg hover:bg-[#111418] transition-colors border border-transparent hover:border-[#232833] cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-2 h-12 rounded-full bg-[#5BE584]"></div>
+<div>
+<div class="text-body-lg font-body-lg text-on-surface font-medium">Advanced Hypertrophy</div>
+<div class="text-label-md font-label-md text-muted mt-1">09:00 AM - 10:30 AM • Main Floor</div>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<div class="text-right hidden sm:block">
+<div class="text-body-md font-body-md text-on-surface">Sarah J.</div>
+<div class="text-label-md font-label-md text-muted">Lead Coach</div>
+</div>
+<div class="bg-[#5BE584]/10 text-[#5BE584] px-3 py-1 rounded-full text-label-md font-label-md whitespace-nowrap">
+                                            12/15 Enrolled
+                                        </div>
+</div>
+</div>
+<!-- Session Item -->
+<div class="flex items-center justify-between p-md rounded-lg hover:bg-[#111418] transition-colors border border-transparent hover:border-[#232833] cursor-pointer">
+<div class="flex items-center gap-md">
+<div class="w-2 h-12 rounded-full bg-[#3b82f6]"></div>
+<div>
+<div class="text-body-lg font-body-lg text-on-surface font-medium">Mobility &amp; Core</div>
+<div class="text-label-md font-label-md text-muted mt-1">11:00 AM - 12:00 PM • Studio A</div>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<div class="text-right hidden sm:block">
+<div class="text-body-md font-body-md text-on-surface">Marcus T.</div>
+<div class="text-label-md font-label-md text-muted">Coach</div>
+</div>
+<div class="bg-[#5BE584]/10 text-[#5BE584] px-3 py-1 rounded-full text-label-md font-label-md whitespace-nowrap">
+                                            8/20 Enrolled
+                                        </div>
+</div>
+</div>
+<!-- Session Item -->
+<div class="flex items-center justify-between p-md rounded-lg hover:bg-[#111418] transition-colors border border-transparent hover:border-[#232833] cursor-pointer opacity-50">
+<div class="flex items-center gap-md">
+<div class="w-2 h-12 rounded-full bg-surface-variant"></div>
+<div>
+<div class="text-body-lg font-body-lg text-on-surface font-medium line-through decoration-muted">HIIT Basics</div>
+<div class="text-label-md font-label-md text-muted mt-1">07:00 AM - 08:00 AM • Cancelled</div>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<div class="text-right hidden sm:block">
+<div class="text-body-md font-body-md text-muted">Elena R.</div>
+</div>
+<div class="bg-surface-variant text-muted px-3 py-1 rounded-full text-label-md font-label-md whitespace-nowrap">
+                                            Cancelled
+                                        </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Weekly Attendance Chart Placeholder -->
+<div class="surface-card rounded-xl p-lg flex flex-col h-[300px]">
+<div class="flex justify-between items-center mb-md">
+<h3 class="text-title-md font-title-md text-on-surface">Attendance Trends</h3>
+<div class="text-label-md font-label-md text-muted border border-[#232833] px-3 py-1 rounded-lg flex items-center gap-1 cursor-pointer hover:bg-[#111418]">
+                                This Week <span class="material-symbols-outlined text-sm">expand_more</span>
+</div>
+</div>
+<div class="flex-1 relative w-full h-full border-b border-l border-[#232833] mt-sm flex items-end justify-between px-4 pb-0 pt-4">
+<!-- Faux Bar Chart -->
+<div class="w-12 bg-[#5BE584] rounded-t-sm h-[40%] hover:opacity-80 transition-opacity cursor-pointer group relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#232833] text-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">142</div>
+</div>
+<div class="w-12 bg-[#5BE584] rounded-t-sm h-[65%] hover:opacity-80 transition-opacity cursor-pointer group relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#232833] text-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">210</div>
+</div>
+<div class="w-12 bg-[#5BE584] rounded-t-sm h-[80%] hover:opacity-80 transition-opacity cursor-pointer group relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#232833] text-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">285</div>
+</div>
+<div class="w-12 bg-primary-fixed-dim rounded-t-sm h-[95%] hover:opacity-80 transition-opacity cursor-pointer group relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#232833] text-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">320</div>
+</div>
+<div class="w-12 bg-[#5BE584] rounded-t-sm h-[50%] hover:opacity-80 transition-opacity cursor-pointer group relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#232833] text-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">180</div>
+</div>
+<div class="w-12 bg-[#232833] rounded-t-sm h-[10%] opacity-50"></div>
+<div class="w-12 bg-[#232833] rounded-t-sm h-[5%] opacity-50"></div>
+</div>
+<div class="flex justify-between px-4 mt-2 text-label-md font-label-md text-muted w-full border-l border-transparent ml-[1px]">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+</div>
+</div>
+</div>
+<!-- Right Column (Narrow) -->
+<div class="lg:col-span-1 flex flex-col gap-lg">
+<!-- Recent Activity Feed -->
+<div class="surface-card rounded-xl p-lg flex flex-col h-full">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="text-title-md font-title-md text-on-surface">Recent Activity</h3>
+<button class="p-1 hover:bg-[#111418] rounded text-muted transition-colors">
+<span class="material-symbols-outlined text-sm">more_horiz</span>
+</button>
+</div>
+<div class="relative pl-6 flex-1 overflow-y-auto">
+<!-- Timeline line -->
+<div class="absolute left-[11px] top-2 bottom-2 w-[2px] bg-[#232833]"></div>
+<div class="flex flex-col gap-6">
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-6 w-[10px] h-[10px] rounded-full bg-[#5BE584] border-2 border-[#171B21] top-1.5"></div>
+<div class="text-body-md font-body-md text-on-surface">New member signed up</div>
+<div class="text-label-md font-label-md text-muted mt-1">David Chen joined Pro Tier.</div>
+<div class="text-label-md font-label-md text-muted opacity-50 mt-1">2 mins ago</div>
+</div>
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-6 w-[10px] h-[10px] rounded-full bg-[#3b82f6] border-2 border-[#171B21] top-1.5"></div>
+<div class="text-body-md font-body-md text-on-surface">Workout completed</div>
+<div class="text-label-md font-label-md text-muted mt-1">Sarah J. completed 'Strength Phase 2'.</div>
+<div class="text-label-md font-label-md text-muted opacity-50 mt-1">15 mins ago</div>
+</div>
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-6 w-[10px] h-[10px] rounded-full bg-surface-variant border-2 border-[#171B21] top-1.5"></div>
+<div class="text-body-md font-body-md text-on-surface">Invoice Paid</div>
+<div class="text-label-md font-label-md text-muted mt-1">INV-2023-089 settled via Stripe.</div>
+<div class="text-label-md font-label-md text-muted opacity-50 mt-1">1 hour ago</div>
+</div>
+<!-- Activity Item -->
+<div class="relative">
+<div class="absolute -left-6 w-[10px] h-[10px] rounded-full bg-surface-variant border-2 border-[#171B21] top-1.5"></div>
+<div class="text-body-md font-body-md text-on-surface">System Update</div>
+<div class="text-label-md font-label-md text-muted mt-1">Access control sync completed.</div>
+<div class="text-label-md font-label-md text-muted opacity-50 mt-1">3 hours ago</div>
+</div>
+</div>
+</div>
+<button class="w-full mt-md py-sm text-center text-label-md font-label-md text-muted hover:text-on-surface hover:bg-[#111418] rounded transition-colors">
+                            View All Activity
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
