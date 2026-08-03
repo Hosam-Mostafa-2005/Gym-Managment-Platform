@@ -15,13 +15,13 @@ export const create: RequestHandler = catchAsync(async (req, res) => {
 });
 
 export const getAll: RequestHandler = catchAsync(async (req, res) => {
-  const exercises = await exerciseService.getAll(req.query);
+  const result = await exerciseService.getAll(req.query);
 
   res.status(200).json({
     status: "success",
-    results: exercises.length,
+    results: result.totalResults,
     data: {
-      exercises,
+      exercises: result.exercises,
     },
   });
 });

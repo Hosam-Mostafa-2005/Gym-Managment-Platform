@@ -12,12 +12,12 @@ const Sidebar = ({ collapsed }: SidebarProps) => {
   return (
     <aside
       className={`
-        relative flex h-screen flex-col border-r border-border/40 bg-card/60 backdrop-blur-xl transition-all duration-300 z-30
+        sticky top-0 flex h-screen flex-col border-r border-border/40 bg-card/60 backdrop-blur-xl transition-all duration-300 z-30 shrink-0
         ${collapsed ? "w-20" : "w-64 lg:w-72"}
       `}
     >
       {/* ================= 1. Brand Logo Area ================= */}
-      <div className="flex h-16 items-center border-b border-border/40 px-5">
+      <div className="flex h-16 items-center border-b border-border/40 px-5 shrink-0">
         <div className="flex items-center gap-3.5 overflow-hidden">
           {/* Glowing Brand Icon */}
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary shadow-[0_0_15px_rgba(91,229,132,0.15)] transition-transform duration-300 hover:scale-105">
@@ -68,7 +68,7 @@ const Sidebar = ({ collapsed }: SidebarProps) => {
                 >
                   {({ isActive }) => (
                     <>
-                      {/* Left 2px Vertical Indicator Bar (As specified in your Design System) */}
+                      {/* Left 2px Vertical Indicator Bar */}
                       {isActive && (
                         <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-r-full bg-primary shadow-[0_0_8px_rgba(91,229,132,0.8)]" />
                       )}
@@ -89,7 +89,7 @@ const Sidebar = ({ collapsed }: SidebarProps) => {
                         </span>
                       )}
 
-                      {/* Subtle Arrow or Sparkle for active item (Optional aesthetic touch) */}
+                      {/* Subtle Arrow or Sparkle for active item */}
                       {!collapsed && isActive && (
                         <Sparkles className="ml-auto h-3.5 w-3.5 text-primary/70 animate-pulse" />
                       )}
@@ -103,11 +103,11 @@ const Sidebar = ({ collapsed }: SidebarProps) => {
       </nav>
 
       {/* ================= 3. Footer / Logout Area ================= */}
-      <div className="border-t border-border/40 p-3">
+      <div className="border-t border-border/40 p-3 shrink-0">
         <button
           type="button"
           onClick={() => {
-            // أضف هنا منطق تسجيل الخروج (e.g., auth.logout())
+            // منطق تسجيل الخروج
           }}
           className={`group flex w-full items-center gap-3.5 rounded-xl px-3.5 py-2.5 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-destructive/10 hover:text-destructive ${
             collapsed ? "justify-center px-0 py-3" : ""

@@ -6,18 +6,38 @@ export type WorkoutSessionStatus =
 
 export interface IWorkoutSession {
   member: Types.ObjectId;
+
   assignment: Types.ObjectId;
 
   status: WorkoutSessionStatus;
 
   startedAt: Date;
+
   endedAt?: Date;
 
-  duration?: number;
+  // مدة السيشن بالكامل (بالدقائق)
+  duration: number;
+
+  // إجمالي وقت الراحة (بالثواني)
+  totalRestTime: number;
+
+  // الوقت الفعلي للتمرين بدون الراحة (بالثواني)
+  activeTrainingTime: number;
+
+  // إجمالي الحجم (Weight × Reps)
+  totalVolume: number;
+
+  // عدد التمارين المكتملة
+  exercisesCompleted: number;
+
+  // عدد المجموعات المكتملة
+  setsCompleted: number;
 
   notes?: string;
 
   isActive: boolean;
+
+  progress: number;
 }
 
 export interface StartWorkoutSessionDto {

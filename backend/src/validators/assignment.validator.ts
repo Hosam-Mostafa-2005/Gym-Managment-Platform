@@ -6,6 +6,8 @@ export const createAssignmentSchema = z
     body: z.object({
       member: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid member ID"),
 
+      trainer: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid trainer ID"),
+
       workout: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid workout ID"),
 
       startDate: z.coerce.date({
@@ -42,6 +44,11 @@ export const updateAssignmentSchema = z
       member: z
         .string()
         .regex(/^[0-9a-fA-F]{24}$/, "Invalid member ID")
+        .optional(),
+
+      trainer: z
+        .string()
+        .regex(/^[0-9a-fA-F]{24}$/, "Invalid trainer ID")
         .optional(),
 
       workout: z

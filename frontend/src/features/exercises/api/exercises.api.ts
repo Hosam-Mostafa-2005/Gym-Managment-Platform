@@ -6,10 +6,11 @@ import type {
   UpdateExerciseDto,
 } from "../types/exercise.types";
 
-export const getExercises = async (): Promise<Exercise[]> => {
-  const { data } = await api.get("/exercises");
-
-  return data.data.exercises;
+export const getExercises = async (page = 1, limit = 10) => {
+  const { data } = await api.get("/exercises", {
+    params: { page, limit },
+  });
+  return data;
 };
 
 export const createExercise = async (exercise: CreateExerciseDto) => {

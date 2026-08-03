@@ -15,13 +15,16 @@ export const create: RequestHandler = catchAsync(async (req, res) => {
 });
 
 export const getAll: RequestHandler = catchAsync(async (req, res) => {
-  const assignments = await assignmentService.getAll(req.query);
+  const result = await assignmentService.getAll(req.query);
 
   res.status(200).json({
     status: "success",
-    results: assignments.length,
+    results: result.totalResults,
+
+    stats: result.stats,
+
     data: {
-      assignments,
+      assignments: result.assignments,
     },
   });
 });

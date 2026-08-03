@@ -24,8 +24,12 @@ class ExerciseService {
     return mapExercise(exercise);
   }
 
-  // Get All Exercises
+  // Get All Exercises with Pagination Metadata
   async getAll(query: Record<string, any>) {
+    // 1. Get the total count matching the active filter criteria
+    const totalResults = await Exercise.countDocuments({ isActive: true });
+
+    // 2. Setup ApiFeatures for filtering, searching, sorting, and pagination
     const features = new ApiFeatures(Exercise.find({ isActive: true }), query)
       .filter()
       .search(["name", "primaryMuscles", "secondaryMuscles"])
@@ -34,7 +38,10 @@ class ExerciseService {
 
     const exercises = await features.query;
 
-    return exercises.map(mapExercise);
+    return {
+      exercises: exercises.map(mapExercise),
+      totalResults,
+    };
   }
 
   // Get Exercise By Id

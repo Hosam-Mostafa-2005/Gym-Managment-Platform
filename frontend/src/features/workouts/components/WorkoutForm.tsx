@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import type { WorkoutFormData } from "../schemas/workout.schema";
 import { workoutSchema } from "../schemas/workout.schema";
-import { useExercises } from "@/features/exercises/hooks/useExercises";
+import { useAllExercises } from "@/features/exercises/hooks/useExercises";
 import type { Exercise } from "@/features/exercises/types/exercise.types";
 import WorkoutExerciseItem from "./WorkoutExerciseItem";
 
@@ -59,7 +59,14 @@ export default function WorkoutForm({
   onSubmit,
   isSubmitting = false,
 }: WorkoutFormProps) {
-  const { data: exercises = [] } = useExercises();
+  // NEW:
+  const { data: exercisesResponse } = useAllExercises();
+  // Safely extract the array whether it's wrapped in data.exercises, data.data.exercises, or returned as an array directly
+  const exercises: Exercise[] = Array.isArray(exercisesResponse)
+    ? exercisesResponse
+    : (exercisesResponse?.data?.exercises ??
+      exercisesResponse?.exercises ??
+      []);
 
   // Local state for the Exercise Library search & filter
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -111,12 +118,20 @@ export default function WorkoutForm({
 
       const matchesCategory =
         !selectedCategory ||
+        // التحقق من العضلات الأساسية والثانوية بغض النظر عن حالة الحروف
         ex.primaryMuscles?.some(
           (m) => m.toLowerCase() === selectedCategory.toLowerCase(),
         ) ||
         ex.secondaryMuscles?.some(
           (m) => m.toLowerCase() === selectedCategory.toLowerCase(),
-        );
+        ) ||
+        // ميزة إضافية: لو الفلتر "legs" يشمل الـ Quadriceps أو Hamstrings أو Calves
+        (selectedCategory.toLowerCase() === "legs" &&
+          ex.primaryMuscles?.some((m) =>
+            ["quadriceps", "hamstrings", "calves", "glutes"].includes(
+              m.toLowerCase(),
+            ),
+          ));
 
       return matchesSearch && matchesCategory;
     });
@@ -374,7 +389,7 @@ export default function WorkoutForm({
                     key={field.id}
                     index={index}
                     control={control}
-                    exercises={exercises}
+                    exercises={exercises} // <-- Passes the full library array here
                     remove={handleRemoveExercise}
                     move={handleMoveExercise}
                     total={fields.length}

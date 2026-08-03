@@ -6,6 +6,7 @@ export type AssignmentStatus =
 
 export interface IAssignment {
   member: Types.ObjectId;
+  trainer: Types.ObjectId;
   workout: Types.ObjectId;
   startDate: Date;
   endDate: Date;
@@ -16,6 +17,7 @@ export interface IAssignment {
 
 export interface CreateAssignmentDto {
   member: Types.ObjectId;
+  trainer: Types.ObjectId;
   workout: Types.ObjectId;
   startDate: Date;
   endDate: Date;

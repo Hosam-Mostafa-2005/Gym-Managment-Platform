@@ -39,6 +39,9 @@ export default function EditWorkoutPage() {
         onSuccess: () => {
           navigate(`/workouts/${workoutId}`);
         },
+        onError: (err) => {
+          console.log("Mutation error response:", err); // لو السيرفر رفضه هيبان هنا
+        },
       },
     );
   }

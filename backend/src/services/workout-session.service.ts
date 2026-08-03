@@ -12,6 +12,8 @@ import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
 
 import type { FinishWorkoutSessionDto } from "../types/workout-session.types.js";
 import mapWorkoutSession from "../utils/workout-session.mapper.js";
+import WorkoutExerciseLog from "../models/WorkoutExerciseLog.model.js";
+import Workout from "../models/Workout.model.js";
 
 class WorkoutSessionService {
   async start(memberId: string, assignmentId: string) {
@@ -42,10 +44,41 @@ class WorkoutSessionService {
       throw new AppError("You already have an active workout session.", 409);
     }
 
+    // Get workout with exercises
+    const workout = await Workout.findById(assignment.workout).populate(
+      "exercises.exercise",
+    );
+
+    if (!workout) {
+      throw new AppError("Workout not found.", 404);
+    }
+
+    // Create workout session
     const session = await WorkoutSession.create({
       member: memberId,
       assignment: assignmentId,
     });
+
+    // Create Exercise Logs
+    await Promise.all(
+      workout.exercises.map(async (item, index) => {
+        const exercise = item.exercise as any;
+
+        return WorkoutExerciseLog.create({
+          session: session._id,
+
+          exercise: exercise._id,
+
+          exerciseName: exercise.name,
+
+          targetSets: item.sets,
+
+          targetReps: item.reps,
+
+          order: index + 1,
+        });
+      }),
+    );
 
     return mapWorkoutSession(session);
   }
@@ -77,6 +110,13 @@ class WorkoutSessionService {
 
     session.status = WORKOUT_SESSION_STATUS.COMPLETED;
 
+    const assignment = await Assignment.findById(session.assignment);
+
+    if (assignment) {
+      assignment.status = ASSIGNMENT_STATUS.COMPLETED;
+      await assignment.save();
+    }
+
     if (data.notes) {
       session.notes = data.notes;
     }
@@ -91,7 +131,19 @@ class WorkoutSessionService {
       WorkoutSession.find({
         member: memberId,
         isActive: true,
-      }).populate("assignment"),
+      }).populate({
+        path: "assignment",
+        populate: [
+          {
+            path: "workout",
+          },
+          {
+            path: "trainer",
+            select: "name email",
+          },
+        ],
+      }),
+
       query,
     )
       .filter()
@@ -117,7 +169,16 @@ class WorkoutSessionService {
       throw new AppError("Workout session not found.", 404);
     }
 
-    return mapWorkoutSession(session);
+    const exerciseLogs = await WorkoutExerciseLog.find({
+      session: session._id,
+    })
+      .populate("exercise")
+      .sort("order");
+
+    return {
+      session: mapWorkoutSession(session),
+      exerciseLogs,
+    };
   }
 }
 

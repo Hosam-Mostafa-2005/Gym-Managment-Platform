@@ -10,6 +10,12 @@ const assignmentSchema = new Schema<IAssignment>(
       required: true,
     },
 
+    trainer: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
     workout: {
       type: Schema.Types.ObjectId,
       ref: "Workout",

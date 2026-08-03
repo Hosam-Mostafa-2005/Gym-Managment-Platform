@@ -22,14 +22,59 @@ const workoutSessionSchema = new Schema<IWorkoutSession>(
       default: WORKOUT_SESSION_STATUS.IN_PROGRESS,
     },
 
+    // وقت بداية التمرين
     startedAt: {
       type: Date,
       default: Date.now,
     },
 
-    endedAt: Date,
+    // وقت انتهاء التمرين
+    endedAt: {
+      type: Date,
+    },
 
-    duration: Number,
+    // مدة السيشن كاملة بالدقائق
+    duration: {
+      type: Number,
+      default: 0,
+    },
+
+    progress: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+
+    // مجموع وقت الراحة بالثواني
+    totalRestTime: {
+      type: Number,
+      default: 0,
+    },
+
+    // الوقت الفعلي للتمرين (بدون الراحة) بالثواني
+    activeTrainingTime: {
+      type: Number,
+      default: 0,
+    },
+
+    // إجمالي حجم التمرين (Weight × Reps)
+    totalVolume: {
+      type: Number,
+      default: 0,
+    },
+
+    // عدد التمارين المنفذة
+    exercisesCompleted: {
+      type: Number,
+      default: 0,
+    },
+
+    // عدد المجموعات المنفذة
+    setsCompleted: {
+      type: Number,
+      default: 0,
+    },
 
     notes: {
       type: String,

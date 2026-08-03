@@ -32,6 +32,18 @@ class AssignmentService {
       throw new AppError("Selected user is not a member.", 400);
     }
 
+    const trainer = await User.findOne({
+      _id: data.trainer,
+      isActive: true,
+    });
+
+    if (!trainer) {
+      throw new AppError("Trainer not found.", 404);
+    }
+
+    if (trainer.role !== Roles.TRAINER) {
+      throw new AppError("Selected user is not a trainer.", 400);
+    }
     const workout = await Workout.findOne({
       _id: data.workout,
       isActive: true,
@@ -64,6 +76,7 @@ class AssignmentService {
     const features = new ApiFeatures(
       Assignment.find({ isActive: true })
         .populate("member", "name email")
+        .populate("trainer", "name email")
         .populate("workout", "title"),
       query,
     )
@@ -71,9 +84,39 @@ class AssignmentService {
       .sort()
       .paginate();
 
+    const total = await Assignment.countDocuments({
+      isActive: true,
+    });
+
+    const active = await Assignment.countDocuments({
+      isActive: true,
+      status: ASSIGNMENT_STATUS.ACTIVE,
+    });
+
+    const completed = await Assignment.countDocuments({
+      isActive: true,
+      status: ASSIGNMENT_STATUS.COMPLETED,
+    });
+
+    const cancelled = await Assignment.countDocuments({
+      isActive: true,
+      status: ASSIGNMENT_STATUS.CANCELLED,
+    });
+
     const assignments = await features.query;
 
-    return assignments.map(mapAssignment);
+    return {
+      assignments: assignments.map(mapAssignment),
+
+      stats: {
+        total,
+        active,
+        completed,
+        cancelled,
+      },
+
+      totalResults: total,
+    };
   }
 
   async getById(id: string) {
@@ -82,6 +125,7 @@ class AssignmentService {
       isActive: true,
     })
       .populate("member", "name email role")
+      .populate("trainer", "name email role")
       .populate({
         path: "workout",
         populate: {
@@ -101,7 +145,9 @@ class AssignmentService {
     return await Assignment.find({
       member: memberId,
       isActive: true,
-    }).populate("workout");
+    })
+      .populate("trainer", "name email")
+      .populate("workout");
   }
 
   async update(id: string, data: UpdateAssignmentDto) {
@@ -127,6 +173,19 @@ class AssignmentService {
       if (member.role !== Roles.MEMBER) {
         throw new AppError("Selected user is not a member.", 400);
       }
+    }
+
+    const trainer = await User.findOne({
+      _id: data.trainer,
+      isActive: true,
+    });
+
+    if (!trainer) {
+      throw new AppError("Trainer not found.", 404);
+    }
+
+    if (trainer.role !== Roles.TRAINER) {
+      throw new AppError("Selected user is not a trainer.", 400);
     }
 
     if (data.workout) {

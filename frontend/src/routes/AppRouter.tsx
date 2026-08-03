@@ -26,6 +26,12 @@ import CreateWorkoutPage from "@/features/workouts/pages/CreateWorkoutPage";
 import WorkoutDetailsPage from "@/features/workouts/pages/WorkoutDetailsPage";
 import EditWorkoutPage from "@/features/workouts/pages/EditWorkoutPage";
 
+// Assignments
+import AssignmentsPage from "@/features/assignments/pages/AssignmentsPage";
+import CreateAssignmentPage from "@/features/assignments/pages/CreateAssignmentPage";
+import AssignmentDetailsPage from "@/features/assignments/pages/AssignmentDetailsPage";
+import EditAssignmentPage from "@/features/assignments/pages/EditAssignmentPage";
+
 const router = createBrowserRouter([
   // ================= Public =================
   {
@@ -102,6 +108,30 @@ const router = createBrowserRouter([
               {
                 path: ":workoutId/edit",
                 element: <EditWorkoutPage />,
+              },
+            ],
+          },
+
+          // ================= Assignments =================
+
+          {
+            path: "assignments",
+            children: [
+              {
+                index: true,
+                element: <AssignmentsPage />,
+              },
+              {
+                path: "new",
+                element: <CreateAssignmentPage />,
+              },
+              {
+                path: ":assignmentId",
+                element: <AssignmentDetailsPage />,
+              },
+              {
+                path: ":assignmentId/edit",
+                element: <EditAssignmentPage />,
               },
             ],
           },
