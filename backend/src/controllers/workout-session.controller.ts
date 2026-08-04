@@ -17,6 +17,17 @@ export const start: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+export const getCurrent: RequestHandler = catchAsync(async (req, res) => {
+  const session = await workoutSessionService.getCurrent(req.user!.id);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      session,
+    },
+  });
+});
+
 export const finish: RequestHandler = catchAsync(async (req, res) => {
   const session = await workoutSessionService.finish(
     req.params.id as string,

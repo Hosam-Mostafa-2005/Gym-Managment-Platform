@@ -48,6 +48,9 @@ class WorkoutSessionService {
     const workout = await Workout.findById(assignment.workout).populate(
       "exercises.exercise",
     );
+    console.log("Workout Found:", !!workout);
+    console.log("Exercises Count:", workout?.exercises.length);
+    console.log(JSON.stringify(workout?.exercises, null, 2));
 
     if (!workout) {
       throw new AppError("Workout not found.", 404);
@@ -62,25 +65,58 @@ class WorkoutSessionService {
     // Create Exercise Logs
     await Promise.all(
       workout.exercises.map(async (item, index) => {
-        const exercise = item.exercise as any;
+        try {
+          const exercise = item.exercise as any;
 
-        return WorkoutExerciseLog.create({
-          session: session._id,
+          console.log({
+            exercise,
+            exerciseId: exercise?._id,
+            exerciseName: exercise?.name,
+          });
 
-          exercise: exercise._id,
-
-          exerciseName: exercise.name,
-
-          targetSets: item.sets,
-
-          targetReps: item.reps,
-
-          order: index + 1,
-        });
+          return await WorkoutExerciseLog.create({
+            session: session._id,
+            exercise: exercise._id,
+            exerciseName: exercise.name,
+            targetSets: item.sets,
+            targetReps: item.reps,
+            order: index + 1,
+          });
+        } catch (err) {
+          console.error(err);
+          throw err;
+        }
       }),
     );
-
     return mapWorkoutSession(session);
+  }
+
+  async getCurrent(memberId: string) {
+    const session = await WorkoutSession.findOne({
+      member: memberId,
+      status: WORKOUT_SESSION_STATUS.IN_PROGRESS,
+      isActive: true,
+    }).populate({
+      path: "assignment",
+      populate: {
+        path: "workout",
+      },
+    });
+
+    if (!session) {
+      return null;
+    }
+
+    const exerciseLogs = await WorkoutExerciseLog.find({
+      session: session._id,
+    })
+      .populate("exercise")
+      .sort("order");
+
+    return {
+      session: mapWorkoutSession(session),
+      exerciseLogs,
+    };
   }
 
   async finish(
@@ -110,12 +146,12 @@ class WorkoutSessionService {
 
     session.status = WORKOUT_SESSION_STATUS.COMPLETED;
 
-    const assignment = await Assignment.findById(session.assignment);
+    // const assignment = await Assignment.findById(session.assignment);
 
-    if (assignment) {
-      assignment.status = ASSIGNMENT_STATUS.COMPLETED;
-      await assignment.save();
-    }
+    // if (assignment) {
+    //   assignment.status = ASSIGNMENT_STATUS.COMPLETED;
+    //   await assignment.save();
+    // }
 
     if (data.notes) {
       session.notes = data.notes;

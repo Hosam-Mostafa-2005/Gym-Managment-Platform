@@ -111,6 +111,12 @@ router.get(
   workoutSessionController.getMySessions,
 );
 
+router.get(
+  "/current",
+  restrictTo(Roles.MEMBER),
+  workoutSessionController.getCurrent,
+);
+
 /**
  * @swagger
  * /workout-sessions/{id}:
