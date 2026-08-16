@@ -28,6 +28,18 @@ export const getWorkoutSessions = async (
   };
 };
 
+export const updateWorkoutSet = async (
+  id: string,
+  payload: {
+    weight: number;
+    actualReps: number;
+  },
+) => {
+  const { data } = await api.patch(`/workout-set-logs/${id}`, payload);
+
+  return data.data.set;
+};
+
 export const getWorkoutSession = async (
   id: string,
 ): Promise<WorkoutSessionDetails> => {
@@ -47,7 +59,9 @@ export const getCurrentWorkoutSession =
 
 export const startWorkoutSession = async (
   payload: StartWorkoutSessionPayload,
-): Promise<WorkoutSession> => {
+) => {
+  console.log("PAYLOAD", payload);
+
   const { data } = await api.post("/workout-sessions/start", payload);
 
   return mapWorkoutSession(data.data.session);
@@ -66,4 +80,10 @@ export const createWorkoutSet = async (payload: CreateWorkoutSetPayload) => {
   const { data } = await api.post("/workout-set-logs", payload);
 
   return data.data.setLog;
+};
+
+export const getMyAssignments = async () => {
+  const { data } = await api.get("/assignments/me");
+
+  return data.data.assignments;
 };

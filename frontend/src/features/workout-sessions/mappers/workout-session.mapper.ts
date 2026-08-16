@@ -68,6 +68,8 @@ export const mapWorkoutSession = (session: any): WorkoutSession => ({
   duration: session.duration ?? 0,
   progress: session.progress ?? 0,
 
+  notes: session.notes,
+
   totalRestTime: session.totalRestTime ?? 0,
   activeTrainingTime: session.activeTrainingTime ?? 0,
   totalVolume: session.totalVolume ?? 0,

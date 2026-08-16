@@ -82,7 +82,7 @@ export default function WorkoutSessionPage() {
         setsCompleted={session.setsCompleted}
       />
       <ExerciseTimeline exercises={exerciseLogs} />
-      <SessionNotes notes={undefined} />{" "}
+      <SessionNotes notes={session.notes} />{" "}
     </section>
   );
 }

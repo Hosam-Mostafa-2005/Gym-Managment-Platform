@@ -4,7 +4,6 @@ import ExerciseCard from "../components/ExerciseCard";
 import FinishWorkoutDialog from "../components/FinishWorkoutDialog";
 import SetRow from "../components/SetRow";
 import { useCurrentWorkoutSession } from "../hooks/useCurrentWorkoutSession";
-import type { WorkoutSetLog } from "../types/workout-session.types";
 import type { WorkoutExerciseLog } from "../types/workout-session.types";
 
 export default function ActiveWorkoutPage() {
@@ -44,28 +43,14 @@ export default function ActiveWorkoutPage() {
         <section className="space-y-6">
           {data.exerciseLogs.map((exercise: WorkoutExerciseLog) => (
             <ExerciseCard key={exercise.id} exercise={exercise}>
-              {exercise.sets && exercise.sets.length > 0
-                ? exercise.sets.map((set) => <SetRow key={set.id} set={set} />)
-                : Array.from({ length: exercise.targetSets }).map(
-                    (_, index) => (
-                      <SetRow
-                        key={index}
-                        set={{
-                          id: `temp-${exercise.id}-${index}`,
-                          setNumber: index + 1,
-                          targetReps: exercise.targetReps,
-                          actualReps: 0,
-                          weight: 0,
-                          completed: false,
-                        }}
-                      />
-                    ),
-                  )}
+              {exercise.sets.map((set) => (
+                <SetRow key={set.id} set={set} />
+              ))}
             </ExerciseCard>
           ))}
         </section>
 
-        <FinishWorkoutDialog sessionId={data.session.id || data.session.id} />
+        <FinishWorkoutDialog sessionId={data.session.id} />
       </div>
     </div>
   );

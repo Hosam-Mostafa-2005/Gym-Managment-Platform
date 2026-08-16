@@ -33,7 +33,7 @@ export interface WorkoutExerciseLog {
 
   completed: boolean;
 
-  sets?: WorkoutSetLog[];
+  sets: WorkoutSetLog[];
 }
 
 export interface Workout {
@@ -89,6 +89,8 @@ export interface WorkoutSession {
   exercisesCompleted: number;
 
   setsCompleted: number;
+
+  notes?: string;
 }
 
 export interface WorkoutSessionDetails {

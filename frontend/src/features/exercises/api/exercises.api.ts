@@ -10,7 +10,10 @@ export const getExercises = async (page = 1, limit = 10) => {
   const { data } = await api.get("/exercises", {
     params: { page, limit },
   });
-  return data;
+  return {
+    exercises: data.data.exercises,
+    results: data.results,
+  };
 };
 
 export const createExercise = async (exercise: CreateExerciseDto) => {

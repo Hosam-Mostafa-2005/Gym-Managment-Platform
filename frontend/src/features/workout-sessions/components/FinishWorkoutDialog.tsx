@@ -22,7 +22,7 @@ export default function FinishWorkoutDialog({
       {
         onSuccess: () => {
           setIsOpen(false);
-          navigate(`/workouts/${sessionId}`);
+          navigate(`/sessions/${sessionId}`);
         },
       },
     );

@@ -14,3 +14,8 @@ export const register = async (data: RegisterRequest) => {
 
   return response.data;
 };
+export const getCurrentUser = async () => {
+  const { data } = await api.get("/auth/me");
+
+  return data.data.user;
+};

@@ -1,16 +1,28 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import type { WorkoutSetLog } from "../types/workout-session.types";
+import { useUpdateWorkoutSet } from "../hooks/useUpdateWorkoutSet";
 
 interface SetRowProps {
   set: WorkoutSetLog;
 }
 
 export default function SetRow({ set }: SetRowProps) {
-  const [weight, setWeight] = useState<number | string>(set.weight ?? "");
-  const [reps, setReps] = useState<number | string>(set.actualReps ?? "");
+  const [weight, setWeight] = useState(set.weight);
+  const [reps, setReps] = useState(set.actualReps);
 
   const isCompleted = set.completed;
+  const { mutate: updateSet, isPending } = useUpdateWorkoutSet();
+
+  const handleComplete = () => {
+    updateSet({
+      id: set.id,
+      payload: {
+        weight,
+        actualReps: reps,
+      },
+    });
+  };
 
   return (
     <div
@@ -34,7 +46,7 @@ export default function SetRow({ set }: SetRowProps) {
         <input
           type="number"
           value={weight}
-          onChange={(e) => setWeight(e.target.value)}
+          onChange={(e) => setWeight(Number(e.target.value))}
           placeholder="0"
           disabled={isCompleted}
           className="w-full bg-[#090B0F] border border-white/10 rounded-lg py-2.5 px-3 text-center text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -45,20 +57,25 @@ export default function SetRow({ set }: SetRowProps) {
         <input
           type="number"
           value={reps}
-          onChange={(e) => setReps(e.target.value)}
+          onChange={(e) => setReps(Number(e.target.value))}
           placeholder="0"
           disabled={isCompleted}
           className="w-full bg-[#090B0F] border border-white/10 rounded-lg py-2.5 px-3 text-center text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         />
         <button
-          disabled={isCompleted}
+          onClick={handleComplete}
+          disabled={isCompleted || isPending}
           className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all flex-shrink-0 cursor-pointer ${
             isCompleted
               ? "bg-[#5BE584] text-black opacity-50 cursor-not-allowed"
               : "bg-white/5 text-[#9CA3AF] hover:bg-[#5BE584] hover:text-black border border-white/5 hover:border-[#5BE584]"
           }`}
         >
-          <Check size={18} strokeWidth={2.5} />
+          {isPending ? (
+            <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Check size={18} strokeWidth={2.5} />
+          )}
         </button>
       </div>
     </div>

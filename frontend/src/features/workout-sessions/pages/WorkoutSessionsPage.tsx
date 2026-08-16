@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useWorkoutSessions } from "../hooks/useWorkoutSessions";
+import { useStartWorkoutSession } from "../hooks/useStartWorkoutSession";
+import { useMyAssignments } from "../hooks/useMyAssignments";
 
 export default function WorkoutSessionsPage() {
   const navigate = useNavigate();
@@ -16,10 +18,14 @@ export default function WorkoutSessionsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
+  const { data: assignments = [] } = useMyAssignments();
+  const { mutate: startWorkout } = useStartWorkoutSession();
   const { data, isLoading, isError, refetch } = useWorkoutSessions(page, limit);
 
   const sessions = data?.sessions ?? [];
   const totalItems = data?.results ?? 0;
+
+  const activeAssignment = assignments.find((a) => a.status === "ACTIVE");
 
   const stats = useMemo(() => {
     const completed = sessions.filter(
@@ -84,13 +90,38 @@ export default function WorkoutSessionsPage() {
     return filtered;
   }, [sessions, search, statusFilter, sortBy]);
 
-  const handleViewSession = (id: string) => {
+  const handleViewSession = (id: string, status: string) => {
+    if (status === "IN_PROGRESS") {
+      navigate("/sessions/active");
+      return;
+    }
+
     navigate(`/sessions/${id}`);
   };
 
   const handleContinueWorkout = () => {
-    navigate("/sessions/active");
+    if (hasActiveSession) {
+      navigate("/sessions/active");
+      return;
+    }
+
+    if (!activeAssignment) {
+      return;
+    }
+
+    startWorkout(
+      {
+        assignment: activeAssignment._id,
+      },
+      {
+        onSuccess: () => {
+          navigate("/sessions/active");
+        },
+      },
+    );
   };
+
+  const hasActiveSession = stats.inProgress > 0;
 
   return (
     <section className="space-y-8 text-white min-h-screen bg-[#090B0F] p-6 md:p-10">
@@ -105,7 +136,7 @@ export default function WorkoutSessionsPage() {
           onClick={handleContinueWorkout}
           className="bg-[#5BE584] text-black hover:bg-[#5BE584]/90 rounded-2xl font-medium px-6 py-6"
         >
-          + Start Session
+          {hasActiveSession ? "Continue Session" : "Start Workout"}
         </Button>
       </div>
 
@@ -263,7 +294,9 @@ export default function WorkoutSessionsPage() {
                 {filteredSessions.map((session) => (
                   <tr
                     key={session.id}
-                    onClick={() => handleViewSession(session.id)}
+                    onClick={() =>
+                      handleViewSession(session.id, session.status)
+                    }
                     className="hover:bg-white/[0.03] transition-colors cursor-pointer group"
                   >
                     <td className="px-6 py-5">
@@ -333,7 +366,7 @@ export default function WorkoutSessionsPage() {
 
           <div className="flex items-center justify-between px-6 py-4 border-t border-white/5 text-sm text-[#9CA3AF] bg-black/20">
             <div>
-              Showing {filteredSessions.length} of {stats.total} active sessions
+              Showing {filteredSessions.length} of {stats.total} sessions
             </div>
             <div className="flex items-center gap-6">
               <button

@@ -5,6 +5,7 @@ import type {
   CreateAssignmentPayload,
   UpdateAssignmentPayload,
 } from "../types/assignment.types";
+import { mapAssignment } from "../utils/assignment.mapper";
 
 export const getAssignments = async (page = 1, limit = 10) => {
   const { data } = await api.get("/assignments", {
@@ -20,13 +21,13 @@ export const getAssignments = async (page = 1, limit = 10) => {
 export const getAssignment = async (id: string): Promise<Assignment> => {
   const { data } = await api.get(`/assignments/${id}`);
 
-  return data.data.assignment;
+  return mapAssignment(data.data.assignment);
 };
 
 export const getMyAssignments = async (): Promise<Assignment[]> => {
   const { data } = await api.get("/assignments/me");
 
-  return data.data.assignments;
+  return data.data.assignments.map(mapAssignment);
 };
 
 export const createAssignment = async (assignment: CreateAssignmentPayload) => {

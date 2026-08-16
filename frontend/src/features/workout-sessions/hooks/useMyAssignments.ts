@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-
-import { getMyAssignments } from "@/features/assignments/api/assignments.api";
+import { getMyAssignments } from "../api/workout-sessions.api";
 
 export const useMyAssignments = () => {
   return useQuery({
