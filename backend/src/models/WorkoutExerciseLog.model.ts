@@ -47,8 +47,22 @@ const workoutExerciseLogSchema = new Schema<IWorkoutExerciseLog>(
   },
   {
     timestamps: true,
+
+    toJSON: {
+      virtuals: true,
+    },
+
+    toObject: {
+      virtuals: true,
+    },
   },
 );
+
+workoutExerciseLogSchema.virtual("sets", {
+  ref: "WorkoutSetLog",
+  localField: "_id",
+  foreignField: "exerciseLog",
+});
 
 const WorkoutExerciseLog = model<IWorkoutExerciseLog>(
   "WorkoutExerciseLog",

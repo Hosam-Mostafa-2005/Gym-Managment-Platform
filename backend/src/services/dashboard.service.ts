@@ -49,6 +49,7 @@ class DashboardService {
       status: ASSIGNMENT_STATUS.ACTIVE,
       isActive: true,
     }).populate("workout");
+
     const totalSessions = await WorkoutSession.countDocuments({
       member: memberId,
       isActive: true,

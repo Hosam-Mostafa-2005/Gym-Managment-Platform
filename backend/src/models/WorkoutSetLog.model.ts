@@ -23,13 +23,13 @@ const workoutSetLogSchema = new Schema<IWorkoutSetLog>(
 
     actualReps: {
       type: Number,
-      required: true,
+      default: 0,
       min: 0,
     },
 
     weight: {
       type: Number,
-      required: true,
+      default: 0,
       min: 0,
     },
 

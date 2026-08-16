@@ -39,9 +39,9 @@ export interface CreateWorkoutSetDto {
 }
 
 export interface UpdateWorkoutSetDto {
-  actualReps?: number;
+  actualReps: number;
 
-  weight?: number;
+  weight: number;
 
   completed?: boolean;
 }

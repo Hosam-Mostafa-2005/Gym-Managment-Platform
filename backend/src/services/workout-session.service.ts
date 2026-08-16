@@ -14,6 +14,7 @@ import type { FinishWorkoutSessionDto } from "../types/workout-session.types.js"
 import mapWorkoutSession from "../utils/workout-session.mapper.js";
 import WorkoutExerciseLog from "../models/WorkoutExerciseLog.model.js";
 import Workout from "../models/Workout.model.js";
+import WorkoutSetLog from "../models/WorkoutSetLog.model.js";
 
 class WorkoutSessionService {
   async start(memberId: string, assignmentId: string) {
@@ -48,9 +49,6 @@ class WorkoutSessionService {
     const workout = await Workout.findById(assignment.workout).populate(
       "exercises.exercise",
     );
-    console.log("Workout Found:", !!workout);
-    console.log("Exercises Count:", workout?.exercises.length);
-    console.log(JSON.stringify(workout?.exercises, null, 2));
 
     if (!workout) {
       throw new AppError("Workout not found.", 404);
@@ -74,7 +72,7 @@ class WorkoutSessionService {
             exerciseName: exercise?.name,
           });
 
-          return await WorkoutExerciseLog.create({
+          const exerciseLog = await WorkoutExerciseLog.create({
             session: session._id,
             exercise: exercise._id,
             exerciseName: exercise.name,
@@ -82,12 +80,29 @@ class WorkoutSessionService {
             targetReps: item.reps,
             order: index + 1,
           });
+
+          await Promise.all(
+            Array.from({ length: item.sets }).map((_, setIndex) =>
+              WorkoutSetLog.create({
+                exerciseLog: exerciseLog._id,
+                setNumber: setIndex + 1,
+                targetReps: item.reps,
+              }),
+            ),
+          );
+
+          return exerciseLog;
         } catch (err) {
           console.error(err);
           throw err;
         }
       }),
     );
+
+    const logs = await WorkoutExerciseLog.find({
+      session: session._id,
+    });
+
     return mapWorkoutSession(session);
   }
 
@@ -111,6 +126,7 @@ class WorkoutSessionService {
       session: session._id,
     })
       .populate("exercise")
+      .populate("sets")
       .sort("order");
 
     return {
@@ -146,12 +162,12 @@ class WorkoutSessionService {
 
     session.status = WORKOUT_SESSION_STATUS.COMPLETED;
 
-    // const assignment = await Assignment.findById(session.assignment);
+    const assignment = await Assignment.findById(session.assignment);
 
-    // if (assignment) {
-    //   assignment.status = ASSIGNMENT_STATUS.COMPLETED;
-    //   await assignment.save();
-    // }
+    if (assignment) {
+      assignment.status = ASSIGNMENT_STATUS.COMPLETED;
+      await assignment.save();
+    }
 
     if (data.notes) {
       session.notes = data.notes;
@@ -209,6 +225,7 @@ class WorkoutSessionService {
       session: session._id,
     })
       .populate("exercise")
+      .populate("sets")
       .sort("order");
 
     return {

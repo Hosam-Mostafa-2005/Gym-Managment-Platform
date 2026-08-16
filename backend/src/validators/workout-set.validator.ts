@@ -15,3 +15,10 @@ export const createWorkoutSetSchema = z.object({
     weight: z.number().min(0),
   }),
 });
+
+export const updateWorkoutSetSchema = z.object({
+  body: z.object({
+    weight: z.number().min(0),
+    actualReps: z.number().min(0),
+  }),
+});

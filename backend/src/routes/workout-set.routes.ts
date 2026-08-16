@@ -7,9 +7,20 @@ import { protect, restrictTo } from "../middleware/auth.middleware.js";
 
 import { Roles } from "../constants/roles.js";
 
-import { createWorkoutSetSchema } from "../validators/workout-set.validator.js";
+import {
+  createWorkoutSetSchema,
+  updateWorkoutSetSchema,
+} from "../validators/workout-set.validator.js";
 
 const router = Router();
+
+router.patch(
+  "/:id",
+  protect,
+  restrictTo(Roles.MEMBER),
+  validate(updateWorkoutSetSchema),
+  workoutSetController.updateWorkoutSet,
+);
 
 router.post(
   "/",
