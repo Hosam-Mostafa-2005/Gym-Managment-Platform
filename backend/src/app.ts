@@ -9,12 +9,28 @@ import cors from "cors";
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://gym-managment-platform-seven.vercel.app",
+  "https://gym-managment-platform-54rwrqapc-hosso1.vercel.app",
+];
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );

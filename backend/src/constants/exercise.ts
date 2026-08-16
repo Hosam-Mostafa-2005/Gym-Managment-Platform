@@ -3,9 +3,11 @@ export const Equipment = {
   DUMBBELL: "Dumbbell",
   CABLE: "Cable",
   MACHINE: "Machine",
+  SMITH_MACHINE: "Smith Machine",
   BODYWEIGHT: "Bodyweight",
   EZ_BAR: "EZ Bar",
   RESISTANCE_BAND: "Resistance Band",
+  KETTLEBELL: "Kettlebell",
 } as const;
 
 export type Equipment = (typeof Equipment)[keyof typeof Equipment];
