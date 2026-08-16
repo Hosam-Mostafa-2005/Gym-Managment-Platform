@@ -1,4 +1,3 @@
-import React from "react";
 import { CheckCircle2, Activity, Flame, Target } from "lucide-react";
 import type { MemberDashboard } from "../types/dashboard.types"; // عدل المسار إذا لزم الأمر
 

@@ -7,7 +7,6 @@ import {
   Eye,
   Pencil,
   Trash2,
-  Archive,
   ClipboardList,
   PlayCircle,
   CheckCircle2,
@@ -79,7 +78,6 @@ export default function AssignmentsPage() {
   const { data, isLoading } = useAssignments(page, limit);
   const { mutate: deleteAssignment, isPending: isDeleting } =
     useDeleteAssignment();
-  const { mutate: archiveAssignment } = useArchiveAssignment();
 
   // 1. استخراج البيانات اللي جاية من السيرفر بأمان
   const rawAssignments: Assignment[] = data?.data?.assignments ?? [];
@@ -128,9 +126,9 @@ export default function AssignmentsPage() {
     }
   };
 
-  const handleArchive = (id: string) => {
-    archiveAssignment(id);
-  };
+  // const handleArchive = (id: string) => {
+  //   archiveAssignment(id);
+  // };
 
   // مساعد النسبة المئوية للتقارب مع التصميم
   const getProgressPercentage = (status: AssignmentStatus) => {

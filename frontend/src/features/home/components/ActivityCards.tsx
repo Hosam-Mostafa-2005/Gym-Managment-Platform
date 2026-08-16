@@ -1,4 +1,3 @@
-import React from "react";
 import { CheckCircle2, Activity, Target, Flame } from "lucide-react";
 
 export const ActivityCards = ({

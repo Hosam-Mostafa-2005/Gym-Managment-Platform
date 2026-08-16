@@ -1,4 +1,3 @@
-import React from "react";
 // 1. إضافة كلمة 'type' وحل مشكلة verbatimModuleSyntax
 import type {
   UseFormRegister,

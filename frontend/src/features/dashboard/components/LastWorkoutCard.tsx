@@ -1,4 +1,3 @@
-import React from "react";
 import { History, Clock, Dumbbell, Activity, ArrowUpRight } from "lucide-react";
 import type { NavigateFunction } from "react-router-dom";
 import type { WorkoutSession } from "@/features/workout-sessions/types/workout-session.types";

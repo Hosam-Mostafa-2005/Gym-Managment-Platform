@@ -1,4 +1,3 @@
-import React from "react";
 import { Clock, CheckCircle2, XCircle } from "lucide-react";
 
 export const RecentSessions = ({ sessions }: { sessions: any[] }) => {

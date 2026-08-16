@@ -1,5 +1,3 @@
-import React from "react";
-
 const ExerciseDetailsPage = () => {
   return <div></div>;
 };

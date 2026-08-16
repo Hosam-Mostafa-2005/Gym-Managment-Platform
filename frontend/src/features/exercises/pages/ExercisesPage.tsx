@@ -11,13 +11,12 @@ const ExercisesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 10; // Items per page
 
+  // Safely extract response properties based on your backend structure
   const { data, isLoading } = useExercises(currentPage, limit);
 
-  // Safely extract response properties based on your backend structure
-  const exercises = data?.data?.exercises ?? [];
+  const exercises = data?.exercises ?? [];
   const totalResults = data?.results ?? 0;
   const totalPages = Math.ceil(totalResults / limit) || 1;
-
   return (
     <div className="space-y-8 p-8">
       <ExercisesHeader onAddExercise={() => setOpenCreate(true)} />

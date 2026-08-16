@@ -1,4 +1,3 @@
-import React from "react";
 import { Flame, Dumbbell } from "lucide-react";
 import type { RecentWorkoutLog } from "../types/dashboard.types"; // عدل المسار إذا لزم الأمر
 

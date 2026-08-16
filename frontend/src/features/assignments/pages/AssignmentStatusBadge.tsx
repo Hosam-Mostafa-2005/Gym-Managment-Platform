@@ -1,5 +1,3 @@
-import React from "react";
-
 export type AssignmentStatus = "Active" | "Completed" | "At Risk";
 
 interface AssignmentStatusBadgeProps {

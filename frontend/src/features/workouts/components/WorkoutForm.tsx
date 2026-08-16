@@ -64,9 +64,7 @@ export default function WorkoutForm({
   // Safely extract the array whether it's wrapped in data.exercises, data.data.exercises, or returned as an array directly
   const exercises: Exercise[] = Array.isArray(exercisesResponse)
     ? exercisesResponse
-    : (exercisesResponse?.data?.exercises ??
-      exercisesResponse?.exercises ??
-      []);
+    : (exercisesResponse?.exercises ?? exercisesResponse?.exercises ?? []);
 
   // Local state for the Exercise Library search & filter
   const [searchQuery, setSearchQuery] = useState<string>("");

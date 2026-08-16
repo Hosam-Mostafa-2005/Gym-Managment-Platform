@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import type { NavigateFunction } from "react-router-dom";
 import { Dumbbell, Flame, Clock, ArrowRight } from "lucide-react";

@@ -1,4 +1,3 @@
-import React from "react";
 import { Target, ArrowRight, User, Calendar, Flame } from "lucide-react";
 import type { NavigateFunction } from "react-router-dom";
 

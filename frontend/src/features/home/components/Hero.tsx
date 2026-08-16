@@ -1,4 +1,3 @@
-import React from "react";
 import { Activity, ArrowRight, Dumbbell } from "lucide-react";
 import type { NavigateFunction } from "react-router-dom";
 
