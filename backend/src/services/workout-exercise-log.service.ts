@@ -1,4 +1,4 @@
-import WorkoutExerciseLog from "../models/WorkoutSession.model.js";
+import WorkoutExerciseLog from "../models/WorkoutExerciseLog.model.js";
 import WorkoutSession from "../models/WorkoutSession.model.js";
 
 import AppError from "../utils/AppError.js";
@@ -17,9 +17,10 @@ class WorkoutExerciseLogService {
 
     const exercises = await WorkoutExerciseLog.find({
       session: sessionId,
-    }).sort({
-      order: 1,
-    });
+    })
+      .populate("exercise")
+      .populate("sets")
+      .sort({ order: 1 });
 
     return exercises;
   }

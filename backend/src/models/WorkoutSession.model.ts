@@ -91,6 +91,28 @@ const workoutSessionSchema = new Schema<IWorkoutSession>(
   },
 );
 
+// ============================================================================
+// INDEXES
+// ============================================================================
+
+// Frequently used to fetch a member's sessions
+workoutSessionSchema.index({ member: 1 });
+
+// Frequently used to fetch sessions for an assignment
+workoutSessionSchema.index({ assignment: 1 });
+
+// Used in dashboard statistics
+workoutSessionSchema.index({ status: 1 });
+
+// Used when sorting sessions by newest
+workoutSessionSchema.index({ startedAt: -1 });
+
+// Used in member dashboard (latest sessions)
+workoutSessionSchema.index({ member: 1, startedAt: -1 });
+
+// Used in trainer dashboard
+workoutSessionSchema.index({ assignment: 1, status: 1 });
+
 const WorkoutSession = model<IWorkoutSession>(
   "WorkoutSession",
   workoutSessionSchema,

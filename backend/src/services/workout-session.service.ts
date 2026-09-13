@@ -15,19 +15,28 @@ import mapWorkoutSession from "../utils/workout-session.mapper.js";
 import WorkoutExerciseLog from "../models/WorkoutExerciseLog.model.js";
 import Workout from "../models/Workout.model.js";
 import WorkoutSetLog from "../models/WorkoutSetLog.model.js";
+import { Roles, type Role } from "../constants/roles.js";
 
+import notificationService from "./notification.service.js";
+import { NOTIFICATION_TYPE } from "../constants/notification.js";
 class WorkoutSessionService {
   async start(memberId: string, assignmentId: string) {
     const assignment = await Assignment.findOne({
       _id: assignmentId,
       isActive: true,
-    });
+    })
+      .populate("member", "name")
+      .populate("trainer", "name")
+      .populate("workout", "title");
 
     if (!assignment) {
       throw new AppError("Assignment not found.", 404);
     }
+    const member = assignment.member as any;
+    const trainer = assignment.trainer as any;
+    const workoutData = assignment.workout as any;
 
-    if (assignment.member.toString() !== memberId) {
+    if (member._id.toString() !== memberId) {
       throw new AppError("You are not allowed to start this assignment.", 403);
     }
 
@@ -62,15 +71,9 @@ class WorkoutSessionService {
 
     // Create Exercise Logs
     await Promise.all(
-      workout.exercises.map(async (item, index) => {
+      workout.exercises.map(async (item) => {
         try {
           const exercise = item.exercise as any;
-
-          console.log({
-            exercise,
-            exerciseId: exercise?._id,
-            exerciseName: exercise?.name,
-          });
 
           const exerciseLog = await WorkoutExerciseLog.create({
             session: session._id,
@@ -78,7 +81,7 @@ class WorkoutSessionService {
             exerciseName: exercise.name,
             targetSets: item.sets,
             targetReps: item.reps,
-            order: index + 1,
+            order: item.order,
           });
 
           await Promise.all(
@@ -93,14 +96,21 @@ class WorkoutSessionService {
 
           return exerciseLog;
         } catch (err) {
-          console.error(err);
           throw err;
         }
       }),
     );
 
-    const logs = await WorkoutExerciseLog.find({
-      session: session._id,
+    await notificationService.create({
+      user: trainer._id,
+      title: "Workout Started",
+      message: `${member.name} started "${workoutData.title}".`,
+      type: NOTIFICATION_TYPE.WORKOUT_STARTED,
+      actionUrl: `/workout-sessions/${session.id}`,
+      metadata: {
+        sessionId: session.id,
+        assignmentId: assignment.id,
+      },
     });
 
     return mapWorkoutSession(session);
@@ -160,14 +170,12 @@ class WorkoutSessionService {
       (session.endedAt.getTime() - session.startedAt.getTime()) / 60000,
     );
 
+    session.activeTrainingTime = Math.max(
+      0,
+      session.duration * 60 - session.totalRestTime,
+    );
+
     session.status = WORKOUT_SESSION_STATUS.COMPLETED;
-
-    const assignment = await Assignment.findById(session.assignment);
-
-    if (assignment) {
-      assignment.status = ASSIGNMENT_STATUS.COMPLETED;
-      await assignment.save();
-    }
 
     if (data.notes) {
       session.notes = data.notes;
@@ -175,15 +183,67 @@ class WorkoutSessionService {
 
     await session.save();
 
+    const assignment = await Assignment.findById(session.assignment)
+      .populate("member", "name")
+      .populate("trainer", "name")
+      .populate("workout", "title");
+
+    if (!assignment) {
+      return mapWorkoutSession(session);
+    }
+
+    const member = assignment.member as any;
+    const trainer = assignment.trainer as any;
+    const workout = assignment.workout as any;
+
+    await notificationService.create({
+      user: trainer._id,
+      title: "Workout Completed",
+      message: `${member.name} completed "${workout.title}" in ${session.duration} minutes.`,
+      type: NOTIFICATION_TYPE.WORKOUT_COMPLETED,
+      actionUrl: `/workout-sessions/${session.id}`,
+      metadata: {
+        sessionId: session.id,
+        assignmentId: assignment.id,
+      },
+    });
+
+    await notificationService.create({
+      user: member._id,
+      title: "Workout Completed",
+      message: `Great job! You completed "${workout.title}".`,
+      type: NOTIFICATION_TYPE.WORKOUT_COMPLETED,
+      actionUrl: `/workout-sessions/${session.id}`,
+      metadata: {
+        sessionId: session.id,
+        assignmentId: assignment.id,
+      },
+    });
+
     return mapWorkoutSession(session);
   }
 
-  async getMySessions(memberId: string, query: ParsedQs) {
-    const features = new ApiFeatures(
-      WorkoutSession.find({
-        member: memberId,
+  async getAll(query: ParsedQs, userId: string, role: Role) {
+    let filter: any = {
+      isActive: true,
+    };
+
+    if (role === Roles.MEMBER) {
+      filter.member = userId;
+    }
+
+    if (role === Roles.TRAINER) {
+      const assignments = await Assignment.find({
+        trainer: userId,
         isActive: true,
-      }).populate({
+      }).select("_id");
+
+      filter.assignment = {
+        $in: assignments.map((a) => a._id),
+      };
+    }
+    const features = new ApiFeatures(
+      WorkoutSession.find(filter).populate({
         path: "assignment",
         populate: [
           {
@@ -191,6 +251,10 @@ class WorkoutSessionService {
           },
           {
             path: "trainer",
+            select: "name email",
+          },
+          {
+            path: "member",
             select: "name email",
           },
         ],
@@ -205,16 +269,42 @@ class WorkoutSessionService {
     return await features.query;
   }
 
-  async getById(id: string, memberId: string) {
-    const session = await WorkoutSession.findOne({
+  async getById(id: string, userId: string, role: Role) {
+    let filter: any = {
       _id: id,
-      member: memberId,
       isActive: true,
-    }).populate({
+    };
+
+    if (role === Roles.MEMBER) {
+      filter.member = userId;
+    }
+
+    if (role === Roles.TRAINER) {
+      const assignments = await Assignment.find({
+        trainer: userId,
+        isActive: true,
+      }).select("_id");
+
+      filter.assignment = {
+        $in: assignments.map((a) => a._id),
+      };
+    }
+
+    const session = await WorkoutSession.findOne(filter).populate({
       path: "assignment",
-      populate: {
-        path: "workout",
-      },
+      populate: [
+        {
+          path: "workout",
+        },
+        {
+          path: "trainer",
+          select: "name email",
+        },
+        {
+          path: "member",
+          select: "name email",
+        },
+      ],
     });
 
     if (!session) {

@@ -4,7 +4,11 @@ import catchAsync from "../utils/catchAsync.js";
 import assignmentService from "../services/assignment.service.js";
 
 export const create: RequestHandler = catchAsync(async (req, res) => {
-  const assignment = await assignmentService.create(req.body);
+  const assignment = await assignmentService.create(
+    req.body,
+    req.user!.id,
+    req.user!.role,
+  );
 
   res.status(201).json({
     status: "success",
@@ -15,14 +19,16 @@ export const create: RequestHandler = catchAsync(async (req, res) => {
 });
 
 export const getAll: RequestHandler = catchAsync(async (req, res) => {
-  const result = await assignmentService.getAll(req.query);
+  const result = await assignmentService.getAll(
+    req.query,
+    req.user!.id,
+    req.user!.role,
+  );
 
   res.status(200).json({
     status: "success",
     results: result.totalResults,
-
     stats: result.stats,
-
     data: {
       assignments: result.assignments,
     },
@@ -30,7 +36,11 @@ export const getAll: RequestHandler = catchAsync(async (req, res) => {
 });
 
 export const getById: RequestHandler = catchAsync(async (req, res) => {
-  const assignment = await assignmentService.getById(req.params.id as string);
+  const assignment = await assignmentService.getById(
+    req.params.id as string,
+    req.user!.id,
+    req.user!.role,
+  );
 
   res.status(200).json({
     status: "success",
@@ -56,6 +66,8 @@ export const update: RequestHandler = catchAsync(async (req, res) => {
   const assignment = await assignmentService.update(
     req.params.id as string,
     req.body,
+    req.user!.id,
+    req.user!.role,
   );
 
   res.status(200).json({
@@ -67,7 +79,11 @@ export const update: RequestHandler = catchAsync(async (req, res) => {
 });
 
 export const remove: RequestHandler = catchAsync(async (req, res) => {
-  await assignmentService.delete(req.params.id as string);
+  await assignmentService.delete(
+    req.params.id as string,
+    req.user!.id,
+    req.user!.role,
+  );
 
   res.status(204).json({
     status: "success",

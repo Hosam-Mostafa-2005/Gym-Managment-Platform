@@ -22,12 +22,4 @@ router.patch(
   workoutSetController.updateWorkoutSet,
 );
 
-router.post(
-  "/",
-  protect,
-  restrictTo(Roles.MEMBER),
-  validate(createWorkoutSetSchema),
-  workoutSetController.create,
-);
-
 export default router;

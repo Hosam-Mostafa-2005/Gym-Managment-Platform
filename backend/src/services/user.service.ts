@@ -8,6 +8,7 @@ class UserService {
     // بنسحب الناس الأكتيف بس، والـ ApiFeatures هتهندل فلتر الـ role والـ pagination
     const features = new ApiFeatures(User.find({ isActive: true }), query)
       .filter()
+      .search(["name", "email"])
       .sort()
       .paginate();
 

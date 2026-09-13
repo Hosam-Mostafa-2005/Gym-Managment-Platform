@@ -80,6 +80,19 @@ const exerciseSchema = new Schema(
   },
 );
 
+exerciseSchema.index({
+  equipment: 1,
+});
+exerciseSchema.index({
+  difficulty: 1,
+});
+exerciseSchema.index({
+  primaryMuscles: 1,
+});
+exerciseSchema.index({
+  isActive: 1,
+});
+
 const Exercise = model("Exercise", exerciseSchema);
 
 export default Exercise;

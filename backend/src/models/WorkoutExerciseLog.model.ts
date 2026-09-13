@@ -64,6 +64,21 @@ workoutExerciseLogSchema.virtual("sets", {
   foreignField: "exerciseLog",
 });
 
+workoutExerciseLogSchema.index(
+  {
+    session: 1,
+    order: 1,
+  },
+  {
+    unique: true,
+  },
+);
+
+workoutExerciseLogSchema.index({
+  session: 1,
+  completed: 1,
+});
+
 const WorkoutExerciseLog = model<IWorkoutExerciseLog>(
   "WorkoutExerciseLog",
   workoutExerciseLogSchema,

@@ -43,10 +43,11 @@ export const finish: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
-export const getMySessions: RequestHandler = catchAsync(async (req, res) => {
-  const sessions = await workoutSessionService.getMySessions(
-    req.user!.id,
+export const getAll: RequestHandler = catchAsync(async (req, res) => {
+  const sessions = await workoutSessionService.getAll(
     req.query,
+    req.user!.id,
+    req.user!.role,
   );
 
   res.status(200).json({
@@ -62,6 +63,7 @@ export const getById: RequestHandler = catchAsync(async (req, res) => {
   const session = await workoutSessionService.getById(
     req.params.id as string,
     req.user!.id,
+    req.user!.role,
   );
 
   res.status(200).json({

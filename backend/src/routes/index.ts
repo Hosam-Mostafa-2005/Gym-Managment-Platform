@@ -8,10 +8,10 @@ import memberRoutes from "./member.routes.js";
 import exerciseRoutes from "./exercise.routes.js";
 import assignmentRouter from "./assignment.routes.js";
 import workoutSessionRoutes from "./workout-session.routes.js";
-import workoutLogRouter from "./workout-log.routes.js";
 import dashboardRouter from "./dashboard.routes.js";
 import workoutSetRoutes from "./workout-set.routes.js";
 import workoutExerciseLogRoutes from "./workout-exercise-log.routes.js";
+import notificationRouter from "./notification.routes.js";
 
 const router = Router();
 
@@ -28,7 +28,7 @@ router.use("/assignments", assignmentRouter);
 router.use("/workout-sessions", workoutSessionRoutes);
 router.use("/workout-exercise-logs", workoutExerciseLogRoutes);
 router.use("/workout-set-logs", workoutSetRoutes);
-router.use("/workout-logs", workoutLogRouter);
+router.use("/notifications", notificationRouter);
 
 router.use("/dashboard", dashboardRouter);
 export default router;

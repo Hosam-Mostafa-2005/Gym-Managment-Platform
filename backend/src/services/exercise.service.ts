@@ -1,4 +1,5 @@
 import Exercise from "../models/Exercise.model.js";
+import Workout from "../models/Workout.model.js";
 import type {
   CreateExerciseDto,
   UpdateExerciseDto,
@@ -17,6 +18,19 @@ class ExerciseService {
 
     if (existingExercise) {
       throw new AppError("Exercise already exists.", 409);
+    }
+    if (data.alternatives?.length) {
+      const alternatives = await Exercise.countDocuments({
+        _id: { $in: data.alternatives },
+        isActive: true,
+      });
+
+      if (alternatives !== data.alternatives.length) {
+        throw new AppError(
+          "One or more alternative exercises are invalid.",
+          400,
+        );
+      }
     }
 
     const exercise = await Exercise.create(data);
@@ -80,7 +94,19 @@ class ExerciseService {
         throw new AppError("Exercise already exists.", 409);
       }
     }
+    if (data.alternatives?.length) {
+      const alternatives = await Exercise.countDocuments({
+        _id: { $in: data.alternatives },
+        isActive: true,
+      });
 
+      if (alternatives !== data.alternatives.length) {
+        throw new AppError(
+          "One or more alternative exercises are invalid.",
+          400,
+        );
+      }
+    }
     Object.assign(exercise, data);
 
     await exercise.save();
@@ -97,6 +123,18 @@ class ExerciseService {
 
     if (!exercise) {
       throw new AppError("Exercise not found.", 404);
+    }
+
+    const usedInWorkout = await Workout.findOne({
+      isActive: true,
+      "exercises.exercise": exercise._id,
+    });
+
+    if (usedInWorkout) {
+      throw new AppError(
+        "Cannot delete an exercise that is used in a workout.",
+        409,
+      );
     }
 
     exercise.isActive = false;

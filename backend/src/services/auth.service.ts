@@ -29,6 +29,7 @@ class AuthService {
   async login(userData: LoginDto) {
     const user = await User.findOne({
       email: userData.email,
+      isActive: true,
     }).select("+password");
 
     if (!user) {

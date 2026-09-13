@@ -13,6 +13,10 @@ export interface IAssignment {
   status: AssignmentStatus;
   notes?: string;
   isActive: boolean;
+
+  completedAt?: Date;
+  cancelledAt?: Date;
+  cancelReason?: string;
 }
 
 export interface CreateAssignmentDto {
@@ -26,4 +30,5 @@ export interface CreateAssignmentDto {
 
 export type UpdateAssignmentDto = Partial<CreateAssignmentDto> & {
   status?: AssignmentStatus;
+  cancelReason?: string;
 };

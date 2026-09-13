@@ -80,6 +80,7 @@ const workoutSchema = new Schema(
     tags: {
       type: [String],
       default: [],
+      index: true,
     },
 
     isTemplate: {
@@ -113,6 +114,23 @@ const workoutSchema = new Schema(
 
 export const updateWorkoutSchema = z.object({
   body: createWorkoutSchema.shape.body.partial(),
+});
+
+workoutSchema.index({
+  createdBy: 1,
+  isActive: 1,
+});
+
+workoutSchema.index({
+  category: 1,
+});
+
+workoutSchema.index({
+  difficulty: 1,
+});
+
+workoutSchema.index({
+  isTemplate: 1,
 });
 
 const Workout = model("Workout", workoutSchema);

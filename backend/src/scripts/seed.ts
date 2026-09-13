@@ -7,7 +7,6 @@ import Exercise from "../models/Exercise.model.js";
 import Workout from "../models/Workout.model.js";
 import { Assignment } from "../models/Assignment.model.js";
 import WorkoutSession from "../models/WorkoutSession.model.js";
-import WorkoutLog from "../models/WorkoutLog.model.js";
 
 // Import Seed Data Generators
 import { usersData } from "./data/users.js";
@@ -33,7 +32,6 @@ const seedDatabase = async (): Promise<void> => {
     console.log("✅ Successfully connected to MongoDB.\n");
 
     console.log("🗑️  Purging existing database collections...");
-    await WorkoutLog.deleteMany({});
     await WorkoutSession.deleteMany({});
     await Assignment.deleteMany({});
     await Workout.deleteMany({});
@@ -130,8 +128,6 @@ const seedDatabase = async (): Promise<void> => {
       createdWorkouts,
       createdAssignments,
     );
-    const createdLogs = await WorkoutLog.insertMany(logsPayload);
-    console.log(`✅ Inserted ${createdLogs.length} detailed exercise logs.\n`);
 
     console.log("====================================================");
     console.log("🎉 DATABASE SEEDING COMPLETED SUCCESSFULLY!");
@@ -142,7 +138,6 @@ const seedDatabase = async (): Promise<void> => {
       Workouts: createdWorkouts.length,
       Assignments: createdAssignments.length,
       Sessions: createdSessions.length,
-      Logs: createdLogs.length,
     });
     console.log("====================================================\n");
   } catch (error) {

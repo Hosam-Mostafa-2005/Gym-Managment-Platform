@@ -38,6 +38,19 @@ const assignmentSchema = new Schema<IAssignment>(
       default: ASSIGNMENT_STATUS.ACTIVE,
     },
 
+    completedAt: {
+      type: Date,
+    },
+
+    cancelledAt: {
+      type: Date,
+    },
+
+    cancelReason: {
+      type: String,
+      trim: true,
+    },
+
     notes: {
       type: String,
       trim: true,
@@ -53,4 +66,36 @@ const assignmentSchema = new Schema<IAssignment>(
   },
 );
 
+assignmentSchema.index({
+  trainer: 1,
+  isActive: 1,
+});
+assignmentSchema.index({
+  member: 1,
+  isActive: 1,
+});
+assignmentSchema.index({
+  member: 1,
+  status: 1,
+  isActive: 1,
+});
+assignmentSchema.index({
+  status: 1,
+});
+assignmentSchema.index({
+  createdAt: -1,
+});
+assignmentSchema.index(
+  {
+    member: 1,
+    workout: 1,
+    status: 1,
+  },
+  {
+    unique: true,
+    partialFilterExpression: {
+      status: ASSIGNMENT_STATUS.ACTIVE,
+    },
+  },
+);
 export const Assignment = model<IAssignment>("Assignment", assignmentSchema);

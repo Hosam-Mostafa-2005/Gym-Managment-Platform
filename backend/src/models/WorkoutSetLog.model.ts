@@ -56,6 +56,29 @@ const workoutSetLogSchema = new Schema<IWorkoutSetLog>(
   },
 );
 
+// ============================================================================
+// INDEXES
+// ============================================================================
+
+// Used to prevent duplicate set numbers within the same exercise
+workoutSetLogSchema.index({ exerciseLog: 1, setNumber: 1 }, { unique: true });
+
+// Used when counting completed sets
+workoutSetLogSchema.index({
+  exerciseLog: 1,
+  completed: 1,
+});
+
+// Used in dashboard aggregations (volume calculations)
+workoutSetLogSchema.index({
+  exerciseLog: 1,
+});
+
+// Used for recent workout history
+workoutSetLogSchema.index({
+  completedAt: -1,
+});
+
 const WorkoutSetLog = model<IWorkoutSetLog>(
   "WorkoutSetLog",
   workoutSetLogSchema,

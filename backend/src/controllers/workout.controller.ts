@@ -15,7 +15,11 @@ export const create: RequestHandler = catchAsync(async (req, res) => {
 });
 
 export const getAll: RequestHandler = catchAsync(async (req, res) => {
-  const workouts = await workoutService.getAll(req.query);
+  const workouts = await workoutService.getAll(
+    req.query,
+    req.user!.id,
+    req.user!.role,
+  );
 
   res.status(200).json({
     status: "success",
@@ -41,6 +45,8 @@ export const update: RequestHandler = catchAsync(async (req, res) => {
   const workout = await workoutService.update(
     req.params.id as string,
     req.body,
+    req.user!.id,
+    req.user!.role,
   );
 
   res.status(200).json({
@@ -52,8 +58,11 @@ export const update: RequestHandler = catchAsync(async (req, res) => {
 });
 
 export const remove: RequestHandler = catchAsync(async (req, res) => {
-  await workoutService.delete(req.params.id as string);
-
+  await workoutService.delete(
+    req.params.id as string,
+    req.user!.id,
+    req.user!.role,
+  );
   res.status(204).json({
     status: "success",
     data: null,

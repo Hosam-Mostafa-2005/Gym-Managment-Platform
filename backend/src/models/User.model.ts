@@ -72,6 +72,11 @@ userSchema.methods.correctPassword = async function (
 
 export interface IUserModel extends Model<IUser, {}, IUserMethods> {}
 
+userSchema.index({
+  role: 1,
+  isActive: 1,
+});
+
 const User = model<IUser, IUserModel>("User", userSchema);
 
 export default User;

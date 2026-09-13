@@ -3,8 +3,9 @@ import { Router } from "express";
 import * as exerciseController from "../controllers/exercise.controller.js";
 
 import validate from "../middleware/validate.middleware.js";
-import { protect, restrictTo } from "../middleware/auth.middleware.js";
-
+import { protect } from "../middleware/auth.middleware.js";
+import { authorize } from "../middleware/authorize.middleware.js";
+import { Permissions } from "../constants/permissions.js";
 import {
   createExerciseSchema,
   updateExerciseSchema,
@@ -82,7 +83,7 @@ router.use(protect);
  */
 router.post(
   "/",
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  authorize(Permissions.Exercise.CREATE),
   validate(createExerciseSchema),
   exerciseController.create,
 );
@@ -120,7 +121,7 @@ router.post(
  */
 router.patch(
   "/:id",
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  authorize(Permissions.Exercise.UPDATE),
   validate(updateExerciseSchema),
   exerciseController.update,
 );
@@ -152,6 +153,10 @@ router.patch(
  *       404:
  *         description: Exercise not found.
  */
-router.delete("/:id", restrictTo(Roles.ADMIN), exerciseController.remove);
+router.delete(
+  "/:id",
+  authorize(Permissions.Exercise.DELETE),
+  exerciseController.remove,
+);
 
 export default router;
