@@ -8,15 +8,22 @@ export interface IAssignment {
   member: Types.ObjectId;
   trainer: Types.ObjectId;
   workout: Types.ObjectId;
+
   startDate: Date;
   endDate: Date;
+
   status: AssignmentStatus;
   notes?: string;
+
   isActive: boolean;
 
   completedAt?: Date;
   cancelledAt?: Date;
   cancelReason?: string;
+
+  // timestamps
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface CreateAssignmentDto {
