@@ -41,7 +41,7 @@ export const generateWorkoutsData = (
       category: "strength",
       difficulty: "intermediate",
       estimatedDuration: 60,
-      tags: ["Push", "Hypertrophy", "Upper Body"],
+      tags: ["Push", "Chest", "Triceps", "Upper Body", "Hypertrophy"],
       isTemplate: true,
       createdBy: getTrainer(0),
       exercises: [
@@ -98,7 +98,7 @@ export const generateWorkoutsData = (
       category: "hypertrophy",
       difficulty: "intermediate",
       estimatedDuration: 65,
-      tags: ["Pull", "Back", "Biceps"],
+      tags: ["Pull", "Back", "Biceps", "Upper Body", "Hypertrophy"],
       isTemplate: true,
       createdBy: getTrainer(1),
       exercises: [
@@ -154,7 +154,7 @@ export const generateWorkoutsData = (
       category: "hypertrophy",
       difficulty: "advanced",
       estimatedDuration: 75,
-      tags: ["Legs", "Lower Body", "Volume"],
+      tags: ["Legs", "Lower Body", "Volume", "Hypertrophy", "Advanced"],
       isTemplate: true,
       createdBy: getTrainer(2),
       exercises: [
@@ -216,8 +216,8 @@ export const generateWorkoutsData = (
       category: "strength",
       difficulty: "advanced",
       estimatedDuration: 70,
-      tags: ["Upper Body", "Strength", "Powerbuilding"],
-      isTemplate: true,
+      tags: ["Upper Body", "Strength", "Powerbuilding", "Advanced", "Compound"],
+      isTemplate: false,
       createdBy: getTrainer(0),
       exercises: [
         {
@@ -271,8 +271,8 @@ export const generateWorkoutsData = (
       category: "strength",
       difficulty: "intermediate",
       estimatedDuration: 60,
-      tags: ["Lower Body", "Athletic", "Power"],
-      isTemplate: true,
+      tags: ["Lower Body", "Athletic", "Power", "Strength", "Intermediate"],
+      isTemplate: false,
       createdBy: getTrainer(1),
       exercises: [
         {
@@ -326,7 +326,7 @@ export const generateWorkoutsData = (
       category: "hypertrophy",
       difficulty: "beginner",
       estimatedDuration: 50,
-      tags: ["Full Body", "Beginner", "Foundations"],
+      tags: ["Full Body", "Beginner", "Foundations", "General", "Hypertrophy"],
       isTemplate: true,
       createdBy: getTrainer(2),
       exercises: [
@@ -381,8 +381,8 @@ export const generateWorkoutsData = (
       category: "hypertrophy",
       difficulty: "intermediate",
       estimatedDuration: 55,
-      tags: ["Arms", "Shoulders", "Isolation"],
-      isTemplate: true,
+      tags: ["Arms", "Shoulders", "Isolation", "Hypertrophy", "Intermediate"],
+      isTemplate: false,
       createdBy: getTrainer(0),
       exercises: [
         {
@@ -443,7 +443,7 @@ export const generateWorkoutsData = (
       category: "strength",
       difficulty: "beginner",
       estimatedDuration: 45,
-      tags: ["Beginner", "Strength", "Circuit"],
+      tags: ["Beginner", "Strength", "Circuit", "Foundations", "Compound"],
       isTemplate: true,
       createdBy: getTrainer(1),
       exercises: [
@@ -498,8 +498,8 @@ export const generateWorkoutsData = (
       category: "hypertrophy",
       difficulty: "advanced",
       estimatedDuration: 65,
-      tags: ["Chest", "Back", "Supersets"],
-      isTemplate: true,
+      tags: ["Chest", "Back", "Supersets", "Advanced", "Hypertrophy"],
+      isTemplate: false,
       createdBy: getTrainer(2),
       exercises: [
         {
@@ -553,8 +553,14 @@ export const generateWorkoutsData = (
       category: "strength",
       difficulty: "intermediate",
       estimatedDuration: 50,
-      tags: ["Core", "Functional", "Conditioning"],
-      isTemplate: true,
+      tags: [
+        "Core",
+        "Functional",
+        "Conditioning",
+        "Powerbuilding",
+        "Intermediate",
+      ],
+      isTemplate: false,
       createdBy: getTrainer(0),
       exercises: [
         {
