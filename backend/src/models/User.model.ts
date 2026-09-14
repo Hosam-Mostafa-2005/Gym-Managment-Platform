@@ -18,6 +18,8 @@ export interface IUser {
   password: string;
   role: Role;
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type UserDocument = HydratedDocument<IUser, IUserMethods>;
