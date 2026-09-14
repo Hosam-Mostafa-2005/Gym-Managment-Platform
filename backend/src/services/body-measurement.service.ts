@@ -4,7 +4,7 @@ import User from "../models/User.model.js";
 import { Assignment } from "../models/Assignment.model.js";
 import AppError from "../utils/AppError.js";
 import { Roles, type Role } from "../constants/roles.js";
-import { mapBodyMeasurement } from "../utils/body-measurement.mapper.js";
+import { mapBodyMeasurement } from "../mappers/body-measurement.mapper.js";
 import type {
   CreateBodyMeasurementDto,
   UpdateBodyMeasurementDto,

@@ -10,7 +10,7 @@ import ApiFeatures from "../utils/ApiFeatures.js";
 import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 
-import mapAssignment from "../utils/assignment.mapper.js";
+import mapAssignment from "../mappers/assignment.mapper.js";
 
 import type {
   CreateAssignmentDto,

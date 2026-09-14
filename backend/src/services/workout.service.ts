@@ -9,7 +9,7 @@ import type {
 } from "../types/workout.types.js";
 import ApiFeatures from "../utils/ApiFeatures.js";
 import type { ParsedQs } from "qs";
-import mapWorkout from "../utils/workout.mapper.js";
+import mapWorkout from "../mappers/workout.mapper.js";
 import { Roles, type Role } from "../constants/roles.js";
 
 import { Assignment } from "../models/Assignment.model.js";

@@ -6,7 +6,7 @@ import type {
 } from "../types/exercise.types.js";
 import ApiFeatures from "../utils/ApiFeatures.js";
 import AppError from "../utils/AppError.js";
-import mapExercise from "../utils/exercise.mapper.js";
+import mapExercise from "../mappers/exercise.mapper.js";
 
 class ExerciseService {
   // Create Exercise

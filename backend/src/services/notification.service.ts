@@ -1,7 +1,7 @@
 import Notification from "../models/Notification.model.js";
 
 import AppError from "../utils/AppError.js";
-import mapNotification from "../utils/notification.mapper.js";
+import mapNotification from "../mappers/notification.mapper.js";
 
 import type { CreateNotificationDto } from "../types/notification.types.js";
 

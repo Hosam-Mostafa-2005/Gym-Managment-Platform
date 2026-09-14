@@ -11,7 +11,7 @@ import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
 
 import type { FinishWorkoutSessionDto } from "../types/workout-session.types.js";
-import mapWorkoutSession from "../utils/workout-session.mapper.js";
+import mapWorkoutSession from "../mappers/workout-session.mapper.js";
 import WorkoutExerciseLog from "../models/WorkoutExerciseLog.model.js";
 import Workout from "../models/Workout.model.js";
 import WorkoutSetLog from "../models/WorkoutSetLog.model.js";

@@ -1,7 +1,7 @@
 import type { ParsedQs } from "qs";
 import User from "../models/User.model.js";
 import ApiFeatures from "../utils/ApiFeatures.js";
-import mapUser from "../utils/user.mapper.js"; // نفس المابر اللي بتستعمله في الـ auth
+import mapUser from "../mappers/user.mapper.js"; // نفس المابر اللي بتستعمله في الـ auth
 
 class UserService {
   async getAll(query: ParsedQs) {

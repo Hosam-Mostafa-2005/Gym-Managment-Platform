@@ -7,7 +7,7 @@ import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { MEMBER_SORT } from "../constants/member.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
-import { mapMemberManagementCard } from "../utils/members-management.mapper.js";
+import { mapMemberManagementCard } from "../mappers/members-management.mapper.js";
 
 class MembersManagementService {
   async getAllMembers(query: ParsedQs, userId: string, role: Role) {

@@ -8,7 +8,7 @@ import AppError from "../utils/AppError.js";
 import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
-import { mapMemberProfile } from "../utils/member-profile.mapper.js";
+import { mapMemberProfile } from "../mappers/member-profile.mapper.js";
 
 class MemberProfileService {
   private async checkTrainerAccess(trainerId: string, memberId: string) {

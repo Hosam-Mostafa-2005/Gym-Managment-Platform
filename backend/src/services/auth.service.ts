@@ -3,7 +3,7 @@ import type { RegisterDto } from "../types/auth.types.js";
 import AppError from "../utils/AppError.js";
 import type { LoginDto } from "../types/auth.types.js";
 import generateToken from "../utils/generateToken.js";
-import mapUser from "../utils/user.mapper.js";
+import mapUser from "../mappers/user.mapper.js";
 import type { UserDocument } from "../models/User.model.js";
 import type { UpdatePasswordDto } from "../types/auth.types.js";
 
