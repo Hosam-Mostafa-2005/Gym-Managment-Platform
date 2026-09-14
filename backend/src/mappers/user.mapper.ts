@@ -6,6 +6,12 @@ const mapUser = (user: IUser & { _id: unknown }) => {
     name: user.name,
     email: user.email,
     role: user.role,
+
+    // Trainer Profile
+    bio: user.bio,
+    specialties: user.specialties,
+    certifications: user.certifications,
+    yearsOfExperience: user.yearsOfExperience,
   };
 };
 

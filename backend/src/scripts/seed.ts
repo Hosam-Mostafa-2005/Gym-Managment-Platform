@@ -7,6 +7,10 @@ import Exercise from "../models/Exercise.model.js";
 import Workout from "../models/Workout.model.js";
 import { Assignment } from "../models/Assignment.model.js";
 import WorkoutSession from "../models/WorkoutSession.model.js";
+import WorkoutExerciseLog from "../models/WorkoutExerciseLog.model.js";
+import WorkoutSetLog from "../models/WorkoutSetLog.model.js";
+import BodyMeasurement from "../models/BodyMeasurement.model.js";
+import Notification from "../models/Notification.model.js";
 
 // Import Seed Data Generators
 import { usersData } from "./data/users.js";
@@ -14,7 +18,10 @@ import { exercisesData } from "./data/exercises.js";
 import { generateWorkoutsData } from "./data/workouts.js";
 import { generateAssignmentsData } from "./data/assignments.js";
 import { generateWorkoutSessionsData } from "./data/workoutSessions.js";
-import { generateWorkoutLogsData } from "./data/workoutLogs.js";
+import { generateWorkoutExerciseLogsData } from "./data/workoutExerciseLogs.js";
+import { generateWorkoutSetLogsData } from "./data/workoutSetLogs.js";
+import { generateBodyMeasurementsData } from "./data/bodyMeasurements.js";
+import { generateNotificationsData } from "./data/notifications.js";
 
 dotenv.config();
 
@@ -32,6 +39,10 @@ const seedDatabase = async (): Promise<void> => {
     console.log("✅ Successfully connected to MongoDB.\n");
 
     console.log("🗑️  Purging existing database collections...");
+    await Notification.deleteMany({});
+    await BodyMeasurement.deleteMany({});
+    await WorkoutSetLog.deleteMany({});
+    await WorkoutExerciseLog.deleteMany({});
     await WorkoutSession.deleteMany({});
     await Assignment.deleteMany({});
     await Workout.deleteMany({});
@@ -121,13 +132,46 @@ const seedDatabase = async (): Promise<void> => {
       `✅ Inserted ${createdSessions.length} workout sessions (${completedSessions.length} completed).\n`,
     );
 
-    // 7. Seed Workout Logs
-    console.log("📈 Seeding Workout Logs & Progression Data...");
-    const logsPayload = generateWorkoutLogsData(
+    // 7. Seed Workout Exercise Logs
+    console.log("📈 Seeding Workout Exercise Logs...");
+    const exerciseLogsPayload = generateWorkoutExerciseLogsData(
       completedSessions,
       createdWorkouts,
       createdAssignments,
     );
+    const createdExerciseLogs =
+      await WorkoutExerciseLog.insertMany(exerciseLogsPayload);
+    console.log(
+      `✅ Inserted ${createdExerciseLogs.length} workout exercise logs.\n`,
+    );
+
+    // 8. Seed Workout Set Logs
+    console.log("🔢 Seeding Workout Set Logs...");
+    const setLogsPayload = generateWorkoutSetLogsData(createdExerciseLogs);
+    const createdSetLogs = await WorkoutSetLog.insertMany(setLogsPayload);
+    console.log(`✅ Inserted ${createdSetLogs.length} workout set logs.\n`);
+
+    // 9. Seed Body Measurements
+    console.log("⚖️ Seeding Body Measurements...");
+    const measurementsPayload =
+      generateBodyMeasurementsData(createdAssignments);
+    const createdMeasurements =
+      await BodyMeasurement.insertMany(measurementsPayload);
+    console.log(
+      `✅ Inserted ${createdMeasurements.length} body measurements.\n`,
+    );
+
+    // 10. Seed Notifications
+    console.log("🔔 Seeding Notifications...");
+    const notificationsPayload = generateNotificationsData(
+      createdUsers,
+      createdAssignments,
+      createdSessions,
+      createdMeasurements,
+    );
+    const createdNotifications =
+      await Notification.insertMany(notificationsPayload);
+    console.log(`✅ Inserted ${createdNotifications.length} notifications.\n`);
 
     console.log("====================================================");
     console.log("🎉 DATABASE SEEDING COMPLETED SUCCESSFULLY!");
@@ -137,7 +181,11 @@ const seedDatabase = async (): Promise<void> => {
       Exercises: createdExercises.length,
       Workouts: createdWorkouts.length,
       Assignments: createdAssignments.length,
-      Sessions: createdSessions.length,
+      WorkoutSessions: createdSessions.length,
+      WorkoutExerciseLogs: createdExerciseLogs.length,
+      WorkoutSetLogs: createdSetLogs.length,
+      BodyMeasurements: createdMeasurements.length,
+      Notifications: createdNotifications.length,
     });
     console.log("====================================================\n");
   } catch (error) {

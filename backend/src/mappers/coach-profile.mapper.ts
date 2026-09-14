@@ -16,6 +16,17 @@ export const mapCoachProfile = (data: {
       id: data.coach._id.toString(),
       name: data.coach.name,
       email: data.coach.email,
+
+      phone: data.coach.phone,
+
+      bio: data.coach.bio,
+
+      specialties: data.coach.specialties,
+
+      certifications: data.coach.certifications,
+
+      yearsOfExperience: data.coach.yearsOfExperience,
+
       joinedAt: data.coach.createdAt,
     },
     overview: data.overview,
@@ -37,6 +48,8 @@ export const mapCoachProfile = (data: {
     achievements: data.achievements,
     upcomingTasks: data.upcomingTasks.map((task) => ({
       type: task.type,
+      title: task.title,
+      priority: task.priority,
       description: task.description,
       dueDate: task.dueDate,
       member: task.member

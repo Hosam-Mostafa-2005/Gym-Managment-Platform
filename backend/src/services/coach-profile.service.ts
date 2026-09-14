@@ -116,12 +116,37 @@ class CoachProfileService {
       coach.name = data.name;
     }
 
+    if (data.phone !== undefined) {
+      coach.phone = data.phone;
+    }
+
+    if (data.bio !== undefined) {
+      coach.bio = data.bio;
+    }
+
+    if (data.specialties !== undefined) {
+      coach.specialties = data.specialties;
+    }
+
+    if (data.certifications !== undefined) {
+      coach.certifications = data.certifications;
+    }
+
+    if (data.yearsOfExperience !== undefined) {
+      coach.yearsOfExperience = data.yearsOfExperience;
+    }
+
     await coach.save();
 
     return {
       id: coach._id.toString(),
       name: coach.name,
       email: coach.email,
+      phone: coach.phone,
+      bio: coach.bio,
+      specialties: coach.specialties,
+      certifications: coach.certifications,
+      yearsOfExperience: coach.yearsOfExperience,
       joinedAt: coach.createdAt,
     };
   }

@@ -2,8 +2,7 @@ import { Schema, model } from "mongoose";
 import { Roles } from "../constants/roles.js";
 import type { Role } from "../constants/roles.js";
 import bcrypt from "bcrypt";
-import type { Model } from "mongoose";
-import type { HydratedDocument } from "mongoose";
+import type { Model, HydratedDocument } from "mongoose";
 
 export interface IUserMethods {
   correctPassword(
@@ -16,8 +15,17 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
+
   role: Role;
   isActive: boolean;
+
+  phone?: string;
+
+  bio?: string | null;
+  specialties?: string[];
+  certifications?: string[];
+  yearsOfExperience?: number;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,6 +39,7 @@ const userSchema = new Schema<IUser, {}, IUserMethods>(
       required: true,
       trim: true,
     },
+
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -38,20 +47,55 @@ const userSchema = new Schema<IUser, {}, IUserMethods>(
       lowercase: true,
       trim: true,
     },
+
     password: {
       type: String,
       required: true,
       minlength: 8,
       select: false,
     },
+
     role: {
       type: String,
       enum: Object.values(Roles),
       default: Roles.MEMBER,
     },
+
     isActive: {
       type: Boolean,
       default: true,
+    },
+
+    phone: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+
+    // ==========================
+    // Trainer Profile
+    // ==========================
+
+    bio: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+
+    specialties: {
+      type: [String],
+      default: [],
+    },
+
+    certifications: {
+      type: [String],
+      default: [],
+    },
+
+    yearsOfExperience: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
   },
   {

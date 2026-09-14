@@ -85,14 +85,7 @@ class MembersManagementService {
               createdAt: -1,
             },
           },
-          {
-            $project: {
-              priority: 0,
-              status: 1,
-              trainer: 1,
-              workout: 1,
-            },
-          },
+
           { $project: { status: 1, trainer: 1, workout: 1 } },
         ],
         as: "allAssignments",
