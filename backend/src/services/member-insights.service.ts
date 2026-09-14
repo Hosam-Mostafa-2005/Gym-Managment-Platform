@@ -9,6 +9,13 @@ import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
 import { mapMemberInsights } from "../mappers/member-insights.mapper.js";
+import type {
+  TimelineEvent,
+  KPIs,
+  Charts,
+  WorkoutInsights,
+  BodyInsights,
+} from "../types/member-insights.types.js";
 
 const MAX_HISTORY = 50;
 
@@ -145,7 +152,7 @@ class MemberInsightsService {
     latestMeasurement: any,
     previousMeasurement: any,
     kpis: any,
-  ) {
+  ): BodyInsights {
     return {
       weight: kpis.weightDifference,
       bodyFat: kpis.bodyFatDifference,
@@ -183,7 +190,7 @@ class MemberInsightsService {
     };
   }
 
-  private buildCharts(measurements: any[], completedSessions: any[]) {
+  private buildCharts(measurements: any[], completedSessions: any[]): Charts {
     const measurementsAsc = [...measurements].reverse();
     const sessionsAsc = [...completedSessions].reverse();
 
@@ -213,8 +220,8 @@ class MemberInsightsService {
     measurements: any[],
     sessions: any[],
     assignments: any[],
-  ) {
-    const timelineEvents: any[] = [];
+  ): TimelineEvent[] {
+    const timelineEvents: TimelineEvent[] = [];
 
     measurements.forEach((m) => {
       timelineEvents.push({
@@ -331,7 +338,7 @@ class MemberInsightsService {
         ? Math.round(stats.totalDuration / stats.completedSessions)
         : 0;
 
-    const kpis = {
+    const kpis: KPIs = {
       currentWeight: latestMeasurement?.weight || 0,
       weightDifference:
         latestMeasurement && previousMeasurement
@@ -355,7 +362,7 @@ class MemberInsightsService {
     };
 
     // 3. Compute Body Insights (Deltas)
-    const bodyInsights = this.buildBodyInsights(
+    const bodyInsights: BodyInsights = this.buildBodyInsights(
       latestMeasurement,
       previousMeasurement,
       kpis,
@@ -370,7 +377,7 @@ class MemberInsightsService {
       .filter(Boolean) as Date[];
     const streaksAndAverages = this.calculateStreaksAndAverages(sessionDates);
 
-    const workoutInsights = {
+    const workoutInsights: WorkoutInsights = {
       currentStreak: streaksAndAverages.currentStreak,
       longestStreak: streaksAndAverages.longestStreak,
       lastWorkout: sessionDates.length > 0 ? sessionDates[0] : null,
@@ -380,8 +387,7 @@ class MemberInsightsService {
     };
 
     // 5. Construct Charts (Chronological order)
-    const charts = this.buildCharts(measurements, completedSessions);
-
+    const charts: Charts = this.buildCharts(measurements, completedSessions);
     // 6. Construct Timeline
     const timelineEvents = this.buildTimeline(
       measurements,

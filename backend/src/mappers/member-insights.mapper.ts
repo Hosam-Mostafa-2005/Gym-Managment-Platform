@@ -1,4 +1,5 @@
 // src/mappers/member-insights.mapper.ts
+import type { MemberInsightsMapperInput } from "../types/member-insights.types.js";
 
 export const mapMemberInsights = ({
   kpis,
@@ -6,7 +7,7 @@ export const mapMemberInsights = ({
   workoutInsights,
   bodyInsights,
   timeline,
-}: any) => {
+}: MemberInsightsMapperInput) => {
   return {
     kpis: {
       currentWeight: kpis.currentWeight,

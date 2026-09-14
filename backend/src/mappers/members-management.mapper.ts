@@ -1,6 +1,7 @@
 // src/mappers/members-management.mapper.ts
+import type { MemberManagementCard } from "../types/members-management.types.js";
 
-export const mapMemberManagementCard = (data: any) => {
+export const mapMemberManagementCard = (data: any): MemberManagementCard => {
   const assignment = data.currentAssignment;
   const trainer = data.trainer;
   const workout = data.workout;

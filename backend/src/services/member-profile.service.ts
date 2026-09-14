@@ -9,6 +9,7 @@ import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
 import { mapMemberProfile } from "../mappers/member-profile.mapper.js";
+import type { TimelineEvent } from "../types/member-profile.types.js";
 
 class MemberProfileService {
   private async checkTrainerAccess(trainerId: string, memberId: string) {
@@ -58,8 +59,8 @@ class MemberProfileService {
     assignmentHistory: any[],
     measurements: any[],
     sessions: any[],
-  ) {
-    const timeline: any[] = [];
+  ): TimelineEvent[] {
+    const timeline: TimelineEvent[] = [];
 
     const allAssignments = currentAssignment
       ? [currentAssignment, ...assignmentHistory]

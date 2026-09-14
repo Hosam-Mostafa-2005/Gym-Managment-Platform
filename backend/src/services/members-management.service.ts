@@ -8,9 +8,14 @@ import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { MEMBER_SORT } from "../constants/member.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
 import { mapMemberManagementCard } from "../mappers/members-management.mapper.js";
+import type { MembersManagementResponse } from "../types/members-management.types.js";
 
 class MembersManagementService {
-  async getAllMembers(query: ParsedQs, userId: string, role: Role) {
+  async getAllMembers(
+    query: ParsedQs,
+    userId: string,
+    role: Role,
+  ): Promise<MembersManagementResponse> {
     if (role === Roles.MEMBER) {
       throw new AppError("Forbidden.", 403);
     }
