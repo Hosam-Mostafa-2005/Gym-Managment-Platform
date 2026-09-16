@@ -1,4 +1,8 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from "react-router-dom";
 
 import AuthLayout from "@/features/auth/components/layouts/AuthLayout";
 import AppLayout from "@/components/shared/layouts/AppLayout";
@@ -10,9 +14,10 @@ import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
 import NotFoundPage from "@/features/auth/pages/NotFoundPage";
 
-// Home
+// Home & Dashboard
 import HomePage from "@/features/home/pages/HomePage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
+import CoachDashboardPage from "@/features/coach-dashboard/pages/CoachDashboardPage";
 
 // Exercises
 import ExercisesPage from "@/features/exercises/pages/ExercisesPage";
@@ -60,6 +65,7 @@ const router = createBrowserRouter([
       {
         element: <AppLayout />,
         children: [
+          // ─── Main ───────────────────────────────────────────
           {
             index: true,
             element: <HomePage />,
@@ -68,38 +74,44 @@ const router = createBrowserRouter([
             path: "dashboard",
             element: <DashboardPage />,
           },
-
-          // ================= Exercises =================
-
           {
-            path: "exercises",
+            path: "coach-dashboard",
+            element: <CoachDashboardPage />,
+          },
+
+          // ─── Members ────────────────────────────────────────
+          {
+            path: "members",
             children: [
               {
                 index: true,
-                element: <ExercisesPage />,
+                element: <Navigate to="all" replace />,
               },
               {
-                path: "new",
-                element: <CreateExercisePage />,
+                path: "all",
+                element: <HomePage />, // Reused until dedicated MembersListPage is plugged in
               },
               {
-                path: ":exerciseId",
-                element: <ExerciseDetailsPage />,
+                path: ":memberId",
+                element: <HomePage />, // Reused until dedicated MemberDetailsPage is plugged in
               },
               {
-                path: ":exerciseId/edit",
-                element: <EditExercisePage />,
+                path: ":memberId/insights",
+                element: <HomePage />, // Reused until dedicated MemberInsightsPage is plugged in
               },
             ],
           },
 
-          // ================= Workouts =================
-
+          // ─── Workout Builder ────────────────────────────────
           {
-            path: "workouts",
+            path: "workout-builder",
             children: [
               {
                 index: true,
+                element: <Navigate to="all" replace />,
+              },
+              {
+                path: "all",
                 element: <WorkoutsPage />,
               },
               {
@@ -117,13 +129,69 @@ const router = createBrowserRouter([
             ],
           },
 
-          // ================= Assignments =================
+          // ─── Workout Library ────────────────────────────────
+          {
+            path: "workout-library",
+            children: [
+              {
+                index: true,
+                element: <Navigate to="workouts" replace />,
+              },
+              {
+                path: "workouts",
+                children: [
+                  {
+                    index: true,
+                    element: <WorkoutsPage />,
+                  },
+                  {
+                    path: "new",
+                    element: <CreateWorkoutPage />,
+                  },
+                  {
+                    path: ":workoutId",
+                    element: <WorkoutDetailsPage />,
+                  },
+                  {
+                    path: ":workoutId/edit",
+                    element: <EditWorkoutPage />,
+                  },
+                ],
+              },
+              {
+                path: "exercises",
+                children: [
+                  {
+                    index: true,
+                    element: <ExercisesPage />,
+                  },
+                  {
+                    path: "new",
+                    element: <CreateExercisePage />,
+                  },
+                  {
+                    path: ":exerciseId",
+                    element: <ExerciseDetailsPage />,
+                  },
+                  {
+                    path: ":exerciseId/edit",
+                    element: <EditExercisePage />,
+                  },
+                ],
+              },
+            ],
+          },
 
+          // ─── Assignments ────────────────────────────────────
           {
             path: "assignments",
             children: [
               {
                 index: true,
+                element: <Navigate to="all" replace />,
+              },
+              {
+                path: "all",
                 element: <AssignmentsPage />,
               },
               {
@@ -141,8 +209,7 @@ const router = createBrowserRouter([
             ],
           },
 
-          // ================= Workout Sessions =================
-
+          // ─── Sessions ───────────────────────────────────────
           {
             path: "sessions",
             children: [
@@ -161,19 +228,21 @@ const router = createBrowserRouter([
             ],
           },
 
-          // ================= Future =================
-
-          // assignments
-          // members
-          // sessions
-          // users
+          // ─── Shared ─────────────────────────────────────────
+          {
+            path: "notifications",
+            element: <HomePage />, // Reused until dedicated NotificationsPage is plugged in
+          },
+          {
+            path: "profile",
+            element: <HomePage />, // Reused until dedicated ProfilePage is plugged in
+          },
         ],
       },
     ],
   },
 
   // ================= 404 =================
-
   {
     path: "*",
     element: <NotFoundPage />,
