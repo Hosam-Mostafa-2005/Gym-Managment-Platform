@@ -20,14 +20,14 @@ interface OverviewCardsProps {
 export const OverviewCards: React.FC<OverviewCardsProps> = ({ overview }) => {
   return (
     <section
-      className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8"
+      className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
       aria-label="Dashboard Key Performance Indicators"
     >
       <OverviewCard
         title="Active Members"
         value={overview.members?.active ?? 0}
         secondaryValue={overview.members?.total}
-        secondaryLabel="total"
+        secondaryLabel="total members"
         icon={Users}
       />
 
@@ -35,7 +35,7 @@ export const OverviewCards: React.FC<OverviewCardsProps> = ({ overview }) => {
         title="Active Assignments"
         value={overview.assignments?.active ?? 0}
         secondaryValue={overview.assignments?.total}
-        secondaryLabel="total"
+        secondaryLabel="total assignments"
         icon={ClipboardList}
       />
 
@@ -64,7 +64,7 @@ export const OverviewCards: React.FC<OverviewCardsProps> = ({ overview }) => {
       />
 
       <OverviewCard
-        title="Measurements (Week)"
+        title="Measurements This Week"
         value={overview.measurementsThisWeek ?? 0}
         icon={Ruler}
       />

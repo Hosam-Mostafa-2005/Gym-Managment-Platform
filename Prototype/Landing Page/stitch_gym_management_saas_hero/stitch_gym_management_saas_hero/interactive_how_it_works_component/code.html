@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex Athletic OS - How It Works Workflow Component</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#5BE584',
+              hover: '#49D472',
+              glow: 'rgba(91, 229, 132, 0.25)',
+              dim: 'rgba(91, 229, 132, 0.12)',
+            },
+            surface: {
+              bg: '#090B0F',
+              1: '#13171D',
+              2: '#1B2028',
+              3: '#242B35',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #090B0F;
+      color: #F8FAFC;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .glow-line {
+      background: linear-gradient(90deg, rgba(91,229,132,0.8) 0%, rgba(91,229,132,0.1) 100%);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #13171D;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #1B2028;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #5BE584;
+    }
+  </style>
+</head>
+<body class="bg-[#090B0F] text-[#F8FAFC] antialiased flex flex-col justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+
+  <!-- STANDALONE "HOW IT WORKS" COMPONENT WRAPPER -->
+  <section id="how-it-works-component" class="w-full max-w-7xl mx-auto relative overflow-hidden py-8">
+    
+    <!-- Ambient Background Lighting Orbs (Self-contained) -->
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#5BE584]/5 blur-[130px] pointer-events-none rounded-full"></div>
+    <div class="absolute -bottom-24 right-10 w-[450px] h-[250px] bg-[#5BE584]/5 blur-[100px] pointer-events-none rounded-full"></div>
+
+    <!-- Section Header & Badge -->
+    <div class="text-center max-w-3xl mx-auto mb-12 relative z-10">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#13171D] border border-[#5BE584]/25 mb-4 shadow-[0_0_15px_rgba(91,229,132,0.08)]">
+        <span class="w-2 h-2 rounded-full bg-[#5BE584] animate-pulse"></span>
+        <span class="text-xs font-semibold tracking-wider uppercase text-[#5BE584]">Interactive Workflow</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#F8FAFC]">
+        How It Works
+      </h2>
+      <p class="mt-3.5 text-base sm:text-lg text-[#94A3B8] font-normal leading-relaxed">
+        Select a perspective to explore how our unified architecture orchestrates seamless fitness performance and operations.
+      </p>
+
+      <!-- Role Selector Tabs -->
+      <div class="mt-8 inline-flex p-1.5 rounded-2xl bg-[#13171D] border border-white/10 shadow-2xl backdrop-blur-xl relative">
+        <button 
+          onclick="switchJourney('member')" 
+          id="tab-member" 
+          class="role-tab flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 bg-[#5BE584] text-[#090B0F] shadow-[0_0_20px_rgba(91,229,132,0.35)]">
+          <i data-lucide="user" class="w-4 h-4"></i>
+          <span>Member</span>
+        </button>
+
+        <button 
+          onclick="switchJourney('trainer')" 
+          id="tab-trainer" 
+          class="role-tab flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 text-[#94A3B8] hover:text-[#F8FAFC]">
+          <i data-lucide="dumbbell" class="w-4 h-4"></i>
+          <span>Trainer</span>
+        </button>
+
+        <button 
+          onclick="switchJourney('owner')" 
+          id="tab-owner" 
+          class="role-tab flex items-center gap-2.5 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 text-[#94A3B8] hover:text-[#F8FAFC]">
+          <i data-lucide="building-2" class="w-4 h-4"></i>
+          <span>Gym Owner</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Perspective Micro-Indicator -->
+    <div class="flex items-center justify-between max-w-7xl mx-auto px-2 mb-6">
+      <div class="flex items-center gap-2.5 text-xs text-[#94A3B8]">
+        <span class="w-2 h-2 rounded-full bg-[#5BE584]"></span>
+        <span id="journey-subtitle" class="font-medium tracking-wide uppercase">Member Experience Protocol • 5 Progressive Milestones</span>
+      </div>
+      <div class="hidden sm:flex items-center gap-2 text-xs text-[#94A3B8]/60">
+        <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5"></i>
+        <span>Hover step cards to inspect workflow mechanics</span>
+      </div>
+    </div>
+
+    <!-- WORKFLOW CARDS STAGE (5 CONNECTED CARDS) -->
+    <div class="relative w-full">
+      
+      <!-- Horizontal Flow Grid Container -->
+      <div id="journey-cards-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-5 relative z-10 transition-opacity duration-300 opacity-100">
+        <!-- Cards dynamically injected via JS below -->
+      </div>
+
+    </div>
+
+    <!-- Bottom Context Metadata / Integration Bar -->
+    <div class="mt-12 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#94A3B8]">
+      <div class="flex items-center gap-3">
+        <span class="px-2.5 py-1 rounded bg-[#1B2028] text-[#5BE584] font-mono font-medium">REALTIME MESH</span>
+        <span>Continuous bidirectional telemetry across all five journey stages</span>
+      </div>
+      <div class="flex items-center gap-5">
+        <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-[#5BE584]"></i> Zero Friction</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 text-[#5BE584]"></i> Sub-millisecond Sync</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-[#5BE584]"></i> Auto Progressive</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- JOURNEYS DATA & INTERACTION SCRIPT -->
+  <script>
+    const journeys = {
+      member: {
+        subtitle: "Member Experience Protocol • 5 Progressive Milestones",
+        steps: [
+          {
+            number: "01",
+            icon: "fingerprint",
+            title: "Instant Digital Entry",
+            desc: "Frictionless studio access with high-speed NFC or biometric check-in upon facility arrival.",
+            tag: "Check-In",
+            metric: "0.2s turnstile release",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 flex flex-col items-center justify-center relative overflow-hidden group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="absolute inset-0 bg-radial from-[#5BE584]/10 via-transparent to-transparent"></div>
+                <div class="w-10 h-10 rounded-full bg-[#13171D] border border-[#5BE584]/40 flex items-center justify-center text-[#5BE584] shadow-[0_0_15px_rgba(91,229,132,0.2)]">
+                  <i data-lucide="scan" class="w-5 h-5"></i>
+                </div>
+                <span class="text-[10px] text-[#94A3B8] mt-2 font-mono tracking-wider">NFC_BEACON_LINKED</span>
+              </div>
+            `
+          },
+          {
+            number: "02",
+            icon: "calendar-check",
+            title: "Dynamic Smart Session",
+            desc: "Instantly open the daily programmed split calibrated automatically to your target cycle.",
+            tag: "Program Sync",
+            metric: "AI progression loaded",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2.5 flex flex-col justify-between group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex justify-between items-center text-[10px]">
+                  <span class="text-[#5BE584] font-mono">PUSH DAY // VOL 4</span>
+                  <span class="text-white/40">ZONE 4</span>
+                </div>
+                <div class="space-y-1">
+                  <div class="h-1.5 w-full bg-[#1B2028] rounded-full overflow-hidden">
+                    <div class="h-full w-4/5 bg-[#5BE584] rounded-full"></div>
+                  </div>
+                  <div class="h-1.5 w-3/5 bg-[#1B2028] rounded-full"></div>
+                </div>
+                <span class="text-[10px] text-[#94A3B8] font-mono flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#5BE584]"></span> 4 Sets &bull; 8-10 Reps
+                </span>
+              </div>
+            `
+          },
+          {
+            number: "03",
+            icon: "activity",
+            title: "Live PR & Metric Logging",
+            desc: "Log sets, tempo, and RPE with single-tap precision. Real-time rest interval haptics.",
+            tag: "Execution",
+            metric: "+2.5kg target pacing",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2 flex items-center justify-center gap-2 group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="p-2 rounded bg-[#13171D] border border-[#5BE584]/20 text-center flex-1">
+                  <span class="text-[9px] text-[#94A3B8] block">BENCH PR</span>
+                  <span class="text-sm font-extrabold text-[#5BE584]">115 KG</span>
+                </div>
+                <div class="p-2 rounded bg-[#13171D] border border-white/5 text-center flex-1">
+                  <span class="text-[9px] text-[#94A3B8] block">REST TIME</span>
+                  <span class="text-sm font-extrabold text-white">01:45</span>
+                </div>
+              </div>
+            `
+          },
+          {
+            number: "04",
+            icon: "cpu",
+            title: "Algorithmic Analysis",
+            desc: "Proprietary engine parses volume fatigue and calculates precise recovery windows.",
+            tag: "Telemetry",
+            metric: "98.2% biomechanics score",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2.5 flex flex-col justify-between group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="text-white font-medium">RECOVERY READINESS</span>
+                  <span class="text-[#5BE584] font-bold">92%</span>
+                </div>
+                <!-- Sparkline curve placeholder -->
+                <svg class="w-full h-8 stroke-[#5BE584] fill-none" viewBox="0 0 100 25">
+                  <path d="M0,20 Q20,22 35,10 T70,12 T100,5" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span class="text-[9px] text-[#94A3B8] font-mono">HYPERTROPHY OPTIMIZED</span>
+              </div>
+            `
+          },
+          {
+            number: "05",
+            icon: "award",
+            title: "Milestone & Tier Unlocks",
+            desc: "Earn verified club accolades, celebrate streak milestones, and share verified achievements.",
+            tag: "Progression",
+            metric: "Diamond athlete tier",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 flex flex-col items-center justify-center relative group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="w-8 h-8 rounded-full bg-[#5BE584]/15 border border-[#5BE584] flex items-center justify-center text-[#5BE584] mb-1">
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                </div>
+                <span class="text-xs font-bold text-white tracking-wide">30-DAY STREAK</span>
+                <span class="text-[10px] text-[#5BE584] font-mono">+450 XP RANK 1</span>
+              </div>
+            `
+          }
+        ]
+      },
+      trainer: {
+        subtitle: "Coach & Trainer Protocol • 5 Progressive Milestones",
+        steps: [
+          {
+            number: "01",
+            icon: "users-round",
+            title: "Client Roster Intake",
+            desc: "Onboard new clients with automated baseline movement evaluations and injury screening.",
+            tag: "Assessment",
+            metric: "Smart PAR-Q integrated",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2.5 flex flex-col justify-between group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-full bg-[#1B2028] border border-[#5BE584]/40 flex items-center justify-center text-[10px] text-[#5BE584]">JD</div>
+                  <div>
+                    <div class="text-[11px] font-semibold text-white leading-none">Johnathan Doe</div>
+                    <span class="text-[9px] text-[#94A3B8]">Hypertrophy Phase 1</span>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between text-[10px] pt-2 border-t border-white/5">
+                  <span class="text-[#94A3B8]">Clearance:</span>
+                  <span class="text-[#5BE584] font-mono">100% READY</span>
+                </div>
+              </div>
+            `
+          },
+          {
+            number: "02",
+            icon: "layers",
+            title: "1-Click Workout Builder",
+            desc: "Assemble custom multi-week periodization macrocycles with smart drag-and-drop mechanics.",
+            tag: "Programming",
+            metric: "250+ video library",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2 space-y-1.5 group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex items-center justify-between px-2 py-1 rounded bg-[#13171D] border border-white/5 text-[10px]">
+                  <span class="text-white font-medium">Barbell Deadlift</span>
+                  <span class="text-[#5BE584] font-mono">5x5 @ RPE 8</span>
+                </div>
+                <div class="flex items-center justify-between px-2 py-1 rounded bg-[#13171D] border border-white/5 text-[10px]">
+                  <span class="text-white font-medium">Bulgarian Split Squat</span>
+                  <span class="text-[#5BE584] font-mono">3x10 / leg</span>
+                </div>
+              </div>
+            `
+          },
+          {
+            number: "03",
+            icon: "radio",
+            title: "Live Studio Broadcast",
+            desc: "Broadcast training regimens to gym floor screens or client phones simultaneously.",
+            tag: "Delivery",
+            metric: "Live sync < 50ms",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 flex flex-col items-center justify-center text-center p-2 group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex items-center gap-1.5 text-[#5BE584] text-[11px] font-mono font-semibold mb-1">
+                  <span class="w-2 h-2 rounded-full bg-[#5BE584] animate-ping"></span>
+                  <span>SESSION LIVE</span>
+                </div>
+                <span class="text-xs text-white font-bold">Arena Floor A &bull; 8 Clients</span>
+                <span class="text-[9px] text-[#94A3B8] mt-1 font-mono">FEED_STATION_SYNCED</span>
+              </div>
+            `
+          },
+          {
+            number: "04",
+            icon: "line-chart",
+            title: "Adherence Telemetry",
+            desc: "Track client completion rates, flag plateaus early, and modify volume before fatigue spikes.",
+            tag: "Monitoring",
+            metric: "94.6% adherence rate",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2.5 flex flex-col justify-between group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex justify-between items-center text-[10px]">
+                  <span class="text-white font-medium">Weekly Completion</span>
+                  <span class="text-[#5BE584] font-bold">14/15 Sets</span>
+                </div>
+                <div class="grid grid-cols-7 gap-1">
+                  <div class="h-5 bg-[#5BE584] rounded-sm"></div>
+                  <div class="h-5 bg-[#5BE584] rounded-sm"></div>
+                  <div class="h-5 bg-[#5BE584] rounded-sm"></div>
+                  <div class="h-5 bg-[#1B2028] rounded-sm"></div>
+                  <div class="h-5 bg-[#5BE584] rounded-sm"></div>
+                  <div class="h-5 bg-[#5BE584] rounded-sm"></div>
+                  <div class="h-5 bg-[#5BE584]/40 rounded-sm"></div>
+                </div>
+                <span class="text-[9px] text-[#94A3B8] font-mono">0 PLATEAUS DETECTED</span>
+              </div>
+            `
+          },
+          {
+            number: "05",
+            icon: "credit-card",
+            title: "Automated Commission",
+            desc: "Session completions trigger zero-delay coach payouts and package renewals with zero admin work.",
+            tag: "Revenue",
+            metric: "Instant payout routing",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 flex flex-col items-center justify-center p-2 group-hover:border-[#5BE584]/30 transition-colors">
+                <span class="text-[9px] text-[#94A3B8] uppercase tracking-wider">CYCLE EARNINGS</span>
+                <span class="text-base font-extrabold text-[#5BE584] mt-0.5">$3,480.00</span>
+                <div class="mt-1.5 flex items-center gap-1 text-[10px] text-white/70">
+                  <i data-lucide="check-circle" class="w-3 h-3 text-[#5BE584]"></i> Direct Deposit Cleared
+                </div>
+              </div>
+            `
+          }
+        ]
+      },
+      owner: {
+        subtitle: "Executive Owner Protocol • 5 Progressive Milestones",
+        steps: [
+          {
+            number: "01",
+            icon: "network",
+            title: "Multi-Studio Federation",
+            desc: "Unify front desk operations, member access permissions, and facilities across multiple locations.",
+            tag: "Infrastructure",
+            metric: "Global SSO + Multi-site",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2 flex flex-col justify-around group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex items-center justify-between text-[10px] px-1.5 py-1 bg-[#13171D] rounded">
+                  <span class="text-white">Downtown HQ</span>
+                  <span class="text-[#5BE584] font-mono font-bold">&bull; ONLINE</span>
+                </div>
+                <div class="flex items-center justify-between text-[10px] px-1.5 py-1 bg-[#13171D] rounded">
+                  <span class="text-white">Westside Branch</span>
+                  <span class="text-[#5BE584] font-mono font-bold">&bull; ONLINE</span>
+                </div>
+              </div>
+            `
+          },
+          {
+            number: "02",
+            icon: "credit-card",
+            title: "Zero-Leak Billing Flow",
+            desc: "Eliminate recurring revenue leakage with automatic smart retries and seamless tiered billing.",
+            tag: "Billing",
+            metric: "99.8% collection rate",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2.5 flex flex-col justify-between group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex justify-between items-center text-[10px]">
+                  <span class="text-[#94A3B8]">MRR PROJECTION</span>
+                  <span class="text-[#5BE584] font-mono font-semibold">+18.4%</span>
+                </div>
+                <div class="text-lg font-extrabold text-white tracking-tight">$84,250</div>
+                <div class="flex items-center gap-1.5 text-[9px] text-[#5BE584]">
+                  <i data-lucide="shield" class="w-3 h-3"></i> Automated Card Updater Active
+                </div>
+              </div>
+            `
+          },
+          {
+            number: "03",
+            icon: "gauge",
+            title: "Occupancy & Flow Balancer",
+            desc: "Real-time turnstile telemetry monitors locker and equipment congestion to balance floor loads.",
+            tag: "Capacity",
+            metric: "Dynamic capacity alerts",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2 flex items-center justify-between group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="w-12 h-12 rounded-full border-2 border-[#5BE584] flex items-center justify-center flex-col">
+                  <span class="text-xs font-bold text-white">74%</span>
+                  <span class="text-[7px] text-[#94A3B8]">PEAK</span>
+                </div>
+                <div class="text-right text-[10px] space-y-0.5">
+                  <div class="text-white font-semibold">142 In Facility</div>
+                  <div class="text-[#5BE584]">Optimal Density</div>
+                  <div class="text-[9px] text-[#94A3B8]">Avg Stay: 58m</div>
+                </div>
+              </div>
+            `
+          },
+          {
+            number: "04",
+            icon: "sparkles",
+            title: "AI Churn Defense Matrix",
+            desc: "Predictive engagement models detect declining check-ins and trigger personalized retention offers.",
+            tag: "Retention",
+            metric: "-42% member churn",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2.5 flex flex-col justify-between group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="text-white font-medium">AUTO-REENGAGEMENT</span>
+                  <span class="text-[#5BE584] font-bold">SAVED 28</span>
+                </div>
+                <div class="h-2 w-full bg-[#1B2028] rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-amber-500 to-[#5BE584] w-4/5 rounded-full"></div>
+                </div>
+                <span class="text-[9px] text-[#94A3B8] font-mono">RETENTION RISK: LOW</span>
+              </div>
+            `
+          },
+          {
+            number: "05",
+            icon: "pie-chart",
+            title: "Executive BI Cockpit",
+            desc: "Consolidated profit per square foot, coach utilization rates, and lifetime value analytics.",
+            tag: "Analytics",
+            metric: "Export-ready governance",
+            svgGraphic: `
+              <div class="w-full h-24 rounded-lg bg-[#090B0F]/90 border border-white/5 p-2 flex flex-col justify-between group-hover:border-[#5BE584]/30 transition-colors">
+                <div class="flex justify-between items-center text-[10px]">
+                  <span class="text-white font-medium">EBITDA MARGIN</span>
+                  <span class="text-[#5BE584] font-bold">34.2%</span>
+                </div>
+                <div class="flex items-end gap-1.5 h-7 pt-1">
+                  <div class="w-1/4 bg-[#1B2028] h-3 rounded-t"></div>
+                  <div class="w-1/4 bg-[#1B2028] h-4 rounded-t"></div>
+                  <div class="w-1/4 bg-[#5BE584]/60 h-5 rounded-t"></div>
+                  <div class="w-1/4 bg-[#5BE584] h-7 rounded-t"></div>
+                </div>
+                <span class="text-[9px] text-[#94A3B8] font-mono text-center">MULTI-FACILITY SYNC</span>
+              </div>
+            `
+          }
+        ]
+      }
+    };
+
+    function renderCards(roleKey) {
+      const data = journeys[roleKey];
+      const container = document.getElementById('journey-cards-container');
+      const subtitleEl = document.getElementById('journey-subtitle');
+      
+      subtitleEl.textContent = data.subtitle;
+
+      let html = '';
+      data.steps.forEach((step, idx) => {
+        const isLast = idx === data.steps.length - 1;
+        html += `
+          <div class="group relative flex flex-col justify-between rounded-2xl bg-[#13171D]/90 border border-white/10 hover:border-[#5BE584]/60 p-5 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_12px_30px_rgba(0,0,0,0.6),0_0_25px_rgba(91,229,132,0.15)] backdrop-blur-md">
+            
+            <!-- Connecting indicator for desktop & tablet -->
+            ${!isLast ? `
+              <div class="hidden lg:block absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
+                <div class="w-7 h-7 rounded-full bg-[#1B2028] border border-white/10 flex items-center justify-center text-[#5BE584] shadow-md group-hover:border-[#5BE584]/50">
+                  <i data-lucide="chevron-right" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Card Top: Step Number & Role Badge -->
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <div class="w-10 h-10 rounded-xl bg-[#1B2028] border border-white/10 flex items-center justify-center text-[#5BE584] group-hover:bg-[#5BE584] group-hover:text-[#090B0F] transition-colors duration-300 shadow-inner">
+                  <i data-lucide="${step.icon}" class="w-5 h-5"></i>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#1B2028] text-[#94A3B8] border border-white/5 font-mono">
+                    ${step.tag}
+                  </span>
+                  <span class="text-sm font-extrabold text-[#94A3B8]/50 font-mono">
+                    ${step.number}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Title & Description -->
+              <h3 class="text-base font-bold text-white group-hover:text-[#5BE584] transition-colors tracking-tight leading-snug">
+                ${step.title}
+              </h3>
+              <p class="mt-2 text-xs text-[#94A3B8] leading-relaxed line-clamp-3">
+                ${step.desc}
+              </p>
+            </div>
+
+            <!-- Card Bottom: Image/Illustration Placeholder & Metric Pill -->
+            <div class="mt-5 pt-4 border-t border-white/5">
+              <div class="mb-3">
+                ${step.svgGraphic}
+              </div>
+
+              <!-- Metric highlight footer -->
+              <div class="flex items-center justify-between text-[11px] font-mono">
+                <span class="text-[#94A3B8] flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#5BE584]"></span>
+                  <span>Outcome:</span>
+                </span>
+                <span class="text-[#5BE584] font-medium tracking-tight">${step.metric}</span>
+              </div>
+            </div>
+
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      lucide.createIcons();
+    }
+
+    function switchJourney(roleKey) {
+      // Button states
+      const buttons = document.querySelectorAll('.role-tab');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-[#5BE584]', 'text-[#090B0F]', 'shadow-[0_0_20px_rgba(91,229,132,0.35)]');
+        btn.classList.add('text-[#94A3B8]');
+      });
+
+      const activeBtn = document.getElementById('tab-' + roleKey);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-[#94A3B8]');
+        activeBtn.classList.add('bg-[#5BE584]', 'text-[#090B0F]', 'shadow-[0_0_20px_rgba(91,229,132,0.35)]');
+      }
+
+      // Card animation transition
+      const container = document.getElementById('journey-cards-container');
+      container.style.opacity = '0';
+      setTimeout(() => {
+        renderCards(roleKey);
+        container.style.opacity = '1';
+      }, 150);
+    }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCards('member');
+    });
+  </script>
+</body>
+</html>

@@ -42,6 +42,15 @@ import WorkoutSessionsPage from "@/features/workout-sessions/pages/WorkoutSessio
 import WorkoutSessionPage from "@/features/workout-sessions/pages/WorkoutSessionPage";
 import ActiveWorkoutPage from "@/features/workout-sessions/pages/ActiveWorkoutPage";
 
+// Profile
+import ProfilePage from "@/features/profile/pages/ProfilePage";
+
+import MembersManagementPage from "@/features/members-management/pages/MembersManagementPage";
+import MemberProfilePage from "@/features/member-profile/pages/MemberProfilePage";
+import MemberInsightsPage from "@/features/member-insights/pages/MemberInsightsPage";
+import BodyMeasurementsPage from "@/features/body-measurements/pages/BodyMeasurementsPage";
+import NotificationsPage from "@/features/notifications/pages/NotificationsPage";
+
 const router = createBrowserRouter([
   // ================= Public =================
   {
@@ -79,7 +88,6 @@ const router = createBrowserRouter([
             element: <CoachDashboardPage />,
           },
 
-          // ─── Members ────────────────────────────────────────
           {
             path: "members",
             children: [
@@ -89,15 +97,19 @@ const router = createBrowserRouter([
               },
               {
                 path: "all",
-                element: <HomePage />, // Reused until dedicated MembersListPage is plugged in
+                element: <MembersManagementPage />,
               },
               {
                 path: ":memberId",
-                element: <HomePage />, // Reused until dedicated MemberDetailsPage is plugged in
+                element: <MemberProfilePage />,
               },
               {
                 path: ":memberId/insights",
-                element: <HomePage />, // Reused until dedicated MemberInsightsPage is plugged in
+                element: <MemberInsightsPage />,
+              },
+              {
+                path: ":memberId/measurements",
+                element: <BodyMeasurementsPage />,
               },
             ],
           },
@@ -231,11 +243,11 @@ const router = createBrowserRouter([
           // ─── Shared ─────────────────────────────────────────
           {
             path: "notifications",
-            element: <HomePage />, // Reused until dedicated NotificationsPage is plugged in
+            element: <NotificationsPage />, // Reused until dedicated NotificationsPage is plugged in
           },
           {
             path: "profile",
-            element: <HomePage />, // Reused until dedicated ProfilePage is plugged in
+            element: <ProfilePage />,
           },
         ],
       },

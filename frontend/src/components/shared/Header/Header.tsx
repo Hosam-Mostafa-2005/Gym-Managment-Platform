@@ -2,9 +2,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import {
-  // Search,
   Bell,
   Moon,
   Sun,
@@ -12,13 +11,23 @@ import {
   Settings,
   LogOut,
   ChevronRight,
-  Activity,
-  CalendarCheck,
-  TrendingUp,
   CheckCircle2,
   PanelLeftClose,
   PanelLeftOpen,
+  Dumbbell,
+  ClipboardList,
+  Scale,
+  Info,
+  ClipboardPlus,
+  Users,
+  Zap,
 } from "lucide-react";
+
+// Import real notification hooks and types
+import { useNotifications } from "@/features/notifications/hooks/use-notifications";
+import { useMarkNotificationRead } from "@/features/notifications/hooks/use-mark-notification-read";
+import { useMarkAllNotificationsRead } from "@/features/notifications/hooks/use-mark-all-notifications-read";
+import type { Notification } from "@/features/notifications/types/notifications.types";
 
 export interface HeaderProps {
   collapsed: boolean;
@@ -90,26 +99,6 @@ const Breadcrumb = () => {
   );
 };
 
-// const DisabledSearch = () => {
-//   return (
-//     <div className="hidden md:flex relative group w-48 lg:w-80 items-center">
-//       <Search className="absolute left-3 h-4 w-4 text-gray-500 group-hover:text-gray-400 transition-colors" />
-//       <input
-//         type="text"
-//         disabled
-//         placeholder="Search..."
-//         className="w-full h-9 rounded-md border border-[#1e2329] bg-[#13171d] pl-9 pr-14 text-sm text-gray-200 placeholder-gray-500 shadow-sm transition-all focus:outline-none cursor-not-allowed"
-//         aria-label="Search"
-//       />
-//       <div className="absolute right-2 flex items-center gap-1 rounded border border-[#1e2329] bg-[#090B0F] px-1.5 py-0.5 text-[10px] font-mono text-gray-500">
-//         <span>Ctrl</span>
-//         <span>+</span>
-//         <span>K</span>
-//       </div>
-//     </div>
-//   );
-// };
-
 const ThemeToggle = () => {
   const [isDark, setIsDark] = useState(true);
 
@@ -125,41 +114,80 @@ const ThemeToggle = () => {
   );
 };
 
+// Helper for relative timestamps
+const formatTimeAgo = (dateString: string) => {
+  const date = new Date(dateString);
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  if (seconds < 60) return "Just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
+
+// Helper to map notification type to an icon and color
+const getNotificationStyles = (type: string) => {
+  switch (type?.toUpperCase()) {
+    case "WORKOUT":
+    case "SESSION":
+    case "WORKOUT_COMPLETED":
+      return { icon: Dumbbell, color: "text-[#5BE584]", bg: "bg-green-500/10" };
+    case "ASSIGNMENT":
+    case "WORKOUT_ASSIGNED":
+      return {
+        icon: ClipboardList,
+        color: "text-blue-400",
+        bg: "bg-blue-400/10",
+      };
+    case "MEASUREMENT":
+    case "BODY_MEASUREMENT_RECORDED":
+      return { icon: Scale, color: "text-purple-400", bg: "bg-purple-400/10" };
+    case "SYSTEM":
+      return { icon: Info, color: "text-gray-400", bg: "bg-gray-500/10" };
+    default:
+      return { icon: Bell, color: "text-gray-400", bg: "bg-gray-500/10" };
+  }
+};
+
 const NotificationMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useOnClickOutside(ref, () => setIsOpen(false));
 
-  const notifications = [
-    {
-      id: 1,
-      title: "Workout Completed",
-      message: "Ahmed completed Push Day A.",
-      time: "2 min ago",
-      icon: Activity,
-      color: "text-[#5BE584]",
-      bg: "bg-[#5BE584]/10",
-    },
-    {
-      id: 2,
-      title: "New Assignment",
-      message: "Sarah updated her weekly goals.",
-      time: "1 hr ago",
-      icon: CalendarCheck,
-      color: "text-blue-400",
-      bg: "bg-blue-400/10",
-    },
-    {
-      id: 3,
-      title: "Progress Milestone",
-      message: "Marcus hit a new PR on Bench Press.",
-      time: "3 hrs ago",
-      icon: TrendingUp,
-      color: "text-purple-400",
-      bg: "bg-purple-400/10",
-    },
-  ];
+  const { data, isLoading, isError } = useNotifications();
+  const { mutate: markAsRead } = useMarkNotificationRead();
+  const { mutate: markAllRead, isPending: isMarkingAll } =
+    useMarkAllNotificationsRead();
+
+  const notifications = data?.notifications || [];
+  const unreadCount = data?.unreadCount || 0;
+  const recentNotifications = notifications.slice(0, 5);
+
+  const handleNotificationClick = (notification: Notification) => {
+    const isUnread = !notification.readAt;
+
+    if (isUnread) {
+      markAsRead(notification.id);
+    }
+    if (notification.actionUrl) {
+      navigate(notification.actionUrl.replace(window.location.origin, ""));
+      setIsOpen(false);
+    }
+  };
+
+  const handleMarkAllRead = () => {
+    if (unreadCount > 0 && !isMarkingAll) {
+      markAllRead();
+    }
+  };
 
   return (
     <div className="relative" ref={ref}>
@@ -171,49 +199,192 @@ const NotificationMenu = () => {
         className="relative flex h-9 w-9 items-center justify-center rounded-md border border-transparent text-gray-400 transition-all hover:bg-[#13171d] hover:text-gray-200 hover:border-[#1e2329] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
       >
         <Bell className="h-4 w-4" />
-        <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#5BE584] ring-2 ring-[#090B0F]" />
+        {unreadCount > 0 && (
+          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#5BE584] ring-2 ring-[#090B0F]" />
+        )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 origin-top-right rounded-xl border border-[#1e2329] bg-[#0d1014] shadow-2xl shadow-black/50 ring-1 ring-black/5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-          <div className="flex items-center justify-between border-b border-[#1e2329] px-4 py-3">
-            <h3 className="text-sm font-semibold text-gray-100">
+        <div className="absolute right-0 mt-2 w-80 origin-top-right rounded-xl border border-[#1e2329] bg-[#0d1014] shadow-2xl shadow-black/50 ring-1 ring-black/5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-200 z-50 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-[#1e2329] px-4 py-3 shrink-0">
+            <h3 className="text-sm font-semibold text-gray-100 flex items-center gap-2">
               Notifications
+              {unreadCount > 0 && (
+                <span className="rounded-full bg-[#16291d] border border-[#23422e] px-1.5 py-0.5 text-[9px] font-bold text-[#5BE584]">
+                  {unreadCount}
+                </span>
+              )}
             </h3>
-            <button className="text-[11px] font-medium text-[#5BE584] hover:text-[#4ade80] transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:underline">
+            <button
+              onClick={handleMarkAllRead}
+              disabled={unreadCount === 0 || isMarkingAll}
+              className="text-[11px] font-medium text-[#5BE584] hover:text-[#4ade80] transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:underline disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <CheckCircle2 className="h-3 w-3" /> Mark all read
             </button>
           </div>
-          <div className="max-h-[300px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            {notifications.map((notif) => {
-              const Icon = notif.icon;
-              return (
-                <div
-                  key={notif.id}
-                  className="flex items-start gap-3 border-b border-[#1e2329]/50 p-4 transition-colors hover:bg-white/[0.02] cursor-pointer"
-                >
+
+          {/* List Area */}
+          <div className="max-h-[320px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {isLoading ? (
+              <div className="p-4 flex flex-col gap-3 animate-pulse">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex gap-3">
+                    <div className="h-8 w-8 rounded-full bg-[#1e2329] shrink-0" />
+                    <div className="flex flex-col gap-1 w-full mt-1">
+                      <div className="h-3 w-3/4 bg-[#1e2329] rounded" />
+                      <div className="h-2 w-1/2 bg-[#13171d] rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : isError ? (
+              <div className="p-6 text-center text-xs text-red-400 bg-red-500/5">
+                Unable to load notifications.
+              </div>
+            ) : recentNotifications.length === 0 ? (
+              <div className="p-8 flex flex-col items-center justify-center text-center">
+                <Bell className="h-6 w-6 text-gray-600 mb-2" />
+                <span className="text-sm font-medium text-gray-400">
+                  No notifications yet
+                </span>
+              </div>
+            ) : (
+              recentNotifications.map((notif) => {
+                const isUnread = !notif.readAt;
+                const {
+                  icon: Icon,
+                  color,
+                  bg,
+                } = getNotificationStyles(notif.type);
+
+                return (
                   <div
-                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${notif.bg} ${notif.color}`}
+                    key={notif.id}
+                    onClick={() => handleNotificationClick(notif)}
+                    className={`relative flex items-start gap-3 border-b border-[#1e2329]/50 p-4 transition-colors cursor-pointer ${
+                      isUnread
+                        ? "bg-[#13171d]/50 hover:bg-[#13171d]"
+                        : "hover:bg-white/[0.02]"
+                    }`}
                   >
-                    <Icon className="h-4 w-4" />
+                    {isUnread && (
+                      <div className="absolute left-0 top-0 h-full w-0.5 bg-[#5BE584]" />
+                    )}
+                    <div
+                      className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${bg} ${color}`}
+                    >
+                      <Icon className="h-4 w-4" />
+                    </div>
+                    <div className="flex flex-col gap-1 pr-2">
+                      <p
+                        className={`text-sm ${isUnread ? "font-semibold text-gray-100" : "font-medium text-gray-300"}`}
+                      >
+                        {notif.title}
+                      </p>
+                      <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                        {notif.message}
+                      </p>
+                      <span className="text-[10px] font-medium text-gray-600 mt-0.5">
+                        {formatTimeAgo(notif.createdAt)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <p className="text-sm font-medium text-gray-200">
-                      {notif.title}
-                    </p>
-                    <p className="text-xs text-gray-500">{notif.message}</p>
-                    <span className="text-[10px] font-medium text-gray-600">
-                      {notif.time}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
-          <div className="p-2 border-t border-[#1e2329]">
-            <button className="w-full rounded-md py-2 text-xs font-medium text-gray-400 transition-colors hover:bg-[#13171d] hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]">
+
+          {/* View All */}
+          <div className="p-2 border-t border-[#1e2329] shrink-0 bg-[#0d1014]">
+            <button
+              onClick={() => {
+                navigate("/notifications");
+                setIsOpen(false);
+              }}
+              className="w-full rounded-md py-2 text-xs font-medium text-gray-400 transition-colors hover:bg-[#13171d] hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
+            >
               View All Notifications
             </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const QuickActionsMenu = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  useOnClickOutside(ref, () => setIsOpen(false));
+
+  const actions = [
+    {
+      title: "Create Assignment",
+      description: "Assign a workout to a member",
+      icon: ClipboardPlus,
+      path: "/assignments/create",
+    },
+    {
+      title: "Create Workout",
+      description: "Build a new workout",
+      icon: Dumbbell,
+      path: "/workouts/create",
+    },
+    {
+      title: "View Members",
+      description: "Manage gym members",
+      icon: Users,
+      path: "/members/all",
+    },
+  ];
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Quick Actions"
+        aria-expanded={isOpen}
+        className="relative flex h-9 w-9 items-center justify-center rounded-md border border-transparent text-gray-400 transition-all hover:bg-[#13171d] hover:text-gray-200 hover:border-[#1e2329] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
+      >
+        <Zap className="h-4 w-4" />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-72 origin-top-right rounded-xl border border-[#1e2329] bg-[#0d1014] shadow-2xl shadow-black/50 ring-1 ring-black/5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-200 z-50 flex flex-col overflow-hidden">
+          <div className="flex items-center border-b border-[#1e2329] px-4 py-3 shrink-0">
+            <h3 className="text-sm font-semibold text-gray-100 flex items-center gap-2">
+              Quick Actions
+            </h3>
+          </div>
+
+          <div className="p-2 flex flex-col gap-1">
+            {actions.map((action, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  navigate(action.path);
+                  setIsOpen(false);
+                }}
+                className="group flex w-full items-start gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-[#13171d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
+              >
+                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[#23422e] bg-[#16291d] text-[#5BE584] transition-colors group-hover:bg-[#5BE584] group-hover:text-[#090B0F]">
+                  <action.icon className="h-4 w-4" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-gray-200 group-hover:text-white transition-colors">
+                    {action.title}
+                  </span>
+                  <span className="text-[11px] text-gray-500">
+                    {action.description}
+                  </span>
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       )}
@@ -302,14 +473,13 @@ export default function Header({ collapsed, onToggle }: HeaderProps) {
         </div>
       </div>
 
-      {/* <div className="flex-1 flex justify-center px-4">
-        <DisabledSearch />
-      </div> */}
-
       <div className="flex items-center gap-1 md:gap-2">
         <ThemeToggle />
         <NotificationMenu />
+        <QuickActionsMenu />
+
         <div className="mx-1 h-5 w-px bg-[#1e2329] hidden sm:block" />
+
         <ProfileMenu />
       </div>
     </header>

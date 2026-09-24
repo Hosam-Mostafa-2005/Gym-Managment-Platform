@@ -47,7 +47,11 @@ class BodyMeasurementService {
     }
     const trainer = await User.findById(data.trainer);
 
-    if (!trainer || trainer.role !== Roles.TRAINER) {
+    if (!trainer) {
+      throw new AppError("Trainer not found.", 404);
+    }
+
+    if (role !== Roles.ADMIN && trainer.role !== Roles.TRAINER) {
       throw new AppError("Trainer not found.", 404);
     }
     const measurement = await BodyMeasurement.create(data);

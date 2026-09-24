@@ -18,6 +18,10 @@ router.use(protect);
 
 router.post(
   "/",
+  (req, res, next) => {
+    console.log("🔥 REQUEST BODY:", JSON.stringify(req.body, null, 2));
+    next();
+  },
   restrictTo(Roles.ADMIN, Roles.TRAINER),
   validate(createBodyMeasurementSchema),
   bodyMeasurementController.createBodyMeasurement,
@@ -47,5 +51,5 @@ router.delete(
   restrictTo(Roles.ADMIN, Roles.TRAINER),
   bodyMeasurementController.deleteBodyMeasurement,
 );
-
+console.log("🔥 BODY MEASUREMENT ROUTES LOADED");
 export default router;

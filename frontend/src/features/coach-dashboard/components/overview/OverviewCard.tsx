@@ -1,4 +1,5 @@
 // src/features/coach-dashboard/components/overview/OverviewCard.tsx
+
 import React from "react";
 import type { LucideIcon } from "lucide-react";
 
@@ -18,21 +19,81 @@ export const OverviewCard: React.FC<OverviewCardProps> = ({
   icon: Icon,
 }) => {
   return (
-    <div className="flex flex-col justify-between rounded-lg border border-[#1e2329] bg-[#0d1014] p-4 transition-colors hover:border-[#2a313a]">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-[10px] font-semibold tracking-wider text-gray-500 uppercase line-clamp-1">
+    <div
+      className="
+        group relative flex min-h-[145px] flex-col justify-between
+        overflow-hidden rounded-xl
+        border border-[#1e2329]
+        bg-[#0d1014]
+        p-5
+        transition-all duration-200
+        hover:-translate-y-0.5
+        hover:border-[#2a313a]
+        hover:bg-[#0f1318]
+      "
+    >
+      {/* Accent Line */}
+      <div
+        className="
+          absolute left-0 top-0 h-[2px] w-0
+          bg-[#5BE584]
+          transition-all duration-300
+          group-hover:w-full
+        "
+      />
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3">
+        <h3
+          className="
+            max-w-[130px]
+            text-[11px]
+            font-semibold
+            uppercase
+            tracking-[0.12em]
+            leading-relaxed
+            text-gray-500
+          "
+        >
           {title}
         </h3>
-        <Icon className="h-4 w-4 text-[#5BE584]/70" aria-hidden="true" />
+
+        <div
+          className="
+            flex h-9 w-9 shrink-0 items-center justify-center
+            rounded-lg
+            border border-[#23422e]
+            bg-[#16291d]
+            transition-colors
+            group-hover:border-[#315c3e]
+          "
+        >
+          <Icon
+            className="h-[17px] w-[17px] text-[#5BE584]"
+            strokeWidth={1.8}
+            aria-hidden="true"
+          />
+        </div>
       </div>
 
-      <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-bold text-gray-100 tabular-nums leading-none">
+      {/* Value */}
+      <div className="mt-6 flex items-baseline gap-2">
+        <span
+          className="
+            text-3xl
+            font-bold
+            leading-none
+            tracking-tight
+            text-gray-100
+            tabular-nums
+          "
+        >
           {value}
         </span>
+
         {secondaryValue !== undefined && (
-          <span className="text-[11px] font-medium text-gray-500 tabular-nums">
-            of {secondaryValue} {secondaryLabel}
+          <span className="text-xs font-medium text-gray-600 tabular-nums">
+            / {secondaryValue} {secondaryLabel}
           </span>
         )}
       </div>

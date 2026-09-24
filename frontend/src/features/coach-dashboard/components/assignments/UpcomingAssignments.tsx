@@ -93,7 +93,7 @@ export const UpcomingAssignments: React.FC<UpcomingAssignmentsProps> = ({
             </thead>
             <tbody className="divide-y divide-[#1e2329]">
               {assignments.map((item, index) => {
-                const memberId = item.member?.id || item.member?._id;
+                const memberId = item.member?.id || item.member?.id;
                 const memberName = item.member?.name || "Unknown Athlete";
                 const workoutTitle = item.workout?.title || "Custom Routine";
                 const urgency = getUrgencyVisuals(item.daysRemaining);
