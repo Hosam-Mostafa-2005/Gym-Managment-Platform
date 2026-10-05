@@ -3,7 +3,8 @@
 /* -------------------------------------------------------------------------- */
 
 export interface DashboardMember {
-  id: string;
+  id?: string;
+  _id?: string;
   name: string;
   email?: string;
 }

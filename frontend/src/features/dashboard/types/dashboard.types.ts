@@ -1,54 +1,179 @@
-import type { Assignment } from "@/features/assignments/types/assignment.types";
-import type { WorkoutSession } from "@/features/workout-sessions/types/workout-session.types";
+export interface DashboardWorkoutExercise {
+  exercise: string;
+  sets: number;
+  reps: string;
+  restSeconds: number;
+  order: number;
+}
 
 export interface DashboardWorkout {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   category: string;
   difficulty: string;
   estimatedDuration: number;
+  tags: string[];
+  isTemplate: boolean;
+  exercises: DashboardWorkoutExercise[];
+  createdBy: string;
+  isActive: boolean;
+  __v: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface WorkoutLogExercise {
-  id: string;
-  name: string;
+export interface MemberDashboardData {
+  overview: MemberDashboardOverview;
+  charts: MemberDashboardCharts;
+  rankings: Record<string, never>;
+  trends: MemberDashboardTrends;
+  recentActivity: MemberDashboardActivity[];
 }
 
-export interface RecentWorkoutLog {
-  id: string;
-
-  exercise: WorkoutLogExercise;
-
-  weight: number;
-
-  reps: number;
-
-  performedAt: string;
+export interface MemberDashboardResponse {
+  status: string;
+  data: MemberDashboardData;
 }
 
-export interface MemberDashboard {
-  activeAssignment: Assignment | null;
+export interface DashboardAssignment {
+  _id: string;
+  member: string;
+  trainer: string;
+  workout: DashboardWorkout;
+  startDate: string;
+  endDate: string;
+  status: string;
+  notes: string;
+  isActive: boolean;
+  __v: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MemberDashboardOverview {
+  activeAssignment: DashboardAssignment | null;
+  currentWorkout: DashboardWorkout | null;
 
   totalSessions: number;
-
   completedSessions: number;
 
-  lastWorkout: WorkoutSession | null;
+  currentProgress: number;
+  currentStreak: number;
+  bestStreak: number;
 
-  recentLogs: RecentWorkoutLog[];
+  exercisesCompleted: number;
+  totalSetsCompleted: number;
+  totalVolumeLifted: number;
+  totalWorkoutMinutes: number;
+
+  averageWorkoutDuration: number;
+  averageVolumePerWorkout: number;
+
+  attendanceRate: number;
+  completionRate: number;
+
+  workoutsThisWeek: number;
+  workoutsThisMonth: number;
 }
 
-export interface TrainerDashboard {
-  totalMembers: number;
+export interface WorkoutVolumeDaily {
+  date: string;
+  volume: number;
+}
 
-  totalExercises: number;
+export interface WorkoutVolumeMonthly {
+  month: string;
+  volume: number;
+  _id?: string;
+}
 
-  totalWorkouts: number;
+export interface SessionDurationPoint {
+  date: string;
+  duration: number;
+}
 
-  activeAssignments: number;
+export interface ExercisesCompletedPerWeek {
+  week: string;
+  exercises: number;
+}
 
-  activeSessions: number;
+export interface SetsCompletedPerWeek {
+  week: string;
+  sets: number;
+}
 
-  completedSessions: number;
+export interface WorkoutFrequencyByWeekday {
+  day: string;
+  sessions: number;
+}
+
+export interface WorkoutFrequencyByHour {
+  hour: string;
+  sessions: number;
+}
+
+export interface MemberDashboardCharts {
+  workoutVolumeLast30Days: WorkoutVolumeDaily[];
+  workoutVolumeLast12Months: WorkoutVolumeMonthly[];
+
+  sessionDurationTrend: SessionDurationPoint[];
+
+  exercisesCompletedPerWeek: ExercisesCompletedPerWeek[];
+  setsCompletedPerWeek: SetsCompletedPerWeek[];
+
+  workoutFrequencyByWeekday: WorkoutFrequencyByWeekday[];
+  workoutFrequencyByHour: WorkoutFrequencyByHour[];
+}
+
+export interface StrongestExercise {
+  _id: string;
+  name: string;
+  val: number;
+}
+
+export interface FavoriteWorkout {
+  name: string;
+  timesCompleted: number;
+}
+
+export interface FavoriteExercise {
+  _id: string;
+  name: string;
+  val: number;
+}
+
+export interface BestMonth {
+  month: string;
+  volume: number;
+}
+
+export interface MemberDashboardTrends {
+  strongestExercise: StrongestExercise | null;
+  favoriteWorkout: FavoriteWorkout | null;
+  favoriteExercise: FavoriteExercise | null;
+
+  longestWorkout: number;
+  shortestWorkout: number;
+
+  bestMonth: BestMonth | null;
+}
+
+export interface MemberDashboardActivity {
+  id: string;
+  message: string;
+  date: string;
+  type: string;
+}
+
+export interface MemberDashboardResponse {
+  status: string;
+
+  data: {
+    overview: MemberDashboardOverview;
+    charts: MemberDashboardCharts;
+    rankings: Record<string, never>;
+    trends: MemberDashboardTrends;
+    recentActivity: MemberDashboardActivity[];
+  };
 }

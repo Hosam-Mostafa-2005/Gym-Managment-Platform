@@ -1,0 +1,53 @@
+/* src/features/landing/styles/landing.css */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 8s ease-in-out 4s infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.animate-draw-line {
+  stroke-dasharray: 10;
+  animation: draw-line 20s linear infinite;
+}
+
+.bg-radial-glow {
+  background: radial-gradient(
+    circle at center,
+    rgba(91, 229, 132, 0.08) 0%,
+    rgba(9, 11, 15, 0) 70%
+  );
+}

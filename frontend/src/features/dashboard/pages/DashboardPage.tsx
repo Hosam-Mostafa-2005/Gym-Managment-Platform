@@ -1,53 +1,39 @@
-import { useNavigate } from "react-router-dom";
+// src/features/dashboard/pages/DashboardPage.tsx
 
-import { DashboardLayout } from "../components/DashboardLayout";
-import { StatsGrid } from "../components/StatsGrid";
-import { CompletionCard } from "../components/CompletionCard";
-import { CurrentAssignmentCard } from "../components/CurrentAssignmentCard";
-import { LastWorkoutCard } from "../components/LastWorkoutCard";
-import { RecentLogsCard } from "../components/RecentLogsCard";
-import { QuickLinks } from "../components/QuickLinks";
+import React from "react";
+import { Navigate } from "react-router-dom";
 
+import { MemberDashboard } from "../member/MemberDashboard";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
-import { useMemberDashboard } from "@/features/dashboard/hooks/useMemberDashboard";
 
-export default function DashboardPage() {
-  const navigate = useNavigate();
-
-  const { data: user } = useCurrentUser();
-  const { data: dashboard, isLoading } = useMemberDashboard();
+export const DashboardPage: React.FC = () => {
+  const { data: user, isLoading } = useCurrentUser();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#090B0F] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#5BE584]"></div>
-      </div>
-    );
+    return <div className="min-h-screen bg-[#090B0F] text-gray-100" />;
   }
 
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const role = String(user.role ?? "")
+    .trim()
+    .toUpperCase();
+
+  console.log("NORMALIZED ROLE:", role);
+
+  // Trainers and Admins use the Coach Dashboard
+  if (role === "TRAINER" || role === "ADMIN") {
+    return <Navigate to="/coach-dashboard" replace />;
+  }
+
+  // Members use the Member Dashboard
   return (
-    <DashboardLayout userName={user?.name || "Athlete"}>
-      <StatsGrid dashboard={dashboard} />
-
-      <CompletionCard
-        completed={dashboard?.completedSessions || 0}
-        total={dashboard?.totalSessions || 0}
-      />
-
-      <div className="grid md:grid-cols-2 gap-6 mb-10">
-        <CurrentAssignmentCard
-          assignment={dashboard?.activeAssignment}
-          navigate={navigate}
-        />
-        <LastWorkoutCard
-          lastWorkout={dashboard?.lastWorkout}
-          navigate={navigate}
-        />
-      </div>
-
-      <RecentLogsCard logs={dashboard?.recentLogs} />
-
-      <QuickLinks />
-    </DashboardLayout>
+    <div className="min-h-screen bg-[#090B0F] text-gray-100">
+      <MemberDashboard />
+    </div>
   );
-}
+};
+
+export default DashboardPage;

@@ -3,8 +3,6 @@ import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Components & Hooks
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { AssignmentForm } from "@/features/assignments/components/AssignmentForm";
 import { useAssignment } from "@/features/assignments/hooks/useAssignment";
 import { useUpdateAssignment } from "@/features/assignments/hooks/useUpdateAssignment";
@@ -69,80 +67,97 @@ export default function EditAssignmentPage() {
   };
 
   return (
-    <section className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300 text-foreground pb-12">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-border/40 pb-5">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigate("/assignments")}
-            className="h-9 w-9 rounded-lg border-border/60 bg-card/40 hover:bg-accent/60"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+    <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
+      {/* Background Atmosphere */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(91,229,132,0.02)_0%,_rgba(13,16,20,0)_70%)] blur-3xl" />
+      </div>
 
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+      {/* Header */}
+      <header className="relative z-10 border-b border-[#1E2329] bg-[#0D1014]/90 backdrop-blur-md pt-8 pb-6 px-6 lg:px-12">
+        <div className="mx-auto max-w-4xl flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase">
+              <span
+                className="hover:text-[#9CA3AF] cursor-pointer transition-colors"
+                onClick={() => navigate("/assignments")}
+              >
+                Assignments
+              </span>
+              <span>/</span>
+              <span className="text-[#F3F4F6]">Edit</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mt-1">
               Edit Workout Assignment
             </h1>
-
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-sm text-[#9CA3AF]">
               Update routine schedule, trainer assignment, or guidelines.
             </p>
           </div>
+          <button
+            onClick={() => navigate("/assignments")}
+            className="group hidden md:flex items-center gap-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            Back to Assignments
+          </button>
         </div>
-      </div>
+      </header>
 
-      {/* Loading */}
-      {isFetching && (
-        <Card className="border-border/50 bg-card/30 shadow-xl">
-          <CardContent className="p-12 flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
-            <p className="text-sm font-medium">Loading assignment details...</p>
-          </CardContent>
-        </Card>
-      )}
+      {/* Main Content */}
+      <main className="relative z-10 mx-auto max-w-4xl px-6 lg:px-12 py-10 pb-32 animate-in fade-in duration-300">
+        {/* Loading */}
+        {isFetching && (
+          <div className="flex flex-col items-center justify-center py-24 text-[#6B7280]">
+            <Loader2 className="h-8 w-8 animate-spin text-[#5BE584]" />
+            <p className="mt-4 text-sm font-medium">
+              Loading assignment details...
+            </p>
+          </div>
+        )}
 
-      {/* Error */}
-      {isError && (
-        <Card className="border-rose-500/20 bg-rose-500/5 shadow-xl">
-          <CardContent className="p-8 flex flex-col items-center text-center gap-3">
-            <AlertCircle className="w-10 h-10 text-rose-500" />
-
-            <h3 className="text-base font-semibold">
+        {/* Error */}
+        {isError && (
+          <div className="rounded-xl border border-red-900/50 bg-red-950/20 p-10 flex flex-col items-center justify-center text-center gap-3 backdrop-blur-sm">
+            <AlertCircle className="w-10 h-10 text-red-400" />
+            <h3 className="text-base font-semibold text-white">
               Failed to load assignment
             </h3>
-
-            <p className="text-xs text-muted-foreground max-w-sm">
+            <p className="text-xs text-[#9CA3AF] max-w-sm">
               We couldn't retrieve this assignment. It may have been deleted or
               there is a network problem.
             </p>
-
-            <Button
-              variant="outline"
-              size="sm"
+            <button
               onClick={() => navigate("/assignments")}
+              className="mt-4 rounded-md border border-[#1E2329] bg-[#101418] px-5 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white hover:border-[#6B7280]"
             >
               Back to Assignments
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+            </button>
+          </div>
+        )}
 
-      {/* Form */}
-      {!isFetching && !isError && initialValues && (
-        <Card className="border-border/50 bg-card/30 shadow-xl overflow-hidden">
-          <CardContent className="p-6 sm:p-8">
+        {/* Form */}
+        {!isFetching && !isError && initialValues && (
+          <div className="rounded-xl border border-[#1E2329] bg-[#101418]/80 backdrop-blur-sm p-6 sm:p-10 shadow-2xl">
+            <div className="mb-8 border-b border-[#1E2329] pb-4">
+              <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
+                Assignment Details
+              </h2>
+              <p className="text-xs text-[#6B7280] mt-1">
+                Modify the configuration for this routine assignment.
+              </p>
+            </div>
+
             <AssignmentForm
               initialValues={initialValues}
               onSubmit={handleUpdate}
               isLoading={isUpdating}
               submitLabel="Update Assignment"
             />
-          </CardContent>
-        </Card>
-      )}
-    </section>
+          </div>
+        )}
+      </main>
+    </div>
   );
 }

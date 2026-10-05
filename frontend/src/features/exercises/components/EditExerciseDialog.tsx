@@ -9,6 +9,7 @@ import {
 import ExerciseForm from "./ExerciseForm";
 import { useExercise } from "../hooks/useExercises";
 import { useUpdateExercise } from "../hooks/useUpdateExercise";
+import { Loader2 } from "lucide-react";
 
 import type { Exercise, CreateExerciseDto } from "../types/exercise.types";
 
@@ -47,35 +48,29 @@ const EditExerciseDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="
-    max-h-[90vh]
-    w-[95vw]
-    max-w-none
-    overflow-y-auto
-    rounded-3xl
-    border
-    border-border
-    p-6
-    shadow-2xl
-    sm:max-w-4xl
-    md:max-w-5xl
-    lg:max-w-6xl
-    sm:p-8
-  "
-      >
-        <DialogHeader>
-          <DialogTitle>Edit Exercise</DialogTitle>
-
-          <DialogDescription>
-            Update the details of the selected exercise.
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-none overflow-y-auto rounded-xl border border-[#1E2329] bg-[#101418] p-6 shadow-2xl sm:max-w-4xl md:max-w-5xl lg:max-w-6xl sm:p-8 text-[#F3F4F6] selection:bg-[#5BE584]/30">
+        <DialogHeader className="border-b border-[#1E2329] pb-4 mb-6">
+          <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase mb-1">
+            <span>Exercises</span>
+            <span>/</span>
+            <span className="text-[#F3F4F6]">Edit Exercise</span>
+          </div>
+          <DialogTitle className="text-xl font-semibold tracking-tight text-white">
+            Edit Exercise
+          </DialogTitle>
+          <DialogDescription className="text-xs text-[#9CA3AF] mt-1">
+            Update the details and movement specifications of the selected
+            exercise.
           </DialogDescription>
         </DialogHeader>
 
         {isLoading ? (
-          <p className="py-8 text-center text-muted-foreground">
-            Loading exercise...
-          </p>
+          <div className="py-20 flex flex-col items-center justify-center text-[#6B7280]">
+            <Loader2 className="h-8 w-8 animate-spin text-[#5BE584]" />
+            <p className="mt-4 text-sm font-medium">
+              Loading exercise details...
+            </p>
+          </div>
         ) : (
           <ExerciseForm
             initialValues={exerciseDetails}

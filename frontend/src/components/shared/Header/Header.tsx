@@ -23,12 +23,13 @@ import {
   Zap,
 } from "lucide-react";
 
+import { useLogout } from "@/features/auth/hooks/useLogout";
 // Import real notification hooks and types
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { useMarkNotificationRead } from "@/features/notifications/hooks/use-mark-notification-read";
 import { useMarkAllNotificationsRead } from "@/features/notifications/hooks/use-mark-all-notifications-read";
 import type { Notification } from "@/features/notifications/types/notifications.types";
-
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 export interface HeaderProps {
   collapsed: boolean;
   onToggle: () => void;
@@ -394,9 +395,51 @@ const QuickActionsMenu = () => {
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+
   const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  const { mutate: logoutUser, isPending } = useLogout();
+  const { data: user, isLoading } = useCurrentUser();
 
   useOnClickOutside(ref, () => setIsOpen(false));
+
+  const handleLogout = () => {
+    logoutUser(undefined, {
+      onSuccess: () => {
+        navigate("/login");
+      },
+    });
+  };
+
+  const getRoleLabel = (role?: string) => {
+    switch (role?.toUpperCase()) {
+      case "TRAINER":
+        return "Coach";
+      case "MEMBER":
+        return "Member";
+      case "ADMIN":
+        return "Admin";
+      default:
+        return "User";
+    }
+  };
+
+  const getInitials = (name?: string) => {
+    if (!name) return "U";
+
+    return name
+      .trim()
+      .split(/\s+/)
+      .map((word) => word[0])
+      .join("")
+      .substring(0, 2)
+      .toUpperCase();
+  };
+
+  const displayName = isLoading ? "Loading..." : user?.name || "User";
+  const roleLabel = getRoleLabel(user?.role);
+  const initials = getInitials(user?.name);
 
   return (
     <div className="relative" ref={ref}>
@@ -408,37 +451,50 @@ const ProfileMenu = () => {
       >
         <div className="hidden sm:flex flex-col items-end text-right">
           <span className="text-sm font-semibold text-gray-200 leading-none">
-            Hosam
+            {displayName}
           </span>
+
           <span className="text-[10px] font-medium text-[#5BE584] mt-1 tracking-wide">
-            Coach
+            {roleLabel}
           </span>
         </div>
+
         <div className="relative h-8 w-8 overflow-hidden rounded-md border border-[#1e2329] bg-[#16291d] flex items-center justify-center text-[#5BE584] shadow-sm">
-          <span className="text-xs font-bold">HO</span>
+          <span className="text-xs font-bold">{initials}</span>
         </div>
       </button>
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-[#1e2329] bg-[#0d1014] shadow-2xl shadow-black/50 ring-1 ring-black/5 focus:outline-none animate-in fade-in slide-in-from-top-2 duration-200 z-50 overflow-hidden">
           <div className="border-b border-[#1e2329] px-4 py-3 sm:hidden">
-            <p className="text-sm font-semibold text-gray-200">Hosam</p>
-            <p className="text-xs font-medium text-[#5BE584]">Coach</p>
+            <p className="text-sm font-semibold text-gray-200">{displayName}</p>
+
+            <p className="text-xs font-medium text-[#5BE584]">{roleLabel}</p>
           </div>
+
           <div className="p-1.5">
-            <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-white/[0.03] hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]">
+            <button
+              onClick={() => navigate("/profile")}
+              className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-white/[0.03] hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
+            >
               <User className="h-4 w-4 text-gray-500" />
               Profile
             </button>
+
             <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-white/[0.03] hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]">
               <Settings className="h-4 w-4 text-gray-500" />
               Settings
             </button>
           </div>
+
           <div className="border-t border-[#1e2329] p-1.5">
-            <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400">
-              <LogOut className="h-4 w-4" />
-              Logout
+            <button
+              onClick={handleLogout}
+              disabled={isPending}
+              className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-white/[0.03] hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
+            >
+              <LogOut className="h-4 w-4 text-gray-500" />
+              {isPending ? "Logging out..." : "Logout"}
             </button>
           </div>
         </div>

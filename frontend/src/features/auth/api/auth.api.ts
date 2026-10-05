@@ -1,5 +1,5 @@
+import axios from "axios";
 import { api } from "@/lib/axios";
-
 import type { LoginRequest, LoginResponse } from "../types/auth.types.ts";
 import type { RegisterRequest } from "../types/auth.types.ts";
 
@@ -15,7 +15,21 @@ export const register = async (data: RegisterRequest) => {
   return response.data;
 };
 export const getCurrentUser = async () => {
-  const { data } = await api.get("/auth/me");
+  try {
+    const { data } = await api.get("/auth/me");
 
-  return data.data.user;
+    return data.data.user;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      return null;
+    }
+
+    throw error;
+  }
+};
+
+export const logout = async () => {
+  const { data } = await api.post("/auth/logout");
+
+  return data;
 };

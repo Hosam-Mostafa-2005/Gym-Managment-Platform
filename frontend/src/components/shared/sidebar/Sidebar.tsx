@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   Dumbbell,
   LogOut,
@@ -16,8 +16,11 @@ import {
   Bell,
   ChevronRight,
   Home,
+  LayoutDashboard,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 
 export interface SidebarProps {
   collapsed: boolean;
@@ -40,9 +43,11 @@ interface NavItem {
 interface NavGroup {
   id: string;
   label?: string;
+  roles?: string[]; // Role-based access control array
   items: NavItem[];
 }
 
+// Master configuration of navigation
 const navGroups: NavGroup[] = [
   {
     id: "main",
@@ -66,12 +71,6 @@ const navGroups: NavGroup[] = [
         name: "Members Management",
         icon: Users,
         path: "/members",
-      },
-      {
-        id: "member-insights",
-        name: "Member Insights",
-        icon: Users,
-        path: "/members/insights",
       },
     ],
   },
@@ -127,9 +126,17 @@ const navGroups: NavGroup[] = [
     ],
   },
   {
-    id: "profile-group",
-    label: "PROFILE",
+    id: "coach-group",
+    label: "COACH",
+    // Only users with these roles will see this section in the sidebar
+    roles: ["TRAINER", "ADMIN"],
     items: [
+      {
+        id: "coach-dashboard",
+        name: "Coach Dashboard",
+        icon: LayoutDashboard,
+        path: "/coach-dashboard",
+      },
       {
         id: "profile",
         name: "Coach Profile",
@@ -152,28 +159,62 @@ const navGroups: NavGroup[] = [
   },
 ];
 
+// Helper to format the role nicely
+const formatRole = (role?: string) => {
+  if (!role) return "Member";
+  return role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+};
+
 export default function Sidebar({ collapsed }: SidebarProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({});
 
+  const { mutate: logoutUser, isPending } = useLogout();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logoutUser(undefined, {
+      onSuccess: () => {
+        navigate("/login");
+      },
+    });
+  };
+
+  // Use the existing auth system to determine user data and roles
+  const { data: user } = useCurrentUser();
+  const userRole = user?.role?.toUpperCase() || "MEMBER";
+
+  // Calculate open state
+  const isOpen = !collapsed || isHovered;
+
   const toggleSection = (id: string) => {
-    if (collapsed) return;
+    if (!isOpen) return;
     setExpandedSections((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
   };
 
+  // Filter groups dynamically based on role
+  const filteredNavGroups = navGroups.filter((group) => {
+    if (!group.roles) return true;
+    return group.roles.includes(userRole);
+  });
+
   return (
     <aside
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className={`
-        sticky top-0 flex h-screen flex-col border-r border-[#1e2329] bg-[#0d1014] transition-[width] duration-300 ease-in-out z-30 shrink-0 select-none
-        ${collapsed ? "w-20" : "w-[280px]"}
+        sticky top-0 flex h-screen flex-col border-r border-[#1e2329] bg-[#0d1014]
+        transition-[width] duration-300 ease-in-out z-30 shrink-0 select-none
+        ${isOpen ? "w-[280px]" : "w-20"}
       `}
       aria-label="Main Navigation"
     >
-      {/* Brand Header */}
+      {/* User Identity Header */}
       <div className="flex h-20 items-center px-5 shrink-0 mb-1">
         <div className="flex items-center gap-3.5 overflow-hidden w-full">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#23422e] bg-[#16291d] text-[#5BE584] shadow-[0_0_15px_rgba(91,229,132,0.1)] transition-transform duration-300 hover:scale-105">
@@ -182,26 +223,24 @@ export default function Sidebar({ collapsed }: SidebarProps) {
 
           <div
             className={`flex flex-col transition-all duration-300 overflow-hidden whitespace-nowrap ${
-              collapsed ? "max-w-0 opacity-0" : "max-w-[200px] opacity-100"
+              isOpen ? "max-w-[200px] opacity-100" : "max-w-0 opacity-0"
             }`}
           >
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold tracking-wide text-gray-100">
-                GymFlow
+              <span className="text-sm font-semibold tracking-wide text-gray-100 truncate max-w-[130px]">
+                STREN
               </span>
               <span className="flex items-center justify-center text-[9px] font-mono font-medium px-1.5 py-0.5 rounded bg-[#16291d] text-[#5BE584] border border-[#23422e]">
-                OS v4.2
+                OS V.2
               </span>
             </div>
-            <div className="flex items-center gap-1.5 mt-0.5">
+            {/* <div className="flex items-center gap-1.5 mt-0.5">
               <span
                 className="flex h-1.5 w-1.5 rounded-full bg-[#5BE584] animate-pulse shrink-0"
                 aria-hidden="true"
               />
-              <span className="text-[9px] font-medium tracking-widest text-gray-400">
-                Management Pro
-              </span>
-            </div>
+              <span className="text-[9px] font-medium tracking-widest text-gray-400"></span>
+            </div> */}
           </div>
         </div>
       </div>
@@ -211,9 +250,9 @@ export default function Sidebar({ collapsed }: SidebarProps) {
         className="flex-1 overflow-y-auto px-3 pb-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         aria-label="Sidebar Menu"
       >
-        {navGroups.map((group, groupIdx) => (
+        {filteredNavGroups.map((group, groupIdx) => (
           <div key={group.id} className={groupIdx > 0 ? "mt-5" : ""}>
-            {group.label && !collapsed && (
+            {group.label && isOpen && (
               <div className="flex items-center mb-2 px-3 opacity-80">
                 <h3 className="text-[10px] font-semibold tracking-widest text-gray-500 uppercase">
                   {group.label}
@@ -225,7 +264,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
               {group.items.map((item) => {
                 const Icon = item.icon;
                 const isExpanded = !!expandedSections[item.id];
-                const isContentOpen = isExpanded && !collapsed;
+                const isContentOpen = isExpanded && isOpen;
 
                 return (
                   <div key={item.id}>
@@ -238,7 +277,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                           aria-controls={`accordion-content-${item.id}`}
                           className={`
                             group w-full flex items-center justify-between rounded-md text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]
-                            ${collapsed ? "px-0 py-3 justify-center" : "px-3 py-2"}
+                            ${isOpen ? "px-3 py-2" : "justify-center px-0 py-3"}
                             ${
                               isContentOpen
                                 ? "text-gray-200 bg-white/[0.02]"
@@ -258,9 +297,9 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                             />
                             <span
                               className={`font-medium transition-all duration-300 whitespace-nowrap overflow-hidden ${
-                                collapsed
-                                  ? "max-w-0 opacity-0 ml-0"
-                                  : "max-w-[150px] opacity-100 ml-3"
+                                isOpen
+                                  ? "max-w-[150px] opacity-100 ml-3"
+                                  : "max-w-0 opacity-0 ml-0"
                               }`}
                             >
                               {item.name}
@@ -271,7 +310,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                             aria-hidden="true"
                             className={`shrink-0 text-gray-500 transition-all duration-300 ease-in-out 
                               ${isExpanded ? "rotate-90" : ""} 
-                              ${collapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[20px] opacity-100 ml-2"}
+                              ${isOpen ? "max-w-[20px] opacity-100 ml-2" : "max-w-0 opacity-0 ml-0"}
                             `}
                           />
                         </button>
@@ -326,7 +365,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                         end={item.path === "/"}
                         className={({ isActive }) => `
                           group flex items-center justify-between rounded-md text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]
-                          ${collapsed ? "px-0 py-3 justify-center" : "px-3 py-2"}
+                          ${isOpen ? "px-3 py-2" : "justify-center px-0 py-3"}
                           ${
                             isActive
                               ? "bg-[#101b14] border border-[#1e3023] text-[#5BE584]"
@@ -349,7 +388,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                               <span
                                 className={`transition-all duration-300 whitespace-nowrap overflow-hidden ${
                                   isActive ? "font-semibold" : "font-medium"
-                                } ${collapsed ? "max-w-0 opacity-0 ml-0" : "max-w-[150px] opacity-100 ml-3"}`}
+                                } ${isOpen ? "max-w-[150px] opacity-100 ml-3" : "max-w-0 opacity-0 ml-0"}`}
                               >
                                 {item.name}
                               </span>
@@ -362,7 +401,7 @@ export default function Sidebar({ collapsed }: SidebarProps) {
                                     ? "bg-[#16291d] text-[#5BE584] border-[#23422e]"
                                     : "bg-gray-800 text-gray-400 border-gray-700"
                                 }
-                                ${collapsed ? "max-w-0 opacity-0 ml-0 px-0 border-0" : "max-w-[40px] opacity-100"}`}
+                                ${isOpen ? "max-w-[40px] opacity-100" : "max-w-0 opacity-0 ml-0 px-0 border-0"}`}
                               >
                                 {item.badge}
                               </span>
@@ -383,11 +422,11 @@ export default function Sidebar({ collapsed }: SidebarProps) {
       <div className="p-4 border-t border-[#1e2329] shrink-0 bg-[#0d1014]">
         <button
           type="button"
-          onClick={() => console.log("Logging out...")}
+          onClick={handleLogout}
+          disabled={isPending}
           className={`
-            group flex w-full items-center rounded-md text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400
-            ${collapsed ? "justify-center px-0 py-3" : "px-3 py-2"}
-            text-[#8b95a1] hover:bg-red-500/10 hover:text-red-400
+            group flex w-full items-center rounded-md text-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 text-[#8b95a1] hover:bg-red-500/10 hover:text-red-400
+            ${isOpen ? "px-3 py-2" : "justify-center px-0 py-3"}
           `}
         >
           <LogOut
@@ -397,9 +436,9 @@ export default function Sidebar({ collapsed }: SidebarProps) {
           />
           <span
             className={`font-medium transition-all duration-300 whitespace-nowrap overflow-hidden ${
-              collapsed
-                ? "max-w-0 opacity-0 ml-0"
-                : "max-w-[150px] opacity-100 ml-3"
+              isOpen
+                ? "max-w-[150px] opacity-100 ml-3"
+                : "max-w-0 opacity-0 ml-0"
             }`}
           >
             Logout

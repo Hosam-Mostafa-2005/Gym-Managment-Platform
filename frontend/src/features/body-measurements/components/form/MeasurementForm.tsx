@@ -53,10 +53,6 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-    console.log("🔥 FORM SUBMIT FIRED", {
-      formData,
-      isSubmitting,
-    });
     e.preventDefault();
     const payload: MeasurementFormPayload = {
       weight: parseFloat(formData.weight),

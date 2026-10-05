@@ -34,7 +34,6 @@ const getPriorityVisuals = (level: string) => {
 
 export const PriorityCard: React.FC<PriorityCardProps> = ({ priority }) => {
   const visuals = getPriorityVisuals(priority.priority);
-
   return (
     <div className="flex h-full flex-col justify-between rounded-lg border border-[#1e2329] bg-[#0d1014] p-5 transition-colors hover:border-[#2a313a]">
       <div className="flex flex-col gap-3">
@@ -104,7 +103,7 @@ export const PriorityCard: React.FC<PriorityCardProps> = ({ priority }) => {
         {/* Action Button */}
         {priority.member ? (
           <Link
-            to={`/members/${priority.member.id}`}
+            to={`/members/${priority.member._id}`}
             className="group flex w-full items-center justify-center gap-2 rounded-md bg-[#13171d] border border-[#1e2329] py-2 text-xs font-medium text-gray-300 transition-colors hover:bg-white/[0.03] hover:text-white"
           >
             Open Member

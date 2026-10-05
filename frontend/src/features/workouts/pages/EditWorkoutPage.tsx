@@ -5,15 +5,13 @@ import {
   ShieldCheck,
   AlertCircle,
   Pencil,
+  Loader2,
 } from "lucide-react";
 
 import WorkoutBuilder from "../components/WorkoutForm";
 import { useWorkout } from "../hooks/useWorkout";
 import { useUpdateWorkout } from "../hooks/useUpdateWorkout";
 import type { WorkoutFormData } from "../schemas/workout.schema";
-
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 export default function EditWorkoutPage() {
   const { workoutId } = useParams<{ workoutId: string }>();
@@ -29,7 +27,6 @@ export default function EditWorkoutPage() {
   function handleSubmit(data: WorkoutFormData) {
     if (!workoutId) return;
 
-    // Pass updated data to mutation (adjust structure if your hook expects (id, data))
     updateWorkout(
       {
         id: workoutId,
@@ -37,74 +34,73 @@ export default function EditWorkoutPage() {
       },
       {
         onSuccess: () => {
-          navigate(`/workouts/${workoutId}`);
+          navigate(`/workout-builder/${workoutId}`);
         },
         onError: (err) => {
-          console.log("Mutation error response:", err); // لو السيرفر رفضه هيبان هنا
+          console.log("Mutation error response:", err);
         },
       },
     );
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                             LOADING SKELETON                               */
+  /*                                LOADING SKELETON                            */
   /* -------------------------------------------------------------------------- */
   if (isLoading) {
     return (
-      <section className="space-y-8 animate-in fade-in duration-300 text-foreground">
-        <div className="flex flex-col gap-4 border-b border-border/40 pb-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="space-y-3 w-full max-w-xl">
-            <div className="flex gap-2">
-              <div className="h-8 w-36 rounded-lg bg-card/40 animate-pulse" />
-              <div className="h-8 w-28 rounded-lg bg-card/40 animate-pulse" />
-            </div>
-            <div className="h-8 w-64 rounded-lg bg-card/60 animate-pulse" />
-            <div className="h-4 w-96 rounded-lg bg-card/30 animate-pulse" />
-          </div>
-          <div className="flex gap-2 self-start lg:self-auto">
-            <div className="h-8 w-24 rounded-lg bg-card/40 animate-pulse" />
-            <div className="h-8 w-28 rounded-lg bg-card/40 animate-pulse" />
-          </div>
+      <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
         </div>
-        <div className="h-[600px] rounded-xl border border-border/40 bg-card/20 animate-pulse" />
-      </section>
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12 py-24 flex flex-col items-center justify-center text-[#6B7280]">
+          <Loader2 className="h-8 w-8 animate-spin text-[#5BE584]" />
+          <p className="mt-4 text-sm font-medium">Loading workout editor...</p>
+        </div>
+      </div>
     );
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                              ERROR / NOT FOUND                             */
+  /*                               ERROR / NOT FOUND                            */
   /* -------------------------------------------------------------------------- */
   if (isError || !workout) {
     return (
-      <section className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 bg-card/10 p-16 text-center animate-in fade-in duration-300 text-foreground">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive mb-4">
-          <AlertCircle className="h-6 w-6" />
+      <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
         </div>
-        <h2 className="text-lg font-semibold">Workout Not Found</h2>
-        <p className="mt-1 text-sm text-muted-foreground max-w-sm">
-          We could not load the details for this workout routine. It may have
-          been deleted or archived.
-        </p>
-        <div className="flex items-center gap-3 mt-6">
-          <Button
-            variant="outline"
-            onClick={() => navigate("/workouts")}
-            className="border-border/60 hover:bg-accent/50"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Library
-          </Button>
-          {workoutId && (
-            <Button
-              variant="default"
-              onClick={() => navigate(`/workouts/${workoutId}`)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              Try Details Page
-            </Button>
-          )}
+        <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12 py-24">
+          <div className="rounded-xl border border-red-900/50 bg-red-950/20 p-12 text-center backdrop-blur-sm max-w-md mx-auto">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-950/50 text-red-400 border border-red-900/50 mx-auto mb-4">
+              <AlertCircle className="h-6 w-6" />
+            </div>
+            <h2 className="text-base font-semibold text-white">
+              Workout Not Found
+            </h2>
+            <p className="mt-2 text-xs text-[#9CA3AF] max-w-xs mx-auto leading-relaxed">
+              We could not load the details for this workout routine. It may
+              have been deleted or archived.
+            </p>
+            <div className="flex items-center justify-center gap-3 mt-6">
+              <button
+                onClick={() => navigate("/workout-builder")}
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                Library
+              </button>
+              {workoutId && (
+                <button
+                  onClick={() => navigate(`/workout-builder/${workoutId}`)}
+                  className="inline-flex items-center justify-center rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#4ade80]"
+                >
+                  View Details Page
+                </button>
+              )}
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
     );
   }
 
@@ -117,7 +113,6 @@ export default function EditWorkoutPage() {
     tags: workout.tags ?? [],
     isTemplate: workout.isTemplate,
 
-    // ✅ Safely extract _id or id whether populated as an object or returned as a string
     exercises: (workout.exercises || []).map((item) => ({
       exercise:
         typeof item.exercise === "string"
@@ -135,82 +130,78 @@ export default function EditWorkoutPage() {
   /*                            MAIN EDIT WORKSPACE                             */
   /* -------------------------------------------------------------------------- */
   return (
-    <section className="space-y-8 animate-in fade-in duration-300 text-foreground">
-      {/* ===================================================================== */}
-      {/*                   TOP BREADCRUMB & HEADER SECTION                     */}
-      {/* ===================================================================== */}
-      <div className="flex flex-col gap-4 border-b border-border/40 pb-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-3">
-          {/* Back Navigation & Status Pill */}
-          <div className="flex flex-wrap items-center gap-3">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(`/workouts/${workoutId}`)}
-              className="-ml-2.5 h-8 text-muted-foreground hover:bg-accent/60 hover:text-foreground transition-all"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Details
-            </Button>
-
-            <span className="text-border/60 hidden sm:inline-block">|</span>
-
-            <Badge
-              variant="outline"
-              className="border-primary/30 bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary flex items-center gap-1.5 shadow-[0_0_12px_rgba(91,229,132,0.1)]"
-            >
-              <Pencil className="h-3 w-3" />
-              Editing Mode
-            </Badge>
-
-            <Badge
-              variant="outline"
-              className="border-border/60 text-muted-foreground font-mono text-[11px]"
-            >
-              ID: {workoutId?.slice(0, 8)}...
-            </Badge>
-          </div>
-
-          {/* Title & Description */}
-          <div className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Edit Routine:{" "}
-              <span className="text-primary font-normal">{workout.title}</span>
-            </h1>
-            <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
-              Modify your training parameters, adjust target rest intervals, or
-              re-order sequence movements below.
-            </p>
-          </div>
-        </div>
-
-        {/* ===================================================================== */}
-        {/*                         RIGHT METADATA CHIPS                        */}
-        {/* ===================================================================== */}
-        <div className="flex items-center gap-2.5 self-start lg:self-auto pt-2 lg:pt-0">
-          <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/30 px-3.5 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-            <Layers className="h-3.5 w-3.5 text-primary" />
-            <span>Active Template</span>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-border/40 bg-card/30 px-3.5 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Zod Validated</span>
-          </div>
-        </div>
+    <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
+      {/* Background Atmosphere */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(91,229,132,0.02)_0%,_rgba(13,16,20,0)_70%)] blur-3xl" />
       </div>
 
-      {/* ===================================================================== */}
-      {/*                      WORKOUT BUILDER WORKSPACE                        */}
-      {/* ===================================================================== */}
-      <div className="relative">
+      {/* Header */}
+      <header className="relative z-10 border-b border-[#1E2329] bg-[#0D1014]/90 backdrop-blur-md pt-8 pb-6 px-6 lg:px-12">
+        <div className="mx-auto max-w-7xl flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-3">
+            {/* Breadcrumb & Status Badges */}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => navigate(`/workout-builder/${workoutId}`)}
+                className="group inline-flex items-center gap-1.5 text-xs font-medium text-[#6B7280] hover:text-[#F3F4F6] transition-colors"
+              >
+                <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
+                Back to Details
+              </button>
+
+              <span className="text-[#1E2329]">/</span>
+
+              <span className="inline-flex items-center gap-1 rounded bg-[#16291D] border border-[#23422E] px-2.5 py-0.5 text-[11px] font-medium text-[#5BE584]">
+                <Pencil className="h-3 w-3" />
+                Editing Mode
+              </span>
+
+              <span className="inline-flex items-center rounded bg-[#1E2329] px-2.5 py-0.5 text-[11px] font-mono text-[#9CA3AF]">
+                ID: {workoutId?.slice(0, 8)}...
+              </span>
+            </div>
+
+            {/* Title & Description */}
+            <div className="space-y-1.5">
+              <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
+                Edit Routine:{" "}
+                <span className="text-[#5BE584] font-normal">
+                  {workout.title}
+                </span>
+              </h1>
+              <p className="text-sm text-[#9CA3AF] max-w-2xl leading-relaxed">
+                Modify your training parameters, adjust target rest intervals,
+                or re-order sequence movements below.
+              </p>
+            </div>
+          </div>
+
+          {/* Right Metadata Chips */}
+          <div className="flex items-center gap-2.5 self-start lg:self-auto pt-2 lg:pt-0">
+            <div className="flex items-center gap-2 rounded-lg border border-[#1E2329] bg-[#101418] px-3.5 py-1.5 text-xs font-medium text-[#9CA3AF] backdrop-blur-sm">
+              <Layers className="h-3.5 w-3.5 text-[#5BE584]" />
+              <span>Active Template</span>
+            </div>
+
+            <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#101418] px-3.5 py-1.5 text-xs font-medium text-[#9CA3AF] backdrop-blur-sm">
+              <ShieldCheck className="h-3.5 w-3.5 text-[#5BE584]" />
+              <span>Zod Validated</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12 py-10 pb-32 animate-in fade-in duration-300">
         <WorkoutBuilder
           defaultValues={defaultValues}
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
         />
-      </div>
-    </section>
+      </main>
+    </div>
   );
 }

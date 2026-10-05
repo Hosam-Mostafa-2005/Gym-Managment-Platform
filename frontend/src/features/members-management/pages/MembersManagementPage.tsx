@@ -28,7 +28,8 @@ const MembersManagementPage: React.FC = () => {
 
   const { data, isLoading, isError, error, refetch } =
     useMembersManagement(queryParams);
-
+  console.log("MEMBERS MANAGEMENT RESPONSE:", data);
+  console.log("MEMBERS:", data?.members);
   // Reset to page 1 when filters change
   const handleSearchChange = useCallback((val: string) => {
     setSearch(val);

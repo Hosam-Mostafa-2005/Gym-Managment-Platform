@@ -2,8 +2,6 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // Components & Hooks
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { AssignmentForm } from "@/features/assignments/components/AssignmentForm";
 import { useCreateAssignment } from "@/features/assignments/hooks/useCreateAssignment";
 import type { AssignmentFormValues } from "@/features/assignments/schemas/assignment.schema";
@@ -12,7 +10,6 @@ export default function CreateAssignmentPage() {
   const navigate = useNavigate();
   const { mutate: createAssignment, isPending } = useCreateAssignment();
 
-  // تشغيل الإضافة عند الضغط على زرار Submit
   const handleCreate = (data: AssignmentFormValues) => {
     createAssignment({
       member: data.member,
@@ -25,39 +22,67 @@ export default function CreateAssignmentPage() {
   };
 
   return (
-    <section className="max-w-4xl mx-auto space-y-6 animate-in fade-in duration-300 text-foreground pb-12">
-      {/* Top Header & Back Button */}
-      <div className="flex items-center justify-between border-b border-border/40 pb-5">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigate("/assignments")}
-            className="h-9 w-9 rounded-lg border-border/60 bg-card/40 hover:bg-accent/60 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+    <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
+      {/* Background Atmosphere */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(91,229,132,0.02)_0%,_rgba(13,16,20,0)_70%)] blur-3xl" />
+      </div>
+
+      {/* Header */}
+      <header className="relative z-10 border-b border-[#1E2329] bg-[#0D1014]/90 backdrop-blur-md pt-8 pb-6 px-6 lg:px-12">
+        <div className="mx-auto max-w-4xl flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase">
+              <span
+                className="hover:text-[#9CA3AF] cursor-pointer transition-colors"
+                onClick={() => navigate("/assignments")}
+              >
+                Assignments
+              </span>
+              <span>/</span>
+              <span className="text-[#F3F4F6]">Assign Routine</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mt-1">
               Assign Workout Routine
             </h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
+            <p className="text-sm text-[#9CA3AF]">
               Create a new structured workout assignment for a gym member.
             </p>
           </div>
+          <button
+            onClick={() => navigate("/assignments")}
+            className="group hidden md:flex items-center gap-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white"
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            Back to Assignments
+          </button>
         </div>
-      </div>
+      </header>
 
-      {/* Main Form Card */}
-      <Card className="border-border/50 bg-card/30 shadow-xl overflow-hidden">
-        <CardContent className="p-6 sm:p-8">
+      {/* Main Content */}
+      <main className="relative z-10 mx-auto max-w-4xl px-6 lg:px-12 py-10 pb-32 animate-in fade-in duration-300">
+        <div className="rounded-xl border border-[#1E2329] bg-[#101418]/80 backdrop-blur-sm p-6 sm:p-10 shadow-2xl">
+          <div className="mb-8 border-b border-[#1E2329] pb-4">
+            <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
+              Assignment Details
+            </h2>
+            <p className="text-xs text-[#6B7280] mt-1">
+              Select the member, trainer, and schedule for this routine.
+            </p>
+          </div>
+
+          {/* 
+            Since AssignmentForm contains the actual fields and submission buttons, 
+            we wrap it in a premium container that matches the GymFlow design system.
+          */}
           <AssignmentForm
             onSubmit={handleCreate}
             isLoading={isPending}
             submitLabel="Assign Routine"
           />
-        </CardContent>
-      </Card>
-    </section>
+        </div>
+      </main>
+    </div>
   );
 }

@@ -18,7 +18,7 @@ export const getWorkoutSessions = async (
   page = 1,
   limit = 10,
 ): Promise<WorkoutSessionsResponse> => {
-  const { data } = await api.get("/workout-sessions/me", {
+  const { data } = await api.get("/workout-sessions", {
     params: { page, limit },
   });
 
@@ -64,7 +64,9 @@ export const startWorkoutSession = async (
 
   const { data } = await api.post("/workout-sessions/start", payload);
 
-  return mapWorkoutSession(data.data.session);
+  console.log("START RESPONSE", data);
+
+  return data.data.session;
 };
 
 export const finishWorkoutSession = async (
@@ -73,7 +75,9 @@ export const finishWorkoutSession = async (
 ): Promise<WorkoutSession> => {
   const { data } = await api.patch(`/workout-sessions/${id}/finish`, payload);
 
-  return mapWorkoutSession(data.data.session);
+  console.log("FINISH RESPONSE", data);
+
+  return data.data.session;
 };
 
 export const createWorkoutSet = async (payload: CreateWorkoutSetPayload) => {

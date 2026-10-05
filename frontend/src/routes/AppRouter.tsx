@@ -9,13 +9,16 @@ import AppLayout from "@/components/shared/layouts/AppLayout";
 
 import ProtectedRoute from "./ProtectedRoute";
 
+// Overview (Public Root)
+import LandingPage from "@/features/landing/pages/LandingPage";
+import HomePage from "@/features/homelayout/pages/HomePage";
+
 // Auth
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
 import NotFoundPage from "@/features/auth/pages/NotFoundPage";
 
 // Home & Dashboard
-import HomePage from "@/features/home/pages/HomePage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import CoachDashboardPage from "@/features/coach-dashboard/pages/CoachDashboardPage";
 
@@ -54,12 +57,17 @@ import NotificationsPage from "@/features/notifications/pages/NotificationsPage"
 const router = createBrowserRouter([
   // ================= Public =================
   {
+    path: "/",
+    element: <HomePage />,
+  },
+  {
     element: <AuthLayout />,
     children: [
       {
         path: "/login",
         element: <LoginPage />,
       },
+
       {
         path: "/register",
         element: <RegisterPage />,
@@ -76,8 +84,8 @@ const router = createBrowserRouter([
         children: [
           // ─── Main ───────────────────────────────────────────
           {
-            index: true,
-            element: <HomePage />,
+            path: "home",
+            element: <LandingPage />,
           },
           {
             path: "dashboard",

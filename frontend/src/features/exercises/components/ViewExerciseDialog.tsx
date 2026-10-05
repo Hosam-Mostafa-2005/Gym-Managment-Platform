@@ -5,8 +5,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { useExercise } from "../hooks/useExercises";
 import {
   Dumbbell,
@@ -16,6 +14,7 @@ import {
   Lightbulb,
   PlayCircle,
   ExternalLink,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +24,6 @@ interface ViewExerciseDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Local helper to keep cards DRY and consistent
 interface InfoCardProps {
   icon: React.ReactNode;
   title: string;
@@ -36,14 +34,14 @@ interface InfoCardProps {
 const InfoCard = ({ icon, title, children, className }: InfoCardProps) => (
   <div
     className={cn(
-      "flex flex-col justify-between rounded-2xl border border-border bg-card/40 p-5 transition-all duration-200 hover:border-primary/40 hover:bg-card hover:shadow-sm",
+      "flex flex-col justify-between rounded-xl border border-[#1E2329] bg-[#101418] p-5 transition-all duration-200 hover:border-[#2A313A]",
       className,
     )}
   >
     <div>
-      <div className="mb-3 flex items-center gap-2 text-primary">
+      <div className="mb-3 flex items-center gap-2 text-[#5BE584]">
         {icon}
-        <h3 className="font-semibold tracking-tight text-foreground">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-[#6B7280]">
           {title}
         </h3>
       </div>
@@ -59,23 +57,15 @@ const ViewExerciseDialog: React.FC<ViewExerciseDialogProps> = ({
 }) => {
   const { data: exercise, isLoading } = useExercise(exerciseId, open);
 
-  // 1. Polished Skeleton Loading State
   if (isLoading) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] w-[95vw] max-w-5xl overflow-hidden rounded-3xl border border-border p-8">
-          <div className="animate-pulse space-y-6">
-            <div className="space-y-3 border-b border-border pb-6">
-              <div className="h-8 w-1/3 rounded-lg bg-muted"></div>
-              <div className="h-4 w-3/4 rounded bg-muted"></div>
-              <div className="h-4 w-1/2 rounded bg-muted"></div>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-28 rounded-2xl bg-muted/60"></div>
-              ))}
-            </div>
-            <div className="h-40 rounded-2xl bg-muted/60"></div>
+        <DialogContent className="max-h-[90vh] w-[95vw] max-w-5xl overflow-hidden rounded-xl border border-[#1E2329] bg-[#101418] p-8 text-[#F3F4F6] shadow-2xl">
+          <div className="flex flex-col items-center justify-center py-20 text-[#6B7280]">
+            <Loader2 className="h-8 w-8 animate-spin text-[#5BE584]" />
+            <p className="mt-4 text-sm font-medium">
+              Loading exercise details...
+            </p>
           </div>
         </DialogContent>
       </Dialog>
@@ -86,157 +76,155 @@ const ViewExerciseDialog: React.FC<ViewExerciseDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[95vw] max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl overflow-y-auto rounded-3xl border border-border p-6 shadow-2xl sm:p-8">
-        <DialogHeader className="space-y-3 border-b border-border/80 pb-6 text-left">
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl overflow-y-auto rounded-xl border border-[#1E2329] bg-[#101418] p-6 shadow-2xl sm:p-8 text-[#F3F4F6] selection:bg-[#5BE584]/30">
+        {/* Header */}
+        <DialogHeader className="space-y-3 border-b border-[#1E2329] pb-6 text-left">
+          <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase mb-1">
+            <span>Exercises</span>
+            <span>/</span>
+            <span className="text-[#F3F4F6]">View Details</span>
+          </div>
+
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <DialogTitle className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+            <DialogTitle className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
               {exercise.name}
             </DialogTitle>
 
-            {/* CTA moved to top right for immediate visibility, falls back to bottom on mobile */}
             {exercise.videoUrl && (
-              <Button variant="default" className="w-full shrink-0 sm:w-auto">
-                <a
-                  href={exercise.videoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 font-medium"
-                >
-                  <PlayCircle className="h-4 w-4" />
-                  <span>Watch Tutorial</span>
-                  <ExternalLink className="ml-1 h-3 w-3 opacity-70" />
-                </a>
-              </Button>
+              <a
+                href={exercise.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-[#16291D] border border-[#23422E] px-4 py-2 text-sm font-semibold text-[#5BE584] transition-colors hover:bg-[#1f3827]"
+              >
+                <PlayCircle className="h-4 w-4" />
+                <span>Watch Tutorial</span>
+                <ExternalLink className="ml-1 h-3 w-3 opacity-70" />
+              </a>
             )}
           </div>
 
           {exercise.description && (
-            <DialogDescription className="max-w-3xl text-base leading-relaxed text-muted-foreground">
+            <DialogDescription className="max-w-3xl text-sm leading-relaxed text-[#9CA3AF]">
               {exercise.description}
             </DialogDescription>
           )}
         </DialogHeader>
 
-        {/* 2. Responsive Quick-Stats Grid */}
+        {/* Quick-Stats Grid */}
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <InfoCard icon={<Dumbbell className="h-5 w-5" />} title="Equipment">
+          <InfoCard icon={<Dumbbell className="h-4 w-4" />} title="Equipment">
             <div className="flex flex-wrap gap-1.5">
               {exercise.equipment?.length ? (
                 exercise.equipment.map((item) => (
-                  <Badge key={item} variant="secondary" className="font-normal">
+                  <span
+                    key={item}
+                    className="inline-flex items-center rounded bg-[#1E2329] px-2 py-0.5 text-xs text-[#D1D5DB]"
+                  >
                     {item}
-                  </Badge>
+                  </span>
                 ))
               ) : (
-                <span className="text-sm text-muted-foreground">
-                  Bodyweight
-                </span>
+                <span className="text-xs text-[#9CA3AF]">Bodyweight</span>
               )}
             </div>
           </InfoCard>
 
           <InfoCard
-            icon={<Flame className="h-5 w-5 text-orange-500" />}
+            icon={<Flame className="h-4 w-4 text-orange-400" />}
             title="Difficulty"
           >
-            <Badge
-              variant={
-                exercise.difficulty?.toLowerCase() === "hard"
-                  ? "destructive"
-                  : "outline"
-              }
-              className="capitalize font-medium"
-            >
-              {exercise.difficulty || "N/A"}
-            </Badge>
+            <div>
+              <span className="inline-flex items-center rounded bg-[#1E2329] px-2.5 py-0.5 text-xs font-medium text-[#F3F4F6] capitalize">
+                {exercise.difficulty || "N/A"}
+              </span>
+            </div>
           </InfoCard>
 
           <InfoCard
-            icon={<Target className="h-5 w-5 text-emerald-500" />}
-            title="Primary"
+            icon={<Target className="h-4 w-4 text-[#5BE584]" />}
+            title="Primary Muscles"
           >
             <div className="flex flex-wrap gap-1.5">
               {exercise.primaryMuscles?.map((muscle) => (
-                <Badge
+                <span
                   key={muscle}
-                  variant="default"
-                  className="bg-primary/10 text-primary hover:bg-primary/20 border-0 font-medium"
+                  className="inline-flex items-center rounded bg-[#16291D] border border-[#23422E] px-2 py-0.5 text-xs text-[#5BE584] font-medium"
                 >
                   {muscle}
-                </Badge>
+                </span>
               ))}
             </div>
           </InfoCard>
 
           <InfoCard
-            icon={<Layers className="h-5 w-5 text-blue-500" />}
-            title="Secondary"
+            icon={<Layers className="h-4 w-4 text-blue-400" />}
+            title="Secondary Muscles"
           >
             <div className="flex flex-wrap gap-1.5">
               {exercise.secondaryMuscles?.length ? (
                 exercise.secondaryMuscles.map((muscle) => (
-                  <Badge
+                  <span
                     key={muscle}
-                    variant="outline"
-                    className="text-muted-foreground font-normal"
+                    className="inline-flex items-center rounded bg-[#1E2329] px-2 py-0.5 text-xs text-[#9CA3AF]"
                   >
                     {muscle}
-                  </Badge>
+                  </span>
                 ))
               ) : (
-                <span className="text-sm text-muted-foreground">None</span>
+                <span className="text-xs text-[#6B7280]">None</span>
               )}
             </div>
           </InfoCard>
         </div>
 
-        {/* 3. Instructions Section with custom step numbering */}
+        {/* Instructions Section */}
         {exercise.instructions?.length > 0 && (
-          <div className="mt-6 rounded-2xl border border-border bg-card/40 p-6 transition-all hover:border-primary/30 hover:bg-card">
-            <h3 className="mb-4 text-lg font-semibold tracking-tight">
+          <div className="mt-8 rounded-xl border border-[#1E2329] bg-[#101418] p-6">
+            <h3 className="mb-4 text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
               Instructions
             </h3>
             <ol className="space-y-3 pl-1">
               {exercise.instructions.map((step, index) => (
                 <li
                   key={index}
-                  className="flex items-start gap-3 text-sm leading-relaxed text-muted-foreground sm:text-base"
+                  className="flex items-start gap-3 text-sm leading-relaxed text-[#9CA3AF]"
                 >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
-                    {index + 1}
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#1E2329] font-mono text-xs text-[#5BE584]">
+                    {(index + 1).toString().padStart(2, "0")}
                   </span>
-                  <span className="pt-0.5">{step}</span>
+                  <span className="pt-0.5 text-[#F3F4F6]">{step}</span>
                 </li>
               ))}
             </ol>
           </div>
         )}
 
-        {/* 4. Tips Section with highlighted styling */}
-        <div className="mt-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 transition-all hover:border-amber-500/30 dark:bg-amber-500/10">
-          <div className="mb-3 flex items-center gap-2 text-amber-600 dark:text-amber-400">
-            <Lightbulb className="h-5 w-5 shrink-0 text-amber-500" />
-            <h3 className="text-lg font-semibold tracking-tight text-foreground">
+        {/* Tips Section */}
+        <div className="mt-6 rounded-xl border border-[#1E2329] bg-[#101418] p-6">
+          <div className="mb-4 flex items-center gap-2 text-amber-400">
+            <Lightbulb className="h-4 w-4 shrink-0 text-amber-400" />
+            <h3 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
               Pro Tips
             </h3>
           </div>
 
           {exercise.tips?.length ? (
-            <ul className="space-y-2 pl-2">
+            <ul className="space-y-2.5 pl-2">
               {exercise.tips.map((tip, index) => (
                 <li
                   key={index}
-                  className="flex items-start gap-2.5 text-sm leading-relaxed text-muted-foreground sm:text-base"
+                  className="flex items-start gap-2.5 text-sm leading-relaxed text-[#9CA3AF]"
                 >
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
-                  <span>{tip}</span>
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                  <span className="text-[#F3F4F6]">{tip}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm italic text-muted-foreground">
+            <p className="text-xs italic text-[#6B7280]">
               No specific tips listed for this exercise — focus on controlled
-              form and steady breathing!
+              form and steady breathing.
             </p>
           )}
         </div>

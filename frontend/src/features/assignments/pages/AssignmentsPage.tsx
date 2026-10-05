@@ -15,13 +15,13 @@ import {
   ChevronRight,
   Calendar,
   UserCheck,
+  X,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // Hooks
 import { useAssignments } from "@/features/assignments/hooks/useAssignments";
 import { useDeleteAssignment } from "@/features/assignments/hooks/useDeleteAssignment";
-import { useArchiveAssignment } from "@/features/assignments/hooks/useArchiveAssignment";
 
 // Types
 import type {
@@ -30,10 +30,6 @@ import type {
 } from "@/features/assignments/types/assignment.types";
 
 // Shadcn UI & Custom Components
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,7 +59,7 @@ export default function AssignmentsPage() {
   const [page, setPage] = useState<number>(1);
   const limit = 10;
 
-  // 💡 State للتحكم في نافذة التأكيد قبل الحذف
+  // Delete Modal State
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
     id: string;
@@ -74,17 +70,17 @@ export default function AssignmentsPage() {
     memberName: "",
   });
 
-  // Fetching Data & Mutations (مربوط بالـ Server-Side Pagination)
+  // Fetching Data & Mutations
   const { data, isLoading } = useAssignments(page, limit);
   const { mutate: deleteAssignment, isPending: isDeleting } =
     useDeleteAssignment();
 
-  // 1. استخراج البيانات اللي جاية من السيرفر بأمان
+  // Extracting Data safely
   const rawAssignments: Assignment[] = data?.data?.assignments ?? [];
   const totalItems = data?.results ?? 0;
   const totalPages = Math.ceil(totalItems / limit) || 1;
 
-  // 2. فلترة سريعة للبحث والمدربين على الداتا المعروضة في الصفحة الحالية
+  // Client-side filtering on current page
   const filteredAssignments = rawAssignments.filter((item: Assignment) => {
     const matchesSearch =
       item.member?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -99,11 +95,11 @@ export default function AssignmentsPage() {
     return matchesSearch && matchesStatus && matchesTrainer;
   });
 
-  // 3. حساب أرقام العرض (Showing X to Y of Z) بناءً على أرقام السيرفر الحقيقية
+  // Showing X to Y of Z
   const showingFrom = totalItems > 0 ? (page - 1) * limit + 1 : 0;
   const showingTo = Math.min(page * limit, totalItems);
 
-  // إحصائيات سريعة للكروت العلوية (بناءً على التمارين المعروضة حالياً)
+  // Quick stats
   const stats = data?.stats ?? {
     total: 0,
     active: 0,
@@ -111,7 +107,7 @@ export default function AssignmentsPage() {
     cancelled: 0,
   };
 
-  // 💡 Handlers الحذف الجديدة (بواسطة الـ Modal)
+  // Handlers
   const handleDeleteClick = (id: string, memberName: string) => {
     setDeleteModal({ isOpen: true, id, memberName });
   };
@@ -126,11 +122,7 @@ export default function AssignmentsPage() {
     }
   };
 
-  // const handleArchive = (id: string) => {
-  //   archiveAssignment(id);
-  // };
-
-  // مساعد النسبة المئوية للتقارب مع التصميم
+  // UI Helpers
   const getProgressPercentage = (status: AssignmentStatus) => {
     switch (status) {
       case "COMPLETED":
@@ -147,500 +139,532 @@ export default function AssignmentsPage() {
   const getProgressBarColor = (status: AssignmentStatus) => {
     switch (status) {
       case "ACTIVE":
-        return "bg-emerald-500";
+        return "bg-[#5BE584]";
       case "COMPLETED":
-        return "bg-zinc-500";
+        return "bg-[#6B7280]";
       case "CANCELLED":
-        return "bg-rose-500";
+        return "bg-red-500/80";
       default:
-        return "bg-emerald-500";
+        return "bg-[#5BE584]";
     }
   };
 
   return (
-    <section className="space-y-8 animate-in fade-in duration-300 text-foreground">
-      {/* Top Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/40 pb-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Workout Assignments
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Assign workout routines to members and track their progress over
-            time.
-          </p>
-        </div>
-
-        <Button
-          onClick={() => navigate("/assignments/new")}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm transition-all self-start sm:self-auto"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          New Assignment
-        </Button>
+    <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
+      {/* Background Atmosphere */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(91,229,132,0.02)_0%,_rgba(13,16,20,0)_70%)] blur-3xl" />
       </div>
 
-      {/* Stats Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-border/50 bg-card/30">
-          <CardContent className="p-5 flex items-start justify-between">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Total Assignments
-              </p>
-              <h3 className="text-3xl font-bold mt-2">
-                {isLoading ? "-" : stats.total}
-              </h3>
+      {/* Header */}
+      <header className="relative z-10 border-b border-[#1E2329] bg-[#0D1014]/90 backdrop-blur-md pt-8 pb-6 px-6 lg:px-12">
+        <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase">
+              <span className="text-[#F3F4F6]">Assignments</span>
+              <span>/</span>
+              <span className="hover:text-[#9CA3AF] cursor-pointer">
+                Overview
+              </span>
             </div>
-            <div className="p-2.5 bg-accent/50 rounded-lg text-muted-foreground">
-              <ClipboardList className="w-5 h-5" />
-            </div>
-          </CardContent>
-        </Card>
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mt-1">
+              Workout Assignments
+            </h1>
+            <p className="text-sm text-[#9CA3AF]">
+              Assign workout routines to members and track their progress over
+              time.
+            </p>
+          </div>
 
-        <Card className="border-border/50 bg-card/30">
-          <CardContent className="p-5 flex items-start justify-between">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Active
-              </p>
-              <div className="flex items-baseline gap-2 mt-2">
-                <h3 className="text-3xl font-bold">
-                  {isLoading ? "-" : stats.active}
+          <button
+            onClick={() => navigate("/assignments/new")}
+            className="group flex items-center justify-center gap-2 rounded-md bg-[#5BE584] px-5 py-2.5 text-sm font-semibold text-[#090B0F] transition-all hover:bg-[#4ade80] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
+          >
+            <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
+            New Assignment
+          </button>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12 py-10 pb-32 space-y-10 animate-in fade-in duration-300">
+        {/* Stats Section */}
+        <section>
+          <div className="mb-4">
+            <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
+              Overview
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Total */}
+            <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
+              <div>
+                <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+                  Total Assignments
+                </p>
+                <h3 className="text-2xl font-semibold text-white mt-2">
+                  {isLoading ? "-" : stats.total}
                 </h3>
-                <span className="text-xs font-medium text-emerald-400">
-                  ↗ Active
-                </span>
+              </div>
+              <div className="p-2 rounded bg-[#1E2329]/50 text-[#9CA3AF]">
+                <ClipboardList className="w-4 h-4" />
               </div>
             </div>
-            <div className="p-2.5 bg-emerald-500/10 rounded-lg text-emerald-400">
-              <PlayCircle className="w-5 h-5" />
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card className="border-border/50 bg-card/30">
-          <CardContent className="p-5 flex items-start justify-between">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Completed
-              </p>
-              <h3 className="text-3xl font-bold mt-2">
-                {isLoading ? "-" : stats.completed}
-              </h3>
+            {/* Active */}
+            <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
+              <div>
+                <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+                  Active
+                </p>
+                <div className="flex items-baseline gap-2 mt-2">
+                  <h3 className="text-2xl font-semibold text-white">
+                    {isLoading ? "-" : stats.active}
+                  </h3>
+                  <span className="text-[10px] font-medium text-[#5BE584]">
+                    ↗ Active
+                  </span>
+                </div>
+              </div>
+              <div className="p-2 rounded bg-[#16291D] border border-[#23422E] text-[#5BE584]">
+                <PlayCircle className="w-4 h-4" />
+              </div>
             </div>
-            <div className="p-2.5 bg-accent/50 rounded-lg text-muted-foreground">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
-          </CardContent>
-        </Card>
 
-        <Card className="border-border/50 bg-card/30">
-          <CardContent className="p-5 flex items-start justify-between">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                Cancelled / Stopped
-              </p>
-              <div className="flex items-baseline gap-3 mt-2">
-                <h3 className="text-3xl font-bold">
-                  {isLoading ? "-" : stats.cancelled}
+            {/* Completed */}
+            <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
+              <div>
+                <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+                  Completed
+                </p>
+                <h3 className="text-2xl font-semibold text-white mt-2">
+                  {isLoading ? "-" : stats.completed}
                 </h3>
-                <span
-                  onClick={() => {
-                    setSelectedStatus("CANCELLED");
+              </div>
+              <div className="p-2 rounded bg-[#1E2329]/50 text-[#9CA3AF]">
+                <CheckCircle2 className="w-4 h-4" />
+              </div>
+            </div>
+
+            {/* Cancelled */}
+            <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
+              <div>
+                <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+                  Cancelled / Stopped
+                </p>
+                <div className="flex items-baseline gap-3 mt-2">
+                  <h3 className="text-2xl font-semibold text-white">
+                    {isLoading ? "-" : stats.cancelled}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setSelectedStatus("CANCELLED");
+                      setPage(1);
+                    }}
+                    className="text-[10px] font-medium text-red-400/80 hover:text-red-400 hover:underline transition-colors"
+                  >
+                    Filter
+                  </button>
+                </div>
+              </div>
+              <div className="p-2 rounded bg-red-950/30 border border-red-900/50 text-red-400">
+                <AlertTriangle className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="h-px w-full bg-gradient-to-r from-[#1E2329] to-transparent" />
+
+        {/* Workspace Area */}
+        <section>
+          <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
+              Assignment Records
+            </h2>
+          </div>
+
+          <div className="rounded-xl border border-[#1E2329] bg-[#101418]/50 overflow-hidden backdrop-blur-sm">
+            {/* Filter & Search Bar */}
+            <div className="p-4 border-b border-[#1E2329] flex flex-col md:flex-row items-center justify-between gap-4 bg-[#101418]">
+              <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#1E2329]/40 border border-[#1E2329] text-xs font-medium text-[#9CA3AF]">
+                  <Filter className="w-3.5 h-3.5" />
+                  <span>Filter</span>
+                </div>
+
+                <div className="flex gap-1.5">
+                  {(
+                    ["ACTIVE", "COMPLETED", "CANCELLED"] as AssignmentStatus[]
+                  ).map((status) => {
+                    const isSelected = selectedStatus === status;
+                    return (
+                      <button
+                        key={status}
+                        onClick={() => {
+                          setSelectedStatus(isSelected ? null : status);
+                          setPage(1);
+                        }}
+                        className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors duration-200 border ${
+                          isSelected
+                            ? "bg-[#16291D] border-[#23422E] text-[#5BE584]"
+                            : "bg-[#101418] border-[#1E2329] text-[#9CA3AF] hover:border-[#6B7280] hover:text-[#F3F4F6]"
+                        }`}
+                      >
+                        {status.charAt(0) + status.slice(1).toLowerCase()}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="h-6 w-px bg-[#1E2329] mx-1" />
+
+                <div className="relative">
+                  <select
+                    value={selectedTrainer}
+                    onChange={(e) => {
+                      setSelectedTrainer(e.target.value);
+                      setPage(1);
+                    }}
+                    className="h-8 pl-3 pr-8 rounded-md bg-[#101418] text-xs font-medium border border-[#1E2329] text-[#F3F4F6] focus:outline-none focus:border-[#5BE584] focus:ring-1 focus:ring-[#5BE584] appearance-none cursor-pointer"
+                  >
+                    <option value="ALL">All Trainers</option>
+                    {Array.from(
+                      new Set(rawAssignments.map((a) => a.trainer?.id)),
+                    )
+                      .filter(Boolean)
+                      .map((trainerId) => {
+                        const trainerName = rawAssignments.find(
+                          (a) => a.trainer?.id === trainerId,
+                        )?.trainer?.name;
+                        return (
+                          <option key={trainerId} value={trainerId}>
+                            {trainerName}
+                          </option>
+                        );
+                      })}
+                  </select>
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280] pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="relative w-full md:w-72">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+                <input
+                  type="text"
+                  placeholder="Search member, workout..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
                     setPage(1);
                   }}
-                  className="text-xs font-medium text-rose-400 hover:underline cursor-pointer"
-                >
-                  Filter
-                </span>
+                  className="w-full h-9 pl-9 pr-4 rounded-md border border-[#1E2329] bg-[#101418] text-xs text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      setPage(1);
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#9CA3AF]"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </div>
             </div>
-            <div className="p-2.5 bg-rose-500/10 rounded-lg text-rose-400">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Main Table Container */}
-      <div className="rounded-xl border border-border/50 bg-card/30 overflow-hidden">
-        {/* Filter & Search Bar */}
-        <div className="p-4 border-b border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 gap-2 border-border/60 bg-card/40 pointer-events-none"
-            >
-              <Filter className="w-3.5 h-3.5" />
-              <span>Filter</span>
-            </Button>
-
-            <div className="flex gap-1">
-              {(["ACTIVE", "COMPLETED", "CANCELLED"] as AssignmentStatus[]).map(
-                (status) => (
-                  <Badge
-                    key={status}
-                    variant={
-                      selectedStatus === status ? "default" : "secondary"
-                    }
-                    className="cursor-pointer px-3 py-1.5 font-normal transition-colors text-xs capitalize"
-                    onClick={() => {
-                      setSelectedStatus(
-                        selectedStatus === status ? null : status,
-                      );
-                      setPage(1); // تصفير رقم الصفحة عند تغيير الفلتر
-                    }}
-                  >
-                    {status.toLowerCase()}
-                  </Badge>
-                ),
-              )}
-            </div>
-
-            <select
-              value={selectedTrainer}
-              onChange={(e) => {
-                setSelectedTrainer(e.target.value);
-                setPage(1); // تصفير رقم الصفحة عند تغيير المدرب
-              }}
-              className="h-9 px-3 rounded-md bg-card/40 text-xs font-medium border border-border/60 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer text-foreground"
-            >
-              <option value="ALL">All Trainers</option>
-              {Array.from(new Set(rawAssignments.map((a) => a.trainer?.id)))
-                .filter(Boolean)
-                .map((trainerId) => {
-                  const trainerName = rawAssignments.find(
-                    (a) => a.trainer?.id === trainerId,
-                  )?.trainer?.name;
-                  return (
-                    <option key={trainerId} value={trainerId}>
-                      {trainerName}
-                    </option>
-                  );
-                })}
-            </select>
-          </div>
-
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search member, workout..."
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setPage(1); // تصفير رقم الصفحة عند البحث
-              }}
-              className="pl-9 h-9 bg-card/40 border-border/60 focus-visible:ring-1 text-xs"
-            />
-          </div>
-        </div>
-
-        {/* Table Content */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-border/40 text-muted-foreground text-xs font-semibold uppercase tracking-wider bg-muted/20">
-                <th className="py-3.5 px-4 md:px-5">Member</th>
-                <th className="py-3.5 px-4 md:px-5">Assigned Workout</th>
-                <th className="py-3.5 px-4 md:px-5">Trainer</th>
-                <th className="py-3.5 px-4 md:px-5">Duration</th>
-                <th className="py-3.5 px-4 md:px-5">Progress</th>
-                <th className="py-3.5 px-4 md:px-5">Status</th>
-                <th className="py-3.5 px-4 md:px-5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/40 text-sm">
-              {isLoading ? (
-                Array.from({ length: 4 }).map((_, index) => (
-                  <tr key={index} className="animate-pulse">
-                    <td className="py-4 px-4 md:px-5">
-                      <div className="h-10 w-36 bg-accent/40 rounded-lg" />
-                    </td>
-                    <td className="py-4 px-4 md:px-5">
-                      <div className="h-6 w-28 bg-accent/40 rounded-lg" />
-                    </td>
-                    <td className="py-4 px-4 md:px-5">
-                      <div className="h-6 w-24 bg-accent/40 rounded-lg" />
-                    </td>
-                    <td className="py-4 px-4 md:px-5">
-                      <div className="h-8 w-28 bg-accent/40 rounded-lg" />
-                    </td>
-                    <td className="py-4 px-4 md:px-5">
-                      <div className="h-4 w-24 bg-accent/40 rounded-lg" />
-                    </td>
-                    <td className="py-4 px-4 md:px-5">
-                      <div className="h-6 w-16 bg-accent/40 rounded-full" />
-                    </td>
-                    <td className="py-4 px-4 md:px-5 text-right">
-                      <div className="h-6 w-6 bg-accent/40 rounded ml-auto" />
-                    </td>
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[#1E2329] text-[#6B7280] text-[10px] font-bold uppercase tracking-widest bg-[#101418]">
+                    <th className="py-4 px-5">Member</th>
+                    <th className="py-4 px-5">Assigned Workout</th>
+                    <th className="py-4 px-5">Trainer</th>
+                    <th className="py-4 px-5">Duration</th>
+                    <th className="py-4 px-5">Progress</th>
+                    <th className="py-4 px-5">Status</th>
+                    <th className="py-4 px-5 text-right">Actions</th>
                   </tr>
-                ))
-              ) : filteredAssignments.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-16 text-center">
-                    <div className="flex flex-col items-center justify-center">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500 mb-4">
-                        <ClipboardList className="h-6 w-6" />
-                      </div>
-                      <h2 className="text-base font-semibold">
-                        No assignments found
-                      </h2>
-                      <p className="mt-1 text-xs text-muted-foreground max-w-sm">
-                        {searchQuery ||
-                        selectedStatus ||
-                        selectedTrainer !== "ALL"
-                          ? "We couldn't find any assignments matching your current filters."
-                          : "You haven't assigned any workouts to members yet."}
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-4 border-dashed border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10"
-                        onClick={() => {
-                          if (
-                            searchQuery ||
+                </thead>
+                <tbody className="divide-y divide-[#1E2329] text-sm">
+                  {isLoading ? (
+                    Array.from({ length: 4 }).map((_, index) => (
+                      <tr key={index} className="animate-pulse">
+                        <td className="py-4 px-5">
+                          <div className="h-9 w-32 bg-[#1E2329] rounded" />
+                        </td>
+                        <td className="py-4 px-5">
+                          <div className="h-6 w-28 bg-[#1E2329] rounded" />
+                        </td>
+                        <td className="py-4 px-5">
+                          <div className="h-5 w-24 bg-[#1E2329] rounded" />
+                        </td>
+                        <td className="py-4 px-5">
+                          <div className="h-5 w-28 bg-[#1E2329] rounded" />
+                        </td>
+                        <td className="py-4 px-5">
+                          <div className="h-4 w-24 bg-[#1E2329] rounded" />
+                        </td>
+                        <td className="py-4 px-5">
+                          <div className="h-6 w-16 bg-[#1E2329] rounded-full" />
+                        </td>
+                        <td className="py-4 px-5 text-right">
+                          <div className="h-8 w-8 bg-[#1E2329] rounded ml-auto" />
+                        </td>
+                      </tr>
+                    ))
+                  ) : filteredAssignments.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="py-24 text-center bg-[#0D1014]"
+                      >
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#16291D] text-[#5BE584] border border-[#23422E] mb-4">
+                            <ClipboardList className="h-5 w-5" />
+                          </div>
+                          <h2 className="text-sm font-semibold text-white">
+                            No assignments found
+                          </h2>
+                          <p className="mt-1.5 text-xs text-[#9CA3AF] max-w-xs">
+                            {searchQuery ||
                             selectedStatus ||
                             selectedTrainer !== "ALL"
-                          ) {
-                            setSearchQuery("");
-                            setSelectedStatus(null);
-                            setSelectedTrainer("ALL");
-                            setPage(1);
-                          } else {
-                            navigate("/assignments/new");
-                          }
-                        }}
-                      >
-                        {searchQuery ||
-                        selectedStatus ||
-                        selectedTrainer !== "ALL"
-                          ? "Clear Filters"
-                          : "Create First Assignment"}
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                filteredAssignments.map((item: Assignment) => {
-                  const progress = getProgressPercentage(item.status);
-
-                  return (
-                    <tr
-                      key={item.id}
-                      className="hover:bg-accent/20 transition-colors group"
-                    >
-                      {/* Member */}
-                      <td className="py-3.5 px-4 md:px-5 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-xs border border-emerald-500/20 shrink-0">
-                            {item.member?.name?.slice(0, 2).toUpperCase() ||
-                              "MB"}
-                          </div>
-                          <div>
-                            <div className="font-medium text-foreground">
-                              {item.member?.name}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {item.member?.email}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Workout */}
-                      <td className="py-3.5 px-4 md:px-5 whitespace-nowrap">
-                        <Badge
-                          variant="secondary"
-                          className="bg-accent/50 text-foreground font-normal border border-border/40 text-xs max-w-[220px] truncate"
-                        >
-                          {item.workout?.title || "General Routine"}
-                        </Badge>
-                      </td>
-
-                      {/* Trainer */}
-                      <td className="py-3.5 px-4 md:px-5 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <UserCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                          <span className="text-foreground font-medium">
-                            {item.trainer?.name}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Duration */}
-                      <td className="py-3.5 px-4 md:px-5 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5 text-xs text-foreground">
-                          <Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                          <span>
-                            {new Date(item.startDate).toLocaleDateString(
-                              "en-US",
-                              { month: "short", day: "numeric" },
-                            )}{" "}
-                            -{" "}
-                            {new Date(item.endDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              },
-                            )}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Progress */}
-                      <td className="py-3.5 px-4 md:px-5 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div className="w-20 bg-accent/60 h-1.5 rounded-full overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all duration-500 ${getProgressBarColor(item.status)}`}
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
-                          <span className="text-xs font-medium text-muted-foreground w-8">
-                            {progress}%
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Status Badge */}
-                      <td className="py-3.5 px-4 md:px-5 whitespace-nowrap">
-                        <AssignmentStatusBadge status={item.status} />
-                      </td>
-
-                      {/* Actions Dropdown */}
-                      <td className="py-3.5 px-4 md:px-5 text-right whitespace-nowrap">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-muted-foreground hover:text-foreground focus-visible:ring-1 focus-visible:ring-primary"
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                              <span className="sr-only">Open menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-
-                          <DropdownMenuContent
-                            align="end"
-                            className="w-44 border-border/60 bg-card/95 backdrop-blur-md shadow-xl"
+                              ? "We couldn't find any assignments matching your current filters."
+                              : "You haven't assigned any workouts to members yet."}
+                          </p>
+                          <button
+                            className="mt-5 rounded-md border border-[#1E2329] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
+                            onClick={() => {
+                              if (
+                                searchQuery ||
+                                selectedStatus ||
+                                selectedTrainer !== "ALL"
+                              ) {
+                                setSearchQuery("");
+                                setSelectedStatus(null);
+                                setSelectedTrainer("ALL");
+                                setPage(1);
+                              } else {
+                                navigate("/assignments/new");
+                              }
+                            }}
                           >
-                            <DropdownMenuItem
-                              onClick={() =>
-                                navigate(`/assignments/${item.id}`)
-                              }
-                              className="cursor-pointer text-xs font-medium hover:bg-accent/60"
-                            >
-                              <Eye className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                              View Details
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem
-                              onClick={() =>
-                                navigate(`/assignments/${item.id}/edit`)
-                              }
-                              className="cursor-pointer text-xs font-medium hover:bg-accent/60"
-                            >
-                              <Pencil className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                              Edit Assignment
-                            </DropdownMenuItem>
-
-                            {/* <DropdownMenuItem
-                              onClick={() => handleArchive(item.id)}
-                              className="cursor-pointer text-xs font-medium hover:bg-accent/60"
-                            >
-                              <Archive className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-                              Archive
-                            </DropdownMenuItem> */}
-
-                            <DropdownMenuSeparator className="bg-border/40" />
-
-                            {/* 💡 تم التعديل ليفتح نافذة الحذف بدل window.confirm */}
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleDeleteClick(
-                                  item.id,
-                                  item.member?.name || "this member",
-                                )
-                              }
-                              className="cursor-pointer text-xs font-medium text-destructive focus:bg-destructive/10 focus:text-destructive"
-                            >
-                              <Trash2 className="mr-2 h-3.5 w-3.5 text-destructive" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                            {searchQuery ||
+                            selectedStatus ||
+                            selectedTrainer !== "ALL"
+                              ? "Clear Filters"
+                              : "Create First Assignment"}
+                          </button>
+                        </div>
                       </td>
                     </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                  ) : (
+                    filteredAssignments.map((item: Assignment) => {
+                      const progress = getProgressPercentage(item.status);
 
-        {/* Pagination Footer */}
-        <div className="p-4 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-          <div>
-            Showing{" "}
-            <span className="font-medium text-foreground">{showingFrom}</span>{" "}
-            to <span className="font-medium text-foreground">{showingTo}</span>{" "}
-            of <span className="font-medium text-foreground">{totalItems}</span>{" "}
-            assignments
+                      return (
+                        <tr
+                          key={item.id}
+                          className="hover:bg-[#1E2329]/30 transition-colors group"
+                        >
+                          {/* Member */}
+                          <td className="py-3.5 px-5 whitespace-nowrap">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded border border-[#23422E] bg-[#16291D] text-[#5BE584] flex items-center justify-center font-bold text-[11px] shrink-0 uppercase">
+                                {item.member?.name?.slice(0, 2) || "MB"}
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-[#F3F4F6]">
+                                  {item.member?.name}
+                                </div>
+                                <div className="text-[11px] text-[#6B7280]">
+                                  {item.member?.email}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Workout */}
+                          <td className="py-3.5 px-5 whitespace-nowrap">
+                            <span className="inline-flex items-center rounded-sm bg-[#1E2329]/60 border border-[#1E2329] px-2 py-1 text-xs font-medium text-[#D1D5DB] max-w-[220px] truncate">
+                              {item.workout?.title || "General Routine"}
+                            </span>
+                          </td>
+
+                          {/* Trainer */}
+                          <td className="py-3.5 px-5 whitespace-nowrap">
+                            <div className="flex items-center gap-2 text-xs text-[#9CA3AF]">
+                              <UserCheck className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
+                              <span>{item.trainer?.name}</span>
+                            </div>
+                          </td>
+
+                          {/* Duration */}
+                          <td className="py-3.5 px-5 whitespace-nowrap">
+                            <div className="flex items-center gap-2 text-xs text-[#9CA3AF]">
+                              <Calendar className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
+                              <span>
+                                {new Date(item.startDate).toLocaleDateString(
+                                  "en-US",
+                                  { month: "short", day: "numeric" },
+                                )}
+                                <span className="text-[#6B7280] mx-1">→</span>
+                                {new Date(item.endDate).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  },
+                                )}
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* Progress */}
+                          <td className="py-3.5 px-5 whitespace-nowrap">
+                            <div className="flex items-center gap-3">
+                              <div className="w-20 bg-[#1E2329] h-1.5 rounded-full overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full transition-all duration-500 ${getProgressBarColor(item.status)}`}
+                                  style={{ width: `${progress}%` }}
+                                />
+                              </div>
+                              <span className="text-[11px] font-medium text-[#6B7280] w-8">
+                                {progress}%
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* Status Badge */}
+                          <td className="py-3.5 px-5 whitespace-nowrap">
+                            <AssignmentStatusBadge status={item.status} />
+                          </td>
+
+                          {/* Actions Dropdown */}
+                          <td className="py-3.5 px-5 text-right whitespace-nowrap">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger>
+                                <button className="h-8 w-8 inline-flex items-center justify-center rounded text-[#6B7280] hover:bg-[#1E2329] hover:text-[#F3F4F6] transition-colors focus:outline-none focus:ring-1 focus:ring-[#5BE584]">
+                                  <MoreVertical className="h-4 w-4" />
+                                  <span className="sr-only">Open menu</span>
+                                </button>
+                              </DropdownMenuTrigger>
+
+                              <DropdownMenuContent
+                                align="end"
+                                className="w-44 border-[#1E2329] bg-[#101418] text-[#F3F4F6] shadow-xl"
+                              >
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    navigate(`/assignments/${item.id}`)
+                                  }
+                                  className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
+                                >
+                                  <Eye className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                                  View Details
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    navigate(`/assignments/${item.id}/edit`)
+                                  }
+                                  className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
+                                >
+                                  <Pencil className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                                  Edit Assignment
+                                </DropdownMenuItem>
+
+                                <DropdownMenuSeparator className="bg-[#1E2329]" />
+
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleDeleteClick(
+                                      item.id,
+                                      item.member?.name || "this member",
+                                    )
+                                  }
+                                  className="cursor-pointer text-xs font-medium text-red-400 focus:bg-red-950/30 focus:text-red-400"
+                                >
+                                  <Trash2 className="mr-2 h-3.5 w-3.5 text-red-400" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Footer */}
+            <div className="p-4 border-t border-[#1E2329] bg-[#101418] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#9CA3AF]">
+              <div>
+                Showing{" "}
+                <span className="font-medium text-[#F3F4F6]">
+                  {showingFrom}
+                </span>{" "}
+                to{" "}
+                <span className="font-medium text-[#F3F4F6]">{showingTo}</span>{" "}
+                of{" "}
+                <span className="font-medium text-[#F3F4F6]">{totalItems}</span>{" "}
+                assignments
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setPage((old) => Math.max(old - 1, 1))}
+                  disabled={page === 1 || isLoading || totalItems === 0}
+                  className="h-8 w-8 inline-flex items-center justify-center rounded border border-[#1E2329] bg-[#101418] text-[#9CA3AF] hover:text-white hover:border-[#6B7280] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                </button>
+
+                <span className="px-3 py-1.5 rounded bg-[#1E2329]/50 text-[#F3F4F6] font-medium border border-[#1E2329]">
+                  Page {page} of {totalPages}
+                </span>
+
+                <button
+                  onClick={() =>
+                    setPage((old) => Math.min(old + 1, totalPages))
+                  }
+                  disabled={page >= totalPages || isLoading || totalItems === 0}
+                  className="h-8 w-8 inline-flex items-center justify-center rounded border border-[#1E2329] bg-[#101418] text-[#9CA3AF] hover:text-white hover:border-[#6B7280] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
           </div>
+        </section>
+      </main>
 
-          <div className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setPage((old) => Math.max(old - 1, 1))}
-              disabled={page === 1 || isLoading || totalItems === 0}
-              className="h-8 w-8 border-border/60 bg-card/40"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </Button>
-
-            <span className="px-3 py-1.5 rounded bg-accent/40 text-foreground font-medium border border-border/40">
-              Page {page} of {totalPages}
-            </span>
-
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setPage((old) => Math.min(old + 1, totalPages))}
-              disabled={page >= totalPages || isLoading || totalItems === 0}
-              className="h-8 w-8 border-border/60 bg-card/40"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* 💡 نافذة التأكيد قبل الحذف (Modal) */}
+      {/* Delete Confirmation Modal */}
       <Dialog
         open={deleteModal.isOpen}
         onOpenChange={(open) =>
           !open && setDeleteModal({ isOpen: false, id: "", memberName: "" })
         }
       >
-        <DialogContent className="sm:max-w-[425px] border-destructive/30 bg-card/95 backdrop-blur-md text-foreground">
-          <DialogHeader className="gap-2">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive mb-1">
-              <AlertTriangle className="h-6 w-6" />
+        <DialogContent className="sm:max-w-[425px] border-[#1E2329] bg-[#101418] shadow-2xl p-6">
+          <DialogHeader className="gap-2 text-left">
+            <div className="flex h-10 w-10 items-center justify-center rounded bg-red-950/30 border border-red-900/50 text-red-400 mb-2">
+              <AlertTriangle className="h-5 w-5" />
             </div>
-            <DialogTitle className="text-xl text-foreground">
+            <DialogTitle className="text-xl font-semibold tracking-tight text-white">
               Delete Assignment?
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
+            <DialogDescription className="text-sm text-[#9CA3AF]">
               You are about to permanently delete the workout routine assigned
               to{" "}
-              <span className="font-semibold text-foreground">
+              <span className="font-semibold text-[#F3F4F6]">
                 {deleteModal.memberName}
               </span>
               . This action cannot be undone and will remove all logged progress
@@ -648,33 +672,77 @@ export default function AssignmentsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="gap-2 sm:gap-0 mt-4">
-            <Button
+          <DialogFooter className="gap-3 sm:gap-0 mt-6 border-t border-[#1E2329] pt-4">
+            <button
               type="button"
-              variant="outline"
-              size="sm"
               disabled={isDeleting}
               onClick={() =>
                 setDeleteModal({ isOpen: false, id: "", memberName: "" })
               }
-              className="border-border/60 hover:bg-accent/50"
+              className="rounded-md px-4 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:bg-[#1E2329] hover:text-white disabled:opacity-50"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
               type="button"
-              variant="destructive"
-              size="sm"
               disabled={isDeleting}
               onClick={confirmDelete}
-              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground font-medium shadow-sm"
+              className="inline-flex items-center justify-center rounded-md bg-red-500/90 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-[#101418] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <Trash2 className="mr-2 h-3.5 w-3.5" />
-              {isDeleting ? "Deleting..." : "Yes, Delete Assignment"}
-            </Button>
+              {isDeleting ? (
+                <>
+                  <svg
+                    className="mr-2 h-4 w-4 animate-spin text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-3.5 w-3.5" />
+                  Delete Assignment
+                </>
+              )}
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </section>
+    </div>
+  );
+}
+
+// ChevronDown icon is needed for the custom select arrow
+function ChevronDown(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }
