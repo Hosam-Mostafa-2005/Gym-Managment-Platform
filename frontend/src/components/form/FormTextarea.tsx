@@ -28,7 +28,7 @@ export default function FormTextarea<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className={className}>
+        <div className={`space-y-2 ${className ?? ""}`}>
           <Label htmlFor={String(name)}>{label}</Label>
 
           <Textarea
@@ -36,6 +36,7 @@ export default function FormTextarea<T extends FieldValues>({
             rows={rows}
             placeholder={placeholder}
             disabled={disabled}
+            aria-invalid={!!fieldState.error}
             value={field.value ?? ""}
             onChange={(e) => field.onChange(e.target.value)}
             onBlur={field.onBlur}
@@ -44,7 +45,7 @@ export default function FormTextarea<T extends FieldValues>({
           />
 
           {fieldState.error && (
-            <p className="mt-1 text-sm text-destructive">
+            <p className="text-xs font-medium text-[#EF4444]">
               {fieldState.error.message}
             </p>
           )}

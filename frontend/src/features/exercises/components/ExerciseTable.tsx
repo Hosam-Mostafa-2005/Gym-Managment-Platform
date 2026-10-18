@@ -24,6 +24,8 @@ import { useState } from "react";
 import ViewExerciseDialog from "./ViewExerciseDialog";
 import EditExerciseDialog from "./EditExerciseDialog";
 import DeleteExerciseDialog from "./DeleteExerciseDialog";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { ROLES } from "@/constants/roles";
 
 interface ExerciseTableProps {
   exercises: Exercise[];
@@ -71,6 +73,9 @@ const getCategoryForExercise = (exercise: Exercise & { category?: string }) => {
 };
 
 const ExerciseTable = ({ exercises, isLoading }: ExerciseTableProps) => {
+  const { data: user } = useCurrentUser();
+  const canManage = user?.role === ROLES.ADMIN || user?.role === ROLES.TRAINER;
+
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
     null,
   );
@@ -87,17 +92,21 @@ const ExerciseTable = ({ exercises, isLoading }: ExerciseTableProps) => {
 
   if (!exercises.length) {
     return (
-      <div className="rounded-2xl border border-dashed border-border py-20 text-center">
-        <h3 className="text-xl font-semibold">No exercises found</h3>
-        <p className="mt-2 text-muted-foreground">
-          Create your first exercise to get started.
+      <div className="py-16 text-center px-4">
+        <h3 className="text-lg font-semibold text-[#F8FAFC]">
+          No exercises found
+        </h3>
+        <p className="mt-1.5 text-sm text-[#94A3B8]">
+          {canManage
+            ? "Create your first exercise or adjust your search filter."
+            : "No exercises match your current search filter."}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+    <div className="overflow-x-auto bg-card">
       <Table>
         <TableHeader>
           <TableRow className="border-border hover:bg-transparent">
@@ -144,7 +153,7 @@ const ExerciseTable = ({ exercises, isLoading }: ExerciseTableProps) => {
                       <div className="font-semibold text-foreground">
                         {exercise.name}
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-muted-foreground line-clamp-1 max-w-xs">
                         Primary: {primaryMusclesStr}
                       </div>
                     </div>
@@ -195,26 +204,30 @@ const ExerciseTable = ({ exercises, isLoading }: ExerciseTableProps) => {
                         View
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setSelectedExercise(exercise);
-                          setOpenEdit(true);
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
+                      {canManage && (
+                        <>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedExercise(exercise);
+                              setOpenEdit(true);
+                            }}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Edit
+                          </DropdownMenuItem>
 
-                      <DropdownMenuItem
-                        className="text-red-500 focus:text-red-500"
-                        onClick={() => {
-                          setSelectedExercise(exercise);
-                          setDeleteDialogOpen(true);
-                        }}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-red-500 focus:text-red-500"
+                            onClick={() => {
+                              setSelectedExercise(exercise);
+                              setDeleteDialogOpen(true);
+                            }}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
+                          </DropdownMenuItem>
+                        </>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

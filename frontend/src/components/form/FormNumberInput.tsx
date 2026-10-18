@@ -32,7 +32,7 @@ export default function FormNumberInput<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className={className}>
+        <div className={`space-y-2 ${className ?? ""}`}>
           <Label htmlFor={String(name)}>{label}</Label>
 
           <Input
@@ -40,6 +40,7 @@ export default function FormNumberInput<T extends FieldValues>({
             type="number"
             placeholder={placeholder}
             disabled={disabled}
+            aria-invalid={!!fieldState.error}
             min={min}
             max={max}
             step={step}
@@ -55,7 +56,7 @@ export default function FormNumberInput<T extends FieldValues>({
           />
 
           {fieldState.error && (
-            <p className="mt-1 text-sm text-destructive">
+            <p className="text-xs font-medium text-[#EF4444]">
               {fieldState.error.message}
             </p>
           )}

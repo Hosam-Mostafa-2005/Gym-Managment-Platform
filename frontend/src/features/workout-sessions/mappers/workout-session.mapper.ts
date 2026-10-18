@@ -14,70 +14,108 @@ const mapSet = (set: any): WorkoutSetLog => ({
   completed: set.completed,
 });
 
-const mapExerciseLog = (log: any): WorkoutExerciseLog => ({
-  id: log._id ?? log.id,
+const mapExerciseLog = (log: any): WorkoutExerciseLog => {
+  const exerciseObj =
+    typeof log.exercise === "object" && log.exercise !== null
+      ? log.exercise
+      : {};
 
-  exercise: {
-    id: log.exercise._id ?? log.exercise.id,
-    name: log.exercise.name,
-    equipment: log.exercise.equipment,
-    difficulty: log.exercise.difficulty,
-    primaryMuscles: log.exercise.primaryMuscles,
-    secondaryMuscles: log.exercise.secondaryMuscles,
-  },
+  return {
+    id: log._id ?? log.id,
 
-  exerciseName: log.exerciseName,
-  targetSets: log.targetSets,
-  targetReps: log.targetReps,
-  order: log.order,
-  completed: log.completed,
-
-  sets: log.sets?.map(mapSet) ?? [],
-});
-
-export const mapWorkoutSession = (session: any): WorkoutSession => ({
-  id: session._id ?? session.id,
-
-  assignment: {
-    id: session.assignment._id ?? session.assignment.id,
-
-    trainer: {
-      id: session.assignment.trainer._id ?? session.assignment.trainer.id,
-      name: session.assignment.trainer.name,
-      email: session.assignment.trainer.email,
+    exercise: {
+      id:
+        exerciseObj._id ??
+        exerciseObj.id ??
+        (typeof log.exercise === "string" ? log.exercise : ""),
+      name: exerciseObj.name ?? log.exerciseName ?? "",
+      equipment: exerciseObj.equipment ?? [],
+      difficulty: exerciseObj.difficulty ?? "",
+      primaryMuscles: exerciseObj.primaryMuscles ?? [],
+      secondaryMuscles: exerciseObj.secondaryMuscles ?? [],
     },
 
-    workout: {
-      id: session.assignment.workout._id ?? session.assignment.workout.id,
-      title: session.assignment.workout.title,
-      description: session.assignment.workout.description,
-      estimatedDuration: session.assignment.workout.estimatedDuration,
-      category: session.assignment.workout.category,
-      difficulty: session.assignment.workout.difficulty,
+    exerciseName: log.exerciseName,
+    targetSets: log.targetSets,
+    targetReps: log.targetReps,
+    order: log.order,
+    completed: log.completed,
+
+    sets: log.sets?.map(mapSet) ?? [],
+  };
+};
+
+export const mapWorkoutSession = (session: any): WorkoutSession => {
+  const assignmentObj =
+    typeof session.assignment === "object" && session.assignment !== null
+      ? session.assignment
+      : {};
+  const trainerObj =
+    typeof assignmentObj.trainer === "object" && assignmentObj.trainer !== null
+      ? assignmentObj.trainer
+      : {};
+  const workoutObj =
+    typeof assignmentObj.workout === "object" && assignmentObj.workout !== null
+      ? assignmentObj.workout
+      : {};
+
+  return {
+    id: session._id ?? session.id,
+
+    assignment: {
+      id:
+        assignmentObj._id ??
+        assignmentObj.id ??
+        (typeof session.assignment === "string" ? session.assignment : ""),
+
+      trainer: {
+        id:
+          trainerObj._id ??
+          trainerObj.id ??
+          (typeof assignmentObj.trainer === "string"
+            ? assignmentObj.trainer
+            : ""),
+        name: trainerObj.name ?? "",
+        email: trainerObj.email ?? "",
+      },
+
+      workout: {
+        id:
+          workoutObj._id ??
+          workoutObj.id ??
+          (typeof assignmentObj.workout === "string"
+            ? assignmentObj.workout
+            : ""),
+        title: workoutObj.title ?? "",
+        description: workoutObj.description,
+        estimatedDuration: workoutObj.estimatedDuration ?? 0,
+        category: workoutObj.category ?? "",
+        difficulty: workoutObj.difficulty ?? "",
+      },
+
+      startDate: assignmentObj.startDate ?? "",
+      endDate: assignmentObj.endDate,
+      status: assignmentObj.status ?? "",
     },
 
-    startDate: session.assignment.startDate,
-    endDate: session.assignment.endDate,
-    status: session.assignment.status,
-  },
+    status: session.status,
+    startedAt: session.startedAt,
+    endedAt: session.endedAt,
 
-  status: session.status,
-  startedAt: session.startedAt,
-  endedAt: session.endedAt,
+    duration: session.duration ?? 0,
+    progress: session.progress ?? 0,
 
-  duration: session.duration ?? 0,
-  progress: session.progress ?? 0,
+    notes: session.notes,
 
-  notes: session.notes,
-
-  totalRestTime: session.totalRestTime ?? 0,
-  activeTrainingTime: session.activeTrainingTime ?? 0,
-  totalVolume: session.totalVolume ?? 0,
-  exercisesCompleted: session.exercisesCompleted ?? 0,
-  setsCompleted: session.setsCompleted ?? 0,
-});
+    totalRestTime: session.totalRestTime ?? 0,
+    activeTrainingTime: session.activeTrainingTime ?? 0,
+    totalVolume: session.totalVolume ?? 0,
+    exercisesCompleted: session.exercisesCompleted ?? 0,
+    setsCompleted: session.setsCompleted ?? 0,
+  };
+};
 
 export const mapWorkoutSessionDetails = (data: any): WorkoutSessionDetails => ({
   session: mapWorkoutSession(data.session),
-  exerciseLogs: data.exerciseLogs.map(mapExerciseLog),
+  exerciseLogs: (data.exerciseLogs ?? []).map(mapExerciseLog),
 });

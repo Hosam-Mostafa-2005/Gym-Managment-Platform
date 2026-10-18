@@ -21,7 +21,10 @@ import { useNavigate } from "react-router-dom";
 
 // Hooks
 import { useAssignments } from "@/features/assignments/hooks/useAssignments";
+import { useMyAssignments } from "@/features/assignments/hooks/useMyAssignments";
 import { useDeleteAssignment } from "@/features/assignments/hooks/useDeleteAssignment";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { ROLES } from "@/constants/roles";
 
 // Types
 import type {
@@ -49,6 +52,9 @@ import { AssignmentStatusBadge } from "@/features/assignments/components/Assignm
 
 export default function AssignmentsPage() {
   const navigate = useNavigate();
+  const { data: user, isLoading: isUserLoading } = useCurrentUser();
+  const isMember = user?.role === ROLES.MEMBER;
+  const canManage = user?.role === ROLES.ADMIN || user?.role === ROLES.TRAINER;
 
   // Filter & Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,14 +76,26 @@ export default function AssignmentsPage() {
     memberName: "",
   });
 
-  // Fetching Data & Mutations
-  const { data, isLoading } = useAssignments(page, limit);
+  // Fetching Data & Mutations based on role
+  const { data: adminData, isLoading: isAdminLoading } = useAssignments(
+    page,
+    limit,
+    canManage,
+  );
+  const { data: memberAssignments = [], isLoading: isMemberLoading } =
+    useMyAssignments(isMember);
   const { mutate: deleteAssignment, isPending: isDeleting } =
     useDeleteAssignment();
 
+  const isLoading = isUserLoading || (isMember ? isMemberLoading : isAdminLoading);
+
   // Extracting Data safely
-  const rawAssignments: Assignment[] = data?.data?.assignments ?? [];
-  const totalItems = data?.results ?? 0;
+  const rawAssignments: Assignment[] = isMember
+    ? memberAssignments
+    : (adminData?.data?.assignments ?? []);
+  const totalItems = isMember
+    ? memberAssignments.length
+    : (adminData?.results ?? 0);
   const totalPages = Math.ceil(totalItems / limit) || 1;
 
   // Client-side filtering on current page
@@ -100,12 +118,21 @@ export default function AssignmentsPage() {
   const showingTo = Math.min(page * limit, totalItems);
 
   // Quick stats
-  const stats = data?.stats ?? {
-    total: 0,
-    active: 0,
-    completed: 0,
-    cancelled: 0,
-  };
+  const stats = isMember
+    ? {
+        total: memberAssignments.length,
+        active: memberAssignments.filter((a) => a.status === "ACTIVE").length,
+        completed: memberAssignments.filter((a) => a.status === "COMPLETED")
+          .length,
+        cancelled: memberAssignments.filter((a) => a.status === "CANCELLED")
+          .length,
+      }
+    : (adminData?.stats ?? {
+        total: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+      });
 
   // Handlers
   const handleDeleteClick = (id: string, memberName: string) => {
@@ -172,18 +199,21 @@ export default function AssignmentsPage() {
               Workout Assignments
             </h1>
             <p className="text-sm text-[#9CA3AF]">
-              Assign workout routines to members and track their progress over
-              time.
+              {canManage
+                ? "Assign workout routines to members and track their progress over time."
+                : "View your assigned workout routines and launch training sessions."}
             </p>
           </div>
 
-          <button
-            onClick={() => navigate("/assignments/new")}
-            className="group flex items-center justify-center gap-2 rounded-md bg-[#5BE584] px-5 py-2.5 text-sm font-semibold text-[#090B0F] transition-all hover:bg-[#4ade80] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
-          >
-            <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
-            New Assignment
-          </button>
+          {canManage && (
+            <button
+              onClick={() => navigate("/assignments/new")}
+              className="group flex items-center justify-center gap-2 rounded-[14px] bg-[#5BE584] px-5 py-2.5 text-sm font-semibold text-[#090B0F] transition-all hover:bg-[#49D472] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
+            >
+              <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
+              New Assignment
+            </button>
+          )}
         </div>
       </header>
 
@@ -436,29 +466,34 @@ export default function AssignmentsPage() {
                               ? "We couldn't find any assignments matching your current filters."
                               : "You haven't assigned any workouts to members yet."}
                           </p>
-                          <button
-                            className="mt-5 rounded-md border border-[#1E2329] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
-                            onClick={() => {
-                              if (
-                                searchQuery ||
-                                selectedStatus ||
-                                selectedTrainer !== "ALL"
-                              ) {
-                                setSearchQuery("");
-                                setSelectedStatus(null);
-                                setSelectedTrainer("ALL");
-                                setPage(1);
-                              } else {
-                                navigate("/assignments/new");
-                              }
-                            }}
-                          >
-                            {searchQuery ||
+                          {(searchQuery ||
                             selectedStatus ||
-                            selectedTrainer !== "ALL"
-                              ? "Clear Filters"
-                              : "Create First Assignment"}
-                          </button>
+                            selectedTrainer !== "ALL" ||
+                            canManage) && (
+                            <button
+                              className="mt-5 rounded-md border border-[#1E2329] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
+                              onClick={() => {
+                                if (
+                                  searchQuery ||
+                                  selectedStatus ||
+                                  selectedTrainer !== "ALL"
+                                ) {
+                                  setSearchQuery("");
+                                  setSelectedStatus(null);
+                                  setSelectedTrainer("ALL");
+                                  setPage(1);
+                                } else if (canManage) {
+                                  navigate("/assignments/new");
+                                }
+                              }}
+                            >
+                              {searchQuery ||
+                              selectedStatus ||
+                              selectedTrainer !== "ALL"
+                                ? "Clear Filters"
+                                : "Create First Assignment"}
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -475,14 +510,16 @@ export default function AssignmentsPage() {
                           <td className="py-3.5 px-5 whitespace-nowrap">
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded border border-[#23422E] bg-[#16291D] text-[#5BE584] flex items-center justify-center font-bold text-[11px] shrink-0 uppercase">
-                                {item.member?.name?.slice(0, 2) || "MB"}
+                                {item.member?.name?.slice(0, 2) ||
+                                  user?.name?.slice(0, 2) ||
+                                  "MB"}
                               </div>
                               <div>
                                 <div className="text-sm font-medium text-[#F3F4F6]">
-                                  {item.member?.name}
+                                  {item.member?.name || user?.name || "Member"}
                                 </div>
                                 <div className="text-[11px] text-[#6B7280]">
-                                  {item.member?.email}
+                                  {item.member?.email || user?.email || ""}
                                 </div>
                               </div>
                             </div>
@@ -499,7 +536,7 @@ export default function AssignmentsPage() {
                           <td className="py-3.5 px-5 whitespace-nowrap">
                             <div className="flex items-center gap-2 text-xs text-[#9CA3AF]">
                               <UserCheck className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
-                              <span>{item.trainer?.name}</span>
+                              <span>{item.trainer?.name || "Assigned Coach"}</span>
                             </div>
                           </td>
 
@@ -559,40 +596,67 @@ export default function AssignmentsPage() {
                                 align="end"
                                 className="w-44 border-[#1E2329] bg-[#101418] text-[#F3F4F6] shadow-xl"
                               >
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    navigate(`/assignments/${item.id}`)
-                                  }
-                                  className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
-                                >
-                                  <Eye className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
-                                  View Details
-                                </DropdownMenuItem>
+                                {canManage ? (
+                                  <>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        navigate(`/assignments/${item.id}`)
+                                      }
+                                      className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
+                                    >
+                                      <Eye className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                                      View Details
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    navigate(`/assignments/${item.id}/edit`)
-                                  }
-                                  className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
-                                >
-                                  <Pencil className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
-                                  Edit Assignment
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        navigate(`/assignments/${item.id}/edit`)
+                                      }
+                                      className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
+                                    >
+                                      <Pencil className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                                      Edit Assignment
+                                    </DropdownMenuItem>
 
-                                <DropdownMenuSeparator className="bg-[#1E2329]" />
+                                    <DropdownMenuSeparator className="bg-[#1E2329]" />
 
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    handleDeleteClick(
-                                      item.id,
-                                      item.member?.name || "this member",
-                                    )
-                                  }
-                                  className="cursor-pointer text-xs font-medium text-red-400 focus:bg-red-950/30 focus:text-red-400"
-                                >
-                                  <Trash2 className="mr-2 h-3.5 w-3.5 text-red-400" />
-                                  Delete
-                                </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        handleDeleteClick(
+                                          item.id,
+                                          item.member?.name || "this member",
+                                        )
+                                      }
+                                      className="cursor-pointer text-xs font-medium text-red-400 focus:bg-red-950/30 focus:text-red-400"
+                                    >
+                                      <Trash2 className="mr-2 h-3.5 w-3.5 text-red-400" />
+                                      Delete
+                                    </DropdownMenuItem>
+                                  </>
+                                ) : (
+                                  <>
+                                    {item.workout?.id && (
+                                      <DropdownMenuItem
+                                        onClick={() =>
+                                          navigate(
+                                            `/workout-builder/${item.workout.id}`,
+                                          )
+                                        }
+                                        className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
+                                      >
+                                        <Eye className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                                        View Routine
+                                      </DropdownMenuItem>
+                                    )}
+                                    <DropdownMenuItem
+                                      onClick={() => navigate("/sessions")}
+                                      className="cursor-pointer text-xs font-medium text-[#5BE584] hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-[#5BE584]"
+                                    >
+                                      <PlayCircle className="mr-2 h-3.5 w-3.5 text-[#5BE584]" />
+                                      Go to Sessions
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </td>

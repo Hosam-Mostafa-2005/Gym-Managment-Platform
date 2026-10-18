@@ -28,5 +28,7 @@ export const createExerciseSchema = z.object({
 });
 
 export const updateExerciseSchema = z.object({
-  body: createExerciseSchema.shape.body.partial(),
+  body: createExerciseSchema.shape.body.partial().extend({
+    secondaryMuscles: z.array(z.string()).optional(),
+  }),
 });

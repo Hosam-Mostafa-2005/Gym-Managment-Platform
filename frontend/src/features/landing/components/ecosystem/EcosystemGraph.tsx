@@ -15,125 +15,85 @@ export const EcosystemGraph = () => {
     {
       icon: Users,
       label: "Members",
-      pos: "top-0 left-1/2 -translate-x-1/2 -translate-y-1/2",
+      detail: "Coach-member assignments & profiles",
     },
     {
       icon: Dumbbell,
       label: "Workouts",
-      pos: "top-1/4 right-0 translate-x-1/2 -translate-y-1/2",
+      detail: "Exercises, sets, reps & rest intervals",
     },
     {
       icon: Activity,
       label: "Sessions",
-      pos: "bottom-1/4 right-0 translate-x-1/2 translate-y-1/2",
+      detail: "Live workout execution & volume",
     },
     {
       icon: Ruler,
       label: "Metrics",
-      pos: "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2",
+      detail: "Weight, body fat & circumference logs",
     },
     {
       icon: LineChart,
       label: "Insights",
-      pos: "bottom-1/4 left-0 -translate-x-1/2 translate-y-1/2",
+      detail: "Adherence rates & training history",
     },
     {
       icon: Bell,
       label: "Events",
-      pos: "top-1/4 left-0 -translate-x-1/2 -translate-y-1/2",
+      detail: "Real-time Socket.IO notifications",
     },
   ];
 
   return (
-    <div className="relative w-full max-w-[600px] aspect-square mx-auto mt-20">
-      {/* Circular Grid Background */}
-      <div className="absolute inset-0 rounded-full border border-[#1E2329] opacity-20" />
-      <div className="absolute inset-10 rounded-full border border-[#1E2329] opacity-40" />
-      <div className="absolute inset-24 rounded-full border border-[#1E2329] opacity-60" />
+    <div className="relative mt-12 w-full overflow-hidden rounded-[20px] border border-[#2A3039] bg-gradient-to-b from-[#161B23] to-[#13171D] p-6 sm:p-8 shadow-[0_18px_48px_rgba(0,0,0,0.45),0_0_32px_rgba(91,229,132,0.05)]">
+      {/* Top specular highlight */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#5BE584]/50 to-transparent"
+      />
 
-      {/* Central Node */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex h-24 w-24 flex-col items-center justify-center rounded-full border border-[#5BE584] bg-[#0D1117] shadow-[0_0_60px_rgba(91,229,132,0.2)] animate-pulse-glow">
-        <Share2 className="h-8 w-8 text-[#5BE584] mb-1" />
-        <span className="text-[9px] font-bold tracking-widest text-white">
-          PLATFORM
+      {/* Central Hub Header */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[#2A3039] pb-6 mb-6">
+        <div className="flex items-center gap-3.5">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] border border-[#5BE584]/35 bg-[#5BE584]/15 text-[#5BE584] shadow-[0_0_24px_rgba(91,229,132,0.2)]">
+            <Share2 className="h-6 w-6" />
+          </div>
+          <div>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#5BE584]">
+              STREN Core Data Graph
+            </span>
+            <h3 className="text-lg font-bold text-[#F8FAFC]">
+              Every Coaching Action Updates the Member Experience
+            </h3>
+          </div>
+        </div>
+        <span className="rounded-full border border-[#2A3039] bg-[#090B0F] px-3.5 py-1.5 text-xs font-medium text-[#94A3B8]">
+          6 Synchronized Domain Modules
         </span>
       </div>
 
-      {/* Connecting Lines SVG */}
-      <svg
-        className="absolute inset-0 w-full h-full -z-10 opacity-30"
-        viewBox="0 0 100 100"
-      >
-        <line
-          x1="50"
-          y1="50"
-          x2="50"
-          y2="0"
-          stroke="#5BE584"
-          strokeWidth="0.5"
-          className="animate-draw-line"
-        />
-        <line
-          x1="50"
-          y1="50"
-          x2="100"
-          y2="25"
-          stroke="#5BE584"
-          strokeWidth="0.5"
-          className="animate-draw-line"
-        />
-        <line
-          x1="50"
-          y1="50"
-          x2="100"
-          y2="75"
-          stroke="#5BE584"
-          strokeWidth="0.5"
-          className="animate-draw-line"
-        />
-        <line
-          x1="50"
-          y1="50"
-          x2="50"
-          y2="100"
-          stroke="#5BE584"
-          strokeWidth="0.5"
-          className="animate-draw-line"
-        />
-        <line
-          x1="50"
-          y1="50"
-          x2="0"
-          y2="75"
-          stroke="#5BE584"
-          strokeWidth="0.5"
-          className="animate-draw-line"
-        />
-        <line
-          x1="50"
-          y1="50"
-          x2="0"
-          y2="25"
-          stroke="#5BE584"
-          strokeWidth="0.5"
-          className="animate-draw-line"
-        />
-      </svg>
-
-      {/* Peripheral Nodes */}
-      {nodes.map((node, i) => (
-        <div
-          key={i}
-          className={`absolute ${node.pos} flex flex-col items-center gap-2 bg-[#090B0F] p-2 z-10`}
-        >
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-[#1E2329] bg-[#0D1117] text-gray-400 transition-colors hover:border-[#5BE584] hover:text-[#5BE584]">
-            <node.icon className="h-5 w-5" />
+      {/* Connected Nodes Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {nodes.map((node, i) => (
+          <div
+            key={i}
+            className="group flex items-start gap-3.5 rounded-[14px] border border-[#2A3039] bg-[#090B0F]/90 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#5BE584]/35 hover:shadow-[0_10px_28px_-8px_rgba(0,0,0,0.6),0_0_20px_rgba(91,229,132,0.06)]"
+          >
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-[#2A3039] bg-[#13171D] text-[#5BE584] transition-colors group-hover:border-[#5BE584]/40 group-hover:bg-[#5BE584]/10">
+              <node.icon className="h-5 w-5" />
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-[#F8FAFC] transition-colors group-hover:text-[#5BE584]">
+                {node.label}
+              </h4>
+              <p className="mt-0.5 text-xs text-[#94A3B8] leading-relaxed">
+                {node.detail}
+              </p>
+            </div>
           </div>
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">
-            {node.label}
-          </span>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
+

@@ -62,6 +62,7 @@ export const AssignmentForm = ({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<AssignmentFormValues>({
     resolver: zodResolver(assignmentSchema),
@@ -71,9 +72,14 @@ export const AssignmentForm = ({
       workout: initialValues?.workout || "",
       startDate: initialValues?.startDate || defaultDates.start,
       endDate: initialValues?.endDate || defaultDates.end,
+      status: initialValues?.status,
+      cancelReason: initialValues?.cancelReason || "",
       notes: initialValues?.notes || "",
     },
   });
+
+  const selectedStatus = watch("status");
+  const isEditMode = Boolean(initialValues);
 
   const isFormDisabled =
     isLoading || loadingWorkouts || loadingMembers || loadingTrainers;
@@ -221,6 +227,57 @@ export const AssignmentForm = ({
           )}
         </div>
       </div>
+
+      {/* 3b. Status & Cancellation Reason (Edit Mode) */}
+      {isEditMode && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
+              <span>Assignment Status</span>
+            </label>
+            <select
+              {...register("status")}
+              disabled={isLoading}
+              className="w-full h-10 px-3 rounded-lg bg-card/40 border border-border/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm text-foreground cursor-pointer disabled:opacity-50 transition-all"
+            >
+              <option value="ACTIVE" className="bg-zinc-900">
+                ACTIVE
+              </option>
+              <option value="COMPLETED" className="bg-zinc-900">
+                COMPLETED
+              </option>
+              <option value="CANCELLED" className="bg-zinc-900">
+                CANCELLED
+              </option>
+            </select>
+            {errors.status && (
+              <p className="text-xs text-destructive mt-1 font-medium">
+                {errors.status.message}
+              </p>
+            )}
+          </div>
+
+          {selectedStatus === "CANCELLED" && (
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
+                <span>Cancellation Reason (Required)</span>
+              </label>
+              <textarea
+                {...register("cancelReason")}
+                disabled={isLoading}
+                rows={3}
+                placeholder="Provide a reason for cancelling this assignment..."
+                className="w-full p-3 rounded-lg bg-card/40 border border-border/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm text-foreground placeholder:text-muted-foreground/60 disabled:opacity-50 transition-all resize-none"
+              />
+              {errors.cancelReason && (
+                <p className="text-xs text-destructive mt-1 font-medium">
+                  {errors.cancelReason.message}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 4. Notes Row */}
       <div className="space-y-2">

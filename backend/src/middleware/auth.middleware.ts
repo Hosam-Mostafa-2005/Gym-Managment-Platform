@@ -39,6 +39,10 @@ export const protect: RequestHandler = catchAsync(async (req, res, next) => {
     );
   }
 
+  if (!currentUser.isActive) {
+    throw new AppError("This user account has been deactivated.", 401);
+  }
+
   req.user = currentUser;
 
   next();

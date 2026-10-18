@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import type { ParsedQs } from "qs";
 import User from "../models/User.model.js";
 import AppError from "../utils/AppError.js";
+import { escapeRegex } from "../utils/ApiFeatures.js";
 import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { MEMBER_SORT } from "../constants/member.js";
@@ -28,9 +29,10 @@ class MembersManagementService {
     const userMatch: any = { role: Roles.MEMBER, isActive: true };
 
     if (search) {
+      const safeSearch = escapeRegex(search);
       userMatch.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
+        { name: { $regex: safeSearch, $options: "i" } },
+        { email: { $regex: safeSearch, $options: "i" } },
       ];
     }
 

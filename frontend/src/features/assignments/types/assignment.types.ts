@@ -9,6 +9,11 @@ export interface AssignmentUser {
 export interface AssignmentWorkout {
   id: string;
   title: string;
+  description?: string;
+  category?: string;
+  difficulty?: string;
+  estimatedDuration?: number;
+  exercises?: unknown[];
 }
 
 export interface Assignment {
@@ -22,6 +27,10 @@ export interface Assignment {
   endDate: string;
 
   status: AssignmentStatus;
+
+  completedAt?: string;
+  cancelledAt?: string;
+  cancelReason?: string;
 
   notes?: string;
 
@@ -40,4 +49,7 @@ export interface CreateAssignmentPayload {
   notes?: string;
 }
 
-export type UpdateAssignmentPayload = Partial<CreateAssignmentPayload>;
+export type UpdateAssignmentPayload = Partial<CreateAssignmentPayload> & {
+  status?: AssignmentStatus;
+  cancelReason?: string;
+};

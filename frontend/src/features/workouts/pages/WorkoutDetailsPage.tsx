@@ -15,11 +15,15 @@ import {
 } from "lucide-react";
 
 import { useWorkout } from "@/features/workouts/hooks/useWorkout";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { ROLES } from "@/constants/roles";
 import type { WorkoutExerciseDetails } from "@/features/workouts/types/workout.types";
 
 export default function WorkoutDetailsPage() {
   const { workoutId } = useParams<{ workoutId: string }>();
   const navigate = useNavigate();
+  const { data: user } = useCurrentUser();
+  const canManage = user?.role === ROLES.ADMIN || user?.role === ROLES.TRAINER;
 
   // Fetch workout data using custom query hook
   const { data: workout, isLoading, isError } = useWorkout(workoutId || "");
@@ -133,18 +137,21 @@ export default function WorkoutDetailsPage() {
 
           {/* Action Controls */}
           <div className="flex items-center gap-2.5 self-end lg:self-start">
-            <button
-              type="button"
-              onClick={() => navigate(`/workout-builder/${workoutId}/edit`)}
-              className="inline-flex items-center gap-2 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              Edit Routine
-            </button>
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => navigate(`/workout-builder/${workoutId}/edit`)}
+                className="inline-flex items-center gap-2 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Edit Routine
+              </button>
+            )}
 
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#4ade80] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
+              onClick={() => navigate("/sessions")}
+              className="inline-flex items-center gap-2 rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#49D472] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
             >
               <Play className="h-3.5 w-3.5 fill-current" />
               Start Session

@@ -66,26 +66,28 @@ export function EntityCombobox<T>({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
-        <Button
-          type="button"
-          variant="outline"
-          role="combobox"
-          disabled={disabled}
-          aria-expanded={open}
-          className={cn("w-full justify-between font-normal", className)}
-        >
-          <span className="truncate">
-            {selectedItem ? getLabel(selectedItem) : placeholder}
-          </span>
+      <PopoverTrigger
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            role="combobox"
+            disabled={disabled}
+            aria-expanded={open}
+            className={cn("w-full justify-between font-normal", className)}
+          />
+        }
+      >
+        <span className={cn("truncate", !selectedItem && "text-[#94A3B8]")}>
+          {selectedItem ? getLabel(selectedItem) : placeholder}
+        </span>
 
-          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+        <ChevronsUpDown className="h-4 w-4 shrink-0 text-[#94A3B8]" />
       </PopoverTrigger>
 
       <PopoverContent
         align="start"
-        className="w-[--radix-popover-trigger-width] p-0"
+        className="w-(--anchor-width) min-w-60 p-0"
       >
         <Command>
           <CommandInput placeholder={searchPlaceholder} />

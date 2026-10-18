@@ -6,9 +6,14 @@ import generateToken from "../utils/generateToken.js";
 import mapUser from "../mappers/user.mapper.js";
 import type { UserDocument } from "../models/User.model.js";
 import type { UpdatePasswordDto } from "../types/auth.types.js";
+import { Roles } from "../constants/roles.js";
 
 class AuthService {
   async register(userData: RegisterDto) {
+    if (userData.role && userData.role !== Roles.MEMBER) {
+      throw new AppError("Cannot register with a privileged role.", 403);
+    }
+
     const existingUser = await User.findOne({
       email: userData.email,
     });
@@ -17,7 +22,12 @@ class AuthService {
       throw new AppError("Email already exists", 409);
     }
 
-    const user = await User.create(userData);
+    const user = await User.create({
+      name: userData.name,
+      email: userData.email,
+      password: userData.password,
+      role: Roles.MEMBER,
+    });
     const token = generateToken(user.id);
 
     return {

@@ -7,6 +7,12 @@ export const assignmentSchema = z
     workout: z.string().min(1, "Please select a workout routine"),
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().min(1, "End date is required"),
+    status: z.enum(["ACTIVE", "COMPLETED", "CANCELLED"]).optional(),
+    cancelReason: z
+      .string()
+      .trim()
+      .max(500, "Cancel reason cannot exceed 500 characters")
+      .optional(),
     notes: z.string().max(500, "Notes cannot exceed 500 characters").optional(),
   })
   // 💡 التحقق من صحة النطاق الزمني (Date Range Validation)
@@ -19,6 +25,18 @@ export const assignmentSchema = z
     {
       message: "End date cannot be earlier than the start date",
       path: ["endDate"], // 💡 الخطأ هيتربط مباشرة بحقل الـ endDate
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.status === "CANCELLED") {
+        return Boolean(data.cancelReason && data.cancelReason.trim().length > 0);
+      }
+      return true;
+    },
+    {
+      message: "Cancel reason is required when cancelling an assignment",
+      path: ["cancelReason"],
     },
   );
 

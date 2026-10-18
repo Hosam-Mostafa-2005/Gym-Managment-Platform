@@ -45,11 +45,11 @@ export default function ExerciseCard({
 
       {children && (
         <div className="mt-6">
-          <div className="grid grid-cols-4 gap-4 px-4 pb-3 border-b border-white/5 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
-            <div>Set</div>
-            <div>Target</div>
-            <div>kg</div>
-            <div>Reps</div>
+          <div className="grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 pb-3 border-b border-white/5 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
+            <div className="col-span-2">Set</div>
+            <div className="col-span-2">Target</div>
+            <div className="col-span-3 text-center">kg</div>
+            <div className="col-span-5">Reps</div>
           </div>
           <div className="mt-3 space-y-2">{children}</div>
         </div>

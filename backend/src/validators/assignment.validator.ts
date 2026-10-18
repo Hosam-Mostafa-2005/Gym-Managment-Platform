@@ -68,6 +68,13 @@ export const updateAssignmentSchema = z
         ])
         .optional(),
 
+      cancelReason: z
+        .string()
+        .trim()
+        .min(1, "Cancel reason is required.")
+        .max(500, "Cancel reason must not exceed 500 characters")
+        .optional(),
+
       notes: z
         .string()
         .trim()
@@ -75,14 +82,39 @@ export const updateAssignmentSchema = z
         .optional(),
     }),
   })
-  .refine(
-    (data) => {
-      if (!data.body.startDate || !data.body.endDate) return true;
+  .superRefine((data, ctx) => {
+    if (
+      data.body.startDate &&
+      data.body.endDate &&
+      data.body.endDate < data.body.startDate
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "End date must be after start date.",
+        path: ["body", "endDate"],
+      });
+    }
 
-      return data.body.endDate >= data.body.startDate;
-    },
-    {
-      message: "End date must be after start date.",
-      path: ["body", "endDate"],
-    },
-  );
+    if (
+      data.body.status === ASSIGNMENT_STATUS.CANCELLED &&
+      !data.body.cancelReason
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Cancel reason is required.",
+        path: ["body", "cancelReason"],
+      });
+    }
+
+    if (
+      data.body.status &&
+      data.body.status !== ASSIGNMENT_STATUS.CANCELLED &&
+      data.body.cancelReason
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Cancel reason can only be provided for cancelled assignments.",
+        path: ["body", "cancelReason"],
+      });
+    }
+  });

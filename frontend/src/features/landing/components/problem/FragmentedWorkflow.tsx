@@ -4,27 +4,40 @@ import { Database, FileText, TrendingDown } from "lucide-react";
 
 export const FragmentedWorkflow = () => {
   const silos = [
-    { icon: Database, label: "Scattered Data" },
-    { icon: FileText, label: "Static Programming" },
-    { icon: TrendingDown, label: "Lost Momentum" },
+    {
+      icon: Database,
+      label: "Scattered Data",
+      detail: "Member rosters, workout logs, and body metrics trapped in separate spreadsheets.",
+    },
+    {
+      icon: FileText,
+      label: "Static Programming",
+      detail: "PDF routines with no live set logging, volume calculation, or adherence visibility.",
+    },
+    {
+      icon: TrendingDown,
+      label: "Disconnected Coaching",
+      detail: "No structured link between assigned training blocks and completed athlete sessions.",
+    },
   ];
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 w-full mt-10">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full mt-6">
       {silos.map((silo, idx) => (
-        <React.Fragment key={idx}>
-          <div className="flex flex-col items-center gap-4 rounded-xl border border-red-500/20 bg-[#0D1117] p-8 text-center w-full max-w-[240px] opacity-80 grayscale-[30%]">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
-              <silo.icon className="h-6 w-6" />
-            </div>
-            <span className="text-sm font-semibold text-gray-300">
-              {silo.label}
-            </span>
+        <div
+          key={idx}
+          className="flex flex-col items-start gap-3 rounded-[20px] border border-[#2A3039] bg-[#13171D] p-6 text-left shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/30">
+            <silo.icon className="h-5 w-5" />
           </div>
-          {idx < silos.length - 1 && (
-            <div className="hidden md:flex h-px w-10 bg-gradient-to-r from-red-500/50 to-transparent dashed opacity-50" />
-          )}
-        </React.Fragment>
+          <span className="text-base font-semibold text-[#F8FAFC]">
+            {silo.label}
+          </span>
+          <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
+            {silo.detail}
+          </p>
+        </div>
       ))}
     </div>
   );

@@ -123,9 +123,19 @@ class WorkoutSessionService {
       isActive: true,
     }).populate({
       path: "assignment",
-      populate: {
-        path: "workout",
-      },
+      populate: [
+        {
+          path: "workout",
+        },
+        {
+          path: "trainer",
+          select: "name email",
+        },
+        {
+          path: "member",
+          select: "name email",
+        },
+      ],
     });
 
     if (!session) {
@@ -242,6 +252,10 @@ class WorkoutSessionService {
         $in: assignments.map((a) => a._id),
       };
     }
+
+    const allowedFilters =
+      role === Roles.ADMIN ? ["status", "member", "assignment"] : ["status"];
+
     const features = new ApiFeatures(
       WorkoutSession.find(filter).populate({
         path: "assignment",
@@ -262,11 +276,12 @@ class WorkoutSessionService {
 
       query,
     )
-      .filter()
+      .filter(allowedFilters)
       .sort()
       .paginate();
 
-    return await features.query;
+    const sessions = await features.query;
+    return sessions.map(mapWorkoutSession);
   }
 
   async getById(id: string, userId: string, role: Role) {

@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { getAllUsers } from "../controllers/user.controller.js";
-import { protect } from "../middleware/auth.middleware.js";
+import { protect, restrictTo } from "../middleware/auth.middleware.js";
+import { Roles } from "../constants/roles.js";
 
 const router = Router();
 
 // أي راوت جاي تحت السطر ده لازم يكون معاه Token شغال
-router.use(protect);
+router.use(protect, restrictTo(Roles.ADMIN, Roles.TRAINER));
 
 /**
  * @swagger

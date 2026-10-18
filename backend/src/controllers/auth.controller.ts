@@ -2,6 +2,7 @@ import type { RequestHandler } from "express";
 import authService from "../services/auth.service.js";
 import catchAsync from "../utils/catchAsync.js";
 import sendToken from "../utils/sendToken.js";
+import mapUser from "../mappers/user.mapper.js";
 
 export const register: RequestHandler = catchAsync(async (req, res) => {
   const { user, token } = await authService.register(req.body);
@@ -41,7 +42,7 @@ export const getMe: RequestHandler = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     data: {
-      user: req.user,
+      user: mapUser(req.user!),
     },
   });
 });

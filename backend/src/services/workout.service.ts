@@ -72,8 +72,14 @@ class WorkoutService {
         createdBy: userId,
       };
     }
+
+    const allowedFilters =
+      role === Roles.ADMIN
+        ? ["category", "difficulty", "isTemplate", "tags", "createdBy"]
+        : ["category", "difficulty", "isTemplate", "tags"];
+
     const features = new ApiFeatures(Workout.find(filter).lean(), query)
-      .filter()
+      .filter(allowedFilters)
       .search(["title", "description", "tags"])
       .sort()
       .paginate();
@@ -83,16 +89,44 @@ class WorkoutService {
     return workouts.map(mapWorkout);
   }
 
-  async getById(id: string) {
+  async getById(id: string, userId?: string, role?: Role) {
     const workout = await Workout.findOne({
       _id: id,
       isActive: true,
     })
-      .populate("createdBy")
+      .populate("createdBy", "name email role")
       .populate("exercises.exercise");
 
     if (!workout) {
       throw new AppError("Workout not found.", 404);
+    }
+
+    if (userId && role && role !== Roles.ADMIN) {
+      const creatorId =
+        (workout.createdBy as any)?._id?.toString() ??
+        workout.createdBy?.toString();
+
+      if (role === Roles.TRAINER) {
+        if (creatorId !== userId && !workout.isTemplate) {
+          throw new AppError(
+            "You are not allowed to access this workout.",
+            403,
+          );
+        }
+      } else if (role === Roles.MEMBER) {
+        const isAssigned = await Assignment.exists({
+          workout: workout._id,
+          member: userId,
+          isActive: true,
+        });
+
+        if (!isAssigned && !workout.isTemplate) {
+          throw new AppError(
+            "You are not allowed to access this workout.",
+            403,
+          );
+        }
+      }
     }
 
     // ✅ Explicitly sort the embedded array by 'order' before returning
@@ -100,27 +134,48 @@ class WorkoutService {
       workout.exercises.sort((a, b) => a.order - b.order);
     }
 
-    return workout;
+    const workoutObj =
+      typeof (workout as any).toObject === "function"
+        ? (workout as any).toObject()
+        : workout;
+
+    return {
+      ...workoutObj,
+      id: workoutObj._id ?? workoutObj.id,
+      createdBy:
+        workoutObj.createdBy && typeof workoutObj.createdBy === "object"
+          ? {
+              ...workoutObj.createdBy,
+              id: workoutObj.createdBy._id ?? workoutObj.createdBy.id,
+            }
+          : workoutObj.createdBy,
+      exercises: Array.isArray(workoutObj.exercises)
+        ? workoutObj.exercises.map((item: any) => ({
+            ...item,
+            exercise:
+              item.exercise && typeof item.exercise === "object"
+                ? {
+                    ...item.exercise,
+                    id: item.exercise._id ?? item.exercise.id,
+                  }
+                : item.exercise,
+          }))
+        : [],
+    };
   }
 
   async update(id: string, data: UpdateWorkoutDto, userId: string, role: Role) {
-    let workout;
-
-    if (role === Roles.ADMIN) {
-      workout = await Workout.findOne({
-        _id: id,
-        isActive: true,
-      });
-    } else {
-      workout = await Workout.findOne({
-        _id: id,
-        isActive: true,
-        createdBy: userId,
-      });
-    }
+    const workout = await Workout.findOne({
+      _id: id,
+      isActive: true,
+    });
 
     if (!workout) {
       throw new AppError("Workout not found.", 404);
+    }
+
+    if (role !== Roles.ADMIN && workout.createdBy.toString() !== userId) {
+      throw new AppError("You are not allowed to access this workout.", 403);
     }
 
     if (data.exercises) {
@@ -178,24 +233,19 @@ class WorkoutService {
   }
 
   async delete(id: string, userId: string, role: Role) {
-    let workout;
-
-    if (role === Roles.ADMIN) {
-      workout = await Workout.findOne({
-        _id: id,
-        isActive: true,
-      });
-    } else {
-      workout = await Workout.findOne({
-        _id: id,
-        isActive: true,
-        createdBy: userId,
-      });
-    }
+    const workout = await Workout.findOne({
+      _id: id,
+      isActive: true,
+    });
 
     if (!workout) {
       throw new AppError("Workout not found.", 404);
     }
+
+    if (role !== Roles.ADMIN && workout.createdBy.toString() !== userId) {
+      throw new AppError("You are not allowed to access this workout.", 403);
+    }
+
     const activeAssignment = await Assignment.findOne({
       workout: id,
       status: ASSIGNMENT_STATUS.ACTIVE,

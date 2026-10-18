@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
 import jwt from "jsonwebtoken";
+import User from "../models/User.model.js";
 
 let io: Server;
 
@@ -16,7 +17,7 @@ export const initSocket = (httpServer: HttpServer) => {
     },
   });
 
-  io.use((socket, next) => {
+  io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
 
     if (!token) {
@@ -25,6 +26,11 @@ export const initSocket = (httpServer: HttpServer) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+      const currentUser = await User.findById(decoded.id).select("isActive");
+
+      if (!currentUser || !currentUser.isActive) {
+        return next(new Error("This user account is not active."));
+      }
 
       socket.data.userId = decoded.id;
 

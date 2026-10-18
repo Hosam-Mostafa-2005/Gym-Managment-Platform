@@ -4,6 +4,7 @@ import * as workoutController from "../controllers/workout.controller.js";
 
 import validate from "../middleware/validate.middleware.js";
 import { protect, restrictTo } from "../middleware/auth.middleware.js";
+import { ownsWorkout } from "../middleware/workoutOwnership.middleware.js";
 
 import {
   createWorkoutSchema,
@@ -28,7 +29,11 @@ router.use(protect);
 |--------------------------------------------------------------------------
 */
 
-router.get("/", workoutController.getAll);
+router.get(
+  "/",
+  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  workoutController.getAll,
+);
 
 router.get("/:id", workoutController.getById);
 
@@ -54,6 +59,7 @@ router.post(
 router.patch(
   "/:id",
   restrictTo(Roles.ADMIN, Roles.TRAINER),
+  ownsWorkout,
   validate(updateWorkoutSchema),
   workoutController.update,
 );
@@ -67,6 +73,7 @@ router.patch(
 router.delete(
   "/:id",
   restrictTo(Roles.ADMIN, Roles.TRAINER),
+  ownsWorkout,
   workoutController.remove,
 );
 

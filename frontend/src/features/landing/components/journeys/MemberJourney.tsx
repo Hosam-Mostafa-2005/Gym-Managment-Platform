@@ -5,24 +5,24 @@ import { JourneyStep } from "./JourneyStep";
 
 export const MemberJourney = () => {
   return (
-    <div className="flex flex-col gap-8 w-full mt-24">
-      <div className="flex items-center gap-4 border-b border-[#1E2329] pb-4">
-        <h3 className="text-xl font-bold text-white">The Member Experience</h3>
-        <span className="rounded bg-[#1E2329] px-2 py-0.5 text-[10px] font-semibold text-gray-400 uppercase tracking-widest">
-          Execution
+    <div className="flex flex-col gap-6 w-full mt-14">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#2A3039] pb-4">
+        <div className="flex items-center gap-3">
+          <h3 className="text-lg sm:text-xl font-bold text-[#F8FAFC]">
+            The Member Experience
+          </h3>
+          <span className="rounded-full border border-[#2A3039] bg-[#1B2028] px-2.5 py-0.5 text-[11px] font-semibold text-[#F8FAFC] uppercase tracking-wider">
+            Training Execution
+          </span>
+        </div>
+        <span className="text-xs text-[#94A3B8]">
+          5 focused steps from assigned plan to completed session metrics
         </span>
       </div>
 
-      <div className="relative grid grid-cols-1 md:grid-cols-5 gap-8 lg:gap-12">
-        <div className="hidden md:block absolute top-7 left-0 w-full h-px bg-[#1E2329] -z-0" />
-        <div className="md:hidden absolute left-7 top-0 w-px h-full bg-[#1E2329] -z-0" />
-
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {memberJourney.map((data, idx) => (
-          <div key={idx} className="relative z-10 md:pt-0 pl-16 md:pl-0">
-            <div className="absolute left-0 top-0 md:static">
-              <JourneyStep {...data} />
-            </div>
-          </div>
+          <JourneyStep key={idx} {...data} />
         ))}
       </div>
     </div>

@@ -20,9 +20,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAssignment } from "@/features/assignments/hooks/useAssignment";
 import { AssignmentStatusBadge } from "@/features/assignments/components/AssignmentStatusBadge";
 import type { AssignmentStatus } from "@/features/assignments/types/assignment.types";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { ROLES } from "@/constants/roles";
 
 export default function AssignmentDetailsPage() {
   const navigate = useNavigate();
+  const { data: user } = useCurrentUser();
+  const canManage = user?.role === ROLES.ADMIN || user?.role === ROLES.TRAINER;
   // Fetch id whether it's passed as id or assignmentId
   const { id, assignmentId } = useParams<{
     id: string;
@@ -131,7 +135,7 @@ export default function AssignmentDetailsPage() {
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
               Back
             </button>
-            {!isFetching && !isError && item && (
+            {canManage && !isFetching && !isError && item && (
               <button
                 onClick={() => navigate(`/assignments/${targetId}/edit`)}
                 className="flex items-center justify-center gap-2 rounded-md bg-[#16291D] border border-[#23422E] px-4 py-2 text-sm font-medium text-[#5BE584] transition-colors hover:bg-[#1f3827]"
@@ -312,11 +316,11 @@ export default function AssignmentDetailsPage() {
                     The structured plan assigned to the member.
                   </p>
                 </div>
-                {item.workout?._id && (
+                {(item.workout?.id || item.workout?._id) && (
                   <button
                     onClick={() =>
                       navigate(
-                        `/workouts/${item.workout._id || item.workout.id}`,
+                        `/workout-builder/${item.workout.id || item.workout._id}`,
                       )
                     }
                     className="flex items-center gap-1.5 text-xs font-medium text-[#5BE584] hover:text-[#4ade80] transition-colors"

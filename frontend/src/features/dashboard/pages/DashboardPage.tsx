@@ -21,7 +21,6 @@ export const DashboardPage: React.FC = () => {
     .trim()
     .toUpperCase();
 
-  console.log("NORMALIZED ROLE:", role);
 
   // Trainers and Admins use the Coach Dashboard
   if (role === "TRAINER" || role === "ADMIN") {

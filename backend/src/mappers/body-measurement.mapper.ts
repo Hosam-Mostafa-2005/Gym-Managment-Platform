@@ -6,10 +6,16 @@ type BodyMeasurementDoc = Document<unknown, {}, IBodyMeasurement> &
   IBodyMeasurement & { _id: Types.ObjectId };
 
 export const mapBodyMeasurement = (doc: BodyMeasurementDoc) => {
+  const memberObj = doc.member as any;
+  const trainerObj = doc.trainer as any;
+
   return {
     id: doc._id.toString(),
-    member: doc.member.toString(),
-    trainer: doc.trainer.toString(),
+    member: memberObj?._id ? memberObj._id.toString() : doc.member.toString(),
+    trainer: trainerObj?._id
+      ? trainerObj._id.toString()
+      : doc.trainer.toString(),
+    ...(trainerObj?.name ? { trainerName: trainerObj.name } : {}),
     weight: doc.weight,
     height: doc.height,
     bodyFat: doc.bodyFat,

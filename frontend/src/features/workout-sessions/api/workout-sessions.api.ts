@@ -60,11 +60,9 @@ export const getCurrentWorkoutSession =
 export const startWorkoutSession = async (
   payload: StartWorkoutSessionPayload,
 ) => {
-  console.log("PAYLOAD", payload);
 
   const { data } = await api.post("/workout-sessions/start", payload);
 
-  console.log("START RESPONSE", data);
 
   return data.data.session;
 };
@@ -75,7 +73,6 @@ export const finishWorkoutSession = async (
 ): Promise<WorkoutSession> => {
   const { data } = await api.patch(`/workout-sessions/${id}/finish`, payload);
 
-  console.log("FINISH RESPONSE", data);
 
   return data.data.session;
 };

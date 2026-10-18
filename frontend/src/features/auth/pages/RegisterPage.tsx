@@ -1,5 +1,4 @@
 import { Mail, Lock, User, Loader2 } from "lucide-react";
-import { FcGoogle } from "react-icons/fc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,15 +36,14 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both">
+    <div className="w-full">
       {/* Header */}
-      <div className="mb-8 mt-12 lg:mt-0">
-        <h2 className="text-3xl font-bold tracking-tight text-white">
+      <div className="mb-6">
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-[-0.02em] text-[#F8FAFC]">
           Create Account
         </h2>
-        <p className="mt-2 text-sm text-[#9CA3AF] leading-relaxed">
-          Join the platform built for performance and start managing your
-          training with confidence.
+        <p className="mt-1.5 text-sm text-[#94A3B8] leading-relaxed">
+          Join STREN to track workouts, assignments, and athletic progress.
         </p>
       </div>
 
@@ -53,29 +51,23 @@ const RegisterPage = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Full Name */}
         <div className="space-y-2">
-          <Label
-            htmlFor="name"
-            className="text-xs font-semibold text-[#9CA3AF]"
-          >
+          <Label htmlFor="name" className="text-xs font-medium text-[#F8FAFC]">
             Full Name
           </Label>
           <div className="relative">
-            <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+            <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
             <Input
               id="name"
               type="text"
               autoComplete="name"
               placeholder="Enter your full name"
-              className={`h-12 w-full rounded-lg border bg-[#101418] pl-11 pr-4 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:outline-none focus:ring-1 ${
-                errors.name
-                  ? "border-red-500/50 focus:border-red-500 focus:ring-red-500"
-                  : "border-[#1E2329] focus:border-[#5BE584] focus:ring-[#5BE584]"
-              }`}
+              aria-invalid={!!errors.name}
+              className="h-11 bg-[#090B0F] pl-10 pr-4"
               {...register("name")}
             />
           </div>
           {errors.name && (
-            <p className="text-[11px] text-red-400 mt-1">
+            <p className="text-xs font-medium text-[#EF4444]">
               {errors.name.message}
             </p>
           )}
@@ -83,29 +75,23 @@ const RegisterPage = () => {
 
         {/* Email */}
         <div className="space-y-2">
-          <Label
-            htmlFor="email"
-            className="text-xs font-semibold text-[#9CA3AF]"
-          >
+          <Label htmlFor="email" className="text-xs font-medium text-[#F8FAFC]">
             Email Address
           </Label>
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
             <Input
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="Enter your email"
-              className={`h-12 w-full rounded-lg border bg-[#101418] pl-11 pr-4 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:outline-none focus:ring-1 ${
-                errors.email
-                  ? "border-red-500/50 focus:border-red-500 focus:ring-red-500"
-                  : "border-[#1E2329] focus:border-[#5BE584] focus:ring-[#5BE584]"
-              }`}
+              placeholder="name@example.com"
+              aria-invalid={!!errors.email}
+              className="h-11 bg-[#090B0F] pl-10 pr-4"
               {...register("email")}
             />
           </div>
           {errors.email && (
-            <p className="text-[11px] text-red-400 mt-1">
+            <p className="text-xs font-medium text-[#EF4444]">
               {errors.email.message}
             </p>
           )}
@@ -115,27 +101,24 @@ const RegisterPage = () => {
         <div className="space-y-2">
           <Label
             htmlFor="password"
-            className="text-xs font-semibold text-[#9CA3AF]"
+            className="text-xs font-medium text-[#F8FAFC]"
           >
             Password
           </Label>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
             <Input
               id="password"
               type="password"
               autoComplete="new-password"
               placeholder="Create a password"
-              className={`h-12 w-full rounded-lg border bg-[#101418] pl-11 pr-4 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:outline-none focus:ring-1 ${
-                errors.password
-                  ? "border-red-500/50 focus:border-red-500 focus:ring-red-500"
-                  : "border-[#1E2329] focus:border-[#5BE584] focus:ring-[#5BE584]"
-              }`}
+              aria-invalid={!!errors.password}
+              className="h-11 bg-[#090B0F] pl-10 pr-4"
               {...register("password")}
             />
           </div>
           {errors.password && (
-            <p className="text-[11px] text-red-400 mt-1">
+            <p className="text-xs font-medium text-[#EF4444]">
               {errors.password.message}
             </p>
           )}
@@ -145,27 +128,24 @@ const RegisterPage = () => {
         <div className="space-y-2">
           <Label
             htmlFor="confirmPassword"
-            className="text-xs font-semibold text-[#9CA3AF]"
+            className="text-xs font-medium text-[#F8FAFC]"
           >
             Confirm Password
           </Label>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
             <Input
               id="confirmPassword"
               type="password"
               autoComplete="new-password"
               placeholder="Confirm your password"
-              className={`h-12 w-full rounded-lg border bg-[#101418] pl-11 pr-4 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:outline-none focus:ring-1 ${
-                errors.confirmPassword
-                  ? "border-red-500/50 focus:border-red-500 focus:ring-red-500"
-                  : "border-[#1E2329] focus:border-[#5BE584] focus:ring-[#5BE584]"
-              }`}
+              aria-invalid={!!errors.confirmPassword}
+              className="h-11 bg-[#090B0F] pl-10 pr-4"
               {...register("confirmPassword")}
             />
           </div>
           {errors.confirmPassword && (
-            <p className="text-[11px] text-red-400 mt-1">
+            <p className="text-xs font-medium text-[#EF4444]">
               {errors.confirmPassword.message}
             </p>
           )}
@@ -174,8 +154,9 @@ const RegisterPage = () => {
         {/* Register Button */}
         <Button
           type="submit"
+          size="lg"
           disabled={registerMutation.isPending}
-          className="mt-6 flex h-12 w-full items-center justify-center rounded-lg bg-[#5BE584] text-sm font-bold tracking-wide text-[#090B0F] transition-all hover:bg-[#4ade80] hover:shadow-[0_0_20px_rgba(91,229,132,0.2)] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014] disabled:opacity-70 disabled:cursor-not-allowed"
+          className="mt-2 w-full"
         >
           {registerMutation.isPending ? (
             <>
@@ -183,35 +164,16 @@ const RegisterPage = () => {
               Creating Account...
             </>
           ) : (
-            "CREATE ACCOUNT"
+            "Create Account"
           )}
         </Button>
 
-        {/* Divider */}
-        <div className="flex items-center gap-4 py-4">
-          <div className="h-px flex-1 bg-[#1E2329]" />
-          <span className="text-[10px] font-medium uppercase tracking-widest text-[#6B7280]">
-            Or
-          </span>
-          <div className="h-px flex-1 bg-[#1E2329]" />
-        </div>
-
-        {/* Google Signup */}
-        <Button
-          type="button"
-          variant="outline"
-          className="flex h-12 w-full items-center justify-center rounded-lg border border-[#1E2329] bg-[#101418] text-sm font-medium text-[#9CA3AF] transition-all hover:border-[#6B7280] hover:text-white hover:bg-[#161B22]"
-        >
-          <FcGoogle className="mr-3 h-5 w-5" />
-          Sign up with Google
-        </Button>
-
         {/* Login Link */}
-        <div className="text-center text-xs text-[#6B7280] pt-2">
+        <div className="text-center text-xs text-[#94A3B8] pt-3 border-t border-[#2A3039]">
           Already have an account?{" "}
           <Link
             to="/login"
-            className="font-semibold text-[#5BE584] transition-colors hover:text-[#4ade80]"
+            className="font-semibold text-[#5BE584] transition-colors hover:text-[#49D472]"
           >
             Sign In
           </Link>

@@ -95,16 +95,22 @@ class AssignmentService {
 
     const assignment = await Assignment.create(assignmentData);
 
+    await assignment.populate([
+      { path: "member", select: "name email" },
+      { path: "trainer", select: "name email" },
+      { path: "workout", select: "title description category difficulty estimatedDuration" },
+    ]);
+
     await notificationService.create({
-      user: assignment.member,
+      user: assignment.member._id ?? assignment.member,
       title: "New Workout Assigned",
       message: "A trainer assigned a new workout program to you.",
       type: NOTIFICATION_TYPE.ASSIGNMENT_CREATED,
       actionUrl: `/assignments/${assignment.id}`,
       metadata: {
         assignmentId: assignment.id,
-        workoutId: assignment.workout,
-        trainerId: assignment.trainer,
+        workoutId: (assignment.workout as any)?._id ?? assignment.workout,
+        trainerId: (assignment.trainer as any)?._id ?? assignment.trainer,
       },
     });
 
@@ -120,14 +126,19 @@ class AssignmentService {
             trainer: userId,
           };
 
+    const allowedFilters =
+      role === Roles.ADMIN
+        ? ["status", "member", "trainer", "workout"]
+        : ["status", "member", "workout"];
+
     const features = new ApiFeatures(
       Assignment.find(filter)
         .populate("member", "name email")
         .populate("trainer", "name email")
-        .populate("workout", "title"),
+        .populate("workout", "title description category difficulty estimatedDuration"),
       query,
     )
-      .filter()
+      .filter(allowedFilters)
       .sort()
       .paginate();
 
@@ -374,6 +385,12 @@ class AssignmentService {
         },
       });
     }
+
+    await assignment.populate([
+      { path: "member", select: "name email" },
+      { path: "trainer", select: "name email" },
+      { path: "workout", select: "title description category difficulty estimatedDuration" },
+    ]);
 
     return mapAssignment(assignment);
   }

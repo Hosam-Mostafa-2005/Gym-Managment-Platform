@@ -15,16 +15,18 @@ export const JourneyStep: React.FC<JourneyStepProps> = ({
   description,
   icon: Icon,
 }) => (
-  <div className="relative flex flex-col gap-4 group">
-    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#1E2329] bg-[#0D1117] text-gray-500 transition-colors group-hover:border-[#5BE584] group-hover:text-[#5BE584] z-10 relative">
-      <Icon className="h-6 w-6" />
-      <div className="absolute -bottom-2 -right-2 flex h-6 w-6 items-center justify-center rounded bg-[#1E2329] text-[10px] font-bold text-white group-hover:bg-[#5BE584] group-hover:text-[#090B0F]">
-        {step}
+  <div className="flex flex-col justify-between gap-4 rounded-[20px] border border-[#2A3039] bg-[#13171D] p-5 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-colors hover:border-[#38414D]">
+    <div className="flex items-center justify-between">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-[#2A3039] bg-[#090B0F] text-[#5BE584]">
+        <Icon className="h-5 w-5" />
       </div>
+      <span className="rounded-[10px] border border-[#2A3039] bg-[#090B0F] px-2.5 py-1 text-xs font-bold text-[#94A3B8]">
+        {step}
+      </span>
     </div>
-    <div className="flex flex-col gap-1 pr-4">
-      <h4 className="text-sm font-bold text-gray-200">{title}</h4>
-      <p className="text-xs text-gray-500 leading-relaxed">{description}</p>
+    <div className="flex flex-col gap-1">
+      <h4 className="text-sm font-semibold text-[#F8FAFC]">{title}</h4>
+      <p className="text-xs text-[#94A3B8] leading-relaxed">{description}</p>
     </div>
   </div>
 );

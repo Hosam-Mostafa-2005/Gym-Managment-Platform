@@ -43,11 +43,11 @@ export default function ActiveWorkoutPage() {
             </p>
             <div className="mt-6">
               <Link
-                to="/workouts"
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#4ade80]"
+                to="/sessions"
+                className="inline-flex items-center justify-center gap-2 rounded-[14px] bg-[#5BE584] px-4 py-2.5 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#49D472]"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                Return to Workouts
+                Return to Sessions
               </Link>
             </div>
           </div>

@@ -13,7 +13,7 @@ import { useCurrentWorkoutSession } from "@/features/workout-sessions/hooks/useC
 import { useWorkoutSessions } from "@/features/workout-sessions/hooks/useWorkoutSessions";
 import { useWorkouts } from "@/features/workouts/hooks/useWorkouts";
 import { useExercises } from "@/features/exercises/hooks/useExercises";
-import { useMemberDashboard } from "@/features/dashboard/hooks/useMemberDashboard";
+import { useMemberDashboard } from "@/features/dashboard/hooks/use-dashboard";
 
 export default function HomePage() {
   const navigate = useNavigate();

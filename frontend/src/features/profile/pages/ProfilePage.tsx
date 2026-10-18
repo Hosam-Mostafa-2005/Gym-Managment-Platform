@@ -7,8 +7,7 @@ import { ProfileLoading } from "../components/states/ProfileLoading";
 
 const ProfilePage: React.FC = () => {
   const { data: user, isLoading: isAuthLoading } = useCurrentUser();
-  console.log("PROFILE USER:", user);
-  console.log("PROFILE ROLE:", user?.role);
+  
   if (isAuthLoading) {
     return <ProfileLoading />;
   }

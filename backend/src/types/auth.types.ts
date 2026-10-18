@@ -5,12 +5,7 @@ export interface RegisterDto {
   email: string;
   password: string;
 
-  role: Role;
-
-  bio?: string;
-  specialties?: string[];
-  certifications?: string[];
-  yearsOfExperience?: number;
+  role?: Role;
 }
 
 export interface LoginDto {

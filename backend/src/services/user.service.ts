@@ -7,7 +7,7 @@ class UserService {
   async getAll(query: ParsedQs) {
     // بنسحب الناس الأكتيف بس، والـ ApiFeatures هتهندل فلتر الـ role والـ pagination
     const features = new ApiFeatures(User.find({ isActive: true }), query)
-      .filter()
+      .filter(["role"])
       .search(["name", "email"])
       .sort()
       .paginate();

@@ -39,6 +39,8 @@ export default function EditAssignmentPage() {
         endDate: assignment.endDate
           ? new Date(assignment.endDate).toISOString().split("T")[0]
           : "",
+        status: assignment.status,
+        cancelReason: assignment.cancelReason ?? "",
         notes: assignment.notes ?? "",
       };
     }, [assignment]);
@@ -55,6 +57,11 @@ export default function EditAssignmentPage() {
           workout: data.workout,
           startDate: data.startDate,
           endDate: data.endDate,
+          status: data.status,
+          cancelReason:
+            data.status === "CANCELLED"
+              ? data.cancelReason?.trim() || undefined
+              : undefined,
           notes: data.notes || undefined,
         },
       },

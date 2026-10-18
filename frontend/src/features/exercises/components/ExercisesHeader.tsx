@@ -1,26 +1,35 @@
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { ROLES } from "@/constants/roles";
 
 interface ExercisesHeaderProps {
   onAddExercise: () => void;
 }
 
 const ExercisesHeader = ({ onAddExercise }: ExercisesHeaderProps) => {
-  return (
-    <div className="flex items-start justify-between">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Exercises</h1>
+  const { data: user } = useCurrentUser();
+  const canManage = user?.role === ROLES.ADMIN || user?.role === ROLES.TRAINER;
 
-        <p className="mt-2 text-muted-foreground">
-          Manage your exercise library and keep your workouts organized.
+  return (
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F8FAFC]">
+          Exercise Library
+        </h1>
+
+        <p className="mt-1.5 text-sm text-[#94A3B8]">
+          Browse movement demonstrations, target muscles, and coaching cues.
         </p>
       </div>
 
-      <Button className="gap-2 rounded-xl" onClick={onAddExercise}>
-        <Plus className="h-4 w-4" />
-        Add Exercise
-      </Button>
+      {canManage && (
+        <Button className="gap-2 self-start sm:self-auto" onClick={onAddExercise}>
+          <Plus className="h-4 w-4" />
+          Add Exercise
+        </Button>
+      )}
     </div>
   );
 };

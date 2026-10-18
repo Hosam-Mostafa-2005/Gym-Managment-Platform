@@ -45,7 +45,12 @@ class ExerciseService {
 
     // 2. Setup ApiFeatures for filtering, searching, sorting, and pagination
     const features = new ApiFeatures(Exercise.find({ isActive: true }), query)
-      .filter()
+      .filter([
+        "equipment",
+        "difficulty",
+        "primaryMuscles",
+        "secondaryMuscles",
+      ])
       .search(["name", "primaryMuscles", "secondaryMuscles"])
       .sort()
       .paginate();

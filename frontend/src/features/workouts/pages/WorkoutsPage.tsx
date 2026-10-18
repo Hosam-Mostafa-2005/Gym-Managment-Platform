@@ -16,6 +16,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useWorkouts } from "@/features/workouts/hooks/useWorkouts";
 import { useDeleteWorkout } from "@/features/workouts/hooks/useDeleteWorkout";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { ROLES } from "@/constants/roles";
 
 import type { Workout } from "@/features/workouts/types/workout.types";
 
@@ -37,6 +39,8 @@ import {
 
 export default function WorkoutsPage() {
   const navigate = useNavigate();
+  const { data: user } = useCurrentUser();
+  const canManage = user?.role === ROLES.ADMIN || user?.role === ROLES.TRAINER;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -108,17 +112,21 @@ export default function WorkoutsPage() {
               Workouts
             </h1>
             <p className="text-sm text-[#9CA3AF]">
-              Create, customize, and manage your structured workout routines.
+              {canManage
+                ? "Create, customize, and manage your structured workout routines."
+                : "Browse structured workout routines and training templates."}
             </p>
           </div>
 
-          <button
-            onClick={() => navigate("/workout-builder/new")}
-            className="group flex items-center justify-center gap-2 rounded-md bg-[#5BE584] px-5 py-2.5 text-sm font-semibold text-[#090B0F] transition-all hover:bg-[#4ade80] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
-          >
-            <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
-            New Workout
-          </button>
+          {canManage && (
+            <button
+              onClick={() => navigate("/workout-builder/new")}
+              className="group flex items-center justify-center gap-2 rounded-[14px] bg-[#5BE584] px-5 py-2.5 text-sm font-semibold text-[#090B0F] transition-all hover:bg-[#49D472] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
+            >
+              <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
+              New Workout
+            </button>
+          )}
         </div>
       </header>
 
@@ -213,21 +221,23 @@ export default function WorkoutsPage() {
                   ? "We couldn't find any workouts matching your current filters. Try resetting them."
                   : "You haven't designed any workout templates yet. Get started by creating your first routine."}
               </p>
-              <button
-                className="mt-5 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
-                onClick={() => {
-                  if (searchQuery || selectedCategory) {
-                    setSearchQuery("");
-                    setSelectedCategory(null);
-                  } else {
-                    navigate("/workout-builder/new");
-                  }
-                }}
-              >
-                {searchQuery || selectedCategory
-                  ? "Clear Filters"
-                  : "Create First Workout"}
-              </button>
+              {(searchQuery || selectedCategory || canManage) && (
+                <button
+                  className="mt-5 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
+                  onClick={() => {
+                    if (searchQuery || selectedCategory) {
+                      setSearchQuery("");
+                      setSelectedCategory(null);
+                    } else if (canManage) {
+                      navigate("/workout-builder/new");
+                    }
+                  }}
+                >
+                  {searchQuery || selectedCategory
+                    ? "Clear Filters"
+                    : "Create First Workout"}
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -275,27 +285,33 @@ export default function WorkoutsPage() {
                             View Details
                           </DropdownMenuItem>
 
-                          <DropdownMenuItem
-                            onClick={() =>
-                              navigate(`/workout-builder/${workout.id}/edit`)
-                            }
-                            className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
-                          >
-                            <Pencil className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
-                            Edit Workout
-                          </DropdownMenuItem>
+                          {canManage && (
+                            <>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  navigate(
+                                    `/workout-builder/${workout.id}/edit`,
+                                  )
+                                }
+                                className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
+                              >
+                                <Pencil className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                                Edit Workout
+                              </DropdownMenuItem>
 
-                          <DropdownMenuSeparator className="bg-[#1E2329]" />
+                              <DropdownMenuSeparator className="bg-[#1E2329]" />
 
-                          <DropdownMenuItem
-                            onClick={() =>
-                              handleDeleteClick(workout.id, workout.title)
-                            }
-                            className="cursor-pointer text-xs font-medium text-red-400 focus:bg-red-950/30 focus:text-red-400"
-                          >
-                            <Trash2 className="mr-2 h-3.5 w-3.5 text-red-400" />
-                            Delete Routine
-                          </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleDeleteClick(workout.id, workout.title)
+                                }
+                                className="cursor-pointer text-xs font-medium text-red-400 focus:bg-red-950/30 focus:text-red-400"
+                              >
+                                <Trash2 className="mr-2 h-3.5 w-3.5 text-red-400" />
+                                Delete Routine
+                              </DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>

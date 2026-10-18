@@ -40,7 +40,7 @@ export default function FormCombobox<TForm extends FieldValues, TItem>({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className={className}>
+        <div className={`space-y-2 ${className ?? ""}`}>
           <Label htmlFor={String(name)}>{label}</Label>
 
           <EntityCombobox
@@ -56,7 +56,7 @@ export default function FormCombobox<TForm extends FieldValues, TItem>({
           />
 
           {fieldState.error && (
-            <p className="mt-1 text-sm text-destructive">
+            <p className="text-xs font-medium text-[#EF4444]">
               {fieldState.error.message}
             </p>
           )}

@@ -34,7 +34,7 @@ export default function FormInput<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field, fieldState }) => (
-        <div className={className}>
+        <div className={`space-y-2 ${className ?? ""}`}>
           <Label htmlFor={name}>{label}</Label>
 
           <Input
@@ -42,11 +42,12 @@ export default function FormInput<T extends FieldValues>({
             type={type}
             placeholder={placeholder}
             disabled={disabled}
+            aria-invalid={!!fieldState.error}
             {...field}
           />
 
           {fieldState.error && (
-            <p className="mt-1 text-sm text-destructive">
+            <p className="text-xs font-medium text-[#EF4444]">
               {fieldState.error.message}
             </p>
           )}

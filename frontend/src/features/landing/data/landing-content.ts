@@ -1,17 +1,17 @@
 // src/features/landing/data/landing-content.ts
 export const landingContent = {
   hero: {
-    badge: "Gym Operations Engine",
+    badge: "STREN Workspace",
     headline: "One connected platform for your gym.",
     description:
-      "Manage training, members, workouts, and progress in one unified system. Escape fragmented workflows and build a premium athletic experience.",
-    primaryCta: "Get Started",
-    secondaryCta: "Explore Features",
+      "Manage training, members, workouts, and progress in one unified system.",
+    primaryCta: "Open Dashboard",
+    secondaryCta: "Explore Modules",
   },
   problem: {
-    headline: "Gym management becomes fragmented fast.",
+    headline: "Why Unified Training Architecture Matters",
     description:
-      "When member data, programming, and progress tracking exist in isolated silos, coaches lose oversight and members lose momentum.",
+      "When member data, programming, and progress tracking live in one connected system, coaches keep full oversight and athletes stay consistent.",
   },
   ecosystem: {
     headline: "One platform. Every workflow connected.",
@@ -19,10 +19,11 @@ export const landingContent = {
       "A centralized operational hub where every role, action, and metric is synchronized in real-time.",
   },
   cta: {
-    headline: "Build a better way to manage your gym.",
+    headline: "Ready to jump into today's training?",
     description:
-      "Join modern facilities orchestrating their entire coaching and membership experience through one connected platform.",
-    primaryCta: "Start Free Trial",
-    secondaryCta: "View Documentation",
+      "Open your operational dashboard to review metrics and active plans, or head straight to the exercise and workout libraries.",
+    primaryCta: "Open Dashboard",
+    secondaryCta: "Browse Exercise Library",
   },
 };
+
