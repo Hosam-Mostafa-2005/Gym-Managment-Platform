@@ -1,6 +1,5 @@
 // src/features/auth/components/layouts/AuthLayout.tsx
 import { Link, Navigate, Outlet, useLocation } from "react-router-dom";
-import { Dumbbell } from "lucide-react";
 import heroImage from "@/assets/Generated image 1.png";
 import { tokenService } from "@/services/token.service";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
@@ -35,67 +34,61 @@ const AuthLayout = () => {
   }
 
   return (
-    <main className="min-h-screen w-full flex bg-[#090B0F] text-[#F8FAFC] font-sans selection:bg-[#5BE584] selection:text-[#090B0F]">
-      {/* LEFT PANEL: BRAND & IMAGE (Hidden on Mobile) */}
-      <section className="relative hidden lg:flex w-1/2 min-h-screen flex-col overflow-hidden border-r border-[#2A3039] bg-[#090B0F]">
+    <main className="min-h-screen w-full flex bg-[#0B0D10] text-[#F5F6F8] font-sans selection:bg-[#4FE080] selection:text-[#0B0D10]">
+      {/* LEFT PANEL: BRANDING & HERO (Approximately 49% on desktop) */}
+      <section className="relative hidden lg:flex w-[49%] min-h-screen flex-col overflow-hidden border-r border-[#252B33] bg-[#0B0D10]">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-35 grayscale-[0.25]"
+          className="absolute inset-0 bg-cover bg-center opacity-35 grayscale-[0.2]"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#090B0F] via-[#090B0F]/70 to-[#090B0F]/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#090B0F]/90 via-[#090B0F]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D10] via-[#0B0D10]/70 to-[#0B0D10]/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D10]/95 via-[#0B0D10]/50 to-[#0B0D10]/20" />
 
-        <div className="relative z-10 flex min-h-screen flex-col p-12 xl:p-16">
-          <Link to="/" className="inline-flex items-center gap-3 w-fit">
-            <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#5BE584] text-[#090B0F]">
-              <Dumbbell className="h-5 w-5" />
-            </div>
-            <span className="text-2xl font-bold tracking-tight text-[#F8FAFC]">
+        <div className="relative z-10 flex min-h-screen flex-col p-10 xl:p-14 2xl:p-16">
+          <Link to="/" className="inline-flex items-center w-fit">
+            <span className="text-3xl font-extrabold tracking-tight text-[#F5F6F8]">
               STREN
             </span>
           </Link>
 
           <div className="mt-auto max-w-xl pb-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#5BE584]/30 bg-[#5BE584]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#5BE584] mb-5">
-              Performance Workspace
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#4FE080]/30 bg-[#121E17] px-3.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#4FE080] mb-5">
+              PLATFORM ACCESS
             </div>
 
-            <h2 className="text-4xl xl:text-5xl font-bold leading-[1.1] tracking-[-0.03em] text-[#F8FAFC]">
+            <h1 className="text-4xl xl:text-5xl 2xl:text-6xl font-bold leading-[1.08] tracking-[-0.03em] text-[#F5F6F8]">
               Train Smarter.
               <br />
-              <span className="text-[#94A3B8]">Coach with Precision.</span>
-            </h2>
+              <span className="text-[#9CA3AF]">Manage Better.</span>
+            </h1>
 
-            <p className="mt-5 max-w-md text-sm xl:text-base leading-relaxed text-[#94A3B8]">
-              Manage members, structured workouts, training assignments, live
-              sessions, and body measurements in one connected platform.
+            <p className="mt-5 max-w-md text-sm xl:text-base leading-relaxed text-[#91A0B5]">
+              Manage members, workouts, assignments and progress from one modern
+              platform designed for high-performance facilities.
             </p>
           </div>
         </div>
       </section>
 
-      {/* RIGHT PANEL: FORM OUTLET */}
-      <section className="relative flex w-full lg:w-1/2 flex-col items-center justify-center p-4 sm:p-8 xl:p-16 z-10">
+      {/* RIGHT PANEL: AUTHENTICATION FORM */}
+      <section className="relative flex flex-1 min-h-screen flex-col items-center justify-center p-6 sm:p-10 lg:p-12 xl:p-16 z-10 bg-[#0B0D10]">
         {/* Mobile Brand Header */}
-        <div className="lg:hidden w-full max-w-md mb-6 flex items-center justify-between">
-          <Link to="/" className="inline-flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-[12px] bg-[#5BE584] text-[#090B0F]">
-              <Dumbbell className="h-5 w-5" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-[#F8FAFC]">
+        <div className="lg:hidden w-full max-w-[480px] mb-8 flex items-center justify-between">
+          <Link to="/" className="inline-flex items-center">
+            <span className="text-2xl font-bold tracking-tight text-[#F5F6F8]">
               STREN
             </span>
           </Link>
           <Link
             to="/"
-            className="text-xs font-medium text-[#94A3B8] hover:text-[#F8FAFC]"
+            className="text-xs font-medium text-[#91A0B5] hover:text-[#F5F6F8] transition-colors"
           >
             Back to overview
           </Link>
         </div>
 
-        {/* Form Card Surface */}
-        <div className="relative z-10 w-full max-w-md rounded-[20px] border border-[#2A3039] bg-[#13171D] p-6 sm:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
+        {/* Form Container (Direct surface on #0B0D10, matching reference layout) */}
+        <div className="w-full max-w-[480px]">
           <Outlet />
         </div>
       </section>

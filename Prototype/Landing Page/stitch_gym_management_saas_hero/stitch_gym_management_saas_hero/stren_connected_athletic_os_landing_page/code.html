@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STREN — The Connected Athletic Operating System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#5BE584',
+              hover: '#4dd275',
+              glow: 'rgba(91, 229, 132, 0.22)',
+              surface: '#0F1218',
+              card: '#131720',
+              cardHover: '#181E29',
+              border: 'rgba(255, 255, 255, 0.08)',
+              borderGreen: 'rgba(91, 229, 132, 0.35)'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: '0.4' },
+              '50%': { opacity: '0.85' },
+            }
+          },
+          animation: {
+            'float-slow': 'float 6s ease-in-out infinite',
+            'float-delayed': 'float 7s ease-in-out 2s infinite',
+            'pulse-glow': 'pulseGlow 4s ease-in-out infinite'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #080A0E;
+      color: #E2E8F0;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+    .ambient-radial {
+      background: radial-gradient(circle 800px at 50% -100px, rgba(91, 229, 132, 0.12), transparent 70%);
+    }
+    .glass-panel {
+      background: rgba(19, 23, 32, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .glass-panel-active {
+      background: rgba(22, 28, 40, 0.85);
+      border: 1px solid rgba(91, 229, 132, 0.38);
+      box-shadow: 0 0 35px -5px rgba(91, 229, 132, 0.18);
+    }
+    .badge-mono {
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 4px;
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(91, 229, 132, 0.3);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="selection:bg-brand selection:text-black">
+
+  <!-- ========================================================================= -->
+  <!-- 1. NAVIGATION -->
+  <!-- ========================================================================= -->
+  <header class="fixed top-0 inset-x-0 z-50 transition-all duration-300 backdrop-blur-xl bg-[#080A0E]/80 border-b border-white/[0.06]">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-lg bg-white/5 border border-brand/40 flex items-center justify-center text-brand transition-all duration-300 group-hover:border-brand group-hover:shadow-[0_0_15px_rgba(91,229,132,0.4)]">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+            <path d="M4 6h3v12H4zm6-2h4v16h-4zm7 4h3v8h-3z"/>
+          </svg>
+        </div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-xl font-extrabold tracking-tight text-white group-hover:text-brand transition-colors">STREN</span>
+          <span class="badge-mono text-[9px] font-semibold text-brand/80 px-1.5 py-0.5 rounded bg-brand/10 border border-brand/20">OS</span>
+        </div>
+      </a>
+
+      <!-- Desktop Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+        <a href="#features" class="hover:text-white transition-colors">Features</a>
+        <a href="#solutions" class="hover:text-white transition-colors">Solutions</a>
+        <a href="#product" class="hover:text-white transition-colors">Product</a>
+        <a href="#comparison" class="hover:text-white transition-colors">Why STREN</a>
+        <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
+        <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+      </nav>
+
+      <!-- CTAs -->
+      <div class="flex items-center gap-4">
+        <a href="#pricing" class="hidden sm:inline-flex text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition-colors">Log In</a>
+        <a href="#pricing" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold text-black bg-brand hover:bg-brand-hover transition-all duration-200 shadow-[0_0_20px_rgba(91,229,132,0.25)] hover:shadow-[0_0_25px_rgba(91,229,132,0.45)]">
+          <span>Get Started</span>
+          <svg class="w-3.5 h-3.5 stroke-black stroke-[2.5]" fill="none" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="relative pt-20">
+
+    <!-- ========================================================================= -->
+    <!-- 2. HERO SECTION -->
+    <!-- ========================================================================= -->
+    <section class="relative min-h-[92vh] flex items-center justify-center overflow-hidden ambient-radial px-6 pt-16 pb-24">
+      <!-- Glow Gradients -->
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-brand/10 blur-[130px] rounded-full pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-14 items-center">
+        <!-- Text Column -->
+        <div class="lg:col-span-6 space-y-8 z-10 text-center lg:text-left">
+          <!-- Release Tag -->
+          <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 backdrop-blur-md">
+            <span class="w-2 h-2 rounded-full bg-brand animate-ping"></span>
+            <span class="badge-mono text-[11px] font-medium text-slate-300">STREN ATHLETIC PLATFORM 3.0</span>
+            <span class="text-white/20">|</span>
+            <span class="text-[11px] text-brand font-medium">Unified Ecosystem</span>
+          </div>
+
+          <!-- Emotional Headline -->
+          <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
+            One connected nervous system for <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand via-[#84F0A4] to-white">Gyms, Coaches & Members.</span>
+          </h1>
+
+          <p class="text-base sm:text-lg text-slate-400 font-normal leading-relaxed max-w-xl mx-auto lg:mx-0">
+            Stop stitching fragmented tools together. STREN harmonizes turnstile access, automated financial billing, high-velocity coach programming, and biometric member telemetry in a single, cinematic operating system.
+          </p>
+
+          <!-- CTAs -->
+          <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+            <a href="#pricing" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl text-sm font-semibold text-black bg-brand hover:bg-brand-hover transition-all duration-200 shadow-[0_0_30px_rgba(91,229,132,0.35)] hover:scale-[1.02]">
+              <span>Deploy STREN Today</span>
+              <svg class="w-4 h-4 stroke-black stroke-[2.5]" fill="none" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#product" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-4 rounded-xl text-sm font-semibold text-white bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 transition-all duration-200 backdrop-blur-md">
+              <svg class="w-4 h-4 text-brand" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <span>Explore Interactive Demo</span>
+            </a>
+          </div>
+
+          <!-- Trust Indicators -->
+          <div class="pt-6 border-t border-white/[0.07] flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              <span>Zero-Downtime Migration</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              <span>SOC-2 Type II Certified</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>Sub-200ms Hardware Gate Mesh</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D Fitness Illustration Placeholder & Floating UI Glass Hub -->
+        <div class="lg:col-span-6 relative flex items-center justify-center">
+          <div class="relative w-full max-w-[560px] aspect-[4/3.5] rounded-3xl p-1 bg-gradient-to-b from-white/15 via-white/[0.05] to-transparent shadow-2xl">
+            <div class="w-full h-full rounded-[22px] bg-[#0C0F15] relative overflow-hidden flex flex-col items-center justify-center border border-white/5">
+              
+              <!-- Ambient Studio Light Grid -->
+              <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+              
+              <!-- 3D Vector Visual Core Placeholder -->
+              <div class="relative z-10 flex flex-col items-center text-center p-8">
+                <!-- Abstract 3D Gym / Kinetic Mesh Graphic -->
+                <div class="relative w-48 h-48 mb-6 flex items-center justify-center">
+                  <div class="absolute inset-0 rounded-full border border-brand/30 border-dashed animate-spin" style="animation-duration: 25s;"></div>
+                  <div class="absolute w-36 h-36 rounded-full border border-brand/20 animate-ping"></div>
+                  <div class="absolute w-40 h-40 rounded-full bg-brand/5 blur-xl"></div>
+                  
+                  <!-- Isometric 3D Dumbbell / Sensor Node Iconography -->
+                  <div class="w-28 h-28 rounded-2xl bg-gradient-to-tr from-[#161B26] to-[#222B3D] border border-white/15 flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative">
+                    <svg class="w-14 h-14 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 5v14M18 5v14M3 9v6M21 9v6M6 12h12M10 8h4v8h-4z"/>
+                    </svg>
+                    <div class="absolute -top-2 -right-2 px-2 py-0.5 rounded-full bg-brand text-black text-[9px] font-bold font-mono">LIVE IOT</div>
+                  </div>
+                </div>
+
+                <div class="badge-mono text-xs font-semibold text-brand tracking-widest uppercase mb-1">// 3D_CONNECTED_GYM_ENVIRONMENT</div>
+                <h3 class="text-lg font-bold text-white tracking-tight">Biometric Telemetry & Turnstile Relay</h3>
+                <p class="text-xs text-slate-400 mt-1 max-w-xs">Hardware controllers communicating with coaches and active member devices concurrently.</p>
+              </div>
+
+              <!-- Floating UI Component 1: Turnstile Gate Pass (Top Left) -->
+              <div class="absolute top-4 left-4 p-3 rounded-xl glass-panel shadow-xl border border-white/10 flex items-center gap-3 animate-float-slow">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-brand">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                </div>
+                <div>
+                  <div class="text-[10px] font-mono text-slate-400">NFC TAP ACCESS</div>
+                  <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                    <span>Gate 04 • Unlocked</span>
+                    <span class="text-[9px] text-brand">0.18s</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Floating UI Component 2: Coach Session Telemetry (Bottom Right) -->
+              <div class="absolute bottom-4 right-4 p-3 rounded-xl glass-panel shadow-xl border border-brand/20 flex items-center gap-3 animate-float-delayed">
+                <div class="w-8 h-8 rounded-lg bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-xs">
+                  RPE
+                </div>
+                <div>
+                  <div class="text-[10px] font-mono text-slate-400">REAL-TIME COACH FEED</div>
+                  <div class="text-xs font-bold text-white flex items-center gap-2">
+                    <span>9.2 Velocity High</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 3. TRUSTED BY / STATISTICS SECTION -->
+    <!-- ========================================================================= -->
+    <section class="relative z-20 border-y border-white/[0.08] bg-[#0A0D12] py-16 px-6">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-10">
+          <p class="badge-mono text-xs font-semibold uppercase tracking-widest text-slate-500">TRUSTED INFRASTRUCTURE POWERING ELITE PERFORMANCE HUBS</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <!-- Stat 1 -->
+          <div class="glass-panel p-6 rounded-2xl hover:border-brand/40 transition-all duration-300 group">
+            <div class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-mono group-hover:text-brand transition-colors">500+</div>
+            <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Performance Gyms</div>
+            <p class="text-xs text-slate-500 mt-2">Active facilities scaling without operational bottlenecks.</p>
+          </div>
+
+          <!-- Stat 2 -->
+          <div class="glass-panel p-6 rounded-2xl hover:border-brand/40 transition-all duration-300 group">
+            <div class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-mono group-hover:text-brand transition-colors">4.8M+</div>
+            <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Workouts Logged</div>
+            <p class="text-xs text-slate-500 mt-2">Biometric telemetry recorded across iOS and Android.</p>
+          </div>
+
+          <!-- Stat 3 -->
+          <div class="glass-panel p-6 rounded-2xl hover:border-brand/40 transition-all duration-300 group">
+            <div class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-mono group-hover:text-brand transition-colors">99.98%</div>
+            <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Hardware Relay Uptime</div>
+            <p class="text-xs text-slate-500 mt-2">Wiegand & OSDP access verified offline and online.</p>
+          </div>
+
+          <!-- Stat 4 -->
+          <div class="glass-panel p-6 rounded-2xl hover:border-brand/40 transition-all duration-300 group">
+            <div class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-mono group-hover:text-brand transition-colors">$840k</div>
+            <div class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Dunning Recovered</div>
+            <p class="text-xs text-slate-500 mt-2">Automated card recovery preventing member churn.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 4. THE PROBLEM SECTION -->
+    <!-- ========================================================================= -->
+    <section class="py-28 px-6 relative overflow-hidden">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="max-w-3xl mb-16">
+          <div class="badge-mono text-xs font-semibold text-rose-400 uppercase tracking-widest mb-3">// THE DISCONNECTED GYM PROBLEM</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            Fragmented tools are suffocating athletic facilities.
+          </h2>
+          <p class="text-slate-400 mt-4 text-base sm:text-lg">
+            When your hardware gates, coach spreadsheets, and member apps live on separate islands, data leaks, revenue is lost, and the fitness experience breaks down.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Problem 1: Gym Owners -->
+          <div class="p-8 rounded-2xl bg-gradient-to-b from-[#14161F] to-[#0D0F14] border border-red-500/15 relative overflow-hidden group hover:border-red-500/30 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-6 font-mono font-bold text-sm">
+              01
+            </div>
+            <div class="badge-mono text-[11px] text-red-400 font-semibold tracking-wider uppercase mb-2">FOR GYM OWNERS</div>
+            <h3 class="text-xl font-bold text-white mb-3">Silent Revenue Leaks & Gate Clutter</h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-6">
+              Expired credit cards go uncollected, manual front-desk sign-ins cause rush-hour bottlenecks, and disconnected billing costs gyms thousands in unrecovered dunning each month.
+            </p>
+            <ul class="space-y-2.5 text-xs text-slate-300 font-mono">
+              <li class="flex items-center gap-2 text-red-400">
+                <span>✕</span> <span>18% average soft billing churn</span>
+              </li>
+              <li class="flex items-center gap-2 text-red-400">
+                <span>✕</span> <span>Desynchronized turnstile controllers</span>
+              </li>
+              <li class="flex items-center gap-2 text-red-400">
+                <span>✕</span> <span>Blind spots in real-time floor occupancy</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Problem 2: Coaches -->
+          <div class="p-8 rounded-2xl bg-gradient-to-b from-[#14161F] to-[#0D0F14] border border-red-500/15 relative overflow-hidden group hover:border-red-500/30 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-6 font-mono font-bold text-sm">
+              02
+            </div>
+            <div class="badge-mono text-[11px] text-red-400 font-semibold tracking-wider uppercase mb-2">FOR COACHES & TRAINERS</div>
+            <h3 class="text-xl font-bold text-white mb-3">Spreadsheet Chaos & Lost Hours</h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-6">
+              Trainers spend 10+ hours a week copying workout templates into WhatsApp, texting PDFs, and losing track of member loads, velocity progress, and recovery states.
+            </p>
+            <ul class="space-y-2.5 text-xs text-slate-300 font-mono">
+              <li class="flex items-center gap-2 text-red-400">
+                <span>✕</span> <span>Scattered notes and unstructured chats</span>
+              </li>
+              <li class="flex items-center gap-2 text-red-400">
+                <span>✕</span> <span>Zero real-time RPE or telemetry tracking</span>
+              </li>
+              <li class="flex items-center gap-2 text-red-400">
+                <span>✕</span> <span>No automated periodization recalculation</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Problem 3: Members -->
+          <div class="p-8 rounded-2xl bg-gradient-to-b from-[#14161F] to-[#0D0F14] border border-red-500/15 relative overflow-hidden group hover:border-red-500/30 transition-all">
+            <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-6 font-mono font-bold text-sm">
+              03
+            </div>
+            <div class="badge-mono text-[11px] text-red-400 font-semibold tracking-wider uppercase mb-2">FOR MEMBERS</div>
+            <h3 class="text-xl font-bold text-white mb-3">Clunky Apps & Disconnected Progress</h3>
+            <p class="text-sm text-slate-400 leading-relaxed mb-6">
+              Members are forced to use one clunky app for gate check-ins, another for workout logging, and another for payments. Training consistency drops and motivation decays.
+            </p>
+            <ul class="space-y-2.5 text-xs text-slate-300 font-mono">
+              <li class="flex items-center gap-2 text-red-400">
+                <span>✕</span> <span>Fumbled barcodes at the front gate</span>
+              </li>
+              <li class="flex items-center gap-2 text-red-400">
+                <span>✕</span> <span>No unified history of body metrics & PRs</span>
+              </li>
+              <li class="flex items-center gap-2 text-red-400">
+                <span>✕</span> <span>Lack of accountability leads to dropout</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 5. ONE PLATFORM FOR EVERYONE -->
+    <!-- ========================================================================= -->
+    <section id="solutions" class="py-28 px-6 bg-gradient-to-b from-transparent via-[#0B0E14] to-transparent relative">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-20">
+          <div class="badge-mono text-xs font-semibold text-brand uppercase tracking-widest mb-3">// UNIFIED COGNITIVE ARCHITECTURE</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            One platform calibrated for all three roles.
+          </h2>
+          <p class="text-slate-400 mt-4 text-base sm:text-lg">
+            STREN synchronizes operational business telemetry, elite training science, and member satisfaction into a unified continuum.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          <!-- Role 1: Gym Owners -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden border border-white/10 hover:border-brand/40 transition-all duration-300 flex flex-col justify-between group">
+            <div class="absolute top-0 right-0 w-48 h-48 bg-brand/5 rounded-full blur-3xl group-hover:bg-brand/10 transition-colors pointer-events-none"></div>
+
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <span class="badge-mono text-xs font-semibold text-brand px-2.5 py-1 rounded bg-brand/10 border border-brand/20">ROLE // 01</span>
+                <span class="text-xs text-slate-400 font-mono">EXECUTIVE SUITE</span>
+              </div>
+
+              <h3 class="text-2xl font-extrabold text-white mb-3">Gym Owners</h3>
+              <p class="text-sm text-slate-400 leading-relaxed mb-6">
+                Complete operational command. Automate member billing with smart dunning recovery, manage staff rotas, inspect live turnstile hardware gates, and track real-time gym floor capacity.
+              </p>
+
+              <!-- Mini Feature Matrix -->
+              <div class="space-y-3 mb-8">
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+                  <div class="w-7 h-7 rounded bg-brand/10 text-brand flex items-center justify-center font-bold text-xs">✓</div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-white">Automated Recurring Billing & Dunning</div>
+                    <div class="text-slate-500">Recovers 94.2% of delinquent membership cards</div>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+                  <div class="w-7 h-7 rounded bg-brand/10 text-brand flex items-center justify-center font-bold text-xs">✓</div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-white">NFC Hardware Gate & Turnstile Mesh</div>
+                    <div class="text-slate-500">Instant Wiegand relay unlocks in 0.18 seconds</div>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+                  <div class="w-7 h-7 rounded bg-brand/10 text-brand flex items-center justify-center font-bold text-xs">✓</div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-white">Floor Heatmaps & Churn Predictor</div>
+                    <div class="text-slate-500">Identifies at-risk members 14 days before cancellation</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+              <span class="text-slate-400">Core Metric:</span>
+              <span class="font-mono text-brand font-bold">Churn reduced by 42%</span>
+            </div>
+          </div>
+
+          <!-- Role 2: Coaches & Trainers -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden border border-white/10 hover:border-brand/40 transition-all duration-300 flex flex-col justify-between group">
+            <div class="absolute top-0 right-0 w-48 h-48 bg-brand/5 rounded-full blur-3xl group-hover:bg-brand/10 transition-colors pointer-events-none"></div>
+
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <span class="badge-mono text-xs font-semibold text-brand px-2.5 py-1 rounded bg-brand/10 border border-brand/20">ROLE // 02</span>
+                <span class="text-xs text-slate-400 font-mono">COACH WORKSPACE</span>
+              </div>
+
+              <h3 class="text-2xl font-extrabold text-white mb-3">Personal Trainers</h3>
+              <p class="text-sm text-slate-400 leading-relaxed mb-6">
+                High-performance athletic programming. Build block periodizations in minutes, schedule sessions, assign exercise routines from a 1,000+ movement library, and track live RPE telemetry.
+              </p>
+
+              <!-- Mini Feature Matrix -->
+              <div class="space-y-3 mb-8">
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+                  <div class="w-7 h-7 rounded bg-brand/10 text-brand flex items-center justify-center font-bold text-xs">✓</div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-white">Algorithmic Periodization Builder</div>
+                    <div class="text-slate-500">Auto-calculates overload, deloads, and weekly tonnage</div>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+                  <div class="w-7 h-7 rounded bg-brand/10 text-brand flex items-center justify-center font-bold text-xs">✓</div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-white">Direct Client Roster & Assignment Hub</div>
+                    <div class="text-slate-500">Push custom programs with video cues to 50+ clients</div>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+                  <div class="w-7 h-7 rounded bg-brand/10 text-brand flex items-center justify-center font-bold text-xs">✓</div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-white">Live Telemetry & Velocity Logging</div>
+                    <div class="text-slate-500">Instant feedback on set completion and rep fatigue</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+              <span class="text-slate-400">Core Metric:</span>
+              <span class="font-mono text-brand font-bold">12 hrs saved/week per coach</span>
+            </div>
+          </div>
+
+          <!-- Role 3: Members -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden border border-white/10 hover:border-brand/40 transition-all duration-300 flex flex-col justify-between group">
+            <div class="absolute top-0 right-0 w-48 h-48 bg-brand/5 rounded-full blur-3xl group-hover:bg-brand/10 transition-colors pointer-events-none"></div>
+
+            <div>
+              <div class="flex items-center justify-between mb-6">
+                <span class="badge-mono text-xs font-semibold text-brand px-2.5 py-1 rounded bg-brand/10 border border-brand/20">ROLE // 03</span>
+                <span class="text-xs text-slate-400 font-mono">MEMBER MOBILE OS</span>
+              </div>
+
+              <h3 class="text-2xl font-extrabold text-white mb-3">Athletic Members</h3>
+              <p class="text-sm text-slate-400 leading-relaxed mb-6">
+                A seamless, friction-free gym lifestyle. Unlock physical turnstiles with Apple/Google Wallet NFC, follow assigned workouts set by set, log body measurements, and celebrate PR milestones.
+              </p>
+
+              <!-- Mini Feature Matrix -->
+              <div class="space-y-3 mb-8">
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+                  <div class="w-7 h-7 rounded bg-brand/10 text-brand flex items-center justify-center font-bold text-xs">✓</div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-white">Sub-Second Digital Wallet Gate Pass</div>
+                    <div class="text-slate-500">Tap phone to enter — no clunky QR codes or cards</div>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+                  <div class="w-7 h-7 rounded bg-brand/10 text-brand flex items-center justify-center font-bold text-xs">✓</div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-white">Dynamic Session Tracker & Rest Timers</div>
+                    <div class="text-slate-500">Smart rest alerts, PR confetti, and rep guidance</div>
+                  </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
+                  <div class="w-7 h-7 rounded bg-brand/10 text-brand flex items-center justify-center font-bold text-xs">✓</div>
+                  <div class="text-xs">
+                    <div class="font-semibold text-white">Body Composition & Telemetry Graphs</div>
+                    <div class="text-slate-500">Syncs weight, caliper scans, and muscle mass curves</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs">
+              <span class="text-slate-400">Core Metric:</span>
+              <span class="font-mono text-brand font-bold">88% 90-day retention</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 6. PRODUCT SHOWCASE (INTERACTIVE TABS) -->
+    <!-- ========================================================================= -->
+    <section id="product" class="py-28 px-6 relative">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-14">
+          <div class="badge-mono text-xs font-semibold text-brand uppercase tracking-widest mb-3">// LIVE INTERACTION VIEWPORT</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            Inspect the STREN Interface in action.
+          </h2>
+          <p class="text-slate-400 mt-4 text-base sm:text-lg">
+            Toggle between the specialized consoles designed for facility operators, strength coaches, everyday members, and analytical directors.
+          </p>
+
+          <!-- Interactive Tab Selectors -->
+          <div class="inline-flex p-1.5 rounded-2xl bg-white/[0.04] border border-white/10 mt-8 backdrop-blur-md">
+            <button onclick="switchProductTab('owner')" id="btn-owner" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-brand text-black shadow-lg shadow-brand/20">
+              Owner Dashboard
+            </button>
+            <button onclick="switchProductTab('coach')" id="btn-coach" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white">
+              Coach Workspace
+            </button>
+            <button onclick="switchProductTab('member')" id="btn-member" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white">
+              Member App
+            </button>
+            <button onclick="switchProductTab('analytics')" id="btn-analytics" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white">
+              Analytics & Telemetry
+            </button>
+          </div>
+        </div>
+
+        <!-- Product Preview Chrome Frame Placeholder -->
+        <div class="rounded-3xl border border-white/15 bg-[#0D1017] shadow-2xl overflow-hidden">
+          <!-- Mac Window Top Bar -->
+          <div class="px-6 py-4 bg-[#090C12] border-b border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+              <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+              <span class="ml-4 font-mono text-xs text-slate-400" id="tab-address-bar">stren://console.operator.io/live-studio</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-brand/10 border border-brand/20 text-brand text-[10px] font-mono">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-ping"></span>
+                SYSTEM STATUS: OPTIMAL
+              </span>
+            </div>
+          </div>
+
+          <!-- Dynamic Tab Content Viewport -->
+          <div class="p-8 sm:p-12 min-h-[500px] flex items-center justify-center bg-gradient-to-b from-[#0F131C] to-[#0A0D14]" id="product-display-container">
+            
+            <!-- Owner Dashboard View -->
+            <div id="view-owner" class="w-full space-y-8">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+                <div>
+                  <h4 class="text-xl font-bold text-white">Downtown Athletic Club • Main Hub</h4>
+                  <p class="text-xs text-slate-400 mt-0.5">4 Optical Turnstiles Online • 18 Coaches On Shift</p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <button class="px-4 py-2 rounded-lg bg-brand text-black text-xs font-semibold hover:bg-brand-hover transition-colors">Export Report</button>
+                  <button class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-xs font-semibold hover:bg-white/10 transition-colors">Gate Override</button>
+                </div>
+              </div>
+
+              <!-- Live KPI Row -->
+              <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div class="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                  <div class="text-[11px] font-mono text-slate-400 uppercase">Hourly Check-Ins</div>
+                  <div class="text-2xl font-bold text-white font-mono mt-1">184 <span class="text-xs text-brand font-normal">+18% vs last week</span></div>
+                </div>
+                <div class="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                  <div class="text-[11px] font-mono text-slate-400 uppercase">Live Capacity</div>
+                  <div class="text-2xl font-bold text-brand font-mono mt-1">68% <span class="text-xs text-slate-400 font-normal">(168 / 250)</span></div>
+                </div>
+                <div class="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                  <div class="text-[11px] font-mono text-slate-400 uppercase">Monthly Dunning</div>
+                  <div class="text-2xl font-bold text-white font-mono mt-1">$42.8k <span class="text-xs text-emerald-400 font-normal">94% auto-recovered</span></div>
+                </div>
+                <div class="p-4 rounded-xl bg-white/[0.02] border border-white/5">
+                  <div class="text-[11px] font-mono text-slate-400 uppercase">Active PT Clients</div>
+                  <div class="text-2xl font-bold text-white font-mono mt-1">312 <span class="text-xs text-brand font-normal">+12 this month</span></div>
+                </div>
+              </div>
+
+              <!-- Interactive Visual Floor Monitor -->
+              <div class="p-6 rounded-2xl bg-black/40 border border-white/10">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Real-Time Turnstile & Floor Telemetry</span>
+                  <span class="text-xs font-mono text-brand">SYNC INTERVAL: 500MS</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div class="p-3 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                    <span class="text-slate-300">Turnstile 01 (Front North)</span>
+                    <span class="text-brand font-mono">Active (0.17s)</span>
+                  </div>
+                  <div class="p-3 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                    <span class="text-slate-300">Turnstile 02 (VIP / Staff)</span>
+                    <span class="text-brand font-mono">Active (0.19s)</span>
+                  </div>
+                  <div class="p-3 rounded-lg bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                    <span class="text-slate-300">Free Weights Heatmap</span>
+                    <span class="text-amber-400 font-mono">82% Peak Density</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Coach Workspace View (Hidden initially) -->
+            <div id="view-coach" class="w-full space-y-8 hidden">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+                <div>
+                  <h4 class="text-xl font-bold text-white">Periodization & Block Programming Engine</h4>
+                  <p class="text-xs text-slate-400 mt-0.5">Assigned to: Marcus Vance (Hypertrophy Block B - Week 3)</p>
+                </div>
+                <button class="px-4 py-2 rounded-lg bg-brand text-black text-xs font-semibold">+ Assign New Block</button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-5 rounded-2xl bg-white/[0.02] border border-brand/20">
+                  <div class="text-xs font-mono text-brand mb-1">SESSION 01 // LOWER STRENGTH</div>
+                  <div class="text-sm font-bold text-white mb-2">Back Squat (Heavy Triples)</div>
+                  <div class="text-xs text-slate-400">4 Sets × 3 Reps @ 85% 1RM (185kg)</div>
+                  <div class="mt-3 text-[11px] font-mono text-emerald-400">Target RPE: 8.5 • Velocity: 0.42m/s</div>
+                </div>
+                <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+                  <div class="text-xs font-mono text-slate-400 mb-1">SESSION 02 // POSTERIOR CHAIN</div>
+                  <div class="text-sm font-bold text-white mb-2">Romanian Deadlift + Glute Drive</div>
+                  <div class="text-xs text-slate-400">3 Sets × 8 Reps @ 70% 1RM (140kg)</div>
+                  <div class="mt-3 text-[11px] font-mono text-slate-400">Tempo: 3-0-1-0 • 120s Rest</div>
+                </div>
+                <div class="p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+                  <div class="text-xs font-mono text-slate-400 mb-1">SESSION 03 // UPPER EXPLOSIVE</div>
+                  <div class="text-sm font-bold text-white mb-2">Barbell Bench Press + Row Superset</div>
+                  <div class="text-xs text-slate-400">5 Sets × 5 Reps @ 80% 1RM</div>
+                  <div class="mt-3 text-[11px] font-mono text-slate-400">Fatigue Cutoff: 10% Drop</div>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-xl bg-brand/5 border border-brand/20 flex items-center justify-between text-xs">
+                <span class="text-slate-300">Client Telemetry Synchronized: <strong>Marcus logged Session 01 at 07:15 AM today</strong></span>
+                <span class="font-mono text-brand font-bold">100% COMPLIANCE</span>
+              </div>
+            </div>
+
+            <!-- Member App View (Hidden initially) -->
+            <div id="view-member" class="w-full space-y-8 hidden">
+              <div class="max-w-md mx-auto p-6 rounded-3xl bg-[#090C12] border border-white/10 shadow-2xl">
+                <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-brand/20 border border-brand/40 flex items-center justify-center text-brand font-bold">MV</div>
+                    <div>
+                      <div class="text-sm font-bold text-white">Marcus Vance</div>
+                      <div class="text-[11px] text-slate-400">Elite Athlete Tier • ID: #9842</div>
+                    </div>
+                  </div>
+                  <span class="badge-mono text-[10px] text-brand px-2 py-0.5 rounded bg-brand/10 border border-brand/20">GATE PASS READY</span>
+                </div>
+
+                <div class="my-6 p-4 rounded-2xl bg-gradient-to-tr from-brand/15 to-transparent border border-brand/30 text-center">
+                  <div class="text-xs font-mono text-brand mb-1">TODAY'S SCHEDULED WORKOUT</div>
+                  <div class="text-lg font-extrabold text-white">Lower Body Periodization B</div>
+                  <div class="text-xs text-slate-400 mt-1">Coach Alex Rivera • 6 Movements • ~65 mins</div>
+                  <button class="mt-4 w-full py-2.5 rounded-xl bg-brand text-black font-bold text-xs hover:bg-brand-hover transition-colors">Start Workout Session</button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                  <div class="p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+                    <div class="text-[10px] font-mono text-slate-500">BENCH PR</div>
+                    <div class="font-mono font-bold text-white mt-0.5">145 kg</div>
+                  </div>
+                  <div class="p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+                    <div class="text-[10px] font-mono text-slate-500">SQUAT PR</div>
+                    <div class="font-mono font-bold text-white mt-0.5">210 kg</div>
+                  </div>
+                  <div class="p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+                    <div class="text-[10px] font-mono text-slate-500">DEADLIFT</div>
+                    <div class="font-mono font-bold text-white mt-0.5">260 kg</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Analytics View (Hidden initially) -->
+            <div id="view-analytics" class="w-full space-y-6 hidden">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                  <div class="text-xs font-mono text-slate-400">CHURN PREDICTION INDEX</div>
+                  <div class="text-3xl font-extrabold text-white font-mono mt-2">1.8%</div>
+                  <p class="text-xs text-emerald-400 mt-2">Industry benchmark: 6.5%</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                  <div class="text-xs font-mono text-slate-400">AVERAGE CLIENT LIFETIME VALUE</div>
+                  <div class="text-3xl font-extrabold text-white font-mono mt-2">$2,480</div>
+                  <p class="text-xs text-brand mt-2">+34% after coaching integration</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/10">
+                  <div class="text-xs font-mono text-slate-400">PEAK TURNOVER EFFICIENCY</div>
+                  <div class="text-3xl font-extrabold text-white font-mono mt-2">99.4%</div>
+                  <p class="text-xs text-slate-400 mt-2">Sub-second gate clearing latency</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 7. PLATFORM FEATURES (PREMIUM BENTO GRID) -->
+    <!-- ========================================================================= -->
+    <section id="features" class="py-28 px-6 relative bg-[#090B10]">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="badge-mono text-xs font-semibold text-brand uppercase tracking-widest mb-3">// ARCHITECTURAL CAPABILITIES</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            Engineered for high-throughput athletic facilities.
+          </h2>
+          <p class="text-slate-400 mt-4 text-base sm:text-lg">
+            Ten mission-critical modular systems built directly into the STREN core engine.
+          </p>
+        </div>
+
+        <!-- 10 Bento Grid Elements -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+          <!-- Feature 1: Workout Builder (Span 2) -->
+          <div class="md:col-span-2 p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">01 // BUILDER</div>
+            <h3 class="text-2xl font-bold text-white mb-2">Dynamic Workout Builder</h3>
+            <p class="text-sm text-slate-400 mb-6">Create non-linear periodizations, supersets, and velocity-based training protocols with intuitive drag-and-drop mechanics.</p>
+            <div class="p-4 rounded-xl bg-black/40 border border-white/5 font-mono text-xs text-slate-300 space-y-1.5">
+              <div class="flex justify-between text-brand"><span>[A1] Trap Bar Deadlift</span> <span>4 x 5 @ 82.5%</span></div>
+              <div class="flex justify-between text-slate-400"><span>[A2] Box Jumps (Reactive)</span> <span>4 x 3 @ 30in</span></div>
+            </div>
+          </div>
+
+          <!-- Feature 2: Assignments Hub -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">02 // DISPATCH</div>
+            <h3 class="text-xl font-bold text-white mb-2">Client Assignments</h3>
+            <p class="text-xs text-slate-400 mb-4">Bulk dispatch personalized training blocks to hundreds of athletes with scheduled calendar releases.</p>
+            <div class="text-xs font-mono text-brand">Automated Sync: 100%</div>
+          </div>
+
+          <!-- Feature 3: Workout Sessions (Span 1) -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">03 // EXECUTION</div>
+            <h3 class="text-xl font-bold text-white mb-2">Workout Sessions</h3>
+            <p class="text-xs text-slate-400 mb-4">Live rep counters, audio cues, automatic rest clocks, and barbell load calculators right on the gym floor.</p>
+            <div class="text-xs font-mono text-slate-400">Built-in iOS / Android Haptics</div>
+          </div>
+
+          <!-- Feature 4: Exercise Library (Span 1) -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">04 // REPOSITORY</div>
+            <h3 class="text-xl font-bold text-white mb-2">1,000+ Exercise Library</h3>
+            <p class="text-xs text-slate-400 mb-4">Searchable biomechanical movement encyclopedia with 4K video cues and anatomical tags.</p>
+            <div class="text-xs font-mono text-brand">Custom Upload Support</div>
+          </div>
+
+          <!-- Feature 5: Progress Tracking (Span 2) -->
+          <div class="md:col-span-2 p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">05 // TELEMETRY</div>
+            <h3 class="text-2xl font-bold text-white mb-2">Algorithmic Progress Tracking</h3>
+            <p class="text-sm text-slate-400 mb-6">Track volume tonnage curves, estimated 1-rep maximums, and strength velocity decay over multi-month training blocks.</p>
+            <div class="h-16 w-full rounded-lg bg-black/40 border border-white/5 flex items-end gap-2 p-2">
+              <div class="w-1/6 bg-brand/30 h-6 rounded-t"></div>
+              <div class="w-1/6 bg-brand/40 h-8 rounded-t"></div>
+              <div class="w-1/6 bg-brand/50 h-11 rounded-t"></div>
+              <div class="w-1/6 bg-brand/70 h-12 rounded-t"></div>
+              <div class="w-1/6 bg-brand/85 h-14 rounded-t"></div>
+              <div class="w-1/6 bg-brand h-16 rounded-t"></div>
+            </div>
+          </div>
+
+          <!-- Feature 6: Body Measurements -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">06 // BIOMETRICS</div>
+            <h3 class="text-xl font-bold text-white mb-2">Body Measurements</h3>
+            <p class="text-xs text-slate-400 mb-4">Track circumference measurements, DEXA / InBody scan integrations, and body composition trends.</p>
+            <div class="text-xs font-mono text-slate-400">DEXA & Bluetooth Scale Sync</div>
+          </div>
+
+          <!-- Feature 7: Push Notifications -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">07 // COMMS</div>
+            <h3 class="text-xl font-bold text-white mb-2">Smart Push Alerts</h3>
+            <p class="text-xs text-slate-400 mb-4">Context-aware notifications for upcoming classes, coach feedback, and missed training streaks.</p>
+            <div class="text-xs font-mono text-brand">Zero Spam Filtering</div>
+          </div>
+
+          <!-- Feature 8: Analytics & Intelligence -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">08 // REVENUE BI</div>
+            <h3 class="text-xl font-bold text-white mb-2">Revenue Analytics</h3>
+            <p class="text-xs text-slate-400 mb-4">Real-time MRR dashboards, automated tax breakdowns, and member cohort retention metrics.</p>
+            <div class="text-xs font-mono text-emerald-400">Automated Accounting Feeds</div>
+          </div>
+
+          <!-- Feature 9: Comprehensive Reports -->
+          <div class="p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">09 // AUDIT</div>
+            <h3 class="text-xl font-bold text-white mb-2">Facility Reports</h3>
+            <p class="text-xs text-slate-400 mb-4">One-click audit reports for franchise governance, turnstile hardware logs, and coach commission payouts.</p>
+            <div class="text-xs font-mono text-slate-400">PDF & CSV Instant Export</div>
+          </div>
+
+          <!-- Feature 10: Enterprise Authentication (Span 2) -->
+          <div class="md:col-span-2 p-8 rounded-3xl glass-panel relative overflow-hidden group hover:border-brand/40 transition-all">
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">10 // ACCESS CONTROL</div>
+            <h3 class="text-2xl font-bold text-white mb-2">Enterprise Security & Authentication</h3>
+            <p class="text-sm text-slate-400 mb-4">Wiegand relay controllers, Apple Wallet NFC keys, biometric face scanners, and multi-factor SSO for all staff accounts.</p>
+            <div class="flex flex-wrap gap-2 text-xs font-mono">
+              <span class="px-2.5 py-1 rounded bg-white/5 text-slate-300">Apple Wallet NFC</span>
+              <span class="px-2.5 py-1 rounded bg-white/5 text-slate-300">Google Pay Pass</span>
+              <span class="px-2.5 py-1 rounded bg-white/5 text-slate-300">OSDP / Wiegand</span>
+              <span class="px-2.5 py-1 rounded bg-white/5 text-slate-300">SAML SSO</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 8. HOW IT WORKS (STEP-BY-STEP WORKFLOWS) -->
+    <!-- ========================================================================= -->
+    <section class="py-28 px-6 relative">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="badge-mono text-xs font-semibold text-brand uppercase tracking-widest mb-3">// END-TO-END JOURNEY PROTOCOL</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            See how the system flows from end to end.
+          </h2>
+          <p class="text-slate-400 mt-4 text-base sm:text-lg">
+            Choose a persona below to inspect the step-by-step lifecycle within the STREN platform.
+          </p>
+
+          <!-- Journey Selector Tabs -->
+          <div class="inline-flex p-1.5 rounded-2xl bg-white/[0.04] border border-white/10 mt-8 backdrop-blur-md">
+            <button onclick="switchJourneyTab('journey-owner')" id="btn-j-owner" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-brand text-black shadow-lg shadow-brand/20">
+              Owner Journey
+            </button>
+            <button onclick="switchJourneyTab('journey-coach')" id="btn-j-coach" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white">
+              Coach Journey
+            </button>
+            <button onclick="switchJourneyTab('journey-member')" id="btn-j-member" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white">
+              Member Journey
+            </button>
+          </div>
+        </div>
+
+        <!-- Journey 1: Owner Journey Container -->
+        <div id="journey-owner" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="p-6 rounded-2xl glass-panel border border-white/10 relative">
+            <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-sm mb-4">01</div>
+            <h4 class="text-lg font-bold text-white mb-2">Connect Hardware Relay</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Plug STREN IoT edge controllers into your existing Wiegand or OSDP turnstiles in under 45 minutes.</p>
+          </div>
+          <div class="p-6 rounded-2xl glass-panel border border-white/10 relative">
+            <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-sm mb-4">02</div>
+            <h4 class="text-lg font-bold text-white mb-2">Import Member Database</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">1-click automated ingestion migrates active card tokenizations, waivers, and recurring billings with zero downtime.</p>
+          </div>
+          <div class="p-6 rounded-2xl glass-panel border border-white/10 relative">
+            <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-sm mb-4">03</div>
+            <h4 class="text-lg font-bold text-white mb-2">Configure Staff Privileges</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Assign coaches, front desk personnel, and accounting managers with role-based cryptographic access controls.</p>
+          </div>
+          <div class="p-6 rounded-2xl glass-panel border border-brand/30 relative bg-brand/[0.03]">
+            <div class="w-10 h-10 rounded-xl bg-brand text-black flex items-center justify-center font-mono font-bold text-sm mb-4">04</div>
+            <h4 class="text-lg font-bold text-white mb-2">Autonomous Operations</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Smart dunning recovers failed cards, turnstiles run 24/7 without manual front desk check-ins, and margins expand.</p>
+          </div>
+        </div>
+
+        <!-- Journey 2: Coach Journey Container (Hidden initially) -->
+        <div id="journey-coach" class="grid grid-cols-1 md:grid-cols-4 gap-6 hidden">
+          <div class="p-6 rounded-2xl glass-panel border border-white/10 relative">
+            <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-sm mb-4">01</div>
+            <h4 class="text-lg font-bold text-white mb-2">Onboard Client Roster</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Clients sync immediately upon gym registration with full medical history, 1RMs, and physical goals.</p>
+          </div>
+          <div class="p-6 rounded-2xl glass-panel border border-white/10 relative">
+            <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-sm mb-4">02</div>
+            <h4 class="text-lg font-bold text-white mb-2">Assemble Periodization</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Select from tested template blocks or build custom workouts with automatic tonnage calculation.</p>
+          </div>
+          <div class="p-6 rounded-2xl glass-panel border border-white/10 relative">
+            <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-sm mb-4">03</div>
+            <h4 class="text-lg font-bold text-white mb-2">Receive Live Telemetry</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Get notifications when clients complete workouts on the gym floor, review their logged RPE, and adapt weights.</p>
+          </div>
+          <div class="p-6 rounded-2xl glass-panel border border-brand/30 relative bg-brand/[0.03]">
+            <div class="w-10 h-10 rounded-xl bg-brand text-black flex items-center justify-center font-mono font-bold text-sm mb-4">04</div>
+            <h4 class="text-lg font-bold text-white mb-2">Accelerate Client PRs</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">High accountability leads to tangible athletic progress, client retention surges, and coach referral rates spike.</p>
+          </div>
+        </div>
+
+        <!-- Journey 3: Member Journey Container (Hidden initially) -->
+        <div id="journey-member" class="grid grid-cols-1 md:grid-cols-4 gap-6 hidden">
+          <div class="p-6 rounded-2xl glass-panel border border-white/10 relative">
+            <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-sm mb-4">01</div>
+            <h4 class="text-lg font-bold text-white mb-2">Add NFC Wallet Pass</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">With 1-tap, add your STREN gym credential to Apple or Google Wallet before stepping into the building.</p>
+          </div>
+          <div class="p-6 rounded-2xl glass-panel border border-white/10 relative">
+            <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-sm mb-4">02</div>
+            <h4 class="text-lg font-bold text-white mb-2">Instant Turnstile Tap</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Walk through optical gates with a sub-second phone tap. The gym system marks you present and loads your workout.</p>
+          </div>
+          <div class="p-6 rounded-2xl glass-panel border border-white/10 relative">
+            <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/30 flex items-center justify-center text-brand font-mono font-bold text-sm mb-4">03</div>
+            <h4 class="text-lg font-bold text-white mb-2">Execute & Log Sets</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Open the STREN mobile app to see your coach's prescribed reps, input your actual weights, and track rest timers.</p>
+          </div>
+          <div class="p-6 rounded-2xl glass-panel border border-brand/30 relative bg-brand/[0.03]">
+            <div class="w-10 h-10 rounded-xl bg-brand text-black flex items-center justify-center font-mono font-bold text-sm mb-4">04</div>
+            <h4 class="text-lg font-bold text-white mb-2">Milestone Unlocked</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Celebrate automatic PR badges, inspect progressive overload charts, and see body composition evolve over time.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 9. WHY STREN (COMPARISON HEAD-TO-HEAD) -->
+    <!-- ========================================================================= -->
+    <section id="comparison" class="py-28 px-6 bg-gradient-to-b from-[#090B10] via-[#0D1017] to-[#090B10] border-y border-white/5">
+      <div class="max-w-5xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+          <div class="badge-mono text-xs font-semibold text-brand uppercase tracking-widest mb-3">// PARADIGM COMPARISON</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            Legacy gym software vs. STREN OS.
+          </h2>
+          <p class="text-slate-400 mt-4 text-base">
+            See why modern performance hubs are discarding clunky 2012-era software stacks for STREN.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Traditional Gym Software -->
+          <div class="p-8 rounded-3xl bg-[#0F1218] border border-white/5">
+            <div class="badge-mono text-xs text-red-400 font-semibold mb-2">LEGACY STACK // CLUNKY</div>
+            <h3 class="text-xl font-bold text-white mb-6">Traditional Gym Software</h3>
+
+            <ul class="space-y-4 text-sm text-slate-400">
+              <li class="flex items-start gap-3">
+                <span class="text-red-400 font-bold">✕</span>
+                <span>Manual paper spreadsheets and lost WhatsApp chats between trainers and members.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-red-400 font-bold">✕</span>
+                <span>Clunky optical barcodes that take 5+ seconds to scan at the front door.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-red-400 font-bold">✕</span>
+                <span>Failed billing requires awkward front-desk confrontations and phone calls.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-red-400 font-bold">✕</span>
+                <span>Zero integration between workout programming and actual facility access logs.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-red-400 font-bold">✕</span>
+                <span>Members churn quietly without any predictive warning signals.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- STREN Apex OS -->
+          <div class="p-8 rounded-3xl glass-panel-active relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-40 h-40 bg-brand/20 rounded-full blur-2xl"></div>
+
+            <div class="badge-mono text-xs text-brand font-semibold mb-2">STREN APEX // THE NEW STANDARD</div>
+            <h3 class="text-xl font-bold text-white mb-6">Connected Athletic Operating System</h3>
+
+            <ul class="space-y-4 text-sm text-slate-300">
+              <li class="flex items-start gap-3">
+                <span class="text-brand font-bold">✓</span>
+                <span>Sub-second NFC Apple & Google Wallet passes with 0.18s turnstile unlock speed.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-brand font-bold">✓</span>
+                <span>Automated Smart Dunning recovers 94.2% of delinquent membership credit cards.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-brand font-bold">✓</span>
+                <span>Algorithmic periodization builder with 1,000+ indexed exercise videos and live RPE.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-brand font-bold">✓</span>
+                <span>Unified data continuum connecting owners, coaches, and members in real time.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-brand font-bold">✓</span>
+                <span>Predictive churn telemetry flags disengaged members 14 days before cancellation.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 10. TESTIMONIALS (GYM OWNER, COACH, MEMBER) -->
+    <!-- ========================================================================= -->
+    <section class="py-28 px-6 relative">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="badge-mono text-xs font-semibold text-brand uppercase tracking-widest mb-3">// VERIFIED PROOF POINTS</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            Loved by all three pillars of the fitness ecosystem.
+          </h2>
+          <p class="text-slate-400 mt-4 text-base">
+            Read first-hand accounts from high-performance gym founders, strength coaches, and active athletes.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- Testimonial 1: Gym Owner -->
+          <div class="p-8 rounded-3xl glass-panel border border-white/10 flex flex-col justify-between hover:border-brand/40 transition-all">
+            <div>
+              <div class="flex items-center gap-1 text-brand mb-4">
+                ★★★★★
+              </div>
+              <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                “We recovered over $14,000 in failed credit card dunning in our first 60 days on STREN. The turnstile hardware mesh has never had an outage, and front-desk sign-in lines are completely gone.”
+              </p>
+            </div>
+
+            <div class="pt-6 border-t border-white/10 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-brand/20 border border-brand/40 flex items-center justify-center font-bold text-brand text-xs">MV</div>
+              <div>
+                <div class="text-sm font-bold text-white">Marcus Vance</div>
+                <div class="text-xs text-slate-400">Founder, Ironclad Athletics (3 Locations)</div>
+                <div class="badge-mono text-[10px] text-brand mt-0.5">ROLE: GYM OWNER</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 2: Coach -->
+          <div class="p-8 rounded-3xl glass-panel border border-white/10 flex flex-col justify-between hover:border-brand/40 transition-all">
+            <div>
+              <div class="flex items-center gap-1 text-brand mb-4">
+                ★★★★★
+              </div>
+              <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                “Building 12-week block periodizations used to devour my entire Sunday afternoon. With STREN’s drag-and-drop builder, I program for 40+ athletes in under 90 minutes with live velocity feedback.”
+              </p>
+            </div>
+
+            <div class="pt-6 border-t border-white/10 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center font-bold text-emerald-400 text-xs">ER</div>
+              <div>
+                <div class="text-sm font-bold text-white">Elena Rostova</div>
+                <div class="text-xs text-slate-400">Head of Strength & Conditioning, Apex Lab</div>
+                <div class="badge-mono text-[10px] text-emerald-400 mt-0.5">ROLE: PERSONAL TRAINER</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Testimonial 3: Member -->
+          <div class="p-8 rounded-3xl glass-panel border border-white/10 flex flex-col justify-between hover:border-brand/40 transition-all">
+            <div>
+              <div class="flex items-center gap-1 text-brand mb-4">
+                ★★★★★
+              </div>
+              <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                “Tapping my Apple Watch to unlock the gym turnstile and immediately seeing today's heavy squat targets on my phone feels like living in the future. I haven't missed a training day in 5 months.”
+              </p>
+            </div>
+
+            <div class="pt-6 border-t border-white/10 flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-teal-500/20 border border-teal-500/40 flex items-center justify-center font-bold text-teal-300 text-xs">DC</div>
+              <div>
+                <div class="text-sm font-bold text-white">David Chen</div>
+                <div class="text-xs text-slate-400">Competitive Powerlifter & Member</div>
+                <div class="badge-mono text-[10px] text-teal-300 mt-0.5">ROLE: ATHLETIC MEMBER</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 11. PRICING SECTION -->
+    <!-- ========================================================================= -->
+    <section id="pricing" class="py-28 px-6 bg-[#090B10] border-t border-white/5 relative">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <div class="badge-mono text-xs font-semibold text-brand uppercase tracking-widest mb-3">// TRANSPARENT INFRASTRUCTURE SCALING</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            Predictable plans calibrated for your gym.
+          </h2>
+          <p class="text-slate-400 mt-4 text-base">
+            All tiers include unlimited member check-ins, zero hidden setup fees, and 24-hour database migration.
+          </p>
+
+          <!-- Billing Switcher Pill -->
+          <div class="inline-flex items-center gap-3 p-1.5 rounded-full bg-white/[0.04] border border-white/10 mt-8 backdrop-blur-md">
+            <button onclick="setPricingCadence('monthly')" id="btn-monthly" class="px-5 py-2 rounded-full text-xs font-semibold bg-white/10 text-white transition-all">Monthly Billing</button>
+            <button onclick="setPricingCadence('annual')" id="btn-annual" class="px-5 py-2 rounded-full text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1.5">
+              <span>Annual Billing</span>
+              <span class="badge-mono text-[9px] px-1.5 py-0.5 rounded bg-brand/20 text-brand font-bold">SAVE 20%</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+          
+          <!-- Plan 1: Starter -->
+          <div class="p-8 rounded-3xl glass-panel border border-white/10 flex flex-col justify-between hover:border-white/20 transition-all">
+            <div>
+              <div class="badge-mono text-xs text-slate-400 font-semibold mb-2">TIER 01 // BOUTIQUE STUDIOS</div>
+              <h3 class="text-2xl font-bold text-white mb-1">Starter</h3>
+              <p class="text-xs text-slate-400 mb-6">Essential operating platform for independent boutique gyms and single strength studios.</p>
+
+              <div class="mb-6">
+                <span class="text-4xl font-extrabold text-white font-mono" id="price-starter">$149</span>
+                <span class="text-xs text-slate-400 font-mono" id="period-starter">/ month</span>
+              </div>
+
+              <ul class="space-y-3 text-xs text-slate-300 mb-8">
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> Up to 250 Active Members
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> 5 Coach & Staff Seats
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> Turnstile NFC Gate Controller
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> Workout Session Logger
+                </li>
+                <li class="flex items-center gap-2.5 text-slate-500">
+                  <span>✕</span> AI Periodization Engine
+                </li>
+                <li class="flex items-center gap-2.5 text-slate-500">
+                  <span>✕</span> Multi-Location Network Mesh
+                </li>
+              </ul>
+            </div>
+
+            <a href="#cta" class="w-full py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-xs text-center transition-colors">Deploy Starter</a>
+          </div>
+
+          <!-- Plan 2: Professional (Featured) -->
+          <div class="p-8 rounded-3xl glass-panel-active relative overflow-hidden flex flex-col justify-between scale-[1.03] shadow-2xl">
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-brand/30 rounded-full blur-3xl"></div>
+
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="badge-mono text-xs text-brand font-bold tracking-wider">TIER 02 // HIGH-PERFORMANCE</span>
+                <span class="badge-mono text-[9px] px-2 py-0.5 rounded-full bg-brand text-black font-bold">MOST POPULAR</span>
+              </div>
+              <h3 class="text-2xl font-bold text-white mb-1">Professional</h3>
+              <p class="text-xs text-slate-300 mb-6">Complete operating system for growing athletic facilities requiring high-speed hardware mesh.</p>
+
+              <div class="mb-6">
+                <span class="text-4xl font-extrabold text-white font-mono" id="price-pro">$299</span>
+                <span class="text-xs text-slate-300 font-mono" id="period-pro">/ month</span>
+              </div>
+
+              <ul class="space-y-3 text-xs text-slate-200 mb-8">
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand font-bold">✓</span> Up to 1,000 Active Members
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand font-bold">✓</span> 25 Coach & Staff Seats
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand font-bold">✓</span> NFC Hardware Mesh (0.18s unlock)
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand font-bold">✓</span> Algorithmic Periodization Builder
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand font-bold">✓</span> Automated Smart Dunning (94% recovery)
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand font-bold">✓</span> Executive BI Churn Guard Telemetry
+                </li>
+              </ul>
+            </div>
+
+            <a href="#cta" class="w-full py-4 rounded-xl bg-brand hover:bg-brand-hover text-black font-bold text-xs text-center transition-all shadow-[0_0_25px_rgba(91,229,132,0.35)]">Start 14-Day Free Trial</a>
+          </div>
+
+          <!-- Plan 3: Enterprise -->
+          <div class="p-8 rounded-3xl glass-panel border border-white/10 flex flex-col justify-between hover:border-white/20 transition-all">
+            <div>
+              <div class="badge-mono text-xs text-slate-400 font-semibold mb-2">TIER 03 // FRANCHISE CHAINS</div>
+              <h3 class="text-2xl font-bold text-white mb-1">Enterprise</h3>
+              <p class="text-xs text-slate-400 mb-6">Engineered for multi-location gyms, fitness franchises, and commercial athletic campuses.</p>
+
+              <div class="mb-6">
+                <span class="text-4xl font-extrabold text-white font-mono" id="price-enterprise">$599</span>
+                <span class="text-xs text-slate-400 font-mono" id="period-enterprise">/ month</span>
+              </div>
+
+              <ul class="space-y-3 text-xs text-slate-300 mb-8">
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> Unlimited Members & Staff Seats
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> Multi-Location Network Mesh Sync
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> Dedicated Hardware Controller Clusters
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> Custom Biometric SDK & API Webhooks
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> 99.99% Hardware SLA & 24/7 Priority Tech
+                </li>
+                <li class="flex items-center gap-2.5">
+                  <span class="text-brand">✓</span> Dedicated Account Architect Onboarding
+                </li>
+              </ul>
+            </div>
+
+            <a href="#cta" class="w-full py-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-xs text-center transition-colors">Contact Enterprise Architecture</a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 12. FAQ SECTION -->
+    <!-- ========================================================================= -->
+    <section id="faq" class="py-28 px-6 relative">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <div class="badge-mono text-xs font-semibold text-brand uppercase tracking-widest mb-3">// ARCHITECTURE CLARIFICATIONS</div>
+          <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            Frequently Asked Questions.
+          </h2>
+          <p class="text-slate-400 mt-4 text-base">
+            Everything you need to know about hardware gate installation, migration from legacy tools, and biometrics.
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- FAQ 1 -->
+          <div class="rounded-2xl glass-panel border border-white/10 overflow-hidden">
+            <button onclick="toggleFaq(1)" class="w-full p-6 text-left flex items-center justify-between gap-4">
+              <span class="text-base font-bold text-white">How does STREN connect to our existing turnstiles and optical gates?</span>
+              <span id="faq-icon-1" class="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-brand font-mono text-sm">+</span>
+            </button>
+            <div id="faq-body-1" class="hidden px-6 pb-6 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+              Our hardware relay connects directly via standard Wiegand or OSDP v2 interfaces into your existing physical turnstiles, optical speed gates, or magnetic doors. Facility technicians complete standard wiring in under 45 minutes with zero disruption to active operations.
+            </div>
+          </div>
+
+          <!-- FAQ 2 -->
+          <div class="rounded-2xl glass-panel border border-white/10 overflow-hidden">
+            <button onclick="toggleFaq(2)" class="w-full p-6 text-left flex items-center justify-between gap-4">
+              <span class="text-base font-bold text-white">Can we migrate from our old gym software without downtime?</span>
+              <span id="faq-icon-2" class="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-brand font-mono text-sm">+</span>
+            </button>
+            <div id="faq-body-2" class="hidden px-6 pb-6 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+              Yes. STREN’s ingestion engine securely imports active member profiles, recurring card tokenizations, waiver records, and class schedules directly from CSV, Excel, or API exports of Mindbody, Glofox, Zen Planner, or custom SQL databases without members needing to re-enter payment details.
+            </div>
+          </div>
+
+          <!-- FAQ 3 -->
+          <div class="rounded-2xl glass-panel border border-white/10 overflow-hidden">
+            <button onclick="toggleFaq(3)" class="w-full p-6 text-left flex items-center justify-between gap-4">
+              <span class="text-base font-bold text-white">What happens if the gym's internet connection drops?</span>
+              <span id="faq-icon-3" class="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-brand font-mono text-sm">+</span>
+            </button>
+            <div id="faq-body-3" class="hidden px-6 pb-6 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+              STREN’s hardware gateways maintain a local encrypted token cache. In the event of an ISP outage, turnstiles continue verifying and admitting members seamlessly. Once connectivity is restored, all offline telemetry is asynchronously reconciled.
+            </div>
+          </div>
+
+          <!-- FAQ 4 -->
+          <div class="rounded-2xl glass-panel border border-white/10 overflow-hidden">
+            <button onclick="toggleFaq(4)" class="w-full p-6 text-left flex items-center justify-between gap-4">
+              <span class="text-base font-bold text-white">How does automated Smart Dunning recover failed membership payments?</span>
+              <span id="faq-icon-4" class="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-brand font-mono text-sm">+</span>
+            </button>
+            <div id="faq-body-4" class="hidden px-6 pb-6 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+              Instead of immediately disabling member access or making awkward front-desk phone calls, STREN uses algorithmic smart retry logic and dispatches a 1-tap Apple Pay/Google Pay update link directly to the member's mobile wallet, recovering 94.2% of soft payment churn.
+            </div>
+          </div>
+
+          <!-- FAQ 5 -->
+          <div class="rounded-2xl glass-panel border border-white/10 overflow-hidden">
+            <button onclick="toggleFaq(5)" class="w-full p-6 text-left flex items-center justify-between gap-4">
+              <span class="text-base font-bold text-white">Can trainers program custom exercises with their own videos?</span>
+              <span id="faq-icon-5" class="w-7 h-7 rounded-full bg-white/5 flex items-center justify-center text-brand font-mono text-sm">+</span>
+            </button>
+            <div id="faq-body-5" class="hidden px-6 pb-6 text-sm text-slate-400 leading-relaxed border-t border-white/5 pt-4">
+              In addition to our library of 1,000+ indexed movements, coaches and gym owners can upload custom 4K exercise videos, cue cards, and proprietary movement progressions with role-restricted visibility.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 13. FINAL CALL TO ACTION (CINEMATIC) -->
+    <!-- ========================================================================= -->
+    <section id="cta" class="py-28 px-6 relative overflow-hidden">
+      <div class="max-w-6xl mx-auto relative rounded-3xl p-1 bg-gradient-to-b from-brand/40 via-white/10 to-transparent shadow-2xl">
+        <div class="rounded-[22px] bg-[#0C0F16] p-10 sm:p-20 relative overflow-hidden text-center border border-white/5">
+          
+          <!-- Dramatic Radial Lighting Effect -->
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(91,229,132,0.18),transparent_65%)] pointer-events-none"></div>
+          
+          <div class="relative z-10 max-w-3xl mx-auto space-y-6">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand/10 border border-brand/30 text-brand text-xs font-mono font-semibold">
+              <span>DEPLOYMENT READY // 24HR ACTIVATION</span>
+            </div>
+
+            <h2 class="text-3xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
+              Ready to Transform Your Gym Into a <span class="text-brand">Connected Athletic Machine?</span>
+            </h2>
+
+            <p class="text-base sm:text-lg text-slate-400 font-normal leading-relaxed">
+              Join over 500+ elite gyms eliminating billing leakage, automating turnstile entry, and empowering coaches with high-velocity telemetry.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+              <a href="#pricing" class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl text-sm font-bold text-black bg-brand hover:bg-brand-hover transition-all duration-200 shadow-[0_0_35px_rgba(91,229,132,0.4)] hover:scale-[1.03]">
+                <span>Get Started Now</span>
+                <svg class="w-4 h-4 stroke-black stroke-[2.5]" fill="none" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+              <a href="#pricing" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-sm font-semibold text-white bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 transition-all duration-200 backdrop-blur-md">
+                <span>Book a Live Architecture Demo</span>
+              </a>
+            </div>
+
+            <div class="pt-8 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500 font-mono">
+              <span>✓ 14-Day Free Access</span>
+              <span>✓ Free White-Glove Migration</span>
+              <span>✓ Same-Day Hardware Sync</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 14. FOOTER -->
+    <!-- ========================================================================= -->
+    <footer class="border-t border-white/[0.08] bg-[#07090D] pt-20 pb-12 px-6">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-12 pb-16 border-b border-white/[0.07]">
+          
+          <!-- Brand Column -->
+          <div class="md:col-span-2 space-y-4">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg bg-white/5 border border-brand/40 flex items-center justify-center text-brand">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M4 6h3v12H4zm6-2h4v16h-4zm7 4h3v8h-3z"/></svg>
+              </div>
+              <span class="text-xl font-extrabold tracking-tight text-white">STREN</span>
+              <span class="badge-mono text-[9px] text-brand px-1.5 py-0.5 rounded bg-brand/10 border border-brand/20">OS</span>
+            </div>
+
+            <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
+              The high-performance athletic operating system built for enterprise gym chains, boutique CrossFit boxes, and biometric training facilities.
+            </p>
+
+            <div class="flex items-center gap-2 text-xs text-brand font-mono pt-2">
+              <span class="w-2 h-2 rounded-full bg-brand animate-pulse"></span>
+              <span>SYSTEM STATUS: 100% OPERATIONAL</span>
+            </div>
+          </div>
+
+          <!-- Product Links -->
+          <div class="space-y-3 text-xs">
+            <div class="font-bold text-white uppercase tracking-wider font-mono">Product</div>
+            <ul class="space-y-2 text-slate-400">
+              <li><a href="#features" class="hover:text-white transition-colors">Turnstile Gate Mesh</a></li>
+              <li><a href="#features" class="hover:text-white transition-colors">Periodization Engine</a></li>
+              <li><a href="#features" class="hover:text-white transition-colors">Member Biometrics</a></li>
+              <li><a href="#features" class="hover:text-white transition-colors">Smart Dunning Vault</a></li>
+              <li><a href="#features" class="hover:text-white transition-colors">Hardware Controller</a></li>
+            </ul>
+          </div>
+
+          <!-- Solutions Links -->
+          <div class="space-y-3 text-xs">
+            <div class="font-bold text-white uppercase tracking-wider font-mono">Solutions</div>
+            <ul class="space-y-2 text-slate-400">
+              <li><a href="#solutions" class="hover:text-white transition-colors">Franchise Gym Chains</a></li>
+              <li><a href="#solutions" class="hover:text-white transition-colors">Boutique Fitness</a></li>
+              <li><a href="#solutions" class="hover:text-white transition-colors">Strength & Conditioning</a></li>
+              <li><a href="#solutions" class="hover:text-white transition-colors">24/7 Access Clubs</a></li>
+              <li><a href="#solutions" class="hover:text-white transition-colors">Migration Service</a></li>
+            </ul>
+          </div>
+
+          <!-- Trust & Compliance Links -->
+          <div class="space-y-3 text-xs">
+            <div class="font-bold text-white uppercase tracking-wider font-mono">Trust & Legal</div>
+            <ul class="space-y-2 text-slate-400">
+              <li><a href="#" class="hover:text-white transition-colors">SOC 2 Type II</a></li>
+              <li><a href="#" class="hover:text-white transition-colors">PCI-DSS Level 1</a></li>
+              <li><a href="#" class="hover:text-white transition-colors">Privacy Shield</a></li>
+              <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+              <li><a href="#" class="hover:text-white transition-colors">Security Whitepaper</a></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-mono">
+          <div>© 2026 STREN Inc. Precision Athletic Operating Systems. All rights reserved.</div>
+          <div class="flex items-center gap-6">
+            <span>SAN FRANCISCO</span>
+            <span>AUSTIN</span>
+            <span>LONDON</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Interactive Scripts for Tabs & FAQ -->
+  <script>
+    // Product Showcase Switcher
+    function switchProductTab(tabKey) {
+      const views = ['owner', 'coach', 'member', 'analytics'];
+      views.forEach(v => {
+        const viewEl = document.getElementById('view-' + v);
+        const btnEl = document.getElementById('btn-' + v);
+        if (v === tabKey) {
+          viewEl.classList.remove('hidden');
+          btnEl.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-brand text-black shadow-lg shadow-brand/20";
+        } else {
+          viewEl.classList.add('hidden');
+          btnEl.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white";
+        }
+      });
+
+      const addressBar = document.getElementById('tab-address-bar');
+      if (tabKey === 'owner') addressBar.textContent = 'stren://console.operator.io/live-studio';
+      if (tabKey === 'coach') addressBar.textContent = 'stren://console.coach.io/periodization-matrix';
+      if (tabKey === 'member') addressBar.textContent = 'stren://mobile.member.app/wallet-pass';
+      if (tabKey === 'analytics') addressBar.textContent = 'stren://console.bi.io/churn-predictions';
+    }
+
+    // How It Works Journey Switcher
+    function switchJourneyTab(journeyId) {
+      const journeys = ['journey-owner', 'journey-coach', 'journey-member'];
+      journeys.forEach(j => {
+        const el = document.getElementById(j);
+        const btn = document.getElementById(j.replace('journey-', 'btn-j-'));
+        if (j === journeyId) {
+          el.classList.remove('hidden');
+          btn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all bg-brand text-black shadow-lg shadow-brand/20";
+        } else {
+          el.classList.add('hidden');
+          btn.className = "px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-white";
+        }
+      });
+    }
+
+    // Pricing Cadence Switcher
+    function setPricingCadence(cadence) {
+      const btnMonthly = document.getElementById('btn-monthly');
+      const btnAnnual = document.getElementById('btn-annual');
+      const priceStarter = document.getElementById('price-starter');
+      const pricePro = document.getElementById('price-pro');
+      const priceEnterprise = document.getElementById('price-enterprise');
+      const periodStarter = document.getElementById('period-starter');
+      const periodPro = document.getElementById('period-pro');
+      const periodEnterprise = document.getElementById('period-enterprise');
+
+      if (cadence === 'annual') {
+        btnAnnual.className = "px-5 py-2 rounded-full text-xs font-semibold bg-white/10 text-white transition-all flex items-center gap-1.5";
+        btnMonthly.className = "px-5 py-2 rounded-full text-xs font-semibold text-slate-400 hover:text-white transition-all";
+        priceStarter.textContent = "$119";
+        pricePro.textContent = "$239";
+        priceEnterprise.textContent = "$479";
+        periodStarter.textContent = "/ month (billed annually)";
+        periodPro.textContent = "/ month (billed annually)";
+        periodEnterprise.textContent = "/ month (billed annually)";
+      } else {
+        btnMonthly.className = "px-5 py-2 rounded-full text-xs font-semibold bg-white/10 text-white transition-all";
+        btnAnnual.className = "px-5 py-2 rounded-full text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1.5";
+        priceStarter.textContent = "$149";
+        pricePro.textContent = "$299";
+        priceEnterprise.textContent = "$599";
+        periodStarter.textContent = "/ month";
+        periodPro.textContent = "/ month";
+        periodEnterprise.textContent = "/ month";
+      }
+    }
+
+    // FAQ Accordion Toggle
+    function toggleFaq(index) {
+      const body = document.getElementById('faq-body-' + index);
+      const icon = document.getElementById('faq-icon-' + index);
+      if (body.classList.contains('hidden')) {
+        body.classList.remove('hidden');
+        icon.textContent = "−";
+        icon.classList.add('text-brand');
+      } else {
+        body.classList.add('hidden');
+        icon.textContent = "+";
+        icon.classList.remove('text-brand');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Standalone SaaS Footer Component</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#5be584',
+              glow: 'rgba(91, 229, 132, 0.18)',
+              hover: '#4cd474',
+            },
+            surface: {
+              base: '#090B0F',
+              card: '#111318',
+              container: '#161922',
+              border: '#1F242F',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #07090D;
+      color: #F1F5F9;
+      font-family: 'Inter', sans-serif;
+    }
+    .neon-glow-hover:hover {
+      box-shadow: 0 0 25px -4px rgba(91, 229, 132, 0.4);
+    }
+    .social-btn {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .social-btn:hover {
+      border-color: rgba(91, 229, 132, 0.5);
+      color: #5be584;
+      background-color: rgba(91, 229, 132, 0.08);
+      transform: translateY(-2px);
+    }
+    .footer-link {
+      transition: all 0.18s ease;
+      position: relative;
+    }
+    .footer-link:hover {
+      color: #F8FAFC;
+      transform: translateX(2px);
+    }
+    .footer-link:hover .link-dot {
+      opacity: 1;
+      transform: scale(1);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-center items-center p-4 sm:p-8 md:p-12 selection:bg-brand/30 selection:text-brand">
+
+  <!-- STANDALONE COMPONENT CONTAINER -->
+  <!-- Designed with transparent isolation to be seamlessly assembled into the landing page footer slot -->
+  <div class="w-full max-w-7xl mx-auto">
+    
+    <!-- Component Boundary Tag (Contextual Metadata) -->
+    <div class="flex items-center justify-between mb-4 px-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-card/80 border border-white/5 text-[11px] font-mono text-slate-400">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
+        <span>STANDALONE FOOTER COMPONENT</span>
+        <span class="text-slate-600">//</span>
+        <span class="text-brand">APEX ATHLETIC OS</span>
+      </div>
+      <div class="hidden sm:flex items-center gap-2 text-[11px] font-mono text-slate-500">
+        <span class="w-2 h-2 rounded-sm border border-slate-700"></span>
+        <span>MODULAR COMPONENT ARCHITECTURE</span>
+      </div>
+    </div>
+
+    <!-- MAIN FOOTER WRAPPER -->
+    <footer class="relative rounded-3xl bg-gradient-to-b from-[#0E1117] to-[#08090D] border border-white/5 shadow-2xl overflow-hidden">
+      
+      <!-- Ambient Background Glow Gradients -->
+      <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-brand/5 blur-[120px] pointer-events-none rounded-full"></div>
+      <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-brand/[0.03] blur-[100px] pointer-events-none rounded-full"></div>
+
+      <!-- Top Primary Row: Newsletter & High-Level Mission -->
+      <div class="relative px-6 sm:px-10 lg:px-14 pt-12 pb-12 border-b border-white/[0.06]">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center justify-between">
+          
+          <!-- Left: Brand Statement & Newsletter Value Prop -->
+          <div class="lg:col-span-6 space-y-2">
+            <div class="inline-flex items-center gap-2 text-xs font-mono tracking-wider uppercase text-brand font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+              Engineering The Future of Gym Operations
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              Stay synchronized with athletic OS releases.
+            </h3>
+            <p class="text-sm text-slate-400 max-w-lg leading-relaxed">
+              Bi-weekly engineering briefs on hardware integrations, member retention algorithms, automated turnstile telemetry, and platform updates.
+            </p>
+          </div>
+
+          <!-- Right: Interactive Newsletter Subscription Field -->
+          <div class="lg:col-span-6">
+            <form id="newsletter-form" onsubmit="handleNewsletter(event)" class="space-y-2.5">
+              <div class="relative flex flex-col sm:flex-row items-stretch gap-2.5 p-1.5 rounded-2xl bg-[#141822]/90 border border-white/10 shadow-inner focus-within:border-brand/60 focus-within:ring-2 focus-within:ring-brand/20 transition-all duration-300">
+                <div class="relative flex-1 flex items-center pl-3">
+                  <svg class="w-5 h-5 text-slate-400 shrink-0 mr-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                  <input 
+                    type="email" 
+                    id="email-input" 
+                    required 
+                    placeholder="Enter your work email (e.g. founder@athletic.com)" 
+                    class="w-full bg-transparent border-0 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-0 py-2.5 font-normal"
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  id="submit-btn"
+                  class="neon-glow-hover inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-brand text-slate-950 font-semibold text-sm hover:bg-brand-hover active:scale-[0.98] transition-all duration-200 shrink-0 shadow-lg shadow-brand/10 cursor-pointer">
+                  <span>Subscribe</span>
+                  <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between px-2">
+                <p id="form-feedback" class="text-xs text-slate-500 flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-brand inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                  </svg>
+                  <span>Zero spam. Direct engineer dispatches only. Unsubscribe at any time.</span>
+                </p>
+                <span class="hidden sm:inline-block font-mono text-[11px] text-slate-500">2,840+ gym founders subscribed</span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mid Section: Brand Identity & Four Column Navigation Matrix -->
+      <div class="px-6 sm:px-10 lg:px-14 py-14">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
+          
+          <!-- Brand Logo & Elevator Column (4 cols) -->
+          <div class="lg:col-span-4 space-y-6">
+            <!-- Small Brand Logo Component -->
+            <a href="#" class="inline-flex items-center gap-3 group focus:outline-none">
+              <div class="w-9 h-9 rounded-xl bg-[#131922] border border-white/10 flex items-center justify-center p-1.5 shadow-md group-hover:border-brand/50 transition-colors">
+                <!-- High-precision vector logo emblem -->
+                <svg class="w-full h-full text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="#5be584" fill-opacity="0.2"/>
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-lg font-bold tracking-tight text-white font-sans flex items-center gap-1.5">
+                  Apex Athletic <span class="text-xs font-mono font-medium px-1.5 py-0.5 rounded bg-brand/10 text-brand border border-brand/20">OS</span>
+                </span>
+                <span class="text-[11px] font-mono text-slate-400">PRECISION FITNESS INFRASTRUCTURE</span>
+              </div>
+            </a>
+
+            <p class="text-sm text-slate-400 leading-relaxed max-w-sm">
+              The next-generation athletic facility operating system. Unifying sub-second biometric access gates, algorithmic periodization builders, and automated recurring billing recovery into one mission-critical cloud platform.
+            </p>
+
+            <!-- Operational Status Indicator -->
+            <div class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[#12151D] border border-white/5 text-xs text-slate-400 font-mono">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+              </span>
+              <span>SYSTEMS OPERATIONAL</span>
+              <span class="text-slate-600">|</span>
+              <span class="text-slate-300">99.99% UPTIME</span>
+            </div>
+
+            <!-- Social Media Icons Row -->
+            <div class="pt-2">
+              <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-3">CONNECT WITH ENGINEERING & LEADERSHIP</div>
+              <div class="flex items-center gap-2.5">
+                <!-- X / Twitter -->
+                <a href="#" aria-label="X / Twitter" class="social-btn w-9 h-9 rounded-xl bg-[#141822] border border-white/10 flex items-center justify-center text-slate-400">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </a>
+                <!-- GitHub -->
+                <a href="#" aria-label="GitHub Repository" class="social-btn w-9 h-9 rounded-xl bg-[#141822] border border-white/10 flex items-center justify-center text-slate-400">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                  </svg>
+                </a>
+                <!-- LinkedIn -->
+                <a href="#" aria-label="LinkedIn" class="social-btn w-9 h-9 rounded-xl bg-[#141822] border border-white/10 flex items-center justify-center text-slate-400">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.47 1.47 0 1 0 0-2.94 1.47 1.47 0 0 0 0 2.94m1.37 9.74V9.97H5.09v8.53h2.74z"/>
+                  </svg>
+                </a>
+                <!-- Discord Community -->
+                <a href="#" aria-label="Discord Community" class="social-btn w-9 h-9 rounded-xl bg-[#141822] border border-white/10 flex items-center justify-center text-slate-400">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                  </svg>
+                </a>
+                <!-- YouTube / Tech Demos -->
+                <a href="#" aria-label="YouTube Demos" class="social-btn w-9 h-9 rounded-xl bg-[#141822] border border-white/10 flex items-center justify-center text-slate-400">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- The Four Ordered Navigation Columns (8 cols: 2 cols each on large screens) -->
+          <div class="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+            
+            <!-- Column 1: Product -->
+            <div class="space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand/80"></span>
+                <h4 class="text-xs font-mono uppercase tracking-wider text-slate-300 font-semibold">Product</h4>
+              </div>
+              <ul class="space-y-2.5 text-sm text-slate-400 font-normal">
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Studio Dashboard</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>NFC Turnstile Mesh</span>
+                    <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-brand/10 text-brand border border-brand/20">v2.4</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Workout Periodizer</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Smart Dunning Engine</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Member Mobile App</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Pricing & Plans</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5 text-brand/90 hover:text-brand font-medium">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Release Changelog →</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Column 2: Company -->
+            <div class="space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                <h4 class="text-xs font-mono uppercase tracking-wider text-slate-300 font-semibold">Company</h4>
+              </div>
+              <ul class="space-y-2.5 text-sm text-slate-400 font-normal">
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>About Us</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Careers</span>
+                    <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Hiring</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Customer Stories</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Brand Assets & Kit</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Hardware Partners</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Contact Leadership</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Column 3: Resources -->
+            <div class="space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                <h4 class="text-xs font-mono uppercase tracking-wider text-slate-300 font-semibold">Resources</h4>
+              </div>
+              <ul class="space-y-2.5 text-sm text-slate-400 font-normal">
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Documentation</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>API Reference</span>
+                    <span class="text-[9px] font-mono px-1 py-0.5 rounded bg-slate-800 text-slate-300">REST / gRPC</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Turnstile Relay SDK</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Migration Guides</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Biometrics Whitepaper</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Help Center</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Column 4: Legal -->
+            <div class="space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                <h4 class="text-xs font-mono uppercase tracking-wider text-slate-300 font-semibold">Legal</h4>
+              </div>
+              <ul class="space-y-2.5 text-sm text-slate-400 font-normal">
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Privacy Policy</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Terms of Service</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>SOC-2 Compliance</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>GDPR & Biometric Data</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Security Disclosure</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="footer-link inline-flex items-center gap-1.5">
+                    <span class="link-dot w-1 h-1 rounded-full bg-brand opacity-0 transform scale-0 transition-all"></span>
+                    <span>Subprocessors</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Minimal Hairline Divider -->
+      <div class="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+
+      <!-- Bottom Bar: Copyright, Compliance Badges, Regional Metadata -->
+      <div class="px-6 sm:px-10 lg:px-14 py-6 bg-[#0B0D12]/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-500">
+        
+        <!-- Copyright Text -->
+        <div class="flex items-center gap-2">
+          <span>&copy; <span id="current-year">2025</span> Apex Athletic Systems, Inc. All rights reserved.</span>
+        </div>
+
+        <!-- Trust Badges & Server Region -->
+        <div class="flex flex-wrap items-center gap-4">
+          <span class="inline-flex items-center gap-1.5 text-slate-400">
+            <svg class="w-3.5 h-3.5 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <span>SOC-2 TYPE II CERTIFIED</span>
+          </span>
+          <span class="text-slate-700 hidden sm:inline">&bull;</span>
+          <span class="inline-flex items-center gap-1 text-slate-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
+            <span>PCI-DSS LVL 1 ENCRYPTED</span>
+          </span>
+          <span class="text-slate-700 hidden sm:inline">&bull;</span>
+          <span class="text-slate-500">EDGE REGION: US-EAST (IAD-01)</span>
+        </div>
+
+      </div>
+
+    </footer>
+
+  </div>
+
+  <!-- Micro Interaction Script for Newsletter Handling -->
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    function handleNewsletter(e) {
+      e.preventDefault();
+      const input = document.getElementById('email-input');
+      const btn = document.getElementById('submit-btn');
+      const feedback = document.getElementById('form-feedback');
+      
+      const email = input.value.trim();
+      if (!email) return;
+
+      btn.disabled = true;
+      btn.innerHTML = `
+        <svg class="animate-spin w-4 h-4 text-slate-950" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Synchronizing...</span>
+      `;
+
+      setTimeout(() => {
+        input.value = '';
+        btn.disabled = false;
+        btn.classList.remove('bg-brand', 'hover:bg-brand-hover');
+        btn.classList.add('bg-emerald-400', 'text-slate-950');
+        btn.innerHTML = `
+          <svg class="w-4 h-4 text-slate-950" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+          <span>Subscribed</span>
+        `;
+        feedback.innerHTML = `<span class="text-brand font-medium">✓ Confirmation sent! Check your inbox for the latest architecture digest.</span>`;
+
+        setTimeout(() => {
+          btn.classList.remove('bg-emerald-400');
+          btn.classList.add('bg-brand', 'hover:bg-brand-hover');
+          btn.innerHTML = `
+            <span>Subscribe</span>
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          `;
+        }, 4000);
+      }, 900);
+    }
+  </script>
+</body>
+</html>

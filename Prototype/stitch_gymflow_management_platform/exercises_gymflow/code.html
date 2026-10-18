@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GymFlow - Exercises</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#690005",
+                        "secondary-fixed-dim": "#c5c6cc",
+                        "inverse-primary": "#006d32",
+                        "surface": "#101415",
+                        "error": "#ffb4ab",
+                        "on-tertiary": "#2d3137",
+                        "surface-container-high": "#272a2c",
+                        "outline-variant": "#3d4a3e",
+                        "on-primary-container": "#00642d",
+                        "surface-dim": "#101415",
+                        "on-background": "#e0e3e5",
+                        "outline": "#869486",
+                        "on-primary-fixed-variant": "#005224",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#e4e7f0",
+                        "on-surface-variant": "#bccaba",
+                        "on-primary": "#003917",
+                        "surface-bright": "#363a3b",
+                        "primary": "#90ffa8",
+                        "on-secondary-fixed-variant": "#44474c",
+                        "surface-container-highest": "#323537",
+                        "surface-tint": "#55e07f",
+                        "on-secondary-fixed": "#191c20",
+                        "on-tertiary-container": "#52565d",
+                        "surface-container": "#1d2022",
+                        "surface-container-low": "#191c1e",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#dfe2eb",
+                        "surface-container-lowest": "#0b0f10",
+                        "tertiary-container": "#c8cbd3",
+                        "inverse-surface": "#e0e3e5",
+                        "secondary-container": "#44474c",
+                        "primary-container": "#5be584",
+                        "on-surface": "#e0e3e5",
+                        "primary-fixed": "#74fd99",
+                        "on-tertiary-fixed": "#181c22",
+                        "on-secondary-container": "#b3b5ba",
+                        "on-secondary": "#2e3135",
+                        "secondary": "#c5c6cc",
+                        "secondary-fixed": "#e1e2e8",
+                        "inverse-on-surface": "#2d3133",
+                        "primary-fixed-dim": "#55e07f",
+                        "on-tertiary-fixed-variant": "#43474e",
+                        "tertiary-fixed-dim": "#c3c6cf",
+                        "on-primary-fixed": "#00210b",
+                        "background": "#101415",
+                        "surface-variant": "#323537"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "max-content-width": "1440px",
+                        "3xl": "64px",
+                        "2xl": "48px",
+                        "sm": "12px",
+                        "md": "16px",
+                        "xs": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "base": "4px",
+                        "sidebar-width": "260px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "mono-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "mono-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "title-md": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- Shared Component: SideNavBar -->
+<nav class="bg-surface-container dark:bg-surface-container fixed left-0 top-0 h-full w-[260px] border-r border-outline-variant dark:border-outline-variant hidden md:flex flex-col gap-xs py-lg z-50">
+<!-- Brand / Header -->
+<div class="px-lg mb-xl flex items-center gap-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+</div>
+<div>
+<h1 class="text-title-md font-title-md font-bold text-primary dark:text-primary leading-tight">GymFlow</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">Management Pro</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 flex flex-col gap-base mt-md">
+<a class="flex items-center gap-sm py-sm text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-body-md font-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm py-sm text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-body-md font-body-md">Members</span>
+</a>
+<a class="flex items-center gap-sm py-sm text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">fitness_center</span>
+<span class="text-body-md font-body-md">Coaches</span>
+</a>
+<!-- Active Tab: Exercises -->
+<a class="flex items-center gap-sm py-sm text-primary font-bold border-l-2 border-primary pl-4 bg-surface-container-highest/20 transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">exercise</span>
+<span class="text-body-md font-body-md">Exercises</span>
+</a>
+<a class="flex items-center gap-sm py-sm text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">sports_gymnastics</span>
+<span class="text-body-md font-body-md">Workouts</span>
+</a>
+<a class="flex items-center gap-sm py-sm text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">assignment</span>
+<span class="text-body-md font-body-md">Assignments</span>
+</a>
+<a class="flex items-center gap-sm py-sm text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+<span class="text-body-md font-body-md">Logs</span>
+</a>
+<a class="flex items-center gap-sm py-sm text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">bar_chart</span>
+<span class="text-body-md font-body-md">Reports</span>
+</a>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant mx-4">
+<a class="flex items-center gap-sm py-sm text-on-surface-variant font-medium pl-4 hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-body-md font-body-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<main class="flex-1 w-full md:ml-[260px] flex flex-col min-h-screen">
+<!-- Shared Component: TopNavBar -->
+<header class="bg-surface/80 dark:bg-surface/80 backdrop-blur-md docked full-width top-0 sticky z-40 border-b border-outline-variant dark:border-outline-variant flex justify-between items-center h-16 px-xl w-full transition-all">
+<!-- Left Side: Search Bar (as per JSON search_bar: "on_left") -->
+<div class="flex items-center flex-1">
+<div class="relative w-64 hidden sm:block group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-1.5 text-body-md font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 transition-all bg-transparent" placeholder="Search operations..." type="text"/>
+</div>
+</div>
+<!-- Right Side: Trailing Actions -->
+<div class="flex items-center gap-md">
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-full scale-95 active:scale-100 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-full scale-95 active:scale-100 transition-transform">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-px h-6 bg-outline-variant mx-2"></div>
+<button class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant scale-95 active:scale-100 transition-transform">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A macro photography shot of a sleek, abstract geometric shape resembling a user avatar, illuminated by cool cyan and bright mint green rim lighting against an obsidian black background. The style is ultra-modern, pristine, and fitting for a premium SaaS dark mode dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAphii5hsfXeCjaHgnwR4bmHXCjhFWbMlJshwxpSD4OIza3O7cOrYDgwe8NHR_iiobB91KCkO0XzDUO79amNnejayd3Nuz8E6kifVf-bSf6Pj1DXBwB0nPntIAKina4oUbBhPLXyzZKndKZDGCHC4RbSiwp4PPk8TZgC5wH_-nAqcUvZkfpEvmjIxJlT4JY-NZLYm3hMozedXOOoc-gWBT2Y1h4hG_dSSCK6Z7n7PN3yq2UDr4ZGt6c"/>
+</button>
+</div>
+</header>
+<!-- Page Content Canvas -->
+<div class="p-4 md:p-xl flex-1 w-full max-w-max-content-width mx-auto flex flex-col gap-lg">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">Exercises</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-1">Manage and curate the master exercise library.</p>
+</div>
+<button class="flex items-center gap-2 bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-title-md text-title-md font-semibold hover:bg-primary-fixed active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                    Create Exercise
+                </button>
+</div>
+<!-- Toolbar: Filter & View Options -->
+<div class="bg-surface-container rounded-xl p-2 border border-outline-variant flex flex-col sm:flex-row justify-between gap-4 items-center">
+<div class="flex flex-wrap gap-2 w-full sm:w-auto">
+<!-- Filters -->
+<div class="relative">
+<select class="appearance-none bg-surface-container-high border border-outline-variant text-on-surface text-body-md font-body-md rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 cursor-pointer">
+<option value="">All Categories</option>
+<option value="strength">Strength</option>
+<option value="cardio">Cardio</option>
+<option value="mobility">Mobility</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-high border border-outline-variant text-on-surface text-body-md font-body-md rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 cursor-pointer">
+<option value="">All Equipment</option>
+<option value="barbell">Barbell</option>
+<option value="dumbbell">Dumbbell</option>
+<option value="machine">Machine</option>
+<option value="bodyweight">Bodyweight</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">arrow_drop_down</span>
+</div>
+</div>
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<div class="relative w-full sm:w-64 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-[18px]">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-lg pl-9 pr-4 py-2 text-body-md font-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container/20 transition-all" placeholder="Search exercises..." type="text"/>
+</div>
+<button class="p-2 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Export">
+<span class="material-symbols-outlined text-[20px]">download</span>
+</button>
+</div>
+</div>
+<!-- Data Table Card -->
+<div class="bg-surface-container rounded-xl border border-outline-variant overflow-hidden flex-1 flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="py-4 px-6 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Exercise Name</th>
+<th class="py-4 px-6 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Category</th>
+<th class="py-4 px-6 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Equipment</th>
+<th class="py-4 px-6 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold">Difficulty</th>
+<th class="py-4 px-6 text-label-md font-label-md text-on-surface-variant uppercase tracking-wider font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/50">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">fitness_center</span>
+</div>
+<div>
+<p class="text-title-md font-title-md font-medium text-on-surface group-hover:text-primary transition-colors">Barbell Back Squat</p>
+<p class="text-body-md font-body-md text-on-surface-variant">Primary: Quads, Glutes</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-md font-label-md font-medium bg-primary-container/10 text-primary-container border border-primary-container/20">
+                                        Strength
+                                    </span>
+</td>
+<td class="py-4 px-6 text-body-md font-body-md text-on-surface">Barbell</td>
+<td class="py-4 px-6 text-body-md font-body-md text-on-surface-variant">Advanced</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary transition-colors rounded hover:bg-surface-container-highest" title="View Details">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary transition-colors rounded hover:bg-surface-container-highest" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">monitor_heart</span>
+</div>
+<div>
+<p class="text-title-md font-title-md font-medium text-on-surface group-hover:text-primary transition-colors">Treadmill Sprint Intervals</p>
+<p class="text-body-md font-body-md text-on-surface-variant">Primary: Cardiovascular</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-md font-label-md font-medium bg-secondary/10 text-secondary border border-secondary/20">
+                                        Cardio
+                                    </span>
+</td>
+<td class="py-4 px-6 text-body-md font-body-md text-on-surface">Machine</td>
+<td class="py-4 px-6 text-body-md font-body-md text-on-surface-variant">Intermediate</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary transition-colors rounded hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary transition-colors rounded hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">fitness_center</span>
+</div>
+<div>
+<p class="text-title-md font-title-md font-medium text-on-surface group-hover:text-primary transition-colors">Dumbbell Romanian Deadlift</p>
+<p class="text-body-md font-body-md text-on-surface-variant">Primary: Hamstrings, Glutes</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-md font-label-md font-medium bg-primary-container/10 text-primary-container border border-primary-container/20">
+                                        Strength
+                                    </span>
+</td>
+<td class="py-4 px-6 text-body-md font-body-md text-on-surface">Dumbbell</td>
+<td class="py-4 px-6 text-body-md font-body-md text-on-surface-variant">Intermediate</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary transition-colors rounded hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary transition-colors rounded hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-surface-container-highest flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined">self_improvement</span>
+</div>
+<div>
+<p class="text-title-md font-title-md font-medium text-on-surface group-hover:text-primary transition-colors">Thoracic Rotation</p>
+<p class="text-body-md font-body-md text-on-surface-variant">Primary: Thoracic Spine</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-md font-label-md font-medium bg-tertiary-container/10 text-tertiary-container border border-tertiary-container/20">
+                                        Mobility
+                                    </span>
+</td>
+<td class="py-4 px-6 text-body-md font-body-md text-on-surface">Bodyweight</td>
+<td class="py-4 px-6 text-body-md font-body-md text-on-surface-variant">Beginner</td>
+<td class="py-4 px-6 text-right">
+<div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-on-surface-variant hover:text-primary transition-colors rounded hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-primary transition-colors rounded hover:bg-surface-container-highest">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="mt-auto px-6 py-4 bg-surface-container-low border-t border-outline-variant flex items-center justify-between">
+<p class="text-body-md font-body-md text-on-surface-variant">Showing <span class="font-medium text-on-surface">1</span> to <span class="font-medium text-on-surface">4</span> of <span class="font-medium text-on-surface">128</span> results</p>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded flex items-center justify-center bg-primary-container/10 text-primary-container font-medium text-body-md border border-primary-container/20">1</button>
+<button class="w-8 h-8 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high font-medium text-body-md">2</button>
+<button class="w-8 h-8 rounded flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high font-medium text-body-md">3</button>
+<span class="text-on-surface-variant">...</span>
+<button class="p-2 rounded border border-outline-variant text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

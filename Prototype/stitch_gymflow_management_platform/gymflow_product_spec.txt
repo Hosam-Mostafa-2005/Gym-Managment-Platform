@@ -1,0 +1,27 @@
+# GymFlow Product Specification
+
+GymFlow is a premium B2B SaaS platform for gym management, targeting owners, coaches, and staff. The design aesthetic is heavily inspired by Linear, Stripe, and Vercel—modern, minimal, dark-mode first, and highly professional.
+
+## Target Audience
+- Gym Owners (Business oversight)
+- Admins (Staff and operation management)
+- Coaches (Client management and workout programming)
+
+## Design Principles
+- **Minimalist & Premium**: No gym-bro aesthetics. Clean, data-driven, and elegant.
+- **Dark Mode First**: Primary background #090B0F.
+- **High Readability**: Inter typography, generous spacing, clear hierarchy.
+- **Action-Oriented**: Focus on "What is happening?", "What needs attention?", and "What's next?".
+
+## Planned Screens
+
+1.  **Auth Flow** (Login, Register, Forgot Password)
+    - Modern split-screen layout.
+2.  **Dashboard**
+    - High-level overview: Stats, Today's Sessions, Quick Actions, Activity Feed.
+3.  **Exercises & Workouts** (Exercises, Workouts, Workout Sessions, Workout Logs)
+    - Database management and workout builder.
+4.  **Management** (Members, Coaches, Workout Assignments)
+    - CRM-style tables and profiles.
+5.  **Analytics & System** (Reports, Notifications, Profile, Settings)
+    - Data visualization and configuration.

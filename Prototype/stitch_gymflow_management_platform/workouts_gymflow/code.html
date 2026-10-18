@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Workout Builder - GymFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#690005",
+                        "secondary-fixed-dim": "#c5c6cc",
+                        "inverse-primary": "#006d32",
+                        "surface": "#101415",
+                        "error": "#ffb4ab",
+                        "on-tertiary": "#2d3137",
+                        "surface-container-high": "#272a2c",
+                        "outline-variant": "#3d4a3e",
+                        "on-primary-container": "#00642d",
+                        "surface-dim": "#101415",
+                        "on-background": "#e0e3e5",
+                        "outline": "#869486",
+                        "on-primary-fixed-variant": "#005224",
+                        "on-error-container": "#ffdad6",
+                        "tertiary": "#e4e7f0",
+                        "on-surface-variant": "#bccaba",
+                        "on-primary": "#003917",
+                        "surface-bright": "#363a3b",
+                        "primary": "#90ffa8",
+                        "on-secondary-fixed-variant": "#44474c",
+                        "surface-container-highest": "#323537",
+                        "surface-tint": "#55e07f",
+                        "on-secondary-fixed": "#191c20",
+                        "on-tertiary-container": "#52565d",
+                        "surface-container": "#1d2022",
+                        "surface-container-low": "#191c1e",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#dfe2eb",
+                        "surface-container-lowest": "#0b0f10",
+                        "tertiary-container": "#c8cbd3",
+                        "inverse-surface": "#e0e3e5",
+                        "secondary-container": "#44474c",
+                        "primary-container": "#5be584",
+                        "on-surface": "#e0e3e5",
+                        "primary-fixed": "#74fd99",
+                        "on-tertiary-fixed": "#181c22",
+                        "on-secondary-container": "#b3b5ba",
+                        "on-secondary": "#2e3135",
+                        "secondary": "#c5c6cc",
+                        "secondary-fixed": "#e1e2e8",
+                        "inverse-on-surface": "#2d3133",
+                        "primary-fixed-dim": "#55e07f",
+                        "on-tertiary-fixed-variant": "#43474e",
+                        "tertiary-fixed-dim": "#c3c6cf",
+                        "on-primary-fixed": "#00210b",
+                        "background": "#101415",
+                        "surface-variant": "#323537"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "max-content-width": "1440px",
+                        "3xl": "64px",
+                        "2xl": "48px",
+                        "sm": "12px",
+                        "md": "16px",
+                        "xs": "8px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sidebar-width": "260px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "mono-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "title-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "mono-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "title-md": ["18px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { background-color: #090B0F; color: #F8FAFC; }
+        .card { background-color: #171B21; border: 1px solid #232833; padding: 24px; border-radius: 0.5rem; }
+        .input-base { background-color: #090B0F; border: 1px solid #232833; color: #F8FAFC; border-radius: 0.25rem; }
+        .input-base:focus { border-color: #5BE584; box-shadow: 0 0 0 2px rgba(91, 229, 132, 0.2); outline: none; }
+        .btn-primary { background-color: #5BE584; color: #090B0F; font-weight: 700; border-radius: 0.25rem; padding: 8px 16px; transition: transform 0.1s; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-secondary { background-color: transparent; border: 1px solid #232833; color: #F8FAFC; border-radius: 0.25rem; padding: 8px 16px; transition: background-color 0.2s; }
+        .btn-secondary:hover { background-color: #171B21; }
+        .btn-ghost { background-color: transparent; color: #94A3B8; border-radius: 0.25rem; padding: 8px 16px; transition: all 0.2s; border: none; }
+        .btn-ghost:hover { color: #F8FAFC; background-color: #111418; }
+        
+        .chip { background-color: rgba(91, 229, 132, 0.1); color: #5BE584; border-radius: 9999px; padding: 4px 12px; font-size: 12px; font-weight: 500; }
+        
+        /* Draggable styles for demo */
+        .draggable { cursor: grab; }
+        .draggable:active { cursor: grabbing; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[260px] bg-surface-container border-r border-outline-variant flex flex-col gap-xs py-lg z-50">
+<div class="px-xl mb-lg">
+<h1 class="text-title-md font-title-md font-bold text-primary flex items-center gap-xs">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A minimalist geometric logo design featuring sharp, angular lines forming an abstract letter G or a stylized barbell. The logo is rendered in a bright, energetic mint green against a dark obsidian background, conveying motion, precision, and high-performance software aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMWMNEP6xgrYa2ei4Qv-FOIJ9sU64nipX_5RznlPLxpkfOQ5uoTsMT3MxIxO6z9nHagCp71SZ7E_sh8OJt21Frdu7MpO0AOmgBK74JIUppzAj5j4thH_N-PvRHQZvMz00e11lbYutmVi9ZX9KUNHn9b1XF0G6H5GlH6wJGSOX-Et9tcU7KZF0D6r9xAVvZf-1M_O_ssgD_i2z8UrR3FJsQHkrDq0XiP4wvvcq4oEet7eXinWCqXrse"/>
+                GymFlow
+            </h1>
+<p class="text-label-md font-label-md text-on-surface-variant mt-1">Management Pro</p>
+</div>
+<nav class="flex flex-col gap-base mt-md">
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined text-lg">group</span>
+<span class="text-label-md font-label-md">Members</span>
+</a>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined text-lg">fitness_center</span>
+<span class="text-label-md font-label-md">Coaches</span>
+</a>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined text-lg">exercise</span>
+<span class="text-label-md font-label-md">Exercises</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out text-primary font-bold border-l-2 border-primary pl-4 bg-surface-container-high" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">sports_gymnastics</span>
+<span class="text-label-md font-label-md">Workouts</span>
+</a>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined text-lg">assignment</span>
+<span class="text-label-md font-label-md">Assignments</span>
+</a>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined text-lg">history_edu</span>
+<span class="text-label-md font-label-md">Logs</span>
+</a>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined text-lg">bar_chart</span>
+<span class="text-label-md font-label-md">Reports</span>
+</a>
+<a class="flex items-center gap-md py-sm hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out text-on-surface-variant font-medium pl-4" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 ml-[260px] flex flex-col h-full bg-background relative">
+<!-- TopNavBar -->
+<header class="docked full-width top-0 sticky z-40 border-b border-outline-variant bg-surface/80 backdrop-blur-md flex justify-between items-center h-16 px-xl w-full">
+<div class="flex items-center gap-md w-1/3">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="input-base w-full pl-10 py-2 text-body-md font-body-md" placeholder="Search exercises, clients..." type="text"/>
+</div>
+</div>
+<div class="flex items-center justify-end w-1/3 gap-md">
+<button class="text-on-surface-variant hover:bg-surface-container-highest rounded-full p-2 scale-95 active:scale-100 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-highest rounded-full p-2 scale-95 active:scale-100 transition-transform">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant cursor-pointer ml-sm">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional studio portrait of a fitness software user, shown from the shoulders up. The lighting is dramatic and moody, utilizing deep shadows and crisp rim lighting to emphasize a modern, high-tech aesthetic. The subject wears dark, minimalist athletic apparel against a pure black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHQc4P9pTW-K2VIw4IGUYFP0zbAhQI8ZIroLwLypiRKvKK3KYhkkbw8ewCnctj3i1bMIAsALdDi3IgK4xlOxgPKIaSKRa7qez-7fmpaYm_tmeELFYBTatMN0NlaaDaGu3-JUvuFEBxZPeiJEBfWhQ0jl6je1KnGZFzehe-Sfas3RvWf0LYtUv-dktB5sdMLjM7Xx2YeQcHUzjhAal88J-uXNbdJ4KCfrYaB87LCQXQV5kbuSR51ydH"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 overflow-hidden p-xl flex flex-col gap-lg">
+<!-- Workout Details Header -->
+<div class="flex justify-between items-start shrink-0">
+<div class="flex-1 max-w-2xl">
+<input class="bg-transparent text-headline-lg font-headline-lg font-bold text-on-surface border-none focus:ring-0 p-0 mb-sm w-full placeholder-on-surface-variant" placeholder="Workout Name" type="text" value="Advanced Push Day Phase 2"/>
+<textarea class="bg-transparent text-body-md font-body-md text-on-surface-variant border-none focus:ring-0 p-0 w-full resize-none h-12" placeholder="Add a description for this workout...">Focus on heavy compound movements with volume progression for upper chest and triceps. Ensure 3 mins rest on primary lifts.</textarea>
+<div class="flex gap-xs mt-sm items-center">
+<span class="chip">Hypertrophy</span>
+<span class="chip">Advanced</span>
+<span class="chip">Push</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-xs ml-2 text-label-md font-label-md">
+<span class="material-symbols-outlined text-sm">add</span> Add Tag
+                        </button>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="btn-ghost text-label-md font-label-md">Discard</button>
+<button class="btn-secondary text-label-md font-label-md">Preview</button>
+<button class="btn-primary flex items-center gap-xs text-label-md font-label-md">
+<span class="material-symbols-outlined text-sm">save</span> Save Workout
+                    </button>
+</div>
+</div>
+<!-- Builder Area (Two Columns) -->
+<div class="flex-1 flex gap-lg overflow-hidden min-h-0">
+<!-- Left Col: Exercise Selector -->
+<div class="w-[320px] flex flex-col gap-md shrink-0 border-r border-outline-variant pr-lg overflow-hidden">
+<div class="flex flex-col gap-sm shrink-0">
+<h2 class="text-title-md font-title-md text-on-surface">Library</h2>
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="input-base w-full pl-10 py-2 text-body-md font-body-md bg-surface-container" placeholder="Find exercises..." type="text"/>
+</div>
+<div class="flex gap-xs overflow-x-auto pb-2 scrollbar-hide">
+<button class="bg-surface-container px-3 py-1 rounded-full text-label-md font-label-md text-on-surface border border-outline-variant whitespace-nowrap">Chest</button>
+<button class="bg-surface-container px-3 py-1 rounded-full text-label-md font-label-md text-on-surface border border-outline-variant whitespace-nowrap">Triceps</button>
+<button class="bg-surface-container px-3 py-1 rounded-full text-label-md font-label-md text-on-surface border border-outline-variant whitespace-nowrap">Shoulders</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-sm">
+<!-- Exercise Item Draggable -->
+<div class="bg-surface-container border border-outline-variant p-sm rounded-lg flex items-center justify-between draggable hover:border-primary-container transition-colors group">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant cursor-grab active:cursor-grabbing text-sm">drag_indicator</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Barbell Bench Press</p>
+<p class="text-xs text-on-surface-variant mt-0.5">Barbell • Compound</p>
+</div>
+</div>
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="bg-surface-container border border-outline-variant p-sm rounded-lg flex items-center justify-between draggable hover:border-primary-container transition-colors group">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant cursor-grab active:cursor-grabbing text-sm">drag_indicator</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Incline Dumbbell Press</p>
+<p class="text-xs text-on-surface-variant mt-0.5">Dumbbell • Compound</p>
+</div>
+</div>
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="bg-surface-container border border-outline-variant p-sm rounded-lg flex items-center justify-between draggable hover:border-primary-container transition-colors group">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant cursor-grab active:cursor-grabbing text-sm">drag_indicator</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Cable Crossover</p>
+<p class="text-xs text-on-surface-variant mt-0.5">Cable • Isolation</p>
+</div>
+</div>
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="bg-surface-container border border-outline-variant p-sm rounded-lg flex items-center justify-between draggable hover:border-primary-container transition-colors group">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant cursor-grab active:cursor-grabbing text-sm">drag_indicator</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Overhead Tricep Ext</p>
+<p class="text-xs text-on-surface-variant mt-0.5">Cable • Isolation</p>
+</div>
+</div>
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+<div class="bg-surface-container border border-outline-variant p-sm rounded-lg flex items-center justify-between draggable hover:border-primary-container transition-colors group">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant cursor-grab active:cursor-grabbing text-sm">drag_indicator</span>
+<div>
+<p class="text-label-md font-label-md text-on-surface">Lateral Raises</p>
+<p class="text-xs text-on-surface-variant mt-0.5">Dumbbell • Isolation</p>
+</div>
+</div>
+<button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-primary transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Col: Active Builder Sequence -->
+<div class="flex-1 flex flex-col overflow-hidden min-h-0 bg-surface-container-lowest rounded-xl border border-outline-variant p-md relative">
+<!-- Subtle background texture -->
+<div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 24px 24px;"></div>
+<div class="flex justify-between items-center mb-md shrink-0 relative z-10">
+<h2 class="text-title-md font-title-md text-on-surface flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-sm">format_list_numbered</span>
+                            Sequence
+                        </h2>
+<span class="text-label-md font-label-md text-on-surface-variant bg-surface-container px-2 py-1 rounded">5 Exercises • ~65 mins</span>
+</div>
+<div class="flex-1 overflow-y-auto pr-sm custom-scrollbar flex flex-col gap-md relative z-10">
+<!-- Sequence Card 1 -->
+<div class="card relative group">
+<div class="absolute -left-2 top-1/2 -translate-y-1/2 bg-surface-container border border-outline-variant rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab shadow-lg">
+<span class="material-symbols-outlined text-on-surface-variant text-sm block">drag_indicator</span>
+</div>
+<div class="flex justify-between items-start mb-md border-b border-outline-variant pb-sm">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-label-md font-bold text-on-surface">1</div>
+<div>
+<h3 class="text-title-md font-title-md text-on-surface">Barbell Bench Press</h3>
+<p class="text-label-md font-label-md text-on-surface-variant mt-1">Primary Strength Focus</p>
+</div>
+</div>
+<div class="flex gap-xs">
+<button class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container transition-colors" title="Add Note">
+<span class="material-symbols-outlined text-sm">edit_note</span>
+</button>
+<button class="text-on-surface-variant hover:text-error p-1 rounded hover:bg-error/10 transition-colors" title="Remove">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-sm items-end">
+<div class="col-span-1 text-label-md text-on-surface-variant text-center pb-2">Set</div>
+<div class="col-span-3 text-label-md text-on-surface-variant">Reps</div>
+<div class="col-span-3 text-label-md text-on-surface-variant">Weight (lbs)</div>
+<div class="col-span-3 text-label-md text-on-surface-variant">Rest (s)</div>
+<div class="col-span-2"></div>
+<!-- Set row -->
+<div class="col-span-1 flex justify-center items-center h-full text-body-md font-bold text-on-surface">1</div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="number" value="8"/></div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="text" value="225"/></div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="number" value="180"/></div>
+<div class="col-span-2 flex justify-end">
+<button class="text-on-surface-variant hover:text-on-surface p-2"><span class="material-symbols-outlined text-sm">content_copy</span></button>
+</div>
+<!-- Set row -->
+<div class="col-span-1 flex justify-center items-center h-full text-body-md font-bold text-on-surface">2</div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="number" value="8"/></div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="text" value="225"/></div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="number" value="180"/></div>
+<div class="col-span-2 flex justify-end">
+<button class="text-on-surface-variant hover:text-on-surface p-2"><span class="material-symbols-outlined text-sm">content_copy</span></button>
+</div>
+<!-- Set row -->
+<div class="col-span-1 flex justify-center items-center h-full text-body-md font-bold text-on-surface">3</div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="number" value="6"/></div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center text-primary border-primary/50" type="text" value="235"/></div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="number" value="180"/></div>
+<div class="col-span-2 flex justify-end">
+<button class="text-on-surface-variant hover:text-on-surface p-2"><span class="material-symbols-outlined text-sm">content_copy</span></button>
+</div>
+</div>
+<button class="w-full mt-md border border-dashed border-outline-variant py-2 rounded text-label-md font-label-md text-on-surface-variant hover:text-primary hover:border-primary transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-sm">add</span> Add Set
+                            </button>
+</div>
+<!-- Sequence Card 2 -->
+<div class="card relative group opacity-80 hover:opacity-100 transition-opacity">
+<div class="absolute -left-2 top-1/2 -translate-y-1/2 bg-surface-container border border-outline-variant rounded p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab shadow-lg">
+<span class="material-symbols-outlined text-on-surface-variant text-sm block">drag_indicator</span>
+</div>
+<div class="flex justify-between items-start mb-md border-b border-outline-variant pb-sm">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-label-md font-bold text-on-surface">2</div>
+<div>
+<h3 class="text-title-md font-title-md text-on-surface">Incline Dumbbell Press</h3>
+<p class="text-label-md font-label-md text-on-surface-variant mt-1">Upper Chest</p>
+</div>
+</div>
+<div class="flex gap-xs">
+<button class="text-on-surface-variant hover:text-primary p-1 rounded hover:bg-surface-container transition-colors" title="Add Note">
+<span class="material-symbols-outlined text-sm">edit_note</span>
+</button>
+<button class="text-on-surface-variant hover:text-error p-1 rounded hover:bg-error/10 transition-colors" title="Remove">
+<span class="material-symbols-outlined text-sm">delete</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-sm items-end">
+<div class="col-span-1 text-label-md text-on-surface-variant text-center pb-2">Set</div>
+<div class="col-span-3 text-label-md text-on-surface-variant">Reps</div>
+<div class="col-span-3 text-label-md text-on-surface-variant">Weight (lbs)</div>
+<div class="col-span-3 text-label-md text-on-surface-variant">Rest (s)</div>
+<div class="col-span-2"></div>
+<div class="col-span-1 flex justify-center items-center h-full text-body-md font-bold text-on-surface">1</div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="number" value="10"/></div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="text" value="85"/></div>
+<div class="col-span-3"><input class="input-base w-full p-2 text-body-md text-center" type="number" value="120"/></div>
+<div class="col-span-2 flex justify-end">
+<button class="text-on-surface-variant hover:text-on-surface p-2"><span class="material-symbols-outlined text-sm">content_copy</span></button>
+</div>
+</div>
+</div>
+<!-- Drop Zone Indicator -->
+<div class="border-2 border-dashed border-outline-variant/50 rounded-lg p-lg flex flex-col items-center justify-center text-on-surface-variant hover:border-primary hover:text-primary hover:bg-primary/5 transition-all cursor-pointer">
+<span class="material-symbols-outlined text-2xl mb-2">move_to_inbox</span>
+<p class="text-label-md font-label-md">Drag exercises here to add to sequence</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<style>
+        /* Custom Scrollbar for sleek UI */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #232833;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #323537;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

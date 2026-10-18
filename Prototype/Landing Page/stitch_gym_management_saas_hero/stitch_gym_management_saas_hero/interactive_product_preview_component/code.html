@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Preview Component</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#5be584',
+              hover: '#4dd474',
+              glow: 'rgba(91, 229, 132, 0.25)',
+              dim: 'rgba(91, 229, 132, 0.12)'
+            },
+            surface: {
+              base: '#090B0F',
+              card: '#111318',
+              elevated: '#1a1c22',
+              border: 'rgba(255, 255, 255, 0.08)'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #090B0F;
+      color: #F8FAFC;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .tab-btn.active {
+      background-color: #5be584;
+      color: #090B0F;
+      font-weight: 700;
+      box-shadow: 0 0 24px rgba(91, 229, 132, 0.35);
+    }
+    .tab-btn:not(.active) {
+      color: #94A3B8;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .tab-btn:not(.active):hover {
+      color: #F8FAFC;
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(91, 229, 132, 0.3);
+    }
+    .browser-glow {
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 45px -5px rgba(91, 229, 132, 0.12);
+    }
+  </style>
+</head>
+<body class="bg-[#090B0F] min-h-screen flex items-center justify-center p-6 md:p-12 lg:p-16">
+
+  <!-- STANDALONE COMPONENT CONTAINER -->
+  <section class="w-full max-w-7xl mx-auto py-12 relative select-none">
+
+    <!-- Ambient Subtle Background Glow (Scoped to component) -->
+    <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[360px] bg-[#5be584]/10 rounded-full blur-[140px] pointer-events-none"></div>
+
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-10 md:mb-12 relative z-10">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#5be584]/10 border border-[#5be584]/25 text-[#5be584] text-xs font-semibold uppercase tracking-wider mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#5be584] animate-pulse"></span>
+        Interactive Product Suite
+      </div>
+      <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white mb-4">
+        Engineered for Execution. <br>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-[#5be584] to-[#4dd474]">
+          Explore the Software.
+        </span>
+      </h2>
+      <p class="text-gray-400 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+        Switch perspectives to preview how our modern architecture gives owners, coaches, and staff total command over daily gym operations and athletic programming.
+      </p>
+
+      <!-- 4 Segmented Interactive Tabs -->
+      <div class="mt-8 inline-flex flex-wrap items-center justify-center p-1.5 rounded-2xl bg-[#12151B] border border-white/10 gap-1.5 shadow-2xl backdrop-blur-xl">
+        <button onclick="switchTab('dashboard')" id="tab-btn-dashboard" class="tab-btn active transition-all duration-300 px-5 py-2.5 rounded-xl text-xs md:text-sm flex items-center gap-2.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+          </svg>
+          Dashboard
+        </button>
+        <button onclick="switchTab('members')" id="tab-btn-members" class="tab-btn transition-all duration-300 px-5 py-2.5 rounded-xl text-xs md:text-sm flex items-center gap-2.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          Members
+        </button>
+        <button onclick="switchTab('workout-builder')" id="tab-btn-workout-builder" class="tab-btn transition-all duration-300 px-5 py-2.5 rounded-xl text-xs md:text-sm flex items-center gap-2.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+          Workout Builder
+        </button>
+        <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="tab-btn transition-all duration-300 px-5 py-2.5 rounded-xl text-xs md:text-sm flex items-center gap-2.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          Analytics
+        </button>
+      </div>
+    </div>
+
+    <!-- PREVIEW STAGE (Side-by-side grid) -->
+    <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+      <!-- Left / Primary: Realistic Browser Window Frame with Empty Screenshot Area -->
+      <div class="lg:col-span-8 order-2 lg:order-1">
+        <div class="relative rounded-2xl bg-[#101319] border border-white/10 browser-glow overflow-hidden transition-all duration-500 hover:border-[#5be584]/30">
+          
+          <!-- Browser Top Chrome / Header Bar -->
+          <div class="h-11 bg-[#141820] border-b border-white/5 px-4 flex items-center justify-between">
+            <!-- Window Control Dots -->
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-[#EF4444]/80 border border-[#EF4444]/30 inline-block"></span>
+              <span class="w-3 h-3 rounded-full bg-[#F59E0B]/80 border border-[#F59E0B]/30 inline-block"></span>
+              <span class="w-3 h-3 rounded-full bg-[#10B981]/80 border border-[#10B981]/30 inline-block"></span>
+            </div>
+
+            <!-- Browser URL Bar Pill -->
+            <div class="flex items-center gap-2 bg-[#090B0F]/80 border border-white/5 rounded-md px-4 py-1 text-[11px] font-mono text-gray-400 w-full max-w-sm mx-4 justify-center">
+              <svg class="w-3 h-3 text-[#5be584]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+              <span id="browser-url" class="text-gray-300">app.apexfit.os/studio/dashboard</span>
+              <span class="text-gray-600 ml-auto">v2.4</span>
+            </div>
+
+            <!-- Window Right Quick Actions Indicator -->
+            <div class="flex items-center gap-2 text-gray-500 text-xs font-mono">
+              <span class="hidden sm:inline-block w-2 h-2 rounded-full bg-[#5be584] animate-ping"></span>
+              <span class="hidden sm:inline text-[#5be584] text-[10px] font-bold">CONNECTED</span>
+            </div>
+          </div>
+
+          <!-- Empty Application Screenshot Viewport Area -->
+          <div class="relative bg-[#0B0D12] min-h-[440px] md:min-h-[520px] flex flex-col items-center justify-center p-8 border-dashed border-2 border-white/5 m-3 rounded-xl transition-all duration-300 group hover:border-[#5be584]/20">
+            
+            <!-- Technical Grid Overlay (subtle background feel) -->
+            <div class="absolute inset-0 bg-[radial-gradient(#5be584_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.03] pointer-events-none rounded-xl"></div>
+            
+            <!-- Soft Center Spotlight -->
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#5be584]/[0.02] to-transparent pointer-events-none"></div>
+
+            <!-- Elegant Empty State Placeholder Graphic & Badge -->
+            <div class="relative z-10 text-center max-w-md mx-auto p-6 rounded-2xl bg-[#13171F]/60 border border-white/10 backdrop-blur-sm shadow-xl">
+              <div class="w-16 h-16 rounded-2xl bg-[#1A202C] border border-[#5be584]/30 flex items-center justify-center mx-auto mb-4 text-[#5be584] shadow-lg shadow-[#5be584]/10">
+                <svg id="preview-icon" class="w-8 h-8 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div class="inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono uppercase tracking-wider text-gray-300 mb-2">
+                <span id="preview-badge">SCREENSHOT_PLACEHOLDER // 1920x1080</span>
+              </div>
+              <h4 id="preview-title" class="text-base font-semibold text-white mb-1">
+                Studio Command Dashboard Screenshot
+              </h4>
+              <p class="text-xs text-gray-400 leading-relaxed font-sans">
+                Leave this area completely clear for high-resolution software renders, interactive Figma embeds, or video demos.
+              </p>
+            </div>
+
+            <!-- Corner Frame Dimension Guides -->
+            <span class="absolute top-4 left-4 font-mono text-[10px] text-gray-600 uppercase tracking-widest pointer-events-none">VIEWPORT: 1440 × 900</span>
+            <span class="absolute bottom-4 right-4 font-mono text-[10px] text-gray-600 uppercase tracking-widest pointer-events-none">READY FOR PRODUCTION ASSET</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right: Structured Explanation & Feature Highlights Beside the Screenshot -->
+      <div class="lg:col-span-4 order-1 lg:order-2 space-y-6">
+        
+        <div id="explanation-container" class="space-y-6 transition-opacity duration-300">
+          
+          <!-- Category Micro Tag -->
+          <div class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#5be584]">
+            <span class="w-2 h-2 rounded-full bg-[#5be584]"></span>
+            <span id="explain-tag">MODULE 01 • OPERATIONS HUB</span>
+          </div>
+
+          <!-- Section Main Heading -->
+          <h3 id="explain-heading" class="text-2xl md:text-3xl font-bold text-white tracking-tight leading-snug">
+            Real-time Studio Telemetry & Facility Control
+          </h3>
+
+          <!-- Primary Description -->
+          <p id="explain-desc" class="text-gray-300 text-sm md:text-base leading-relaxed">
+            Monitor member check-ins, turnstile hardware telemetry, facility capacity limits, and hourly revenue in a unified executive command center with sub-second sync.
+          </p>
+
+          <!-- 3 Bullet Feature Nodes -->
+          <div class="space-y-3 pt-2">
+            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-[#12151C] border border-white/5 hover:border-[#5be584]/30 transition-colors">
+              <div class="p-2 rounded-lg bg-[#5be584]/10 text-[#5be584] shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+              </div>
+              <div>
+                <h5 id="feature-1-title" class="text-xs md:text-sm font-semibold text-white">Live Capacity Intelligence</h5>
+                <p id="feature-1-desc" class="text-xs text-gray-400 mt-0.5">Automated floor traffic density mapping via smart NFC gates.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-[#12151C] border border-white/5 hover:border-[#5be584]/30 transition-colors">
+              <div class="p-2 rounded-lg bg-[#5be584]/10 text-[#5be584] shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div>
+                <h5 id="feature-2-title" class="text-xs md:text-sm font-semibold text-white">Automated Dunning & Billing</h5>
+                <p id="feature-2-desc" class="text-xs text-gray-400 mt-0.5">Recovers 94% of failed member membership renewals instantly.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-3.5 rounded-xl bg-[#12151C] border border-white/5 hover:border-[#5be584]/30 transition-colors">
+              <div class="p-2 rounded-lg bg-[#5be584]/10 text-[#5be584] shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+              </div>
+              <div>
+                <h5 id="feature-3-title" class="text-xs md:text-sm font-semibold text-white">Multi-Location Sync</h5>
+                <p id="feature-3-desc" class="text-xs text-gray-400 mt-0.5">Manage rosters and equipment across multiple branch locations.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Action Link -->
+          <div class="pt-2">
+            <button class="inline-flex items-center gap-2 text-sm font-semibold text-[#5be584] hover:text-[#4dd474] transition-colors group">
+              <span>View technical architecture docs</span>
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Interactive Tab Switcher Logic -->
+  <script>
+    const tabData = {
+      'dashboard': {
+        url: 'app.apexfit.os/studio/dashboard',
+        badge: 'SCREENSHOT_PLACEHOLDER // 1920x1080',
+        title: 'Studio Command Dashboard Screenshot',
+        tag: 'MODULE 01 • OPERATIONS HUB',
+        heading: 'Real-time Studio Telemetry & Facility Control',
+        desc: 'Monitor member check-ins, turnstile hardware telemetry, facility capacity limits, and hourly revenue in a unified executive command center with sub-second sync.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>',
+        f1Title: 'Live Capacity Intelligence',
+        f1Desc: 'Automated floor traffic density mapping via smart NFC gates.',
+        f2Title: 'Automated Dunning & Billing',
+        f2Desc: 'Recovers 94% of failed member membership renewals instantly.',
+        f3Title: 'Multi-Location Sync',
+        f3Desc: 'Manage rosters and equipment across multiple branch locations.'
+      },
+      'members': {
+        url: 'app.apexfit.os/roster/members',
+        badge: 'SCREENSHOT_PLACEHOLDER // 1920x1080',
+        title: 'Member Profile & Retention Matrix Screenshot',
+        tag: 'MODULE 02 • MEMBER DIRECTORY',
+        heading: 'Unified Profiles, Check-ins & Churn Prevention',
+        desc: 'Access complete member athletic history, attendance velocity, subscription health, and predictive AI churn warnings before members stop coming in.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>',
+        f1Title: '360° Athlete Dossiers',
+        f1Desc: 'Full logging of injury flags, PR milestones, and trainer notes.',
+        f2Title: 'Predictive Retention Alerts',
+        f2Desc: 'Flags low-attendance members with targeted automated re-engagement.',
+        f3Title: 'Contactless Digital Credentialing',
+        f3Desc: 'Apple & Google Wallet pass integration for single-tap facility entry.'
+      },
+      'workout-builder': {
+        url: 'app.apexfit.os/coaching/workout-builder',
+        badge: 'SCREENSHOT_PLACEHOLDER // 1920x1080',
+        title: 'Algorithmic Workout Builder Screenshot',
+        tag: 'MODULE 03 • PERIODIZATION ENGINE',
+        heading: 'Hyper-flexible Programming & Periodization',
+        desc: 'Build progressive overload training blocks in seconds with auto-scaling RPE calculations, tempo formulas, and dynamic exercise video libraries.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>',
+        f1Title: 'Auto-Progressive Overload',
+        f1Desc: 'Automatically adjusts poundage and volume based on prior sets.',
+        f2Title: '4K Movement Demonstrations',
+        f2Desc: 'Over 800+ curated technical lift videos with biomechanics cues.',
+        f3Title: '1-Click Team Broadcast',
+        f3Desc: 'Instantly push customized splits to dozens of client mobile apps.'
+      },
+      'analytics': {
+        url: 'app.apexfit.os/insights/analytics-bi',
+        badge: 'SCREENSHOT_PLACEHOLDER // 1920x1080',
+        title: 'Executive BI & Cohort Analytics Screenshot',
+        tag: 'MODULE 04 • REVENUE & METRICS',
+        heading: 'Precision Business Intelligence & Cohort LTV',
+        desc: 'Make data-backed decisions with interactive cohort retention curves, trainer yield metrics, peak floor capacity analysis, and forecasting models.',
+        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>',
+        f1Title: 'Cohort Retention Modeling',
+        f1Desc: 'Visualize 30, 60, and 90-day subscription survival percentages.',
+        f2Title: 'Trainer Utilization & Payroll',
+        f2Desc: 'Automated calculation of billable PT hours and commission tiers.',
+        f3Title: 'Studio Heatmap Telemetry',
+        f3Desc: 'Identify underutilized barbell racks and equipment dead zones.'
+      }
+    };
+
+    function switchTab(key) {
+      // Toggle button styles
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      const activeBtn = document.getElementById(`tab-btn-${key}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const data = tabData[key];
+      if (!data) return;
+
+      // Animate explanation container
+      const container = document.getElementById('explanation-container');
+      container.style.opacity = '0.3';
+
+      setTimeout(() => {
+        // Update browser details
+        document.getElementById('browser-url').innerText = data.url;
+        document.getElementById('preview-badge').innerText = data.badge;
+        document.getElementById('preview-title').innerText = data.title;
+        document.getElementById('preview-icon').innerHTML = data.icon;
+
+        // Update explanation content
+        document.getElementById('explain-tag').innerText = data.tag;
+        document.getElementById('explain-heading').innerText = data.heading;
+        document.getElementById('explain-desc').innerText = data.desc;
+        document.getElementById('feature-1-title').innerText = data.f1Title;
+        document.getElementById('feature-1-desc').innerText = data.f1Desc;
+        document.getElementById('feature-2-title').innerText = data.f2Title;
+        document.getElementById('feature-2-desc').innerText = data.f2Desc;
+        document.getElementById('feature-3-title').innerText = data.f3Title;
+        document.getElementById('feature-3-desc').innerText = data.f3Desc;
+
+        container.style.opacity = '1';
+      }, 150);
+    }
+  </script>
+</body>
+</html>
