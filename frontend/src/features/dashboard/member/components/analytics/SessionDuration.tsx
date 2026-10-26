@@ -10,6 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { Clock } from "lucide-react";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface SessionDurationProps {
   trend?: any[];
@@ -19,10 +20,18 @@ export const SessionDuration: React.FC<SessionDurationProps> = ({
   trend = [],
 }) => {
   return (
-    <div className="flex flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6">
+    <div className="flex flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 transition-colors hover:border-[#2A313A]">
       <div className="mb-6 flex items-center gap-2">
         <Clock className="h-5 w-5 text-gray-400" />
         <h2 className="text-sm font-semibold text-white">Duration Trend</h2>
+        <InfoTooltip
+          title="Session Duration Telemetry"
+          description="Average active workout duration in minutes per day across the past 30 days."
+          calculation="SUM(duration) / COUNT(sessions) on each calendar date"
+          unit="minutes"
+          dateRange="Past 30 days"
+          limitations="Zero-padded on days where no workout session was completed."
+        />
       </div>
 
       <div className="h-[200px] w-full">
@@ -62,6 +71,7 @@ export const SessionDuration: React.FC<SessionDurationProps> = ({
                   borderRadius: "8px",
                   color: "#fff",
                 }}
+                formatter={(val: any) => [`${val} min`, "Duration"]}
               />
               <Area
                 type="monotone"

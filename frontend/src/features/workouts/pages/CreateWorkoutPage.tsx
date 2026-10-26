@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Sparkles, Layers, ShieldCheck } from "lucide-react";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { ROLES } from "@/constants/roles";
 
 import WorkoutForm from "../components/WorkoutForm";
 import { useCreateWorkout } from "../hooks/useCreateWorkout";
@@ -7,6 +9,8 @@ import type { WorkoutFormData } from "../schemas/workout.schema";
 
 export default function CreateWorkoutPage() {
   const navigate = useNavigate();
+  const { data: user } = useCurrentUser();
+  const isMember = user?.role === ROLES.MEMBER;
   const { mutate, isPending } = useCreateWorkout();
 
   function handleSubmit(data: WorkoutFormData) {
@@ -44,7 +48,7 @@ export default function CreateWorkoutPage() {
 
               <span className="inline-flex items-center gap-1 rounded bg-[#16291D] border border-[#23422E] px-2.5 py-0.5 text-[11px] font-medium text-[#5BE584]">
                 <Sparkles className="h-3 w-3" />
-                Template Creator
+                {isMember ? "Personal Routine" : "Template Creator"}
               </span>
             </div>
 

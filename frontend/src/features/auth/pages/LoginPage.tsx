@@ -1,18 +1,19 @@
 // src/features/auth/pages/LoginPage.tsx
 import { useState } from "react";
-import { Mail, Lock, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
+import { Link, useNavigate } from "react-router-dom";
 
 import { useLogin } from "../hooks/useLogin";
 import { loginSchema } from "../schemas/login.schema";
 import type { LoginFormData } from "../schemas/login.schema";
-import { GoogleIcon } from "../components/GoogleIcon";
+import { GoogleAuthButton } from "../components/GoogleAuthButton";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -32,14 +33,8 @@ const LoginPage = () => {
     loginMutation.mutate(data);
   };
 
-  const handleGoogleAuth = () => {
-    toast.info("Google authentication is not configured for this environment.");
-  };
-
   const handleForgotPassword = () => {
-    toast.info(
-      "Password recovery is not configured yet. Please contact your gym administrator.",
-    );
+    navigate("/forgot-password");
   };
 
   return (
@@ -66,19 +61,24 @@ const LoginPage = () => {
             Email Address
           </label>
           <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#91A0B5]" />
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#91A0B5]">
+              <Mail className="h-4 w-4" />
+            </div>
             <input
               id="email"
               type="email"
               autoComplete="email"
-              placeholder="Enter your email"
-              aria-invalid={!!errors.email}
-              className="h-[52px] w-full rounded-[22px] border border-[#252B33] bg-[#171B20] pl-11 pr-4 text-sm text-[#F5F6F8] placeholder:text-[#64748B] focus:border-[#4FE080] focus:outline-none focus:ring-1 focus:ring-[#4FE080] transition-colors"
               {...register("email")}
+              placeholder="athlete@example.com"
+              className={`w-full h-11 pl-10 pr-4 rounded-xl border bg-[#171B20] text-sm text-[#F5F6F8] placeholder-[#91A0B5]/50 transition-colors focus:outline-none focus:ring-1 ${
+                errors.email
+                  ? "border-[#EF4444] focus:border-[#EF4444] focus:ring-[#EF4444]"
+                  : "border-[#252B33] focus:border-[#4FE080] focus:ring-[#4FE080]"
+              }`}
             />
           </div>
           {errors.email && (
-            <p className="mt-1.5 text-xs font-medium text-[#EF4444]">
+            <p className="mt-1 text-xs text-[#EF4444]">
               {errors.email.message}
             </p>
           )}
@@ -93,30 +93,46 @@ const LoginPage = () => {
             Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#91A0B5]" />
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#91A0B5]">
+              <Lock className="h-4 w-4" />
+            </div>
             <input
               id="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
-              placeholder="Enter your password"
-              aria-invalid={!!errors.password}
-              className="h-[52px] w-full rounded-[22px] border border-[#252B33] bg-[#171B20] pl-11 pr-4 text-sm text-[#F5F6F8] placeholder:text-[#64748B] focus:border-[#4FE080] focus:outline-none focus:ring-1 focus:ring-[#4FE080] transition-colors"
               {...register("password")}
+              placeholder="••••••••"
+              className={`w-full h-11 pl-10 pr-10 rounded-xl border bg-[#171B20] text-sm text-[#F5F6F8] placeholder-[#91A0B5]/50 transition-colors focus:outline-none focus:ring-1 ${
+                errors.password
+                  ? "border-[#EF4444] focus:border-[#EF4444] focus:ring-[#EF4444]"
+                  : "border-[#252B33] focus:border-[#4FE080] focus:ring-[#4FE080]"
+              }`}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#91A0B5] hover:text-[#F5F6F8] transition-colors"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
           </div>
           {errors.password && (
-            <p className="mt-1.5 text-xs font-medium text-[#EF4444]">
+            <p className="mt-1 text-xs text-[#EF4444]">
               {errors.password.message}
             </p>
           )}
         </div>
 
-        {/* Remember Me & Forgot Password */}
+        {/* Remember me and Forgot Password */}
         <div className="flex items-center justify-between pt-1">
-          <label className="flex items-center gap-2.5 cursor-pointer select-none group">
+          <label className="flex items-center gap-2 cursor-pointer group">
             <input
               type="checkbox"
-              id="remember"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
               className="h-4 w-4 rounded-[5px] border border-[#252B33] bg-[#171B20] accent-[#4FE080] focus:ring-0 focus:ring-offset-0 cursor-pointer"
@@ -150,38 +166,33 @@ const LoginPage = () => {
             "SIGN IN"
           )}
         </button>
-
-        {/* Separator */}
-        <div className="relative my-6 flex items-center justify-center">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#252B33]" />
-          </div>
-          <div className="relative bg-[#0B0D10] px-3 text-[11px] font-medium tracking-wider text-[#64748B] uppercase">
-            OR
-          </div>
-        </div>
-
-        {/* Google Secondary Button */}
-        <button
-          type="button"
-          onClick={handleGoogleAuth}
-          className="flex h-[50px] w-full items-center justify-center gap-3 rounded-[22px] border border-[#252B33] bg-[#171B20] text-sm font-medium text-[#F5F6F8] transition-colors hover:bg-[#1E232A] hover:border-[#333A44] cursor-pointer"
-        >
-          <GoogleIcon className="h-4 w-4" />
-          <span>Continue with Google</span>
-        </button>
-
-        {/* Sign Up Link */}
-        <div className="mt-7 text-center text-[13px] text-[#91A0B5]">
-          Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="font-semibold text-[#4FE080] hover:text-[#43D474] transition-colors"
-          >
-            Create one now
-          </Link>
-        </div>
       </form>
+
+      {/* Separator */}
+      <div className="relative my-6 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-[#252B33]" />
+        </div>
+        <div className="relative bg-[#0B0D10] px-3 text-[11px] font-medium tracking-wider text-[#64748B] uppercase">
+          OR
+        </div>
+      </div>
+
+      {/* Google Authentication - Completely Outside Form */}
+      <div className="w-full">
+        <GoogleAuthButton mode="signin" disabled={loginMutation.isPending} />
+      </div>
+
+      {/* Sign Up Link */}
+      <div className="mt-7 text-center text-[13px] text-[#91A0B5]">
+        Don&apos;t have an account?{" "}
+        <Link
+          to="/register"
+          className="font-semibold text-[#4FE080] hover:text-[#43D474] transition-colors"
+        >
+          Create one now
+        </Link>
+      </div>
     </div>
   );
 };

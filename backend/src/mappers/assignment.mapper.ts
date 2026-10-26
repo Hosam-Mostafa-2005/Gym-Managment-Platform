@@ -1,65 +1,73 @@
-const mapAssignment = (assignment: any) => ({
-  id: assignment._id ?? assignment.id,
+const mapAssignment = (assignment: any) => {
+  const firstExercise = assignment.workout?.exercises?.[0]?.exercise;
+  const imageUrl = assignment.workout?.imageUrl ?? firstExercise?.imageUrl ?? null;
+  const exerciseCount = assignment.workout?.exercises?.length ?? 0;
 
-  member: assignment.member
-    ? typeof assignment.member === "object" &&
-      ("name" in assignment.member || "email" in assignment.member)
-      ? {
-          id: assignment.member._id ?? assignment.member.id,
-          name: assignment.member.name,
-          email: assignment.member.email,
-        }
-      : {
-          id: assignment.member,
-        }
-    : null,
+  return {
+    id: assignment._id ?? assignment.id,
 
-  trainer: assignment.trainer
-    ? typeof assignment.trainer === "object" &&
-      ("name" in assignment.trainer || "email" in assignment.trainer)
-      ? {
-          id: assignment.trainer._id ?? assignment.trainer.id,
-          name: assignment.trainer.name,
-          email: assignment.trainer.email,
-        }
-      : {
-          id: assignment.trainer,
-        }
-    : null,
+    member: assignment.member
+      ? typeof assignment.member === "object" &&
+        ("name" in assignment.member || "email" in assignment.member)
+        ? {
+            id: assignment.member._id ?? assignment.member.id,
+            name: assignment.member.name,
+            email: assignment.member.email,
+          }
+        : {
+            id: assignment.member,
+          }
+      : null,
 
-  workout: assignment.workout
-    ? typeof assignment.workout === "object" && "title" in assignment.workout
-      ? {
-          id: assignment.workout._id ?? assignment.workout.id,
-          title: assignment.workout.title,
-          description: assignment.workout.description,
-          category: assignment.workout.category,
-          difficulty: assignment.workout.difficulty,
-          estimatedDuration: assignment.workout.estimatedDuration,
-          exercises: assignment.workout.exercises,
-        }
-      : {
-          id: assignment.workout,
-        }
-    : null,
+    trainer: assignment.trainer
+      ? typeof assignment.trainer === "object" &&
+        ("name" in assignment.trainer || "email" in assignment.trainer)
+        ? {
+            id: assignment.trainer._id ?? assignment.trainer.id,
+            name: assignment.trainer.name,
+            email: assignment.trainer.email,
+          }
+        : {
+            id: assignment.trainer,
+          }
+      : null,
 
-  startDate: assignment.startDate,
+    workout: assignment.workout
+      ? typeof assignment.workout === "object" && "title" in assignment.workout
+        ? {
+            id: assignment.workout._id ?? assignment.workout.id,
+            title: assignment.workout.title,
+            description: assignment.workout.description,
+            category: assignment.workout.category,
+            difficulty: assignment.workout.difficulty,
+            estimatedDuration: assignment.workout.estimatedDuration,
+            imageUrl,
+            exerciseCount,
+            exercises: assignment.workout.exercises,
+          }
+        : {
+            id: assignment.workout,
+          }
+      : null,
 
-  endDate: assignment.endDate,
+    startDate: assignment.startDate,
 
-  status: assignment.status,
+    endDate: assignment.endDate,
 
-  completedAt: assignment.completedAt,
+    status: assignment.status,
 
-  cancelledAt: assignment.cancelledAt,
+    completedAt: assignment.completedAt,
 
-  cancelReason: assignment.cancelReason,
+    cancelledAt: assignment.cancelledAt,
 
-  notes: assignment.notes,
+    cancelReason: assignment.cancelReason,
 
-  createdAt: assignment.createdAt,
+    notes: assignment.notes,
 
-  updatedAt: assignment.updatedAt,
-});
+    createdAt: assignment.createdAt,
+
+    updatedAt: assignment.updatedAt,
+  };
+};
 
 export default mapAssignment;

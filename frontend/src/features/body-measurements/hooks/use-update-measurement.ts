@@ -25,6 +25,12 @@ export const useUpdateMeasurement = (memberId: string) => {
       queryClient.invalidateQueries({
         queryKey: ["body-measurement", data.id],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["gamification"],
+      });
       toast.success("Measurement updated successfully.");
     },
     onError: () => {

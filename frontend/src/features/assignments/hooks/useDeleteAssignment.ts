@@ -12,6 +12,12 @@ export const useDeleteAssignment = () => {
       queryClient.invalidateQueries({
         queryKey: ["assignments"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["my-assignments"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard"],
+      });
     },
   });
 };

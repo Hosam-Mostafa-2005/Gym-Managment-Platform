@@ -10,7 +10,10 @@ export interface User {
 }
 
 export const getUsers = async (role?: string): Promise<User[]> => {
-  const params = role ? { role } : {};
+  const params: Record<string, any> = { limit: 1000 };
+  if (role) {
+    params.role = role.toLowerCase();
+  }
   const response = await api.get("/users", { params });
 
   // 💡 التعامل الذكي مع كل أشكال الـ Response الممكنة من الباك اند

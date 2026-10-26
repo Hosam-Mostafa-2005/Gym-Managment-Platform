@@ -1,0 +1,142 @@
+import React, { useState, useEffect } from "react";
+import { Timer, X, Plus, Minus, Play, Pause, Check } from "lucide-react";
+import { formatTimer } from "../utils/session.utils";
+
+interface RestTimerProps {
+  initialSeconds: number;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const RestTimer: React.FC<RestTimerProps> = ({
+  initialSeconds,
+  isOpen,
+  onClose,
+}) => {
+  const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
+  const [isPaused, setIsPaused] = useState(false);
+  const [totalTime, setTotalTime] = useState(initialSeconds);
+
+  useEffect(() => {
+    setSecondsLeft(initialSeconds);
+    setTotalTime(initialSeconds);
+    setIsPaused(false);
+  }, [initialSeconds, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || isPaused || secondsLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isOpen, isPaused, secondsLeft]);
+
+  if (!isOpen) return null;
+
+  const isFinished = secondsLeft === 0;
+  const progressPercent = totalTime > 0 ? ((totalTime - secondsLeft) / totalTime) * 100 : 100;
+
+  const handleAdd30 = () => {
+    setSecondsLeft((s) => s + 30);
+    setTotalTime((t) => t + 30);
+  };
+
+  const handleMinus15 = () => {
+    setSecondsLeft((s) => Math.max(0, s - 15));
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+      <div className={`rounded-2xl border p-4 shadow-2xl backdrop-blur-md transition-all duration-300 w-80 ${
+        isFinished
+          ? "border-[#5BE584] bg-[#16291D]/95 text-[#5BE584]"
+          : "border-[#1E2329] bg-[#0D1014]/95 text-white"
+      }`}>
+        {/* Top Header */}
+        <div className="flex items-center justify-between pb-2 border-b border-white/5">
+          <div className="flex items-center gap-2">
+            <Timer className={`h-4 w-4 ${isFinished ? "text-[#5BE584]" : "text-[#5BE584] animate-pulse"}`} />
+            <span className="text-xs font-bold tracking-wide uppercase">
+              {isFinished ? "Rest Complete!" : "Rest Interval"}
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-[#9CA3AF] hover:text-white transition-colors p-1 rounded-md hover:bg-white/5"
+            aria-label="Dismiss Rest Timer"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Center Timer Display */}
+        <div className="my-4 flex flex-col items-center justify-center">
+          <span className={`font-mono text-3xl font-extrabold tracking-wider ${
+            isFinished ? "text-[#5BE584] animate-bounce" : "text-white"
+          }`}>
+            {isFinished ? "GO!" : formatTimer(secondsLeft)}
+          </span>
+
+          {/* Progress Bar */}
+          <div className="w-full bg-[#1E2329] rounded-full h-1.5 mt-3 overflow-hidden">
+            <div
+              className={`h-full transition-all duration-1000 ease-linear ${
+                isFinished ? "bg-[#5BE584]" : "bg-[#5BE584]"
+              }`}
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Action Controls */}
+        <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/5">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={handleMinus15}
+              disabled={isFinished || secondsLeft < 15}
+              className="rounded-lg border border-[#1E2329] bg-[#101418] px-2 py-1 text-[11px] font-medium text-[#9CA3AF] hover:text-white hover:border-[#2A313A] disabled:opacity-30 transition-colors"
+            >
+              -15s
+            </button>
+            <button
+              onClick={handleAdd30}
+              className="rounded-lg border border-[#1E2329] bg-[#101418] px-2 py-1 text-[11px] font-medium text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
+            >
+              +30s
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            {!isFinished && (
+              <button
+                onClick={() => setIsPaused(!isPaused)}
+                className="rounded-lg border border-[#1E2329] bg-[#101418] p-1.5 text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
+                title={isPaused ? "Resume" : "Pause"}
+              >
+                {isPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="inline-flex items-center gap-1 rounded-lg bg-[#5BE584] px-3 py-1.5 text-xs font-semibold text-[#090B0F] hover:bg-[#49D472] transition-colors"
+            >
+              <Check className="h-3.5 w-3.5 stroke-[3]" />
+              <span>{isFinished ? "Next Set" : "Skip"}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RestTimer;

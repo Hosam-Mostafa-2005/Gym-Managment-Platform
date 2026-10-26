@@ -28,6 +28,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { ROLES } from "@/constants/roles";
 
 interface WorkoutFormProps {
   defaultValues?: WorkoutFormData;
@@ -60,6 +62,9 @@ export default function WorkoutForm({
   isSubmitting = false,
 }: WorkoutFormProps) {
   // NEW:
+  const { data: user } = useCurrentUser();
+  const isMember = user?.role === ROLES.MEMBER;
+
   const { data: exercisesResponse } = useAllExercises();
   // Safely extract the array whether it's wrapped in data.exercises, data.data.exercises, or returned as an array directly
   const exercises: Exercise[] = Array.isArray(exercisesResponse)
@@ -220,7 +225,8 @@ export default function WorkoutForm({
               <FormCheckbox
                 control={control}
                 name="isTemplate"
-                label="Save as Template"
+                label={isMember ? "Personal Routine" : "Save as Template"}
+                disabled={isMember}
               />
             </div>
           </div>
@@ -305,7 +311,20 @@ export default function WorkoutForm({
                   className="group flex items-center justify-between rounded-lg border border-border/50 bg-card/30 p-3.5 transition-all hover:border-border hover:bg-card/80 hover:shadow-sm cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <GripVertical className="h-4 w-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+                    <GripVertical className="h-4 w-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors shrink-0" />
+                    {ex.imageUrl ? (
+                      <div className="h-9 w-9 shrink-0 overflow-hidden rounded-md border border-border/40 bg-secondary/40">
+                        <img
+                          src={ex.imageUrl}
+                          alt={ex.name}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            const parent = (e.currentTarget as HTMLImageElement).parentElement;
+                            if (parent) parent.style.display = "none";
+                          }}
+                        />
+                      </div>
+                    ) : null}
                     <div>
                       <h4 className="text-sm font-medium leading-none text-foreground group-hover:text-emerald-400 transition-colors">
                         {ex.name || `Exercise #${idx + 1}`}

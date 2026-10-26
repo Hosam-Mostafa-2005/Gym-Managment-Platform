@@ -9,6 +9,7 @@ export interface RawExercise {
   secondaryMuscles: string[];
   instructions: string[];
   tips: string[];
+  imageUrl?: string;
   videoUrl?: string;
   alternatives?: any[];
 }
@@ -33,7 +34,7 @@ export const exercisesData: RawExercise[] = [
       "Keep your shoulder blades retracted and depressed.",
       "Do not bounce the bar off your chest.",
     ],
-    videoUrl: "https://example.com/videos/barbell-bench-press.mp4",
+    videoUrl: "https://www.youtube.com/watch?v=rT7DgCr-3pg",
   },
   {
     name: "Incline Dumbbell Press",

@@ -8,8 +8,15 @@ export const mapCoachDashboard = ({
   recentActivity,
   membersNeedingAttention,
   upcomingAssignments,
+  upcomingScheduledWorkouts = [],
   recentMeasurements,
   quickActions,
+  clientHealthOverview = [],
+  actionCenter = {
+    pendingInvitations: [],
+    expiringAssignments: [],
+    inactiveClients: [],
+  },
 }: CoachDashboardMapperInput) => {
   return {
     generatedAt: new Date(),
@@ -22,9 +29,15 @@ export const mapCoachDashboard = ({
         active: overview.activeAssignments,
         total: overview.totalAssignments,
       },
+      activeCoachingMembers: overview.activeCoachingMembers ?? overview.activeMembers,
+      pendingInvitations: overview.pendingInvitations ?? 0,
+      expiringAssignments: overview.expiringAssignments ?? 0,
       workoutsCreated: overview.workoutsCreated,
       completedSessionsToday: overview.completedSessionsToday,
       completedSessionsThisWeek: overview.completedSessionsThisWeek,
+      completedMemberSessions:
+        overview.completedMemberSessions ?? overview.completedSessionsThisWeek,
+      overdueAssignments: overview.overdueAssignments ?? 0,
       completionRate: overview.completionRate,
       measurementsThisWeek: overview.measurementsThisWeek,
       healthScore: overview.healthScore,
@@ -44,7 +57,29 @@ export const mapCoachDashboard = ({
       completionRate: {
         last30Days: charts.completionRateTrend.last30Days || [],
       },
+      assignmentStatusDistribution: charts.assignmentStatusDistribution || [],
+      memberActivityRanking: charts.memberActivityRanking || [],
     },
+    upcomingScheduledWorkouts: (upcomingScheduledWorkouts || []).map((s: any) => ({
+      id: s.id,
+      member: s.member
+        ? {
+            id: s.member.id || s.member._id,
+            name: s.member.name,
+            email: s.member.email,
+          }
+        : null,
+      workout: s.workout
+        ? {
+            id: s.workout.id || s.workout._id,
+            title: s.workout.title,
+            category: s.workout.category,
+            difficulty: s.workout.difficulty,
+          }
+        : null,
+      scheduledAt: s.scheduledAt,
+      notes: s.notes,
+    })),
     recentActivity: recentActivity.map((event: any) => ({
       type: event.type,
       member: event.member
@@ -63,12 +98,13 @@ export const mapCoachDashboard = ({
         name: m.member.name,
         email: m.member.email,
       },
-      reasons: m.reasons, // Mapping array of strings
+      reasons: m.reasons,
       lastWorkout: m.lastWorkout,
       completionRate: m.completionRate,
       latestMeasurement: m.latestMeasurement,
     })),
     upcomingAssignments: upcomingAssignments.map((a: any) => ({
+      id: a.id,
       member: a.member
         ? {
             id: a.member._id?.toString() || a.member.id,
@@ -85,6 +121,7 @@ export const mapCoachDashboard = ({
       daysRemaining: a.daysRemaining,
     })),
     recentMeasurements: recentMeasurements.map((m: any) => ({
+      id: m.id,
       member: m.member
         ? {
             id: m.member._id?.toString() || m.member.id,
@@ -100,7 +137,21 @@ export const mapCoachDashboard = ({
       weight: m.weight,
       bodyFat: m.bodyFat,
       measuredAt: m.measuredAt,
+      isRestricted: m.isRestricted ?? false,
     })),
+    clientHealthOverview: clientHealthOverview.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      email: item.email,
+      relationshipStatus: item.relationshipStatus,
+      historySharingConsent: item.historySharingConsent,
+      lastWorkoutDate: item.lastWorkoutDate,
+      daysSinceLastWorkout: item.daysSinceLastWorkout,
+      activityStatus: item.activityStatus,
+      completedSessionsThisMonth: item.completedSessionsThisMonth,
+      latestMeasurement: item.latestMeasurement,
+    })),
+    actionCenter,
     quickActions,
     ai: {
       enabled: false,
@@ -108,3 +159,5 @@ export const mapCoachDashboard = ({
     },
   };
 };
+
+export default mapCoachDashboard;

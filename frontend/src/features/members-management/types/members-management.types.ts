@@ -27,6 +27,13 @@ export interface MemberManagementCard {
   measurements: {
     latestWeight: number | null;
   };
+
+  relationship?: {
+    id: string;
+    status: string;
+    historySharingConsent: string;
+    startedAt: string | null;
+  } | null;
 }
 
 export interface MembersManagementResponse {

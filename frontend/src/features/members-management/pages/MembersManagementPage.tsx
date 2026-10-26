@@ -8,6 +8,8 @@ import { MembersPagination } from "../components/MembersPagination";
 import { MembersLoading } from "../components/states/MembersLoading";
 import { MembersError } from "../components/states/MembersError";
 import { MembersEmpty } from "../components/states/MembersEmpty";
+import { InviteMemberDialog } from "../../coaching-relationships/components/InviteMemberDialog";
+import { PendingInvitationsList } from "../../coaching-relationships/components/PendingInvitationsList";
 import type { MembersManagementQuery } from "../types/members-management.types";
 
 const MembersManagementPage: React.FC = () => {
@@ -16,6 +18,7 @@ const MembersManagementPage: React.FC = () => {
   const [status, setStatus] = useState("");
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
   const limit = 12; // Static limit based on 3-column grid design
 
   const queryParams: MembersManagementQuery = {
@@ -55,8 +58,14 @@ const MembersManagementPage: React.FC = () => {
   const hasFilters = Boolean(search || status || sort);
 
   return (
-    <div className="min-h-full w-full p-4 md:p-6 lg:p-8 flex flex-col pb-20">
-      <MembersHeader totalMembers={data?.pagination?.totalResults} />
+    <div className="min-h-full w-full p-4 md:p-6 lg:p-8 flex flex-col gap-6 pb-20">
+      <MembersHeader
+        totalMembers={data?.pagination?.totalResults}
+        onInviteClick={() => setIsInviteOpen(true)}
+      />
+
+      {/* Pending Invitations list for the coach */}
+      <PendingInvitationsList />
 
       <MembersToolbar
         searchValue={search}
@@ -93,6 +102,12 @@ const MembersManagementPage: React.FC = () => {
           onClearFilters={handleClearFilters}
         />
       )}
+
+      {/* Invite Member Dialog */}
+      <InviteMemberDialog
+        isOpen={isInviteOpen}
+        onClose={() => setIsInviteOpen(false)}
+      />
     </div>
   );
 };

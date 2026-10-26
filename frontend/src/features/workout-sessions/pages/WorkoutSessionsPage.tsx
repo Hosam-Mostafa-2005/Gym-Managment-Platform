@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Search, Calendar, Clock, Activity, Dumbbell } from "lucide-react";
+import { Search, Calendar, Clock, Activity, Dumbbell, Play } from "lucide-react";
 
 import { useWorkoutSessions } from "../hooks/useWorkoutSessions";
 import { useStartWorkoutSession } from "../hooks/useStartWorkoutSession";
 import { useMyAssignments } from "../hooks/useMyAssignments";
+import StartWorkoutDialog from "../components/StartWorkoutDialog";
 
 export default function WorkoutSessionsPage() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function WorkoutSessionsPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+  const [isStartWorkoutModalOpen, setIsStartWorkoutModalOpen] = useState(false);
 
   const { data: assignments = [] } = useMyAssignments();
   const { mutate: startWorkout, isPending: isStarting } =
@@ -24,7 +26,7 @@ export default function WorkoutSessionsPage() {
   const sessions = data?.sessions ?? [];
   const totalItems = data?.results ?? 0;
 
-  const activeAssignment = assignments.find((a) => a.status === "ACTIVE");
+  const activeAssignment = assignments.find((a: any) => a.status === "ACTIVE");
 
   const stats = useMemo(() => {
     const completed = sessions.filter(
@@ -58,11 +60,17 @@ export default function WorkoutSessionsPage() {
 
     if (search.trim()) {
       const value = search.toLowerCase();
-      filtered = filtered.filter(
-        (session) =>
-          session.assignment.workout.title.toLowerCase().includes(value) ||
-          session.assignment.trainer.name.toLowerCase().includes(value),
-      );
+      filtered = filtered.filter((session) => {
+        const title = (
+          session.workout?.title ||
+          session.assignment?.workout?.title ||
+          ""
+        ).toLowerCase();
+        const trainer = (
+          session.assignment?.trainer?.name || ""
+        ).toLowerCase();
+        return title.includes(value) || trainer.includes(value);
+      });
     }
 
     if (statusFilter !== "all") {
@@ -95,6 +103,11 @@ export default function WorkoutSessionsPage() {
       return;
     }
 
+    if (status === "COMPLETED") {
+      navigate(`/sessions/${id}/summary`);
+      return;
+    }
+
     navigate(`/sessions/${id}`);
   };
 
@@ -103,27 +116,7 @@ export default function WorkoutSessionsPage() {
       navigate("/sessions/active");
       return;
     }
-
-    if (!activeAssignment) {
-      toast.error("No active workout assignment found.");
-      return;
-    }
-
-    startWorkout(
-      {
-        assignment: activeAssignment._id,
-      },
-      {
-        onSuccess: () => {
-          navigate("/sessions/active");
-        },
-
-        onError: (error) => {
-          console.error("Failed to start workout:", error);
-          toast.error("Failed to start workout.");
-        },
-      },
-    );
+    setIsStartWorkoutModalOpen(true);
   };
 
   const hasActiveSession = stats.inProgress > 0;
@@ -156,17 +149,37 @@ export default function WorkoutSessionsPage() {
             </p>
           </div>
 
-          <button
-            onClick={handleContinueWorkout}
-            disabled={isStarting}
-            className="group flex items-center justify-center gap-2 rounded-md bg-[#5BE584] px-5 py-2.5 text-sm font-semibold text-[#090B0F] transition-all hover:bg-[#4ade80] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
-          >
-            {isStarting
-              ? "Starting..."
-              : hasActiveSession
-                ? "Continue Session"
-                : "Start Workout"}
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            {hasActiveSession ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsStartWorkoutModalOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-xs font-semibold text-[#9CA3AF] transition-all hover:text-white hover:border-[#2A313A]"
+                >
+                  <Dumbbell className="w-3.5 h-3.5 text-[#5BE584]" />
+                  <span>Choose Another Workout</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/sessions/active")}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5BE584] px-5 py-2.5 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80] shadow-md shadow-[#5BE584]/10"
+                >
+                  <Activity className="w-3.5 h-3.5 animate-pulse" />
+                  <span>Continue Live Session</span>
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsStartWorkoutModalOpen(true)}
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5BE584] px-5 py-2.5 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80] shadow-md shadow-[#5BE584]/10"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Start Workout</span>
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -370,14 +383,18 @@ export default function WorkoutSessionsPage() {
                         >
                           <td className="px-5 py-3.5">
                             <div className="font-medium text-[#F3F4F6] group-hover:text-[#5BE584] transition-colors">
-                              {session.assignment.workout.title}
+                              {session.workout?.title ||
+                                session.assignment?.workout?.title ||
+                                "Workout Session"}
                             </div>
                             <div className="text-[#6B7280] text-[11px] mt-0.5">
                               ID: M-{session.id.slice(-4).toUpperCase()}
                             </div>
                           </td>
                           <td className="px-5 py-3.5 text-xs text-[#9CA3AF]">
-                            {session.assignment.trainer.name}
+                            {session.assignment?.trainer?.name
+                              ? `Coach ${session.assignment.trainer.name}`
+                              : "Self-Trained"}
                           </td>
                           <td className="px-5 py-3.5 text-xs text-[#9CA3AF]">
                             <div className="font-medium text-[#F3F4F6]">
@@ -466,6 +483,12 @@ export default function WorkoutSessionsPage() {
           </div>
         </section>
       </main>
+
+      {/* Start Workout Selection Modal */}
+      <StartWorkoutDialog
+        isOpen={isStartWorkoutModalOpen}
+        onClose={() => setIsStartWorkoutModalOpen(false)}
+      />
     </div>
   );
 }

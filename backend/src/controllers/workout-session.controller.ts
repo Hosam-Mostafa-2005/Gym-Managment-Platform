@@ -7,6 +7,7 @@ export const start: RequestHandler = catchAsync(async (req, res) => {
   const session = await workoutSessionService.start(
     req.user!.id,
     req.body.assignment,
+    req.body.workout,
   );
 
   res.status(201).json({
@@ -33,6 +34,21 @@ export const finish: RequestHandler = catchAsync(async (req, res) => {
     req.params.id as string,
     req.user!.id,
     req.body,
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      session,
+    },
+  });
+});
+
+export const cancel: RequestHandler = catchAsync(async (req, res) => {
+  const session = await workoutSessionService.cancel(
+    req.params.id as string,
+    req.user!.id,
+    req.body.reason,
   );
 
   res.status(200).json({
@@ -73,3 +89,39 @@ export const getById: RequestHandler = catchAsync(async (req, res) => {
     },
   });
 });
+
+export const getPreviousPerformance: RequestHandler = catchAsync(
+  async (req, res) => {
+    const performance =
+      await workoutSessionService.getPreviousPerformanceForSession(
+        req.params.id as string,
+        req.user!.id,
+      );
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        previousPerformance: performance,
+      },
+    });
+  },
+);
+
+export const getPreviousPerformanceBatch: RequestHandler = catchAsync(
+  async (req, res) => {
+    const { exerciseIds, excludeSessionId } = req.body;
+    const performance =
+      await workoutSessionService.getPreviousPerformanceForExercises(
+        Array.isArray(exerciseIds) ? exerciseIds : [],
+        req.user!.id,
+        excludeSessionId,
+      );
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        previousPerformance: performance,
+      },
+    });
+  },
+);

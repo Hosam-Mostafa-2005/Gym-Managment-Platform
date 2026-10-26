@@ -1,26 +1,32 @@
-import WorkoutExerciseLog from "../models/WorkoutExerciseLog.model.js";
-import WorkoutSession from "../models/WorkoutSession.model.js";
-
+import prisma from "../config/prisma.js";
 import AppError from "../utils/AppError.js";
 
 class WorkoutExerciseLogService {
   async getBySession(sessionId: string, memberId: string) {
-    const session = await WorkoutSession.findOne({
-      _id: sessionId,
-      member: memberId,
-      isActive: true,
+    const session = await prisma.workoutSession.findFirst({
+      where: {
+        id: sessionId,
+        memberId,
+        isActive: true,
+      },
     });
 
     if (!session) {
       throw new AppError("Workout session not found.", 404);
     }
 
-    const exercises = await WorkoutExerciseLog.find({
-      session: sessionId,
-    })
-      .populate("exercise")
-      .populate("sets")
-      .sort({ order: 1 });
+    const exercises = await prisma.workoutExerciseLog.findMany({
+      where: {
+        sessionId,
+      },
+      include: {
+        exercise: true,
+        sets: {
+          orderBy: { setNumber: "asc" },
+        },
+      },
+      orderBy: { order: "asc" },
+    });
 
     return exercises;
   }

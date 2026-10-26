@@ -7,11 +7,15 @@ import { createServer } from "http";
 import app from "./app.js";
 import connectDB from "./config/db.js";
 import { initSocket } from "./socket/index.js";
+import emailService from "./services/email.service.js";
 
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
+
+  // Validate email provider configuration safely at startup
+  emailService.validateConfiguration();
 
   const httpServer = createServer(app);
 

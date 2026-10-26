@@ -32,9 +32,14 @@ export interface DashboardOverview {
   workoutsCreated: number;
   completedSessionsToday: number;
   completedSessionsThisWeek: number;
+  completedMemberSessions?: number;
+  overdueAssignments?: number;
   completionRate: number;
   measurementsThisWeek: number;
   healthScore: number;
+  activeCoachingMembers?: number;
+  pendingInvitations?: number;
+  expiringAssignments?: number;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -84,6 +89,7 @@ export interface DashboardActivity {
 
   metadata: DashboardActivityMetadata;
 }
+
 /* -------------------------------------------------------------------------- */
 /*                       Members Needing Attention                            */
 /* -------------------------------------------------------------------------- */
@@ -128,6 +134,7 @@ export interface UpcomingAssignment {
 /* -------------------------------------------------------------------------- */
 
 export interface RecentMeasurement {
+  id?: string;
   member: {
     id: string;
     name: string;
@@ -143,6 +150,50 @@ export interface RecentMeasurement {
   bodyFat: number | null;
 
   measuredAt: string;
+  isRestricted?: boolean;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                             Client Health                                  */
+/* -------------------------------------------------------------------------- */
+
+export interface ClientHealthItem {
+  id: string;
+  name: string;
+  email: string;
+  relationshipStatus: string;
+  historySharingConsent: string;
+  lastWorkoutDate: string | null;
+  daysSinceLastWorkout: number | null;
+  activityStatus: "ACTIVE" | "INACTIVE_7_DAYS" | "NO_WORKOUTS";
+  completedSessionsThisMonth: number;
+  latestMeasurement: {
+    weight: number | null;
+    measuredAt: string | null;
+    isRestricted: boolean;
+    restrictionReason?: string;
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/*                             Action Center                                  */
+/* -------------------------------------------------------------------------- */
+
+export interface ActionCenterData {
+  pendingInvitations: Array<{
+    id: string;
+    member: { id: string; name: string; email: string };
+    invitedAt: string;
+    notes?: string | null;
+  }>;
+  expiringAssignments: UpcomingAssignment[];
+  inactiveClients: Array<{
+    id: string;
+    name: string;
+    email: string;
+    daysSinceLastWorkout: number | null;
+    lastWorkoutDate: string | null;
+  }>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -161,6 +212,19 @@ export interface DashboardQuickActions {
 /*                               Charts Types                                 */
 /* -------------------------------------------------------------------------- */
 
+export interface AssignmentStatusPoint {
+  status: string;
+  count: number;
+  percentage: number;
+  color: string;
+}
+
+export interface MemberActivityRankingPoint {
+  memberId: string;
+  name: string;
+  completedSessions: number;
+}
+
 export interface DashboardCharts {
   sessions: {
     last7Days: DashboardChartPoint[];
@@ -178,6 +242,26 @@ export interface DashboardCharts {
   completionRate: {
     last30Days: DashboardChartPoint[];
   };
+
+  assignmentStatusDistribution?: AssignmentStatusPoint[];
+  memberActivityRanking?: MemberActivityRankingPoint[];
+}
+
+export interface UpcomingScheduledWorkout {
+  id: string;
+  member: {
+    id: string;
+    name: string;
+    email?: string;
+  } | null;
+  workout: {
+    id: string;
+    title: string;
+    category?: string;
+    difficulty?: string;
+  } | null;
+  scheduledAt: string;
+  notes?: string | null;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -219,12 +303,19 @@ export interface CoachDashboard {
 
   upcomingAssignments: UpcomingAssignment[];
 
+  upcomingScheduledWorkouts?: UpcomingScheduledWorkout[];
+
   recentMeasurements: RecentMeasurement[];
 
   quickActions: QuickActions;
 
+  clientHealthOverview?: ClientHealthItem[];
+
+  actionCenter?: ActionCenterData;
+
   ai: DashboardAI;
 }
+
 /* -------------------------------------------------------------------------- */
 /*                       Members Needing Attention                            */
 /* -------------------------------------------------------------------------- */

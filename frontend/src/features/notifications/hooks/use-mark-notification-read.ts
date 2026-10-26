@@ -9,6 +9,7 @@ export const useMarkNotificationRead = () => {
     mutationFn: markNotificationAsRead,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 };

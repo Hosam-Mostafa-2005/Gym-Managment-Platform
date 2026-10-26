@@ -18,6 +18,11 @@ import memberProfileRoutes from "./member-profile.routes.js";
 import memberInsightsRoutes from "./member-insights.routes.js";
 import membersManagementRoutes from "./members-management.routes.js";
 import bodyMeasurementRoutes from "./body-measurement.routes.js";
+import scheduledWorkoutRoutes from "./scheduled-workout.routes.js";
+import coachMemberRelationshipRoutes from "./coach-member-relationship.routes.js";
+import nutritionRoutes from "./nutrition.routes.js";
+import coachingAppointmentRoutes from "./coaching-appointment.routes.js";
+import gamificationRoutes from "./gamification.routes.js";
 
 const router = Router();
 
@@ -46,5 +51,10 @@ router.use("/member-insights", memberInsightsRoutes);
 router.use("/members-management", membersManagementRoutes);
 
 router.use("/body-measurements", bodyMeasurementRoutes);
+router.use("/scheduled-workouts", scheduledWorkoutRoutes);
+router.use("/coaching-relationships", coachMemberRelationshipRoutes);
+router.use("/nutrition", nutritionRoutes);
+router.use("/coaching-appointments", coachingAppointmentRoutes);
+router.use("/gamification", gamificationRoutes);
 
 export default router;

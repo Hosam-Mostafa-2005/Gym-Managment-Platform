@@ -1,18 +1,30 @@
 import type { ParsedQs } from "qs";
-import User from "../models/User.model.js";
+import prisma from "../config/prisma.js";
 import ApiFeatures from "../utils/ApiFeatures.js";
-import mapUser from "../mappers/user.mapper.js"; // نفس المابر اللي بتستعمله في الـ auth
+import mapUser from "../mappers/user.mapper.js";
 
 class UserService {
   async getAll(query: ParsedQs) {
-    // بنسحب الناس الأكتيف بس، والـ ApiFeatures هتهندل فلتر الـ role والـ pagination
-    const features = new ApiFeatures(User.find({ isActive: true }), query)
+    const effectiveQuery = { ...query };
+    if (!effectiveQuery.limit) {
+      effectiveQuery.limit = "500";
+    }
+    if (typeof effectiveQuery.role === "string") {
+      effectiveQuery.role = effectiveQuery.role.toLowerCase();
+    }
+
+    const features = new ApiFeatures({ isActive: true }, effectiveQuery)
       .filter(["role"])
       .search(["name", "email"])
       .sort()
       .paginate();
 
-    const users = await features.query;
+    const users = await prisma.user.findMany({
+      where: features.prismaWhere,
+      orderBy: features.prismaOrderBy,
+      skip: features.prismaSkip,
+      take: Math.min(features.prismaTake, 1000),
+    });
 
     return users.map(mapUser);
   }

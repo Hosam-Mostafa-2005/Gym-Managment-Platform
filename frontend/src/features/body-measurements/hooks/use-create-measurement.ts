@@ -15,6 +15,12 @@ export const useCreateMeasurement = () => {
       queryClient.invalidateQueries({
         queryKey: ["body-measurements", "latest", variables.member],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["gamification"],
+      });
       toast.success("Measurement added successfully.");
     },
     onError: () => {

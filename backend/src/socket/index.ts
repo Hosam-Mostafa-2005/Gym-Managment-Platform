@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { Server as HttpServer } from "http";
 import jwt from "jsonwebtoken";
-import User from "../models/User.model.js";
+import prisma from "../config/prisma.js";
 
 let io: Server;
 
@@ -26,7 +26,10 @@ export const initSocket = (httpServer: HttpServer) => {
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-      const currentUser = await User.findById(decoded.id).select("isActive");
+      const currentUser = await prisma.user.findUnique({
+        where: { id: decoded.id },
+        select: { isActive: true },
+      });
 
       if (!currentUser || !currentUser.isActive) {
         return next(new Error("This user account is not active."));

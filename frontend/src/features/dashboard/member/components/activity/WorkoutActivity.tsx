@@ -10,6 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { BarChart3 } from "lucide-react";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface WorkoutActivityProps {
   last30Days?: any[];
@@ -26,11 +27,19 @@ export const WorkoutActivity: React.FC<WorkoutActivityProps> = ({
   const xAxisKey = view === "30D" ? "date" : "month";
 
   return (
-    <div className="flex flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6">
+    <div className="flex flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 transition-colors hover:border-[#2A313A]">
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-5 w-5 text-gray-400" />
           <h2 className="text-sm font-semibold text-white">Volume Activity</h2>
+          <InfoTooltip
+            title="Training Volume Over Time"
+            description="Total weight tonnage lifted per day (past 30 days) or per month (past 12 months)."
+            calculation="SUM(reps × weight_kg) for all completed sets within each date interval"
+            unit="kg lifted"
+            dateRange={view === "30D" ? "Past 30 days" : "Past 12 months"}
+            limitations="Days with 0 kg indicate rest days or non-weightlifting routines."
+          />
         </div>
         <div className="flex rounded-lg border border-[#1E2329] bg-[#090B0F] p-1">
           <button
@@ -88,6 +97,7 @@ export const WorkoutActivity: React.FC<WorkoutActivityProps> = ({
                   borderRadius: "8px",
                   color: "#fff",
                 }}
+                formatter={(val: any) => [`${Number(val).toLocaleString()} kg`, "Volume"]}
               />
               <Bar
                 dataKey="volume"
@@ -99,7 +109,7 @@ export const WorkoutActivity: React.FC<WorkoutActivityProps> = ({
           </ResponsiveContainer>
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-gray-500">
-            No volume data available for this period.
+            No volume data available.
           </div>
         )}
       </div>

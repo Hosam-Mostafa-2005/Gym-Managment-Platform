@@ -31,7 +31,7 @@ router.use(protect);
 
 router.get(
   "/",
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   workoutController.getAll,
 );
 
@@ -45,9 +45,15 @@ router.get("/:id", workoutController.getById);
 
 router.post(
   "/",
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   validate(createWorkoutSchema),
   workoutController.create,
+);
+
+router.post(
+  "/:id/duplicate",
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
+  workoutController.duplicate,
 );
 
 /*
@@ -58,7 +64,7 @@ router.post(
 
 router.patch(
   "/:id",
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   ownsWorkout,
   validate(updateWorkoutSchema),
   workoutController.update,
@@ -72,7 +78,7 @@ router.patch(
 
 router.delete(
   "/:id",
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   ownsWorkout,
   workoutController.remove,
 );

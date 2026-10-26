@@ -1,15 +1,9 @@
-import mongoose from "mongoose";
-import User from "../models/User.model.js";
-import Exercise from "../models/Exercise.model.js";
-import Workout from "../models/Workout.model.js";
-import { Assignment } from "../models/Assignment.model.js";
-import WorkoutSession from "../models/WorkoutSession.model.js";
-import WorkoutExerciseLog from "../models/WorkoutExerciseLog.model.js";
-import WorkoutSetLog from "../models/WorkoutSetLog.model.js";
-
+// src/services/dashboard.service.ts
+import prisma from "../config/prisma.js";
 import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
+import nutritionService from "./nutrition.service.js";
 
 // ============================================================================
 // HELPER FUNCTIONS FOR TIMELINE ZERO-PADDING & RECHARTS FORMATTING
@@ -65,7 +59,7 @@ const chunkIntoWeeks = (dailyData: any[], weeks: number, defaultObj: any) => {
   const result = [];
   for (let i = 0; i < weeks; i++) {
     const chunk = dailyData.slice(i * 7, (i + 1) * 7);
-    const sumObj: any = { week: `Week of ${chunk[0].date}` };
+    const sumObj: any = { week: `Week of ${chunk[0]?.date || ""}` };
     Object.keys(defaultObj).forEach((k) => {
       sumObj[k] = chunk.reduce(
         (acc: number, curr: any) => acc + (curr[k] || 0),
@@ -106,406 +100,410 @@ class DashboardService {
   // ============================================================================
   async getTrainerDashboard(userId: string, role: Role) {
     const isAdmin = role === Roles.ADMIN;
-    const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    const assignmentMatch = isAdmin
-      ? { isActive: true }
-      : { trainer: userObjectId, isActive: true };
-    const workoutMatch = isAdmin
-      ? { isActive: true }
-      : { createdBy: userObjectId, isActive: true };
+    const assignmentWhere = {
+      isActive: true,
+      ...(isAdmin ? {} : { trainerId: userId }),
+    };
 
-    const assignments =
-      await Assignment.find(assignmentMatch).select("_id member");
-    const assignmentIds = assignments.map((a) => a._id);
-    const memberIds = [...new Set(assignments.map((a) => a.member.toString()))];
+    const workoutWhere = {
+      isActive: true,
+      ...(isAdmin ? {} : { createdBy: userId }),
+    };
 
-    const sessionMatch = isAdmin
-      ? { isActive: true }
-      : { assignment: { $in: assignmentIds }, isActive: true };
+    const assignments = await prisma.assignment.findMany({
+      where: assignmentWhere,
+      select: {
+        id: true,
+        memberId: true,
+        workoutId: true,
+        status: true,
+        createdAt: true,
+      },
+    });
 
-    // Time Boundaries
+    const assignmentIds = assignments.map((a) => a.id);
+    const memberIds = [...new Set(assignments.map((a) => a.memberId))];
+
+    const sessionWhere = {
+      isActive: true,
+      ...(isAdmin ? {} : { assignmentId: { in: assignmentIds } }),
+    };
+
     const now = new Date();
     const days84Ago = new Date(now);
     days84Ago.setDate(days84Ago.getDate() - 84); // 12 weeks
     const months12Ago = new Date(now);
     months12Ago.setMonth(months12Ago.getMonth() - 12);
 
-    // ============================================================================
-    // PARALLEL AGGREGATIONS
-    // ============================================================================
     const [
-      globalUserStats,
+      memberCount,
+      trainerCount,
       totalExercises,
       totalWorkouts,
-      assignmentsFacet,
-      sessionsFacet,
-      topMembersByVolume,
-      topWorkoutsData,
-      topExercisesData,
+      sessions,
+      exerciseLogsGrouped,
       recentSessionsRaw,
       recentAssignmentsRaw,
-      topTrainersData,
     ] = await Promise.all([
-      User.aggregate([
-        { $match: { isActive: true } },
-        { $group: { _id: "$role", count: { $sum: 1 } } },
-      ]),
-      Exercise.countDocuments({ isActive: true }),
-      Workout.countDocuments(workoutMatch),
-
-      // Single pass assignment metrics
-      Assignment.aggregate([
-        { $match: assignmentMatch },
-        {
-          $facet: {
-            statusCounts: [{ $group: { _id: "$status", count: { $sum: 1 } } }],
-            monthlyCreated: [
-              { $match: { createdAt: { $gte: months12Ago } } },
-              {
-                $group: {
-                  _id: {
-                    $dateToString: { format: "%Y-%m", date: "$createdAt" },
-                  },
-                  count: { $sum: 1 },
-                },
-              },
-            ],
+      prisma.user.count({ where: { role: Roles.MEMBER, isActive: true } }),
+      prisma.user.count({ where: { role: Roles.TRAINER, isActive: true } }),
+      prisma.exercise.count({ where: { isActive: true } }),
+      prisma.workout.count({ where: workoutWhere }),
+      prisma.workoutSession.findMany({
+        where: sessionWhere,
+        select: {
+          id: true,
+          memberId: true,
+          assignmentId: true,
+          workoutId: true,
+          status: true,
+          duration: true,
+          totalVolume: true,
+          exercisesCompleted: true,
+          setsCompleted: true,
+          startedAt: true,
+        },
+      }),
+      prisma.workoutExerciseLog.groupBy({
+        by: ["exerciseId"],
+        where: {
+          session: sessionWhere,
+        },
+        _count: { exerciseId: true },
+        orderBy: { _count: { exerciseId: "desc" } },
+        take: 10,
+      }),
+      prisma.workoutSession.findMany({
+        where: sessionWhere,
+        orderBy: { startedAt: "desc" },
+        take: 10,
+        include: {
+          member: { select: { id: true, name: true } },
+          assignment: {
+            include: { workout: { select: { id: true, title: true } } },
           },
         },
-      ]),
-
-      // Single pass session metrics
-      WorkoutSession.aggregate([
-        { $match: sessionMatch },
-        {
-          $facet: {
-            overview: [
-              {
-                $group: {
-                  _id: null,
-                  total: { $sum: 1 },
-                  completed: {
-                    $sum: {
-                      $cond: [
-                        { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                        1,
-                        0,
-                      ],
-                    },
-                  },
-                  active: {
-                    $sum: {
-                      $cond: [
-                        {
-                          $eq: ["$status", WORKOUT_SESSION_STATUS.IN_PROGRESS],
-                        },
-                        1,
-                        0,
-                      ],
-                    },
-                  },
-                  totalDuration: { $sum: "$duration" },
-                  avgDuration: { $avg: "$duration" },
-                  totalVolume: { $sum: "$totalVolume" },
-                  avgVolume: { $avg: "$totalVolume" },
-                  avgExercises: { $avg: "$exercisesCompleted" },
-                  avgSets: { $avg: "$setsCompleted" },
-                },
-              },
-            ],
-            daily84: [
-              { $match: { startedAt: { $gte: days84Ago } } },
-              {
-                $group: {
-                  _id: {
-                    $dateToString: { format: "%Y-%m-%d", date: "$startedAt" },
-                  },
-                  sessions: { $sum: 1 },
-                  volume: { $sum: "$totalVolume" },
-                  completed: {
-                    $sum: {
-                      $cond: [
-                        { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                        1,
-                        0,
-                      ],
-                    },
-                  },
-                },
-              },
-            ],
-            monthly12: [
-              { $match: { startedAt: { $gte: months12Ago } } },
-              {
-                $group: {
-                  _id: {
-                    $dateToString: { format: "%Y-%m", date: "$startedAt" },
-                  },
-                  sessions: { $sum: 1 },
-                  volume: { $sum: "$totalVolume" },
-                  completed: {
-                    $sum: {
-                      $cond: [
-                        { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                        1,
-                        0,
-                      ],
-                    },
-                  },
-                },
-              },
-            ],
-            byWeekday: [
-              {
-                $group: {
-                  _id: { $dayOfWeek: "$startedAt" },
-                  count: { $sum: 1 },
-                },
-              },
-            ],
-            byHour: [
-              { $group: { _id: { $hour: "$startedAt" }, count: { $sum: 1 } } },
-            ],
-          },
+      }),
+      prisma.assignment.findMany({
+        where: assignmentWhere,
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        include: {
+          member: { select: { id: true, name: true } },
+          workout: { select: { id: true, title: true } },
         },
-      ]),
-
-      // Rankings
-      WorkoutSession.aggregate([
-        {
-          $match: { ...sessionMatch, status: WORKOUT_SESSION_STATUS.COMPLETED },
-        },
-        {
-          $group: {
-            _id: "$member",
-            totalVolume: { $sum: "$totalVolume" },
-            completedSessions: { $sum: 1 },
-          },
-        },
-        { $sort: { totalVolume: -1 } },
-        { $limit: 10 },
-        {
-          $lookup: {
-            from: "users",
-            localField: "_id",
-            foreignField: "_id",
-            as: "user",
-          },
-        },
-        { $unwind: "$user" },
-        {
-          $project: {
-            name: "$user.name",
-            totalVolume: 1,
-            completedSessions: 1,
-          },
-        },
-      ]),
-
-      WorkoutSession.aggregate([
-        { $match: sessionMatch },
-        { $group: { _id: "$assignment", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 },
-        {
-          $lookup: {
-            from: "assignments",
-            localField: "_id",
-            foreignField: "_id",
-            as: "assign",
-          },
-        },
-        { $unwind: "$assign" },
-        {
-          $lookup: {
-            from: "workouts",
-            localField: "assign.workout",
-            foreignField: "_id",
-            as: "work",
-          },
-        },
-        { $unwind: "$work" },
-        {
-          $group: {
-            _id: "$work._id",
-            name: { $first: "$work.title" },
-            uses: { $sum: "$count" },
-          },
-        },
-        { $sort: { uses: -1 } },
-      ]),
-
-      // Top Exercises using WorkoutExerciseLog
-      WorkoutExerciseLog.aggregate([
-        {
-          $lookup: {
-            from: "workoutsessions",
-            localField: "session",
-            foreignField: "_id",
-            as: "sessDoc",
-          },
-        },
-        { $unwind: "$sessDoc" },
-        {
-          $match: {
-            "sessDoc.assignment": { $in: assignmentIds },
-          },
-        },
-        { $group: { _id: "$exercise", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 10 },
-        {
-          $lookup: {
-            from: "exercises",
-            localField: "_id",
-            foreignField: "_id",
-            as: "ex",
-          },
-        },
-        { $unwind: "$ex" },
-        { $project: { name: "$ex.name", count: 1 } },
-      ]),
-
-      // Recent Activity Fetchers
-      WorkoutSession.find(sessionMatch)
-        .sort({ startedAt: -1 })
-        .limit(10)
-        .populate("member", "name")
-        .populate({
-          path: "assignment",
-          populate: { path: "workout", select: "title" },
-        }),
-
-      Assignment.find(assignmentMatch)
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .populate("member", "name")
-        .populate("workout", "title"),
-
-      // Admin Only Trainers Ranking
-      isAdmin
-        ? Assignment.aggregate([
-            { $match: { isActive: true } },
-            { $group: { _id: "$trainer", assignmentsCount: { $sum: 1 } } },
-            { $sort: { assignmentsCount: -1 } },
-            { $limit: 10 },
-            {
-              $lookup: {
-                from: "users",
-                localField: "_id",
-                foreignField: "_id",
-                as: "trainer",
-              },
-            },
-            { $unwind: "$trainer" },
-            { $project: { name: "$trainer.name", score: "$assignmentsCount" } },
-          ])
-        : Promise.resolve([]),
+      }),
     ]);
 
-    // ============================================================================
-    // DATA FORMATTING & SYNTHESIS
-    // ============================================================================
-    const sysTotalMembers =
-      globalUserStats.find((s) => s._id === Roles.MEMBER)?.count || 0;
-    const sysTotalTrainers =
-      globalUserStats.find((s) => s._id === Roles.TRAINER)?.count || 0;
-
-    const assignStats = assignmentsFacet[0].statusCounts;
+    // Assignments metrics
     let totalAssignments = 0;
     let activeAssignments = 0;
     let completedAssignments = 0;
     let cancelledAssignments = 0;
+    const assignmentStatusMap = new Map<string, number>();
+    const assignmentsMonthlyMap = new Map<string, number>();
 
-    const assignmentStatusData = assignStats.map((stat: any) => {
-      totalAssignments += stat.count;
-      if (stat._id === ASSIGNMENT_STATUS.ACTIVE) activeAssignments = stat.count;
-      if (stat._id === ASSIGNMENT_STATUS.COMPLETED)
-        completedAssignments = stat.count;
-      if (stat._id === "CANCELLED") cancelledAssignments = stat.count;
-      return { status: stat._id, value: stat.count };
+    assignments.forEach((a) => {
+      totalAssignments++;
+      assignmentStatusMap.set(
+        a.status,
+        (assignmentStatusMap.get(a.status) || 0) + 1,
+      );
+      if (a.status === ASSIGNMENT_STATUS.ACTIVE) activeAssignments++;
+      if (a.status === ASSIGNMENT_STATUS.COMPLETED) completedAssignments++;
+      if (a.status === "CANCELLED") cancelledAssignments++;
+
+      if (a.createdAt >= months12Ago) {
+        const ym = a.createdAt.toISOString().slice(0, 7);
+        assignmentsMonthlyMap.set(
+          ym,
+          (assignmentsMonthlyMap.get(ym) || 0) + 1,
+        );
+      }
     });
 
-    const sessOverview = sessionsFacet[0].overview[0] || {
-      total: 0,
-      completed: 0,
-      active: 0,
-      totalDuration: 0,
-      avgDuration: 0,
-      totalVolume: 0,
-      avgVolume: 0,
-      avgExercises: 0,
-      avgSets: 0,
-    };
+    const assignmentStatusData = Array.from(assignmentStatusMap.entries()).map(
+      ([status, value]) => ({ status, value }),
+    );
+
+    // Sessions overview & distributions
+    let completedSessionsCount = 0;
+    let activeSessionsCount = 0;
+    let totalDurationSum = 0;
+    let totalVolumeSum = 0;
+    let totalExercisesSum = 0;
+    let totalSetsSum = 0;
+
+    const daily84Map = new Map<
+      string,
+      { sessions: number; volume: number; completed: number }
+    >();
+    const monthly12Map = new Map<
+      string,
+      { sessions: number; volume: number; completed: number }
+    >();
+    const weekdayMap = new Map<number, number>();
+    const hourMap = new Map<number, number>();
+    const memberVolumeMap = new Map<
+      string,
+      { totalVolume: number; completedSessions: number }
+    >();
+    const workoutUseMap = new Map<string, number>();
+
+    // Map assignmentId -> workoutId
+    const assignToWorkoutMap = new Map(assignments.map((a) => [a.id, a.workoutId]));
+
+    sessions.forEach((s) => {
+      const isCompleted = s.status === WORKOUT_SESSION_STATUS.COMPLETED;
+      const isInProgress = s.status === WORKOUT_SESSION_STATUS.IN_PROGRESS;
+
+      if (isCompleted) completedSessionsCount++;
+      if (isInProgress) activeSessionsCount++;
+
+      totalDurationSum += s.duration || 0;
+      totalVolumeSum += s.totalVolume || 0;
+      totalExercisesSum += s.exercisesCompleted || 0;
+      totalSetsSum += s.setsCompleted || 0;
+
+      if (s.startedAt) {
+        if (s.startedAt >= days84Ago) {
+          const dStr = s.startedAt.toISOString().split("T")[0];
+          const cur = daily84Map.get(dStr) || {
+            sessions: 0,
+            volume: 0,
+            completed: 0,
+          };
+          cur.sessions++;
+          cur.volume += s.totalVolume || 0;
+          if (isCompleted) cur.completed++;
+          daily84Map.set(dStr, cur);
+        }
+
+        if (s.startedAt >= months12Ago) {
+          const mStr = s.startedAt.toISOString().slice(0, 7);
+          const cur = monthly12Map.get(mStr) || {
+            sessions: 0,
+            volume: 0,
+            completed: 0,
+          };
+          cur.sessions++;
+          cur.volume += s.totalVolume || 0;
+          if (isCompleted) cur.completed++;
+          monthly12Map.set(mStr, cur);
+        }
+
+        const weekday = s.startedAt.getDay() + 1; // 1 (Sun) - 7 (Sat)
+        weekdayMap.set(weekday, (weekdayMap.get(weekday) || 0) + 1);
+
+        const hour = s.startedAt.getHours(); // 0 - 23
+        hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
+      }
+
+      if (isCompleted) {
+        const cur = memberVolumeMap.get(s.memberId) || {
+          totalVolume: 0,
+          completedSessions: 0,
+        };
+        cur.totalVolume += s.totalVolume || 0;
+        cur.completedSessions += 1;
+        memberVolumeMap.set(s.memberId, cur);
+      }
+
+      if (s.assignmentId) {
+        const wId = assignToWorkoutMap.get(s.assignmentId);
+        if (wId) {
+          workoutUseMap.set(wId, (workoutUseMap.get(wId) || 0) + 1);
+        }
+      } else if (s.workoutId) {
+        workoutUseMap.set(s.workoutId, (workoutUseMap.get(s.workoutId) || 0) + 1);
+      }
+    });
+
+    const totalSessions = sessions.length;
+    const avgDuration = totalSessions > 0 ? totalDurationSum / totalSessions : 0;
+    const avgVolume = totalSessions > 0 ? totalVolumeSum / totalSessions : 0;
+    const avgExercises =
+      totalSessions > 0 ? totalExercisesSum / totalSessions : 0;
+    const avgSets = totalSessions > 0 ? totalSetsSum / totalSessions : 0;
+
+    // Rankings: Top Members
+    const topMemberEntries = Array.from(memberVolumeMap.entries())
+      .sort((a, b) => b[1].totalVolume - a[1].totalVolume)
+      .slice(0, 10);
+
+    const topMemberUsers = await prisma.user.findMany({
+      where: { id: { in: topMemberEntries.map((e) => e[0]) } },
+      select: { id: true, name: true },
+    });
+    const userNameMap = new Map(topMemberUsers.map((u) => [u.id, u.name]));
+
+    const topMembersByVolume = topMemberEntries.map(([mId, stats]) => ({
+      name: userNameMap.get(mId) || "Member",
+      totalVolume: stats.totalVolume,
+      completedSessions: stats.completedSessions,
+    }));
+
+    // Rankings: Top Workouts
+    const topWorkoutEntries = Array.from(workoutUseMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+
+    const topWorkoutDocs = await prisma.workout.findMany({
+      where: { id: { in: topWorkoutEntries.map((e) => e[0]) } },
+      select: { id: true, title: true },
+    });
+    const workoutNameMap = new Map(
+      topWorkoutDocs.map((w) => [w.id, w.title]),
+    );
+
+    const topWorkoutsData = topWorkoutEntries.map(([wId, uses]) => ({
+      _id: wId,
+      name: workoutNameMap.get(wId) || "Workout",
+      uses,
+    }));
+
+    // Rankings: Top Exercises
+    const topExerciseDocs = await prisma.exercise.findMany({
+      where: { id: { in: exerciseLogsGrouped.map((l) => l.exerciseId) } },
+      select: { id: true, name: true },
+    });
+    const exerciseNameMap = new Map(
+      topExerciseDocs.map((e) => [e.id, e.name]),
+    );
+
+    const topExercisesData = exerciseLogsGrouped.map((l) => ({
+      name: exerciseNameMap.get(l.exerciseId) || "Exercise",
+      count: l._count.exerciseId,
+    }));
+
+    // Rankings: Top Trainers (Admin only)
+    let topTrainersData: any[] = [];
+    if (isAdmin) {
+      const trainerAssignments = await prisma.assignment.groupBy({
+        by: ["trainerId"],
+        where: { isActive: true },
+        _count: { trainerId: true },
+        orderBy: { _count: { trainerId: "desc" } },
+        take: 10,
+      });
+
+      const trainerUsers = await prisma.user.findMany({
+        where: { id: { in: trainerAssignments.map((t) => t.trainerId) } },
+        select: { id: true, name: true },
+      });
+      const trainerNameMap = new Map(
+        trainerUsers.map((u) => [u.id, u.name]),
+      );
+
+      topTrainersData = trainerAssignments.map((t) => ({
+        name: trainerNameMap.get(t.trainerId) || "Trainer",
+        score: t._count.trainerId,
+      }));
+    }
 
     // Chart timeline paddings
     const daily84Labels = getPastDates(84);
-    const daily84Filled = fillDailyData(
-      daily84Labels,
-      sessionsFacet[0].daily84,
-      { sessions: 0, volume: 0, completed: 0 },
-    );
+    const daily84Data = Array.from(daily84Map.entries()).map(([dateStr, d]) => ({
+      _id: dateStr,
+      sessions: d.sessions,
+      volume: d.volume,
+      completed: d.completed,
+    }));
+    const daily84Filled = fillDailyData(daily84Labels, daily84Data, {
+      sessions: 0,
+      volume: 0,
+      completed: 0,
+    });
     const sessionsLast12Weeks = chunkIntoWeeks(daily84Filled, 12, {
       sessions: 0,
       volume: 0,
     });
 
     const monthly12Labels = getPastMonths(12);
+    const monthly12Data = Array.from(monthly12Map.entries()).map(
+      ([mStr, d]) => ({
+        _id: mStr,
+        sessions: d.sessions,
+        volume: d.volume,
+        completed: d.completed,
+      }),
+    );
     const sessionsLast12Months = fillMonthlyData(
       monthly12Labels,
-      sessionsFacet[0].monthly12,
+      monthly12Data,
       { sessions: 0, volume: 0, completed: 0 },
     );
+
+    const assignmentsMonthlyData = Array.from(
+      assignmentsMonthlyMap.entries(),
+    ).map(([mStr, count]) => ({
+      _id: mStr,
+      count,
+    }));
     const assignmentsCreatedPerMonth = fillMonthlyData(
       monthly12Labels,
-      assignmentsFacet[0].monthlyCreated,
+      assignmentsMonthlyData,
       { count: 0 },
     );
 
+    const weekdayData = Array.from(weekdayMap.entries()).map(
+      ([weekday, count]) => ({ _id: weekday, count }),
+    );
+    const hourData = Array.from(hourMap.entries()).map(([hour, count]) => ({
+      _id: hour,
+      count,
+    }));
+
     // Recent Activity Merger
     const combinedActivity = [
-      ...recentSessionsRaw.map((s: any) => ({
-        id: s._id,
-        message: `${s.member?.name || "Member"} ${s.status === WORKOUT_SESSION_STATUS.COMPLETED ? "completed" : "started"} ${s.assignment?.workout?.title || "a workout"}`,
+      ...recentSessionsRaw.map((s) => ({
+        id: s.id,
+        message: `${s.member?.name || "Member"} ${
+          s.status === WORKOUT_SESSION_STATUS.COMPLETED
+            ? "completed"
+            : "started"
+        } ${s.assignment?.workout?.title || "a workout"}`,
         date: s.startedAt,
         type: "SESSION",
       })),
-      ...recentAssignmentsRaw.map((a: any) => ({
-        id: a._id,
-        message: `Assigned ${a.workout?.title || "workout"} to ${a.member?.name || "Member"}`,
+      ...recentAssignmentsRaw.map((a) => ({
+        id: a.id,
+        message: `Assigned ${a.workout?.title || "workout"} to ${
+          a.member?.name || "Member"
+        }`,
         date: a.createdAt,
         type: "ASSIGNMENT",
       })),
     ]
       .sort((a, b) => b.date.getTime() - a.date.getTime())
-      .slice(0, 15);
+      .slice(0, 50);
 
     return {
       overview: {
-        totalMembers: isAdmin ? sysTotalMembers : memberIds.length,
-        ...(isAdmin && { totalTrainers: sysTotalTrainers }),
+        totalMembers: isAdmin ? memberCount : memberIds.length,
+        ...(isAdmin && { totalTrainers: trainerCount }),
         totalExercises,
         totalWorkouts,
         totalAssignments,
         activeAssignments,
         totalCompletedAssignments: completedAssignments,
         totalCancelledAssignments: cancelledAssignments,
-        activeSessions: sessOverview.active,
-        completedSessions: sessOverview.completed,
+        activeSessions: activeSessionsCount,
+        completedSessions: completedSessionsCount,
         completionRate:
-          sessOverview.total > 0
-            ? Math.round((sessOverview.completed / sessOverview.total) * 100)
+          totalSessions > 0
+            ? Math.round((completedSessionsCount / totalSessions) * 100)
             : 0,
-        averageSessionDuration: Math.round(sessOverview.avgDuration),
+        averageSessionDuration: Math.round(avgDuration),
         averageCompletionRate:
-          sessOverview.total > 0
-            ? Math.round((sessOverview.completed / sessOverview.total) * 100)
+          totalSessions > 0
+            ? Math.round((completedSessionsCount / totalSessions) * 100)
             : 0,
-        averageExercisesPerSession: Math.round(sessOverview.avgExercises),
-        averageSetsPerSession: Math.round(sessOverview.avgSets),
-        totalWorkoutVolume: sessOverview.totalVolume,
-        totalWorkoutMinutes: sessOverview.totalDuration,
+        averageExercisesPerSession: Math.round(avgExercises),
+        averageSetsPerSession: Math.round(avgSets),
+        totalWorkoutVolume: totalVolumeSum,
+        totalWorkoutMinutes: totalDurationSum,
       },
       charts: {
         sessionsPerWeek: sessionsLast12Weeks,
@@ -519,12 +517,12 @@ class DashboardService {
         averageWorkoutVolumePerWeek: sessionsLast12Weeks,
         mostUsedExercises: topExercisesData,
         workoutPopularity: topWorkoutsData,
-        sessionsByWeekday: fillWeekdays(sessionsFacet[0].byWeekday),
-        sessionsByHourOfDay: fillHours(sessionsFacet[0].byHour),
+        sessionsByWeekday: fillWeekdays(weekdayData),
+        sessionsByHourOfDay: fillHours(hourData),
         activeVsCompletedAssignments: assignmentStatusData,
         activeVsCompletedSessions: [
-          { status: "Completed", value: sessOverview.completed },
-          { status: "In Progress", value: sessOverview.active },
+          { status: "Completed", value: completedSessionsCount },
+          { status: "In Progress", value: activeSessionsCount },
         ],
       },
       rankings: {
@@ -537,13 +535,13 @@ class DashboardService {
         ...(isAdmin && { topTrainers: topTrainersData }),
       },
       trends: {
-        averageWorkoutVolume: Math.round(sessOverview.avgVolume),
-        averageWorkoutDuration: Math.round(sessOverview.avgDuration),
-        averageExercisesCompleted: Math.round(sessOverview.avgExercises),
-        averageSetsCompleted: Math.round(sessOverview.avgSets),
+        averageWorkoutVolume: Math.round(avgVolume),
+        averageWorkoutDuration: Math.round(avgDuration),
+        averageExercisesCompleted: Math.round(avgExercises),
+        averageSetsCompleted: Math.round(avgSets),
         completionRate:
-          sessOverview.total > 0
-            ? Math.round((sessOverview.completed / sessOverview.total) * 100)
+          totalSessions > 0
+            ? Math.round((completedSessionsCount / totalSessions) * 100)
             : 0,
       },
       recentActivity: combinedActivity,
@@ -554,10 +552,11 @@ class DashboardService {
   // MEMBER DASHBOARD
   // ============================================================================
   async getMemberDashboard(memberId: string) {
-    const userObjectId = new mongoose.Types.ObjectId(memberId);
-    const sessionMatch = { member: userObjectId, isActive: true };
+    const sessionWhere = { memberId, isActive: true };
 
     const now = new Date();
+    const startOfDay = new Date(now);
+    startOfDay.setUTCHours(0, 0, 0, 0);
     const days30Ago = new Date(now);
     days30Ago.setDate(days30Ago.getDate() - 30);
     const months12Ago = new Date(now);
@@ -565,199 +564,297 @@ class DashboardService {
 
     const [
       activeAssignment,
-      sessionsFacet,
-      favoriteExerciseData,
-      strongestExerciseData,
+      latestPersonalWorkout,
+      sessions,
+      favExLogs,
+      maxWeightSet,
       recentSessionsRaw,
       recentAssignmentsRaw,
+      longestWorkout,
+      shortestWorkout,
+      upcomingWorkoutsRaw,
+      memberMeasurements,
+      activeRelationship,
+      pendingInvitation,
+      unreadNotificationsCount,
+      nutritionOverview,
     ] = await Promise.all([
-      Assignment.findOne({
-        member: userObjectId,
-        status: ASSIGNMENT_STATUS.ACTIVE,
-        isActive: true,
-      }).populate("workout"),
-
-      WorkoutSession.aggregate([
-        { $match: sessionMatch },
-        {
-          $facet: {
-            overview: [
-              {
-                $group: {
-                  _id: null,
-                  total: { $sum: 1 },
-                  completed: {
-                    $sum: {
-                      $cond: [
-                        { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                        1,
-                        0,
-                      ],
-                    },
-                  },
-                  totalVolume: { $sum: "$totalVolume" },
-                  totalDuration: { $sum: "$duration" },
-                  avgDuration: { $avg: "$duration" },
-                  avgVolume: { $avg: "$totalVolume" },
-                  totalExercises: { $sum: "$exercisesCompleted" },
-                  totalSets: { $sum: "$setsCompleted" },
+      prisma.assignment.findFirst({
+        where: {
+          memberId,
+          status: ASSIGNMENT_STATUS.ACTIVE,
+          isActive: true,
+        },
+        orderBy: [{ startDate: "desc" }, { createdAt: "desc" }],
+        include: {
+          workout: true,
+          trainer: { select: { id: true, name: true, email: true } },
+        },
+      }),
+      prisma.workout.findFirst({
+        where: {
+          createdBy: memberId,
+          isActive: true,
+        },
+        orderBy: { updatedAt: "desc" },
+      }),
+      prisma.workoutSession.findMany({
+        where: sessionWhere,
+        orderBy: { startedAt: "desc" },
+      }),
+      prisma.workoutExerciseLog.groupBy({
+        by: ["exerciseId"],
+        where: { session: sessionWhere },
+        _count: { exerciseId: true },
+        orderBy: { _count: { exerciseId: "desc" } },
+        take: 1,
+      }),
+      prisma.workoutSetLog.findFirst({
+        where: {
+          completed: true,
+          exerciseLog: { session: sessionWhere },
+        },
+        orderBy: { weight: "desc" },
+        include: {
+          exerciseLog: {
+            include: { exercise: { select: { name: true } } },
+          },
+        },
+      }),
+      prisma.workoutSession.findMany({
+        where: {
+          ...sessionWhere,
+          status: WORKOUT_SESSION_STATUS.COMPLETED,
+        },
+        orderBy: { startedAt: "desc" },
+        take: 35,
+        include: {
+          workout: { select: { title: true } },
+          assignment: {
+            include: { workout: { select: { title: true } } },
+          },
+        },
+      }),
+      prisma.assignment.findMany({
+        where: { memberId, isActive: true },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+        include: { workout: { select: { title: true } } },
+      }),
+      prisma.workoutSession.findFirst({
+        where: sessionWhere,
+        orderBy: { duration: "desc" },
+        select: { duration: true },
+      }),
+      prisma.workoutSession.findFirst({
+        where: {
+          ...sessionWhere,
+          duration: { gt: 0 },
+        },
+        orderBy: { duration: "asc" },
+        select: { duration: true },
+      }),
+      prisma.scheduledWorkout
+        ? prisma.scheduledWorkout.findMany({
+            where: {
+              memberId,
+              status: { in: ["SCHEDULED", "RESCHEDULED"] },
+              scheduledAt: { gte: startOfDay },
+              isActive: true,
+            },
+            orderBy: { scheduledAt: "asc" },
+            take: 10,
+            include: {
+              workout: {
+                select: {
+                  id: true,
+                  title: true,
+                  difficulty: true,
+                  category: true,
+                  estimatedDuration: true,
                 },
               },
-            ],
-            daily30: [
-              { $match: { startedAt: { $gte: days30Ago } } },
-              {
-                $group: {
-                  _id: {
-                    $dateToString: { format: "%Y-%m-%d", date: "$startedAt" },
-                  },
-                  sessions: { $sum: 1 },
-                  volume: { $sum: "$totalVolume" },
-                  duration: { $avg: "$duration" },
-                  exercises: { $sum: "$exercisesCompleted" },
-                  sets: { $sum: "$setsCompleted" },
+              trainer: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
                 },
               },
-            ],
-            monthly12: [
-              { $match: { startedAt: { $gte: months12Ago } } },
-              {
-                $group: {
-                  _id: {
-                    $dateToString: { format: "%Y-%m", date: "$startedAt" },
-                  },
-                  volume: { $sum: "$totalVolume" },
-                },
-              },
-            ],
-            byWeekday: [
-              {
-                $group: {
-                  _id: { $dayOfWeek: "$startedAt" },
-                  count: { $sum: 1 },
-                },
-              },
-            ],
-            byHour: [
-              { $group: { _id: { $hour: "$startedAt" }, count: { $sum: 1 } } },
-            ],
-          },
+            },
+          }).catch(() => [])
+        : Promise.resolve([]),
+      prisma.bodyMeasurement.findMany({
+        where: { memberId, isActive: true },
+        orderBy: { measuredAt: "desc" },
+        take: 2,
+        select: { weight: true, measuredAt: true },
+      }).catch(() => []),
+      prisma.coachMemberRelationship.findFirst({
+        where: {
+          memberId,
+          status: "ACTIVE",
+          isActive: true,
         },
-      ]),
-
-      // Favorite Exercise Data (via WorkoutExerciseLog)
-      WorkoutExerciseLog.aggregate([
-        {
-          $lookup: {
-            from: "workoutsessions",
-            localField: "session",
-            foreignField: "_id",
-            as: "sessDoc",
-          },
+        include: {
+          trainer: { select: { id: true, name: true, email: true } },
         },
-        { $unwind: "$sessDoc" },
-        { $match: { "sessDoc.member": userObjectId } },
-        { $group: { _id: "$exercise", count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-        { $limit: 1 },
-        {
-          $lookup: {
-            from: "exercises",
-            localField: "_id",
-            foreignField: "_id",
-            as: "ex",
-          },
+      }).catch(() => null),
+      prisma.coachMemberRelationship.findFirst({
+        where: {
+          memberId,
+          status: "PENDING",
+          isActive: true,
         },
-        { $unwind: "$ex" },
-        { $project: { name: "$ex.name", val: "$count" } },
-      ]),
-
-      // Strongest Exercise Data (via WorkoutSetLog)
-      WorkoutSetLog.aggregate([
-        { $match: { completed: true } },
-        {
-          $lookup: {
-            from: "workoutexerciselogs",
-            localField: "exerciseLog",
-            foreignField: "_id",
-            as: "exLogDoc",
-          },
+        include: {
+          trainer: { select: { id: true, name: true, email: true } },
         },
-        { $unwind: "$exLogDoc" },
-        {
-          $lookup: {
-            from: "workoutsessions",
-            localField: "exLogDoc.session",
-            foreignField: "_id",
-            as: "sessDoc",
-          },
+      }).catch(() => null),
+      prisma.notification.count({
+        where: {
+          userId: memberId,
+          readAt: null,
+          isActive: true,
         },
-        { $unwind: "$sessDoc" },
-        { $match: { "sessDoc.member": userObjectId } },
-        {
-          $group: {
-            _id: "$exLogDoc.exercise",
-            maxWeight: { $max: "$weight" },
-          },
-        },
-        { $sort: { maxWeight: -1 } },
-        { $limit: 1 },
-        {
-          $lookup: {
-            from: "exercises",
-            localField: "_id",
-            foreignField: "_id",
-            as: "ex",
-          },
-        },
-        { $unwind: "$ex" },
-        { $project: { name: "$ex.name", val: "$maxWeight" } },
-      ]),
-
-      WorkoutSession.find({
-        ...sessionMatch,
-        status: WORKOUT_SESSION_STATUS.COMPLETED,
-      })
-        .sort({ startedAt: -1 })
-        .limit(10)
-        .populate({
-          path: "assignment",
-          populate: { path: "workout", select: "title" },
-        }),
-
-      Assignment.find({ member: userObjectId, isActive: true })
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .populate("workout", "title"),
+      }).catch(() => 0),
+      nutritionService.getMemberOverview(memberId).catch(() => null),
     ]);
 
-    const sessOverview = sessionsFacet[0].overview[0] || {
-      total: 0,
-      completed: 0,
-      totalVolume: 0,
-      totalDuration: 0,
-      avgDuration: 0,
-      avgVolume: 0,
-      totalExercises: 0,
-      totalSets: 0,
-    };
+    let favoriteExerciseData: any[] = [];
+    if (favExLogs.length > 0) {
+      const ex = await prisma.exercise.findUnique({
+        where: { id: favExLogs[0].exerciseId },
+        select: { name: true },
+      });
+      if (ex) {
+        favoriteExerciseData = [
+          { name: ex.name, val: favExLogs[0]._count.exerciseId },
+        ];
+      }
+    }
+
+    let strongestExerciseData: any[] = [];
+    if (maxWeightSet && maxWeightSet.weight) {
+      strongestExerciseData = [
+        {
+          name: maxWeightSet.exerciseLog.exercise.name,
+          val: maxWeightSet.weight,
+        },
+      ];
+    }
+
+    const totalSessions = sessions.length;
+    let completedSessions = 0;
+    let inProgressSessions = 0;
+    let cancelledSessions = 0;
+    let totalVolume = 0;
+    let totalDuration = 0;
+    let totalExercises = 0;
+    let totalSets = 0;
+
+    const daily30Map = new Map<
+      string,
+      {
+        sessions: number;
+        volume: number;
+        duration: number;
+        exercises: number;
+        sets: number;
+      }
+    >();
+    const monthly12Map = new Map<string, { volume: number }>();
+    const weekdayMap = new Map<number, number>();
+    const hourMap = new Map<number, number>();
+
+    sessions.forEach((s) => {
+      if (s.status === WORKOUT_SESSION_STATUS.COMPLETED) {
+        completedSessions++;
+      } else if (s.status === WORKOUT_SESSION_STATUS.IN_PROGRESS) {
+        inProgressSessions++;
+      } else if (s.status === WORKOUT_SESSION_STATUS.CANCELLED) {
+        cancelledSessions++;
+      }
+      totalVolume += s.totalVolume || 0;
+      totalDuration += s.duration || 0;
+      totalExercises += s.exercisesCompleted || 0;
+      totalSets += s.setsCompleted || 0;
+
+      if (s.startedAt) {
+        if (s.startedAt >= days30Ago) {
+          const dStr = s.startedAt.toISOString().split("T")[0];
+          const cur = daily30Map.get(dStr) || {
+            sessions: 0,
+            volume: 0,
+            duration: 0,
+            exercises: 0,
+            sets: 0,
+          };
+          cur.sessions++;
+          cur.volume += s.totalVolume || 0;
+          cur.duration += s.duration || 0;
+          cur.exercises += s.exercisesCompleted || 0;
+          cur.sets += s.setsCompleted || 0;
+          daily30Map.set(dStr, cur);
+        }
+
+        if (s.startedAt >= months12Ago) {
+          const mStr = s.startedAt.toISOString().slice(0, 7);
+          const cur = monthly12Map.get(mStr) || { volume: 0 };
+          cur.volume += s.totalVolume || 0;
+          monthly12Map.set(mStr, cur);
+        }
+
+        const weekday = s.startedAt.getDay() + 1;
+        weekdayMap.set(weekday, (weekdayMap.get(weekday) || 0) + 1);
+
+        const hour = s.startedAt.getHours();
+        hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
+      }
+    });
+
+    const avgDuration =
+      completedSessions > 0
+        ? Math.round(totalDuration / completedSessions)
+        : totalSessions > 0
+          ? Math.round(totalDuration / totalSessions)
+          : 0;
+    const avgVolume =
+      completedSessions > 0
+        ? Math.round(totalVolume / completedSessions)
+        : totalSessions > 0
+          ? Math.round(totalVolume / totalSessions)
+          : 0;
 
     // Timeline Fillers
     const daily30Labels = getPastDates(30);
-    const daily30Filled = fillDailyData(
-      daily30Labels,
-      sessionsFacet[0].daily30,
-      { sessions: 0, volume: 0, duration: 0, exercises: 0, sets: 0 },
-    );
+    const daily30Data = Array.from(daily30Map.entries()).map(([dStr, d]) => ({
+      _id: dStr,
+      sessions: d.sessions,
+      volume: d.volume,
+      duration: d.sessions > 0 ? Math.round(d.duration / d.sessions) : 0,
+      exercises: d.exercises,
+      sets: d.sets,
+    }));
+
+    const daily30Filled = fillDailyData(daily30Labels, daily30Data, {
+      sessions: 0,
+      volume: 0,
+      duration: 0,
+      exercises: 0,
+      sets: 0,
+    });
 
     const monthly12Labels = getPastMonths(12);
-    const monthly12Filled = fillMonthlyData(
-      monthly12Labels,
-      sessionsFacet[0].monthly12,
-      { volume: 0 },
+    const monthly12Data = Array.from(monthly12Map.entries()).map(
+      ([mStr, d]) => ({
+        _id: mStr,
+        volume: d.volume,
+      }),
     );
+    const monthly12Filled = fillMonthlyData(monthly12Labels, monthly12Data, {
+      volume: 0,
+    });
 
-    // Calculate Week/Month totals dynamically from padded arrays
     const workoutsThisWeek = daily30Filled
       .slice(-7)
       .reduce((acc: number, curr: any) => acc + curr.sessions, 0);
@@ -771,14 +868,15 @@ class DashboardService {
     if (recentSessionsRaw.length > 0) {
       const dates = [
         ...new Set(
-          recentSessionsRaw.map(
-            (s: any) => s.startedAt?.toISOString().split("T")[0],
-          ),
+          recentSessionsRaw
+            .filter((s) => s.startedAt)
+            .map((s) => s.startedAt!.toISOString().split("T")[0]),
         ),
       ];
       let checkDate = new Date();
-      if (dates[0] !== checkDate.toISOString().split("T")[0])
+      if (dates[0] !== checkDate.toISOString().split("T")[0]) {
         checkDate.setDate(checkDate.getDate() - 1);
+      }
 
       for (const d of dates) {
         if (d === checkDate.toISOString().split("T")[0]) {
@@ -790,76 +888,193 @@ class DashboardService {
 
     const combinedActivity = [
       ...recentSessionsRaw.map((s: any) => ({
-        id: s._id,
-        message: `Finished ${s.assignment?.workout?.title || "workout"}`,
+        id: s.id,
+        message: `Finished ${s.assignment?.workout?.title || s.workout?.title || "workout"}`,
         date: s.startedAt,
         type: "SESSION_COMPLETED",
       })),
-      ...recentAssignmentsRaw.map((a: any) => ({
-        id: a._id,
+      ...recentAssignmentsRaw.map((a) => ({
+        id: a.id,
         message: `Received ${a.workout?.title || "new workout"} assignment`,
         date: a.createdAt,
         type: "ASSIGNMENT_RECEIVED",
       })),
     ]
       .sort((a, b) => b.date.getTime() - a.date.getTime())
-      .slice(0, 15);
-
-    // Additional single aggregates missing from facets
-    const [longestWorkout] = await WorkoutSession.find(sessionMatch)
-      .sort({ duration: -1 })
-      .limit(1)
-      .select("duration");
-    const [shortestWorkout] = await WorkoutSession.find({
-      ...sessionMatch,
-      duration: { $gt: 0 },
-    })
-      .sort({ duration: 1 })
-      .limit(1)
-      .select("duration");
+      .slice(0, 50);
 
     const favWorkoutData =
       recentSessionsRaw.length > 0
         ? Object.entries(
             recentSessionsRaw.reduce((acc: any, s: any) => {
-              const title = s.assignment?.workout?.title || "Unknown";
+              const title =
+                s.assignment?.workout?.title || s.workout?.title || "Unknown";
               acc[title] = (acc[title] || 0) + 1;
               return acc;
             }, {}),
           ).sort((a: any, b: any) => b[1] - a[1])[0]
         : null;
 
+    const weekdayData = Array.from(weekdayMap.entries()).map(
+      ([weekday, count]) => ({ _id: weekday, count }),
+    );
+    const hourData = Array.from(hourMap.entries()).map(([hour, count]) => ({
+      _id: hour,
+      count,
+    }));
+
+    // Latest Body Weight Measurement
+    const latestMeasurement =
+      memberMeasurements && memberMeasurements.length > 0
+        ? {
+            weight: memberMeasurements[0].weight,
+            unit: "kg",
+            measuredAt: memberMeasurements[0].measuredAt,
+            diffFromPrevious:
+              memberMeasurements.length > 1
+                ? Number(
+                    (
+                      memberMeasurements[0].weight - memberMeasurements[1].weight
+                    ).toFixed(1),
+                  )
+                : null,
+          }
+        : null;
+
+    // 30-Day Training Consistency (Days with at least 1 completed workout / 30)
+    const completedDaysLast30 = new Set(
+      sessions
+        .filter(
+          (s) =>
+            s.status === WORKOUT_SESSION_STATUS.COMPLETED &&
+            s.startedAt &&
+            s.startedAt >= days30Ago,
+        )
+        .map((s) => s.startedAt!.toISOString().split("T")[0]),
+    ).size;
+
+    const consistency30Days = {
+      activeDays: completedDaysLast30,
+      totalDays: 30,
+      percentage: Math.round((completedDaysLast30 / 30) * 100),
+    };
+
+    // Existing Coaching Relationship Connection
+    const coachConnection = activeRelationship
+      ? {
+          hasActiveCoach: true,
+          status: activeRelationship.status,
+          historySharingConsent: activeRelationship.historySharingConsent,
+          coach: activeRelationship.trainer
+            ? {
+                id: activeRelationship.trainer.id,
+                name: activeRelationship.trainer.name,
+                email: activeRelationship.trainer.email,
+                avatarUrl: (activeRelationship.trainer as any).avatarUrl || null,
+              }
+            : null,
+          startedAt: activeRelationship.startedAt,
+        }
+      : {
+          hasActiveCoach: false,
+          status: null,
+          historySharingConsent: null,
+          coach: null,
+          startedAt: null,
+        };
+
+    // Existing Actionable Items (Needs Attention)
+    const needsAttention = {
+      pendingInvitation: pendingInvitation
+        ? {
+            id: pendingInvitation.id,
+            trainer: pendingInvitation.trainer,
+            invitedAt: pendingInvitation.invitedAt,
+            notes: pendingInvitation.notes,
+          }
+        : null,
+      unreadNotificationsCount: unreadNotificationsCount || 0,
+    };
+
+    // Nutrition snapshot derived from active NutritionPlan and FoodLogs
+    const nutritionSnapshot = nutritionOverview
+      ? {
+          hasActivePlan: nutritionOverview.hasActivePlan,
+          onboardingCompleted: nutritionOverview.onboardingCompleted,
+          planName: nutritionOverview.plan?.name || null,
+          planSource: nutritionOverview.plan?.source || null,
+          coachName: nutritionOverview.plan?.coach?.name || null,
+          targetCalories: nutritionOverview.intake?.targetCalories || 0,
+          loggedCalories: nutritionOverview.intake?.loggedCalories || 0,
+          remainingCalories: nutritionOverview.intake?.remainingCalories || 0,
+          calorieProgressPct: nutritionOverview.intake?.calorieProgressPct || 0,
+          targetProteinG: nutritionOverview.intake?.targetProteinG || 0,
+          loggedProteinG: nutritionOverview.intake?.loggedProteinG || 0,
+          proteinProgressPct: nutritionOverview.intake?.proteinProgressPct || 0,
+          targetCarbsG: nutritionOverview.intake?.targetCarbsG || 0,
+          loggedCarbsG: nutritionOverview.intake?.loggedCarbsG || 0,
+          carbsProgressPct: nutritionOverview.intake?.carbsProgressPct || 0,
+          targetFatG: nutritionOverview.intake?.targetFatG || 0,
+          loggedFatG: nutritionOverview.intake?.loggedFatG || 0,
+          fatProgressPct: nutritionOverview.intake?.fatProgressPct || 0,
+          logsCount: nutritionOverview.todayLogs?.length || 0,
+        }
+      : null;
+
+    const upcomingWorkouts = (upcomingWorkoutsRaw || []).map((sw: any) => ({
+      id: sw.id,
+      workoutId: sw.workoutId,
+      scheduledAt: sw.scheduledAt,
+      notes: sw.notes,
+      workout: sw.workout,
+      trainer: sw.trainer || null,
+    }));
+
     return {
       overview: {
         activeAssignment: activeAssignment || null,
-        currentWorkout: activeAssignment ? activeAssignment.workout : null,
-        totalSessions: sessOverview.total,
-        completedSessions: sessOverview.completed,
+        currentWorkout:
+          upcomingWorkouts.length > 0 && upcomingWorkouts[0].workout
+            ? upcomingWorkouts[0].workout
+            : activeAssignment
+              ? activeAssignment.workout
+              : latestPersonalWorkout || null,
+        upcomingWorkouts,
+        totalSessions,
+        completedSessions,
         currentProgress:
-          sessOverview.total > 0
-            ? Math.round((sessOverview.completed / sessOverview.total) * 100)
+          totalSessions > 0
+            ? Math.round((completedSessions / totalSessions) * 100)
             : 0,
         currentStreak,
         bestStreak: currentStreak,
-        exercisesCompleted: sessOverview.totalExercises,
-        totalSetsCompleted: sessOverview.totalSets,
-
-        // New Additions
-        totalVolumeLifted: sessOverview.totalVolume,
-        totalWorkoutMinutes: sessOverview.totalDuration,
-        averageWorkoutDuration: Math.round(sessOverview.avgDuration),
-        averageVolumePerWorkout: Math.round(sessOverview.avgVolume),
+        exercisesCompleted: totalExercises,
+        totalSetsCompleted: totalSets,
+        totalVolumeLifted: totalVolume,
+        totalWorkoutMinutes: totalDuration,
+        averageWorkoutDuration: Math.round(avgDuration),
+        averageVolumePerWorkout: Math.round(avgVolume),
         attendanceRate:
-          sessOverview.total > 0
-            ? Math.round((sessOverview.completed / sessOverview.total) * 100)
+          totalSessions > 0
+            ? Math.round((completedSessions / totalSessions) * 100)
             : 0,
         completionRate:
-          sessOverview.total > 0
-            ? Math.round((sessOverview.completed / sessOverview.total) * 100)
+          totalSessions > 0
+            ? Math.round((completedSessions / totalSessions) * 100)
             : 0,
         workoutsThisWeek,
         workoutsThisMonth,
+        latestMeasurement,
+        consistency30Days,
+        coachConnection,
+        needsAttention,
+        nutritionSnapshot,
       },
+      nutritionSnapshot,
+      latestMeasurement,
+      consistency30Days,
+      coachConnection,
+      needsAttention,
       charts: {
         workoutVolumeLast30Days: daily30Filled.map((d: any) => ({
           date: d.date,
@@ -874,9 +1089,39 @@ class DashboardService {
           exercises: 0,
         }),
         setsCompletedPerWeek: chunkIntoWeeks(daily30Filled, 4, { sets: 0 }),
-        workoutFrequencyByWeekday: fillWeekdays(sessionsFacet[0].byWeekday),
-        workoutFrequencyByHour: fillHours(sessionsFacet[0].byHour),
+        workoutFrequencyByWeekday: fillWeekdays(weekdayData),
+        workoutFrequencyByHour: fillHours(hourData),
+        sessionStatusDistribution: [
+          {
+            status: "Completed",
+            count: completedSessions,
+            percentage:
+              totalSessions > 0
+                ? Math.round((completedSessions / totalSessions) * 100)
+                : 0,
+            color: "#5BE584",
+          },
+          {
+            status: "In Progress",
+            count: inProgressSessions,
+            percentage:
+              totalSessions > 0
+                ? Math.round((inProgressSessions / totalSessions) * 100)
+                : 0,
+            color: "#3B82F6",
+          },
+          {
+            status: "Cancelled",
+            count: cancelledSessions,
+            percentage:
+              totalSessions > 0
+                ? Math.round((cancelledSessions / totalSessions) * 100)
+                : 0,
+            color: "#EF4444",
+          },
+        ],
       },
+      upcomingWorkouts,
       rankings: {},
       trends: {
         strongestExercise: strongestExerciseData[0] || null,

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, AlertCircle } from "lucide-react";
 
+import ExerciseImageUploader from "../components/ExerciseImageUploader";
 import { useCreateExercise } from "../hooks/useCreateExercise";
 import type { CreateExerciseDto } from "../types/exercise.types";
 
@@ -28,10 +29,11 @@ export const CreateExercisePage: React.FC = () => {
   const navigate = useNavigate();
   const createExerciseMutation = useCreateExercise();
 
-  // 1. Form State based strictly on CreateExerciseDto[cite: 14]
+  // 1. Form State based strictly on CreateExerciseDto
   const [formData, setFormData] = useState<CreateExerciseDto>({
     name: "",
     description: "",
+    imageUrl: "",
     videoUrl: "",
     difficulty: "beginner",
     equipment: [],
@@ -41,6 +43,8 @@ export const CreateExercisePage: React.FC = () => {
     tips: [],
   });
 
+  const [imageError, setImageError] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Local state for dynamic list inputs
@@ -153,6 +157,7 @@ export const CreateExercisePage: React.FC = () => {
     const payload: CreateExerciseDto = {
       name: formData.name.trim(),
       description: formData.description.trim(),
+      imageUrl: formData.imageUrl?.trim() || undefined,
       videoUrl: formData.videoUrl?.trim() || undefined,
       difficulty: formData.difficulty,
       equipment: formData.equipment,
@@ -278,14 +283,25 @@ export const CreateExercisePage: React.FC = () => {
                   )}
                 </div>
 
+                <ExerciseImageUploader
+                  value={formData.imageUrl}
+                  onChange={(url) => {
+                    setFormData((prev) => ({ ...prev, imageUrl: url }));
+                    setImageError(false);
+                  }}
+                  onUploadingChange={setIsUploadingImage}
+                  error={errors.imageUrl}
+                  disabled={createExerciseMutation.isPending}
+                />
+
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-[#9CA3AF]">
-                    Video URL
+                    Video URL <span className="text-[10px] text-[#6B7280] font-normal">(Optional)</span>
                   </label>
                   <input
                     type="url"
                     name="videoUrl"
-                    value={formData.videoUrl}
+                    value={formData.videoUrl || ""}
                     onChange={handleChange}
                     placeholder="https://..."
                     className="w-full rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
@@ -565,6 +581,17 @@ export const CreateExercisePage: React.FC = () => {
               </div>
 
               <div className="flex flex-col gap-6">
+                {formData.imageUrl && !imageError && (
+                  <div className="relative h-44 w-full overflow-hidden rounded-xl border border-[#1E2329] bg-[#090B0F]">
+                    <img
+                      src={formData.imageUrl}
+                      alt={formData.name || "Exercise Preview"}
+                      className="h-full w-full object-cover"
+                      onError={() => setImageError(true)}
+                    />
+                  </div>
+                )}
+
                 <div>
                   <h4
                     className={`text-lg font-semibold tracking-tight ${formData.name ? "text-white" : "text-[#6B7280]"}`}
@@ -651,13 +678,13 @@ export const CreateExercisePage: React.FC = () => {
               type="button"
               onClick={() => navigate("/workout-library/exercises")}
               className="rounded-md px-5 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:bg-[#1E2329] hover:text-white disabled:opacity-50"
-              disabled={createExerciseMutation.isPending}
+              disabled={createExerciseMutation.isPending || isUploadingImage}
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
-              disabled={createExerciseMutation.isPending}
+              disabled={createExerciseMutation.isPending || isUploadingImage}
               className="inline-flex min-w-[140px] items-center justify-center rounded-md bg-[#5BE584] px-5 py-2 text-sm font-semibold text-[#090B0F] transition-all hover:bg-[#4ade80] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014] disabled:cursor-not-allowed disabled:opacity-70"
             >
               {createExerciseMutation.isPending ? (
@@ -684,6 +711,8 @@ export const CreateExercisePage: React.FC = () => {
                   </svg>
                   Saving...
                 </span>
+              ) : isUploadingImage ? (
+                "Uploading Image..."
               ) : (
                 "Create Exercise"
               )}

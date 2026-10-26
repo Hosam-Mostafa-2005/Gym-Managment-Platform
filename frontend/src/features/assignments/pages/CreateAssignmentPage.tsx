@@ -1,14 +1,37 @@
 import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 // Components & Hooks
 import { AssignmentForm } from "@/features/assignments/components/AssignmentForm";
 import { useCreateAssignment } from "@/features/assignments/hooks/useCreateAssignment";
+import { useMemberProfile } from "@/features/member-profile/hooks/use-member-profile";
 import type { AssignmentFormValues } from "@/features/assignments/schemas/assignment.schema";
 
 export default function CreateAssignmentPage() {
   const navigate = useNavigate();
-  const { mutate: createAssignment, isPending } = useCreateAssignment();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+
+  const preselectedWorkoutId =
+    searchParams.get("workoutId") ||
+    (location.state as { workoutId?: string } | null)?.workoutId ||
+    "";
+  const preselectedMemberId =
+    searchParams.get("memberId") ||
+    (location.state as { memberId?: string } | null)?.memberId ||
+    "";
+  const returnUrl =
+    searchParams.get("returnUrl") ||
+    (preselectedMemberId
+      ? `/members/${preselectedMemberId}/plan`
+      : "/assignments");
+
+  const { data: memberProfile } = useMemberProfile(preselectedMemberId || undefined);
+  const preselectedMember = memberProfile?.member;
+
+  const { mutate: createAssignment, isPending } = useCreateAssignment({
+    redirectTo: returnUrl,
+  });
 
   const handleCreate = (data: AssignmentFormValues) => {
     createAssignment({
@@ -36,9 +59,9 @@ export default function CreateAssignmentPage() {
             <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase">
               <span
                 className="hover:text-[#9CA3AF] cursor-pointer transition-colors"
-                onClick={() => navigate("/assignments")}
+                onClick={() => navigate(returnUrl)}
               >
-                Assignments
+                {preselectedMemberId ? "Member Plan" : "Assignments"}
               </span>
               <span>/</span>
               <span className="text-[#F3F4F6]">Assign Routine</span>
@@ -47,15 +70,15 @@ export default function CreateAssignmentPage() {
               Assign Workout Routine
             </h1>
             <p className="text-sm text-[#9CA3AF]">
-              Create a new structured workout assignment for a gym member.
+              Create a structured workout assignment for a gym member with real scheduling telemetry.
             </p>
           </div>
           <button
-            onClick={() => navigate("/assignments")}
+            onClick={() => navigate(returnUrl)}
             className="group hidden md:flex items-center gap-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Back to Assignments
+            {preselectedMemberId ? "Back to Member Plan" : "Back to Assignments"}
           </button>
         </div>
       </header>
@@ -68,15 +91,16 @@ export default function CreateAssignmentPage() {
               Assignment Details
             </h2>
             <p className="text-xs text-[#6B7280] mt-1">
-              Select the member, trainer, and schedule for this routine.
+              Select the member and routine duration.
             </p>
           </div>
 
-          {/* 
-            Since AssignmentForm contains the actual fields and submission buttons, 
-            we wrap it in a premium container that matches the GymFlow design system.
-          */}
           <AssignmentForm
+            initialValues={{
+              workout: preselectedWorkoutId,
+              member: preselectedMemberId,
+            }}
+            preselectedMember={preselectedMember}
             onSubmit={handleCreate}
             isLoading={isPending}
             submitLabel="Assign Routine"

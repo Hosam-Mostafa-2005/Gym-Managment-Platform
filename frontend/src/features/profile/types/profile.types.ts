@@ -7,6 +7,11 @@ export interface ProfileUser {
   name: string;
   email: string;
   role?: string;
+  phone?: string | null;
+  bio?: string | null;
+  fitnessGoal?: string | null;
+  experienceLevel?: string | null;
+  onboardingCompleted?: boolean;
   createdAt?: string;
   isActive?: boolean;
 }
@@ -115,6 +120,9 @@ export interface CoachProfileDetails {
   specialties: string[];
   certifications: string[];
   yearsOfExperience: number;
+  professionalTitle?: string | null;
+  coachingPhilosophy?: string | null;
+  languagesSpoken?: string[];
   joinedAt: string;
 }
 

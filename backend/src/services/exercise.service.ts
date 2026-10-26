@@ -1,5 +1,4 @@
-import Exercise from "../models/Exercise.model.js";
-import Workout from "../models/Workout.model.js";
+import prisma from "../config/prisma.js";
 import type {
   CreateExerciseDto,
   UpdateExerciseDto,
@@ -7,44 +6,194 @@ import type {
 import ApiFeatures from "../utils/ApiFeatures.js";
 import AppError from "../utils/AppError.js";
 import mapExercise from "../mappers/exercise.mapper.js";
+import { Roles, type Role } from "../constants/roles.js";
+import storageService from "./storage.service.js";
+import type { ValidatedImageInfo } from "../utils/imageValidator.js";
 
 class ExerciseService {
-  // Create Exercise
-  async create(data: CreateExerciseDto) {
-    const existingExercise = await Exercise.findOne({
-      name: data.name,
-      isActive: true,
+  async assertCanModify(id: string, userId?: string, role?: Role) {
+    const exercise = await prisma.exercise.findFirst({
+      where: {
+        id,
+        isActive: true,
+      },
     });
 
-    if (existingExercise) {
-      throw new AppError("Exercise already exists.", 409);
+    if (!exercise) {
+      throw new AppError("Exercise not found.", 404);
     }
-    if (data.alternatives?.length) {
-      const alternatives = await Exercise.countDocuments({
-        _id: { $in: data.alternatives },
-        isActive: true,
-      });
 
-      if (alternatives !== data.alternatives.length) {
+    if (role === Roles.MEMBER) {
+      if (!exercise.isCustom || exercise.createdById !== userId) {
         throw new AppError(
-          "One or more alternative exercises are invalid.",
-          400,
+          "You can only modify your own custom exercises.",
+          403,
         );
       }
+    } else if (
+      role === Roles.TRAINER &&
+      exercise.isCustom &&
+      exercise.createdById !== userId
+    ) {
+      throw new AppError("You can only modify your own exercises.", 403);
     }
 
-    const exercise = await Exercise.create(data);
+    return exercise;
+  }
 
-    return mapExercise(exercise);
+  async uploadImage(
+    buffer: Buffer,
+    imageInfo: ValidatedImageInfo,
+    options: {
+      exerciseId?: string;
+      userId?: string;
+      role?: Role;
+      requestBaseUrl?: string;
+    } = {},
+  ) {
+    if (options.exerciseId) {
+      await this.assertCanModify(
+        options.exerciseId,
+        options.userId,
+        options.role,
+      );
+    }
+
+    return storageService.uploadExerciseImage(
+      buffer,
+      imageInfo,
+      options.requestBaseUrl,
+    );
+  }
+
+  async deleteStagedImage(imageUrl: string | undefined | null) {
+    if (!imageUrl) return false;
+    return storageService.deleteIfUnused(imageUrl);
+  }
+
+  // Create Exercise
+  async create(data: CreateExerciseDto, userId?: string, role?: Role) {
+    try {
+      const isMember = role === Roles.MEMBER;
+      const isCustom = isMember || false;
+      const createdById = userId || null;
+
+      // Duplicate check
+      let duplicateWhere: any;
+      if (isMember && userId) {
+        duplicateWhere = {
+          name: data.name,
+          isActive: true,
+          OR: [{ isCustom: false }, { createdById: userId }],
+        };
+      } else {
+        duplicateWhere = {
+          name: data.name,
+          isActive: true,
+          isCustom: false,
+        };
+      }
+
+      const existingExercise = await prisma.exercise.findFirst({
+        where: duplicateWhere,
+      });
+
+      if (existingExercise) {
+        throw new AppError("Exercise already exists.", 409);
+      }
+
+      if (data.alternatives?.length) {
+        const altWhere: any = {
+          id: { in: data.alternatives },
+          isActive: true,
+        };
+        if (isMember && userId) {
+          altWhere.OR = [{ isCustom: false }, { createdById: userId }];
+        } else {
+          altWhere.isCustom = false;
+        }
+
+        const alternativesCount = await prisma.exercise.count({
+          where: altWhere,
+        });
+
+        if (alternativesCount !== data.alternatives.length) {
+          throw new AppError(
+            "One or more alternative exercises are invalid.",
+            400,
+          );
+        }
+      }
+
+      const exercise = await prisma.exercise.create({
+        data: {
+          name: data.name,
+          description: data.description ?? "",
+          imageUrl: data.imageUrl ? data.imageUrl : null,
+          videoUrl: data.videoUrl ? data.videoUrl : null,
+          equipment: data.equipment,
+          difficulty: data.difficulty as any,
+          primaryMuscles: data.primaryMuscles,
+          secondaryMuscles: data.secondaryMuscles ?? [],
+          instructions: data.instructions,
+          tips: data.tips ?? [],
+          isCustom,
+          createdById,
+          alternatives: data.alternatives?.length
+            ? {
+                connect: data.alternatives.map((altId) => ({ id: altId })),
+              }
+            : undefined,
+        },
+        include: {
+          alternatives: true,
+        },
+      });
+
+      return mapExercise(exercise);
+    } catch (error) {
+      if (data.imageUrl) {
+        await storageService.deleteIfUnused(data.imageUrl);
+      }
+      throw error;
+    }
   }
 
   // Get All Exercises with Pagination Metadata
-  async getAll(query: Record<string, any>) {
-    // 1. Get the total count matching the active filter criteria
-    const totalResults = await Exercise.countDocuments({ isActive: true });
+  async getAll(query: Record<string, any>, userId?: string, role?: Role) {
+    const isMember = role === Roles.MEMBER;
+    const baseWhere: any = { isActive: true };
 
-    // 2. Setup ApiFeatures for filtering, searching, sorting, and pagination
-    const features = new ApiFeatures(Exercise.find({ isActive: true }), query)
+    if (isMember && userId) {
+      baseWhere.OR = [{ isCustom: false }, { createdById: userId }];
+    } else if (role === Roles.TRAINER && userId) {
+      baseWhere.OR = [{ isCustom: false }, { createdById: userId }];
+    } else if (role !== Roles.ADMIN) {
+      baseWhere.isCustom = false;
+    }
+
+    // Support explicit query filter for isCustom
+    const normalizedQuery = { ...query };
+    if (normalizedQuery.isCustom !== undefined) {
+      const isCustomBool =
+        normalizedQuery.isCustom === "true" ||
+        normalizedQuery.isCustom === true;
+      if (isCustomBool && userId) {
+        baseWhere.isCustom = true;
+        baseWhere.createdById = userId;
+        delete baseWhere.OR;
+      } else if (!isCustomBool) {
+        baseWhere.isCustom = false;
+        delete baseWhere.OR;
+      }
+      delete normalizedQuery.isCustom;
+    }
+
+    const totalResults = await prisma.exercise.count({
+      where: baseWhere,
+    });
+
+    const features = new ApiFeatures(baseWhere, normalizedQuery)
       .filter([
         "equipment",
         "difficulty",
@@ -55,7 +204,15 @@ class ExerciseService {
       .sort()
       .paginate();
 
-    const exercises = await features.query;
+    const exercises = await prisma.exercise.findMany({
+      where: features.prismaWhere,
+      orderBy: features.prismaOrderBy,
+      skip: features.prismaSkip,
+      take: features.prismaTake,
+      include: {
+        alternatives: true,
+      },
+    });
 
     return {
       exercises: exercises.map(mapExercise),
@@ -64,75 +221,182 @@ class ExerciseService {
   }
 
   // Get Exercise By Id
-  async getById(id: string) {
-    const exercise = await Exercise.findOne({
-      _id: id,
-      isActive: true,
-    }).populate("alternatives");
+  async getById(id: string, userId?: string, role?: Role) {
+    const exercise = await prisma.exercise.findFirst({
+      where: {
+        id,
+        isActive: true,
+      },
+      include: {
+        alternatives: true,
+      },
+    });
 
     if (!exercise) {
       throw new AppError("Exercise not found.", 404);
     }
 
-    return exercise;
+    if (exercise.isCustom && role !== Roles.ADMIN) {
+      if (!userId || exercise.createdById !== userId) {
+        throw new AppError("Exercise not found.", 404);
+      }
+    }
+
+    return mapExercise(exercise);
   }
 
   // Update Exercise
-  async update(id: string, data: UpdateExerciseDto) {
-    const exercise = await Exercise.findOne({
-      _id: id,
-      isActive: true,
-    });
+  async update(
+    id: string,
+    data: UpdateExerciseDto,
+    userId?: string,
+    role?: Role,
+  ) {
+    const exercise = await this.assertCanModify(id, userId, role);
+    const previousImageUrl = exercise.imageUrl;
 
-    if (!exercise) {
-      throw new AppError("Exercise not found.", 404);
-    }
+    try {
+      if (data.name) {
+        let duplicateWhere: any;
+        if (role === Roles.MEMBER && userId) {
+          duplicateWhere = {
+            name: data.name,
+            isActive: true,
+            id: { not: id },
+            OR: [{ isCustom: false }, { createdById: userId }],
+          };
+        } else {
+          duplicateWhere = {
+            name: data.name,
+            isActive: true,
+            id: { not: id },
+            isCustom: false,
+          };
+        }
 
-    if (data.name) {
-      const existingExercise = await Exercise.findOne({
-        name: data.name,
-        isActive: true,
-        _id: { $ne: id },
+        const existingExercise = await prisma.exercise.findFirst({
+          where: duplicateWhere,
+        });
+
+        if (existingExercise) {
+          throw new AppError("Exercise already exists.", 409);
+        }
+      }
+
+      if (data.alternatives?.length) {
+        const altWhere: any = {
+          id: { in: data.alternatives },
+          isActive: true,
+        };
+        if (role === Roles.MEMBER && userId) {
+          altWhere.OR = [{ isCustom: false }, { createdById: userId }];
+        } else {
+          altWhere.isCustom = false;
+        }
+
+        const alternativesCount = await prisma.exercise.count({
+          where: altWhere,
+        });
+
+        if (alternativesCount !== data.alternatives.length) {
+          throw new AppError(
+            "One or more alternative exercises are invalid.",
+            400,
+          );
+        }
+      }
+
+      const updatedExercise = await prisma.exercise.update({
+        where: { id },
+        data: {
+          ...(data.name !== undefined && { name: data.name }),
+          ...(data.description !== undefined && {
+            description: data.description,
+          }),
+          ...(data.imageUrl !== undefined && {
+            imageUrl: data.imageUrl ? data.imageUrl : null,
+          }),
+          ...(data.videoUrl !== undefined && {
+            videoUrl: data.videoUrl ? data.videoUrl : null,
+          }),
+          ...(data.equipment !== undefined && { equipment: data.equipment }),
+          ...(data.difficulty !== undefined && {
+            difficulty: data.difficulty as any,
+          }),
+          ...(data.primaryMuscles !== undefined && {
+            primaryMuscles: data.primaryMuscles,
+          }),
+          ...(data.secondaryMuscles !== undefined && {
+            secondaryMuscles: data.secondaryMuscles,
+          }),
+          ...(data.instructions !== undefined && {
+            instructions: data.instructions,
+          }),
+          ...(data.tips !== undefined && { tips: data.tips }),
+          ...(data.alternatives !== undefined && {
+            alternatives: {
+              set: data.alternatives.map((altId) => ({ id: altId })),
+            },
+          }),
+        },
+        include: {
+          alternatives: true,
+        },
       });
 
-      if (existingExercise) {
-        throw new AppError("Exercise already exists.", 409);
+      // If imageUrl was replaced or cleared, safely clean up old asset if no other exercise references it
+      if (
+        data.imageUrl !== undefined &&
+        previousImageUrl &&
+        previousImageUrl !== updatedExercise.imageUrl
+      ) {
+        await storageService.deleteIfUnused(previousImageUrl, id);
       }
-    }
-    if (data.alternatives?.length) {
-      const alternatives = await Exercise.countDocuments({
-        _id: { $in: data.alternatives },
-        isActive: true,
-      });
 
-      if (alternatives !== data.alternatives.length) {
-        throw new AppError(
-          "One or more alternative exercises are invalid.",
-          400,
-        );
+      return mapExercise(updatedExercise);
+    } catch (error) {
+      if (data.imageUrl && data.imageUrl !== previousImageUrl) {
+        await storageService.deleteIfUnused(data.imageUrl);
       }
+      throw error;
     }
-    Object.assign(exercise, data);
-
-    await exercise.save();
-
-    return exercise;
   }
 
   // Soft Delete
-  async delete(id: string) {
-    const exercise = await Exercise.findOne({
-      _id: id,
-      isActive: true,
+  async delete(id: string, userId?: string, role?: Role) {
+    const exercise = await prisma.exercise.findFirst({
+      where: {
+        id,
+        isActive: true,
+      },
     });
 
     if (!exercise) {
       throw new AppError("Exercise not found.", 404);
     }
 
-    const usedInWorkout = await Workout.findOne({
-      isActive: true,
-      "exercises.exercise": exercise._id,
+    if (role === Roles.MEMBER) {
+      if (!exercise.isCustom || exercise.createdById !== userId) {
+        throw new AppError(
+          "You can only delete your own custom exercises.",
+          403,
+        );
+      }
+    } else if (
+      role === Roles.TRAINER &&
+      exercise.isCustom &&
+      exercise.createdById !== userId
+    ) {
+      throw new AppError("You can only delete your own exercises.", 403);
+    }
+
+    const usedInWorkout = await prisma.workoutExercise.findFirst({
+      where: {
+        exerciseId: id,
+        workout: {
+          isActive: true,
+        },
+      },
     });
 
     if (usedInWorkout) {
@@ -142,9 +406,11 @@ class ExerciseService {
       );
     }
 
-    exercise.isActive = false;
+    await prisma.exercise.update({
+      where: { id },
+      data: { isActive: false },
+    });
 
-    await exercise.save();
     return;
   }
 }

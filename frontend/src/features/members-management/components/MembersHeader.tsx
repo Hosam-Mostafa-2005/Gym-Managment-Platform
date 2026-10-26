@@ -1,13 +1,15 @@
 // src/features/members-management/components/MembersHeader.tsx
 import React from "react";
-import { Users } from "lucide-react";
+import { Users, UserPlus } from "lucide-react";
 
 interface MembersHeaderProps {
   totalMembers?: number;
+  onInviteClick?: () => void;
 }
 
 export const MembersHeader: React.FC<MembersHeaderProps> = ({
   totalMembers,
+  onInviteClick,
 }) => {
   return (
     <div className="flex flex-col gap-6">
@@ -23,13 +25,23 @@ export const MembersHeader: React.FC<MembersHeaderProps> = ({
             Members
           </h1>
           <p className="text-xs text-gray-400 max-w-xl">
-            Manage assigned members, monitor training progress, and track
-            coaching activity metrics.
+            Manage assigned members, monitor training progress, track coaching activity metrics, and invite new members to train with you.
           </p>
         </div>
+
+        {onInviteClick && (
+          <button
+            type="button"
+            onClick={onInviteClick}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#5BE584] px-4 py-2.5 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80] shadow-md shrink-0"
+          >
+            <UserPlus className="h-4 w-4" />
+            Invite Member
+          </button>
+        )}
       </div>
 
-      {/* Summary Cards - Only mapping data we definitively have from the API */}
+      {/* Summary Cards */}
       {totalMembers !== undefined && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-4">
@@ -43,7 +55,7 @@ export const MembersHeader: React.FC<MembersHeaderProps> = ({
               {totalMembers}
             </span>
             <span className="text-[10px] text-gray-500 mt-1">
-              Total active capacity
+              Active clients & assignments
             </span>
           </div>
         </div>

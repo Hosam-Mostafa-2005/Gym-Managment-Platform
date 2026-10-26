@@ -1,9 +1,15 @@
 import { z } from "zod";
 
 export const startWorkoutSessionSchema = z.object({
-  body: z.object({
-    assignment: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid assignment ID"),
-  }),
+  body: z
+    .object({
+      assignment: z.string().min(1, "Invalid assignment ID").optional(),
+      workout: z.string().min(1, "Invalid workout ID").optional(),
+    })
+    .refine((data) => Boolean(data.assignment || data.workout), {
+      message: "Either assignment ID or workout ID must be provided",
+      path: ["workout"],
+    }),
 });
 
 export const finishWorkoutSessionSchema = z.object({

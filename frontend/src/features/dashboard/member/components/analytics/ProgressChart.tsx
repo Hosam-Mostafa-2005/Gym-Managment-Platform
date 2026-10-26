@@ -10,6 +10,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { LineChart as LineChartIcon } from "lucide-react";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface ProgressChartProps {
   exercises?: any[];
@@ -24,11 +25,19 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
   const data = metric === "exercises" ? exercises : sets;
 
   return (
-    <div className="flex flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6">
+    <div className="flex flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 transition-colors hover:border-[#2A313A]">
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <LineChartIcon className="h-5 w-5 text-gray-400" />
           <h2 className="text-sm font-semibold text-white">Weekly Output</h2>
+          <InfoTooltip
+            title="Weekly Training Volume Output"
+            description="Total number of completed sets or unique exercises performed each week."
+            calculation="SUM(sets) or COUNT(exercises) grouped by calendar week"
+            unit={metric === "sets" ? "sets / week" : "exercises / week"}
+            dateRange="Past 4 rolling weeks"
+            limitations="Highlights progressive overload and overall training consistency across weeks."
+          />
         </div>
         <select
           value={metric}
@@ -72,6 +81,10 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
                   borderRadius: "8px",
                   color: "#fff",
                 }}
+                formatter={(val: any) => [
+                  val,
+                  metric === "sets" ? "Sets Completed" : "Exercises Completed",
+                ]}
               />
               <Line
                 type="monotone"

@@ -1,4 +1,4 @@
-import { describe, it, mock } from "node:test";
+import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import jwt from "jsonwebtoken";
 
@@ -19,11 +19,16 @@ import ApiFeatures, { escapeRegex } from "../utils/ApiFeatures.js";
 import mapWorkoutSession from "../mappers/workout-session.mapper.js";
 import mapAssignment from "../mappers/assignment.mapper.js";
 import { mapBodyMeasurement } from "../mappers/body-measurement.mapper.js";
-import User from "../models/User.model.js";
-import Workout from "../models/Workout.model.js";
-import { Assignment } from "../models/Assignment.model.js";
+import mapExercise from "../mappers/exercise.mapper.js";
+import prisma from "../config/prisma.js";
 import authService from "../services/auth.service.js";
 import workoutService from "../services/workout.service.js";
+import exerciseService from "../services/exercise.service.js";
+import storageService from "../services/storage.service.js";
+import {
+  validateImageBuffer,
+  MAX_IMAGE_SIZE_BYTES,
+} from "../utils/imageValidator.js";
 
 describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
   describe("1. P0 — Registration privilege escalation", () => {
@@ -84,18 +89,20 @@ describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
       );
 
       let createdPayload: any = null;
-      const findOneMock = mock.method(User, "findOne", async () => null);
-      const createMock = mock.method(User, "create", async (data: any) => {
-        createdPayload = data;
+      const origFindUnique = prisma.user.findUnique;
+      const origCreate = prisma.user.create;
+
+      (prisma.user as any).findUnique = async () => null;
+      (prisma.user as any).create = async (args: any) => {
+        createdPayload = args.data;
         return {
-          _id: "507f1f77bcf86cd799439011",
           id: "507f1f77bcf86cd799439011",
-          name: data.name,
-          email: data.email,
-          role: data.role,
+          name: args.data.name,
+          email: args.data.email,
+          role: args.data.role,
           isActive: true,
-        } as any;
-      });
+        };
+      };
 
       try {
         await authService.register({
@@ -108,13 +115,15 @@ describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
         assert.deepEqual(Object.keys(createdPayload).sort(), [
           "email",
           "name",
+          "onboardingCompleted",
+          "onboardingStep",
           "password",
           "role",
         ]);
         assert.equal(createdPayload.role, Roles.MEMBER);
       } finally {
-        findOneMock.mock.restore();
-        createMock.mock.restore();
+        (prisma.user as any).findUnique = origFindUnique;
+        (prisma.user as any).create = origCreate;
       }
     });
   });
@@ -152,17 +161,13 @@ describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
         { id: "507f1f77bcf86cd799439012" },
         process.env.JWT_SECRET!,
       );
-      const findByIdMock = mock.method(
-        User,
-        "findById",
-        async () =>
-          ({
-            _id: "507f1f77bcf86cd799439012",
-            id: "507f1f77bcf86cd799439012",
-            role: Roles.MEMBER,
-            isActive: false,
-          }) as any,
-      );
+
+      const origFindUnique = prisma.user.findUnique;
+      (prisma.user as any).findUnique = async () => ({
+        id: "507f1f77bcf86cd799439012",
+        role: Roles.MEMBER,
+        isActive: false,
+      });
 
       try {
         const forwardedError = await new Promise<any>((resolve) => {
@@ -182,7 +187,7 @@ describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
         assert.equal(forwardedError.statusCode, 401);
         assert.match(forwardedError.message, /deactivated/i);
       } finally {
-        findByIdMock.mock.restore();
+        (prisma.user as any).findUnique = origFindUnique;
       }
     });
   });
@@ -231,28 +236,16 @@ describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
   describe("5. P1 — Workout ownership", () => {
     it("rejects trainer accessing another trainer's private workout in getById, update, and delete", async () => {
       const fakeWorkout: any = {
-        _id: "507f1f77bcf86cd799439099",
+        id: "507f1f77bcf86cd799439099",
         title: "Private Hypertrophy",
-        createdBy: {
-          _id: "owner-trainer-id",
-          toString: () => "owner-trainer-id",
-        },
+        createdById: "owner-trainer-id",
         isTemplate: false,
         isActive: true,
         exercises: [],
-        toObject() {
-          return this;
-        },
       };
 
-      const findOneMock = mock.method(Workout, "findOne", () => ({
-        populate() {
-          return this;
-        },
-        then(resolve: any) {
-          return Promise.resolve(fakeWorkout).then(resolve);
-        },
-      }) as any);
+      const origFindFirst = prisma.workout.findFirst;
+      (prisma.workout as any).findFirst = async () => fakeWorkout;
 
       try {
         await assert.rejects(
@@ -289,35 +282,25 @@ describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
           (err: any) => err.statusCode === 403,
         );
       } finally {
-        findOneMock.mock.restore();
+        (prisma.workout as any).findFirst = origFindFirst;
       }
     });
 
     it("rejects member accessing an unassigned private workout in getById", async () => {
       const fakeWorkout: any = {
-        _id: "507f1f77bcf86cd799439099",
+        id: "507f1f77bcf86cd799439099",
         title: "Private Hypertrophy",
-        createdBy: {
-          _id: "owner-trainer-id",
-          toString: () => "owner-trainer-id",
-        },
+        createdById: "owner-trainer-id",
         isTemplate: false,
         isActive: true,
         exercises: [],
-        toObject() {
-          return this;
-        },
       };
 
-      const findOneMock = mock.method(Workout, "findOne", () => ({
-        populate() {
-          return this;
-        },
-        then(resolve: any) {
-          return Promise.resolve(fakeWorkout).then(resolve);
-        },
-      }) as any);
-      const existsMock = mock.method(Assignment, "exists", async () => null);
+      const origFindFirstWorkout = prisma.workout.findFirst;
+      const origFindFirstAssignment = prisma.assignment.findFirst;
+
+      (prisma.workout as any).findFirst = async () => fakeWorkout;
+      (prisma.assignment as any).findFirst = async () => null;
 
       try {
         await assert.rejects(
@@ -331,8 +314,8 @@ describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
           (err: any) => err.statusCode === 403,
         );
       } finally {
-        findOneMock.mock.restore();
-        existsMock.mock.restore();
+        (prisma.workout as any).findFirst = origFindFirstWorkout;
+        (prisma.assignment as any).findFirst = origFindFirstAssignment;
       }
     });
   });
@@ -493,6 +476,219 @@ describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
         ) && patchParsed.body.secondaryMuscles !== undefined,
         false,
       );
+    });
+  });
+
+  describe("10. Data-Contract — Optional Exercise Image Support", () => {
+    it("validates that imageUrl is optional and accepts valid URL, empty string, or null", () => {
+      const withUrl = createExerciseSchema.safeParse({
+        body: {
+          name: "Barbell Squat",
+          imageUrl: "https://images.unsplash.com/photo-1574680096145-d05b474e2155",
+          equipment: [Equipment.BARBELL],
+          difficulty: Difficulty.INTERMEDIATE,
+          primaryMuscles: ["Quadriceps"],
+          instructions: ["Squat deep and stand"],
+        },
+      });
+      assert.equal(withUrl.success, true);
+      if (withUrl.success) {
+        assert.equal(
+          withUrl.data.body.imageUrl,
+          "https://images.unsplash.com/photo-1574680096145-d05b474e2155",
+        );
+      }
+
+      const withEmptyString = createExerciseSchema.safeParse({
+        body: {
+          name: "Barbell Squat",
+          imageUrl: "",
+          equipment: [Equipment.BARBELL],
+          difficulty: Difficulty.INTERMEDIATE,
+          primaryMuscles: ["Quadriceps"],
+          instructions: ["Squat deep and stand"],
+        },
+      });
+      assert.equal(withEmptyString.success, true);
+
+      const withNull = createExerciseSchema.safeParse({
+        body: {
+          name: "Barbell Squat",
+          imageUrl: null,
+          equipment: [Equipment.BARBELL],
+          difficulty: Difficulty.INTERMEDIATE,
+          primaryMuscles: ["Quadriceps"],
+          instructions: ["Squat deep and stand"],
+        },
+      });
+      assert.equal(withNull.success, true);
+
+      const omitted = createExerciseSchema.safeParse({
+        body: {
+          name: "Barbell Squat",
+          equipment: [Equipment.BARBELL],
+          difficulty: Difficulty.INTERMEDIATE,
+          primaryMuscles: ["Quadriceps"],
+          instructions: ["Squat deep and stand"],
+        },
+      });
+      assert.equal(omitted.success, true);
+
+      const invalidUrl = createExerciseSchema.safeParse({
+        body: {
+          name: "Barbell Squat",
+          imageUrl: "invalid-url-format",
+          equipment: [Equipment.BARBELL],
+          difficulty: Difficulty.INTERMEDIATE,
+          primaryMuscles: ["Quadriceps"],
+          instructions: ["Squat deep and stand"],
+        },
+      });
+      assert.equal(invalidUrl.success, false);
+    });
+
+    it("maps exercise entity to include imageUrl or null when absent", () => {
+      const mappedWithImage = mapExercise({
+        id: "ex-1",
+        name: "Deadlift",
+        description: "Pull from floor",
+        imageUrl: "https://example.com/deadlift.jpg",
+        equipment: ["Barbell"],
+        difficulty: "advanced",
+        primaryMuscles: ["Back"],
+        secondaryMuscles: ["Hamstrings"],
+        instructions: ["Pull bar up"],
+        tips: [],
+      });
+      assert.equal(mappedWithImage.imageUrl, "https://example.com/deadlift.jpg");
+
+      const mappedWithoutImage = mapExercise({
+        id: "ex-2",
+        name: "Pullup",
+        description: "Bodyweight pull",
+        equipment: ["Bodyweight"],
+        difficulty: "intermediate",
+        primaryMuscles: ["Lats"],
+        secondaryMuscles: ["Biceps"],
+        instructions: ["Pull chin over bar"],
+        tips: [],
+      });
+      assert.equal(mappedWithoutImage.imageUrl, null);
+    });
+
+    it("validates image magic bytes, MIME types, and 5 MB size limits", () => {
+      // Valid PNG signature: 89 50 4E 47 0D 0A 1A 0A + padding
+      const pngBuffer = Buffer.from([
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
+      ]);
+      const validPng = validateImageBuffer(pngBuffer, "image/png");
+      assert.equal(validPng.mimeType, "image/png");
+      assert.equal(validPng.extension, "png");
+
+      // Valid JPEG signature: FF D8 FF + padding
+      const jpgBuffer = Buffer.from([
+        0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
+      ]);
+      const validJpg = validateImageBuffer(jpgBuffer, "image/jpg");
+      assert.equal(validJpg.mimeType, "image/jpeg");
+      assert.equal(validJpg.extension, "jpg");
+
+      // Valid WEBP signature: "RIFF" + 4 bytes + "WEBP"
+      const webpBuffer = Buffer.from("RIFF\x00\x00\x00\x00WEBP", "ascii");
+      const validWebp = validateImageBuffer(webpBuffer, "image/webp");
+      assert.equal(validWebp.mimeType, "image/webp");
+      assert.equal(validWebp.extension, "webp");
+
+      // Spoofed content (text/SVG pretending to be PNG)
+      const spoofedBuffer = Buffer.from("<svg><script>alert(1)</script></svg>");
+      assert.throws(
+        () => validateImageBuffer(spoofedBuffer, "image/png"),
+        /Invalid or corrupted image file content/i,
+      );
+
+      // Mismatched MIME type (PNG bytes declared as image/webp)
+      assert.throws(
+        () => validateImageBuffer(pngBuffer, "image/webp"),
+        /does not match declared image MIME type/i,
+      );
+
+      // Unsupported MIME type
+      assert.throws(
+        () => validateImageBuffer(pngBuffer, "image/svg+xml"),
+        /Unsupported file type/i,
+      );
+
+      // Oversized buffer (> 5 MB)
+      const oversized = Buffer.alloc(MAX_IMAGE_SIZE_BYTES + 1024);
+      assert.throws(
+        () => validateImageBuffer(oversized, "image/png"),
+        /exceeds the 5 MB limit/i,
+      );
+    });
+
+    it("prevents unauthorized users from uploading an image for an exercise they cannot edit and protects shared assets", async () => {
+      const origFindFirst = prisma.exercise.findFirst;
+      const origCount = prisma.exercise.count;
+
+      try {
+        // Platform exercise (isCustom: false) cannot be modified by a MEMBER
+        (prisma.exercise as any).findFirst = async () => ({
+          id: "ex-platform-1",
+          name: "Barbell Bench Press",
+          isCustom: false,
+          createdById: null,
+          isActive: true,
+        });
+
+        const pngBuffer = Buffer.from([
+          0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00,
+          0x0d,
+        ]);
+        const info = validateImageBuffer(pngBuffer, "image/png");
+
+        await assert.rejects(
+          () =>
+            exerciseService.uploadImage(pngBuffer, info, {
+              exerciseId: "ex-platform-1",
+              userId: "member-1",
+              role: Roles.MEMBER,
+            }),
+          (err: any) => {
+            assert.equal(err.statusCode, 403);
+            return true;
+          },
+        );
+
+        // Shared asset reference check: deleteIfUnused must NOT delete when count > 0
+        const managedCloudinaryUrl =
+          "https://res.cloudinary.com/demo/image/upload/v1700000000/stren/exercises/123e4567-e89b-12d3-a456-426614174000.png";
+        const parsed = storageService.parseManagedAsset(managedCloudinaryUrl);
+        assert.ok(parsed);
+        assert.equal(parsed.provider, "cloudinary");
+        assert.equal(
+          parsed.key,
+          "stren/exercises/123e4567-e89b-12d3-a456-426614174000",
+        );
+
+        // External URL is not treated as a managed asset
+        assert.equal(
+          storageService.parseManagedAsset(
+            "https://images.unsplash.com/photo-1574680096145-d05b474e2155",
+          ),
+          null,
+        );
+
+        // When another exercise still references the URL, deleteIfUnused returns false without deleting
+        (prisma.exercise as any).count = async () => 1;
+        const deletedWhenReferenced = await storageService.deleteIfUnused(
+          managedCloudinaryUrl,
+          "ex-1",
+        );
+        assert.equal(deletedWhenReferenced, false);
+      } finally {
+        (prisma.exercise as any).findFirst = origFindFirst;
+        (prisma.exercise as any).count = origCount;
+      }
     });
   });
 });

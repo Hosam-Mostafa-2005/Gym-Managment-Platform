@@ -1,13 +1,13 @@
 // src/services/member-insights.service.ts
-import mongoose from "mongoose";
-import User from "../models/User.model.js";
-import { Assignment } from "../models/Assignment.model.js";
-import BodyMeasurement from "../models/BodyMeasurement.model.js";
-import WorkoutSession from "../models/WorkoutSession.model.js";
+import prisma from "../config/prisma.js";
 import AppError from "../utils/AppError.js";
 import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
+import {
+  RELATIONSHIP_STATUS,
+  HISTORY_SHARING_CONSENT,
+} from "../constants/coaching-relationship.js";
 import { mapMemberInsights } from "../mappers/member-insights.mapper.js";
 import type {
   TimelineEvent,
@@ -21,39 +21,60 @@ const MAX_HISTORY = 50;
 
 class MemberInsightsService {
   private async checkTrainerAccess(trainerId: string, memberId: string) {
-    const isAssigned = await Assignment.exists({
-      trainer: trainerId,
-      member: memberId,
-      isActive: true,
-      status: ASSIGNMENT_STATUS.ACTIVE,
+    const relationship = await prisma.coachMemberRelationship.findFirst({
+      where: {
+        trainerId,
+        memberId,
+        status: RELATIONSHIP_STATUS.ACTIVE,
+        isActive: true,
+      },
     });
-    if (!isAssigned) {
+
+    const isAssigned = await prisma.assignment.findFirst({
+      where: {
+        trainerId,
+        memberId,
+        isActive: true,
+        status: ASSIGNMENT_STATUS.ACTIVE,
+      },
+    });
+
+    if (!relationship && !isAssigned) {
       throw new AppError("Member is not assigned to you.", 403);
     }
+
+    return relationship || null;
   }
 
-  private async getWorkoutStats(memberObjectId: mongoose.Types.ObjectId) {
-    const statsAgg = await WorkoutSession.aggregate([
-      { $match: { member: memberObjectId, isActive: true } },
-      {
-        $group: {
-          _id: null,
-          totalSessions: { $sum: 1 },
-          completedSessions: {
-            $sum: {
-              $cond: [
-                { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                1,
-                0,
-              ],
-            },
-          },
-          totalDuration: { $sum: "$duration" },
-          totalVolume: { $sum: "$totalVolume" },
-        },
+  private async getWorkoutStats(memberId: string, whereClause?: any) {
+    const sessions = await prisma.workoutSession.findMany({
+      where: {
+        memberId,
+        isActive: true,
+        ...(whereClause || {}),
       },
-    ]);
-    return statsAgg[0] || null;
+      select: {
+        status: true,
+        duration: true,
+        totalVolume: true,
+      },
+    });
+
+    if (sessions.length === 0) return null;
+
+    const totalSessions = sessions.length;
+    const completedSessions = sessions.filter(
+      (s) => s.status === WORKOUT_SESSION_STATUS.COMPLETED,
+    ).length;
+    const totalDuration = sessions.reduce((acc, s) => acc + (s.duration || 0), 0);
+    const totalVolume = sessions.reduce((acc, s) => acc + (s.totalVolume || 0), 0);
+
+    return {
+      totalSessions,
+      completedSessions,
+      totalDuration,
+      totalVolume,
+    };
   }
 
   private calculateStreaksAndAverages(dates: Date[]) {
@@ -102,7 +123,6 @@ class MemberInsightsService {
       tempStreak = 1;
       let currDate = new Date(uniqueDates[i]);
 
-      // Count consecutive backwards
       for (let j = i + 1; j < uniqueDates.length; j++) {
         const nextDate = new Date(uniqueDates[j]);
         const diffDays = Math.round(
@@ -113,7 +133,6 @@ class MemberInsightsService {
           tempStreak++;
           currDate = nextDate;
         } else {
-          // Track rest gaps for average
           totalRestDays += diffDays - 1;
           restGaps++;
           break;
@@ -125,7 +144,6 @@ class MemberInsightsService {
     const averageRestDays =
       restGaps > 0 ? Math.round((totalRestDays / restGaps) * 10) / 10 : 0;
 
-    // Frequency (Sessions per week)
     const firstDate = new Date(uniqueDates[uniqueDates.length - 1]);
     const lastDate = new Date(uniqueDates[0]);
     const totalWeeks = Math.max(
@@ -137,15 +155,23 @@ class MemberInsightsService {
     return { currentStreak, longestStreak, averageRestDays, frequency };
   }
 
+  private getMeasurementValue(measurement: any, key: string): number {
+    if (!measurement) return 0;
+    if (measurement.circumferences && measurement.circumferences[key] != null) {
+      return measurement.circumferences[key];
+    }
+    return measurement[key] || 0;
+  }
+
   private getLimbTotal(
     measurement: any,
     leftKey: string,
     rightKey: string,
   ): number {
-    if (!measurement || !measurement.circumferences) return 0;
-    const left = measurement.circumferences[leftKey] || 0;
-    const right = measurement.circumferences[rightKey] || 0;
-    return left + right;
+    return (
+      this.getMeasurementValue(measurement, leftKey) +
+      this.getMeasurementValue(measurement, rightKey)
+    );
   }
 
   private buildBodyInsights(
@@ -157,33 +183,26 @@ class MemberInsightsService {
       weight: kpis.weightDifference,
       bodyFat: kpis.bodyFatDifference,
       chest:
-        (latestMeasurement?.circumferences?.chest || 0) -
-        (previousMeasurement?.circumferences?.chest || 0),
-
+        this.getMeasurementValue(latestMeasurement, "chest") -
+        this.getMeasurementValue(previousMeasurement, "chest"),
       waist:
-        (latestMeasurement?.circumferences?.waist || 0) -
-        (previousMeasurement?.circumferences?.waist || 0),
-
+        this.getMeasurementValue(latestMeasurement, "waist") -
+        this.getMeasurementValue(previousMeasurement, "waist"),
       hips:
-        (latestMeasurement?.circumferences?.hips || 0) -
-        (previousMeasurement?.circumferences?.hips || 0),
-
+        this.getMeasurementValue(latestMeasurement, "hips") -
+        this.getMeasurementValue(previousMeasurement, "hips"),
       shoulders:
-        (latestMeasurement?.circumferences?.shoulders || 0) -
-        (previousMeasurement?.circumferences?.shoulders || 0),
-
+        this.getMeasurementValue(latestMeasurement, "shoulders") -
+        this.getMeasurementValue(previousMeasurement, "shoulders"),
       neck:
-        (latestMeasurement?.circumferences?.neck || 0) -
-        (previousMeasurement?.circumferences?.neck || 0),
-
+        this.getMeasurementValue(latestMeasurement, "neck") -
+        this.getMeasurementValue(previousMeasurement, "neck"),
       arms:
         this.getLimbTotal(latestMeasurement, "leftArm", "rightArm") -
         this.getLimbTotal(previousMeasurement, "leftArm", "rightArm"),
-
       thighs:
         this.getLimbTotal(latestMeasurement, "leftThigh", "rightThigh") -
         this.getLimbTotal(previousMeasurement, "leftThigh", "rightThigh"),
-
       calves:
         this.getLimbTotal(latestMeasurement, "leftCalf", "rightCalf") -
         this.getLimbTotal(previousMeasurement, "leftCalf", "rightCalf"),
@@ -280,7 +299,9 @@ class MemberInsightsService {
 
     timelineEvents.sort((a, b) => {
       if (!a.date || !b.date) return 0;
-      return b.date.getTime() - a.date.getTime();
+      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+      return dateB.getTime() - dateA.getTime();
     });
 
     return timelineEvents;
@@ -291,40 +312,72 @@ class MemberInsightsService {
       throw new AppError("Forbidden.", 403);
     }
 
+    let relationship: any = null;
     if (role === Roles.TRAINER) {
-      await this.checkTrainerAccess(userId, memberId);
+      relationship = await this.checkTrainerAccess(userId, memberId);
     }
 
-    const memberObjectId = new mongoose.Types.ObjectId(memberId);
-    const member = await User.findOne({ _id: memberObjectId, isActive: true });
+    const member = await prisma.user.findFirst({
+      where: { id: memberId, isActive: true },
+    });
 
     if (!member || member.role !== Roles.MEMBER) {
       throw new AppError("Member not found.", 404);
     }
 
-    // 1. Parallel Database Queries
+    const isCoachViewing = role === Roles.TRAINER;
+    const canAccessHistory =
+      !isCoachViewing ||
+      relationship?.historySharingConsent === HISTORY_SHARING_CONSENT.GRANTED;
+
+    const relationshipStartDate = relationship?.startedAt || null;
+
+    const sessionWhere: any = { memberId, isActive: true };
+    const measurementWhere: any = { memberId, isActive: true };
+
+    if (isCoachViewing && !canAccessHistory && relationshipStartDate) {
+      sessionWhere.startedAt = { gte: relationshipStartDate };
+      measurementWhere.measuredAt = { gte: relationshipStartDate };
+    }
+
     const [stats, measurements, sessions, assignments] = await Promise.all([
-      this.getWorkoutStats(memberObjectId),
+      this.getWorkoutStats(memberId, sessionWhere),
 
-      BodyMeasurement.find({ member: memberObjectId, isActive: true })
-        .sort({ measuredAt: -1 })
-        .limit(MAX_HISTORY),
+      prisma.bodyMeasurement.findMany({
+        where: measurementWhere,
+        orderBy: { measuredAt: "desc" },
+        take: MAX_HISTORY,
+      }),
 
-      WorkoutSession.find({ member: memberObjectId, isActive: true })
-        .select("status duration totalVolume startedAt endedAt assignment")
-        .sort({ startedAt: -1 })
-        .populate({
-          path: "assignment",
-          select: "workout",
-          populate: { path: "workout", select: "title" },
-        }),
+      prisma.workoutSession.findMany({
+        where: sessionWhere,
+        select: {
+          status: true,
+          duration: true,
+          totalVolume: true,
+          startedAt: true,
+          endedAt: true,
+          assignment: {
+            select: {
+              workout: { select: { title: true } },
+            },
+          },
+        },
+        orderBy: { startedAt: "desc" },
+      }),
 
-      Assignment.find({ member: memberObjectId, isActive: true })
-        .select("status createdAt completedAt cancelledAt workout")
-        .populate("workout", "title"),
+      prisma.assignment.findMany({
+        where: { memberId, isActive: true },
+        select: {
+          status: true,
+          createdAt: true,
+          completedAt: true,
+          cancelledAt: true,
+          workout: { select: { title: true } },
+        },
+      }),
     ]);
 
-    // 2. Compute KPIs
     const latestMeasurement = measurements[0] || null;
     const previousMeasurement = measurements[1] || null;
 
@@ -361,14 +414,12 @@ class MemberInsightsService {
       totalWorkoutVolume: stats?.totalVolume || 0,
     };
 
-    // 3. Compute Body Insights (Deltas)
     const bodyInsights: BodyInsights = this.buildBodyInsights(
       latestMeasurement,
       previousMeasurement,
       kpis,
     );
 
-    // 4. Compute Workout Insights
     const completedSessions = sessions.filter(
       (s) => s.status === WORKOUT_SESSION_STATUS.COMPLETED,
     );
@@ -383,19 +434,16 @@ class MemberInsightsService {
       lastWorkout: sessionDates.length > 0 ? sessionDates[0] : null,
       averageRestDays: streaksAndAverages.averageRestDays,
       workoutFrequency: streaksAndAverages.frequency,
-      attendancePercentage: completionRate, // Attendance is derived from completion in this context
+      attendancePercentage: completionRate,
     };
 
-    // 5. Construct Charts (Chronological order)
     const charts: Charts = this.buildCharts(measurements, completedSessions);
-    // 6. Construct Timeline
     const timelineEvents = this.buildTimeline(
       measurements,
       sessions,
       assignments,
     );
 
-    // 7. Map and Return
     return mapMemberInsights({
       kpis,
       charts,

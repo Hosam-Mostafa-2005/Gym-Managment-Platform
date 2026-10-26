@@ -4,17 +4,25 @@ import { useNavigate } from "react-router-dom";
 import { createAssignment } from "../api/assignments.api";
 import type { CreateAssignmentPayload } from "../types/assignment.types";
 
-export function useCreateAssignment() {
+export function useCreateAssignment(options?: { redirectTo?: string | null }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (payload: CreateAssignmentPayload) => createAssignment(payload),
-    onSuccess: () => {
-      // تحديث كاش التمارين عشان تسمع في الجدول فوراً
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["assignments"] });
+      queryClient.invalidateQueries({ queryKey: ["my-assignments"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      if (variables?.member) {
+        queryClient.invalidateQueries({
+          queryKey: ["member-profile", variables.member],
+        });
+      }
       toast.success("Assignment created successfully! 🎉");
-      navigate("/assignments"); // الرجوع لصفحة الجدول
+      if (options?.redirectTo !== null) {
+        navigate(options?.redirectTo || "/assignments");
+      }
     },
     onError: (error: any) => {
       toast.error(

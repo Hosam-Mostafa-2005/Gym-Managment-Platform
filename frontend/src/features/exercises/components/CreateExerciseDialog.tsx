@@ -9,6 +9,8 @@ import {
 import ExerciseForm from "./ExerciseForm";
 
 import { useCreateExercise } from "../hooks/useCreateExercise";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { ROLES } from "@/constants/roles";
 
 import type { CreateExerciseDto } from "../types/exercise.types";
 
@@ -21,6 +23,8 @@ const CreateExerciseDialog = ({
   open,
   onOpenChange,
 }: CreateExerciseDialogProps) => {
+  const { data: user } = useCurrentUser();
+  const isMember = user?.role === ROLES.MEMBER;
   const { mutate, isPending } = useCreateExercise();
 
   const handleSubmit = (data: CreateExerciseDto) => {
@@ -51,10 +55,14 @@ const CreateExerciseDialog = ({
   "
       >
         <DialogHeader>
-          <DialogTitle>Create Exercise</DialogTitle>
+          <DialogTitle>
+            {isMember ? "Create Custom Exercise" : "Create Exercise"}
+          </DialogTitle>
 
           <DialogDescription>
-            Add a new exercise to your exercise library.
+            {isMember
+              ? "Add a personal custom exercise to your training library."
+              : "Add a new exercise to your exercise library."}
           </DialogDescription>
         </DialogHeader>
 

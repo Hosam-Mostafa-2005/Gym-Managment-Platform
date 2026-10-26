@@ -11,6 +11,8 @@ const mapSet = (set: any): WorkoutSetLog => ({
   targetReps: set.targetReps,
   actualReps: set.actualReps,
   weight: set.weight,
+  restDuration: set.restDuration ?? 0,
+  completedAt: set.completedAt,
   completed: set.completed,
 });
 
@@ -22,7 +24,6 @@ const mapExerciseLog = (log: any): WorkoutExerciseLog => {
 
   return {
     id: log._id ?? log.id,
-
     exercise: {
       id:
         exerciseObj._id ??
@@ -33,80 +34,87 @@ const mapExerciseLog = (log: any): WorkoutExerciseLog => {
       difficulty: exerciseObj.difficulty ?? "",
       primaryMuscles: exerciseObj.primaryMuscles ?? [],
       secondaryMuscles: exerciseObj.secondaryMuscles ?? [],
+      description: exerciseObj.description ?? "",
+      instructions: exerciseObj.instructions ?? [],
+      tips: exerciseObj.tips ?? [],
+      imageUrl: exerciseObj.imageUrl ?? null,
+      videoUrl: exerciseObj.videoUrl ?? undefined,
     },
-
     exerciseName: log.exerciseName,
     targetSets: log.targetSets,
     targetReps: log.targetReps,
     order: log.order,
     completed: log.completed,
-
     sets: log.sets?.map(mapSet) ?? [],
   };
 };
 
 export const mapWorkoutSession = (session: any): WorkoutSession => {
-  const assignmentObj =
-    typeof session.assignment === "object" && session.assignment !== null
-      ? session.assignment
-      : {};
-  const trainerObj =
-    typeof assignmentObj.trainer === "object" && assignmentObj.trainer !== null
-      ? assignmentObj.trainer
-      : {};
-  const workoutObj =
-    typeof assignmentObj.workout === "object" && assignmentObj.workout !== null
-      ? assignmentObj.workout
-      : {};
+  const assignmentRaw = session.assignment;
+  let assignment: any = null;
 
-  return {
-    id: session._id ?? session.id,
+  if (assignmentRaw && typeof assignmentRaw === "object") {
+    const trainerObj =
+      typeof assignmentRaw.trainer === "object" && assignmentRaw.trainer !== null
+        ? assignmentRaw.trainer
+        : {};
+    const workoutObj =
+      typeof assignmentRaw.workout === "object" && assignmentRaw.workout !== null
+        ? assignmentRaw.workout
+        : {};
 
-    assignment: {
-      id:
-        assignmentObj._id ??
-        assignmentObj.id ??
-        (typeof session.assignment === "string" ? session.assignment : ""),
-
+    assignment = {
+      id: assignmentRaw._id ?? assignmentRaw.id ?? "",
       trainer: {
-        id:
-          trainerObj._id ??
-          trainerObj.id ??
-          (typeof assignmentObj.trainer === "string"
-            ? assignmentObj.trainer
-            : ""),
+        id: trainerObj._id ?? trainerObj.id ?? "",
         name: trainerObj.name ?? "",
         email: trainerObj.email ?? "",
       },
-
       workout: {
-        id:
-          workoutObj._id ??
-          workoutObj.id ??
-          (typeof assignmentObj.workout === "string"
-            ? assignmentObj.workout
-            : ""),
+        id: workoutObj._id ?? workoutObj.id ?? "",
         title: workoutObj.title ?? "",
         description: workoutObj.description,
         estimatedDuration: workoutObj.estimatedDuration ?? 0,
         category: workoutObj.category ?? "",
         difficulty: workoutObj.difficulty ?? "",
+        imageUrl: workoutObj.imageUrl ?? null,
+        exerciseCount: workoutObj.exerciseCount ?? workoutObj.exercises?.length ?? 0,
       },
+      startDate: assignmentRaw.startDate ?? "",
+      endDate: assignmentRaw.endDate,
+      status: assignmentRaw.status ?? "",
+    };
+  }
 
-      startDate: assignmentObj.startDate ?? "",
-      endDate: assignmentObj.endDate,
-      status: assignmentObj.status ?? "",
-    },
+  const workoutRaw =
+    (session.workout && typeof session.workout === "object"
+      ? session.workout
+      : assignment?.workout) || null;
 
+  const workout = workoutRaw
+    ? {
+        id: workoutRaw._id ?? workoutRaw.id ?? "",
+        title: workoutRaw.title ?? "",
+        description: workoutRaw.description,
+        estimatedDuration: workoutRaw.estimatedDuration ?? 0,
+        category: workoutRaw.category ?? "",
+        difficulty: workoutRaw.difficulty ?? "",
+        imageUrl: workoutRaw.imageUrl ?? null,
+        exerciseCount: workoutRaw.exerciseCount ?? workoutRaw.exercises?.length ?? 0,
+      }
+    : null;
+
+  return {
+    id: session._id ?? session.id,
+    assignment,
+    workout,
+    workoutId: session.workoutId ?? assignment?.workout?.id ?? null,
     status: session.status,
     startedAt: session.startedAt,
     endedAt: session.endedAt,
-
     duration: session.duration ?? 0,
     progress: session.progress ?? 0,
-
     notes: session.notes,
-
     totalRestTime: session.totalRestTime ?? 0,
     activeTrainingTime: session.activeTrainingTime ?? 0,
     totalVolume: session.totalVolume ?? 0,

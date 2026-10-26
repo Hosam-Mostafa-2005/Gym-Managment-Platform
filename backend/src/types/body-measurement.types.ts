@@ -1,8 +1,7 @@
-import type { Types } from "mongoose";
-
 export interface IBodyMeasurement {
-  member: Types.ObjectId;
-  trainer: Types.ObjectId;
+  id?: string;
+  member: string;
+  trainer: string;
 
   // Basic Stats
   weight: number; // in kg
@@ -31,9 +30,10 @@ export interface IBodyMeasurement {
   createdAt: Date;
   updatedAt: Date;
 }
+
 export interface CreateBodyMeasurementDto {
-  member: Types.ObjectId;
-  trainer: Types.ObjectId;
+  member: string;
+  trainer: string;
 
   weight: number;
   height: number;
@@ -57,4 +57,6 @@ export interface CreateBodyMeasurementDto {
   measuredAt?: Date;
 }
 
-export type UpdateBodyMeasurementDto = Partial<CreateBodyMeasurementDto>;
+export type UpdateBodyMeasurementDto = Partial<
+  Omit<CreateBodyMeasurementDto, "member" | "trainer">
+>;

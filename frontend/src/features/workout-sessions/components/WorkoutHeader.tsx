@@ -6,16 +6,23 @@ interface WorkoutHeaderProps {
 }
 
 export default function WorkoutHeader({ session }: WorkoutHeaderProps) {
+  const workoutTitle =
+    session.workout?.title ||
+    session.assignment?.workout?.title ||
+    "Workout Session";
+
+  const trainerName = session.assignment?.trainer?.name;
+
   return (
     <header className="bg-[#11151B] border border-white/5 rounded-2xl p-6 md:p-8 shadow-sm">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-            {session.assignment.workout.title}
+            {workoutTitle}
           </h1>
           <div className="flex items-center gap-2 mt-3 text-sm text-[#9CA3AF]">
             <User size={16} className="text-white/40" />
-            <span>Coach {session.assignment.trainer.name}</span>
+            <span>{trainerName ? `Coach ${trainerName}` : "Personal Training"}</span>
           </div>
         </div>
 

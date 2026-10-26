@@ -1,0 +1,342 @@
+// src/features/scheduling/components/ScheduledWorkoutDetailModal.tsx
+import { useState } from "react";
+import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
+import {
+  X,
+  Calendar,
+  Clock,
+  Dumbbell,
+  User,
+  Play,
+  Trash2,
+  AlertCircle,
+  CheckCircle2,
+  AlertTriangle,
+  RotateCcw,
+} from "lucide-react";
+import type { ScheduledWorkout } from "../types/scheduling.types";
+import {
+  useCancelScheduledWorkout,
+  useStartScheduledWorkout,
+} from "../hooks/useScheduling";
+
+interface ScheduledWorkoutDetailModalProps {
+  scheduledWorkout: ScheduledWorkout | null;
+  isOpen: boolean;
+  onClose: () => void;
+  isCoachView?: boolean;
+}
+
+export default function ScheduledWorkoutDetailModal({
+  scheduledWorkout,
+  isOpen,
+  onClose,
+  isCoachView = false,
+}: ScheduledWorkoutDetailModalProps) {
+  const navigate = useNavigate();
+  const [confirmCancel, setConfirmCancel] = useState(false);
+
+  const { mutate: cancelWorkout, isPending: isCancelling } =
+    useCancelScheduledWorkout();
+  const { mutate: startWorkout, isPending: isStarting } =
+    useStartScheduledWorkout();
+
+  if (!isOpen || !scheduledWorkout) return null;
+
+  const scheduledDate = new Date(scheduledWorkout.scheduledAt);
+  const isScheduledByCoach =
+    Boolean(scheduledWorkout.trainerId) && !isCoachView;
+
+  const handleStartWorkout = () => {
+    startWorkout(scheduledWorkout.id, {
+      onSuccess: (session: any) => {
+        onClose();
+        if (session?.id) {
+          navigate(`/sessions/${session.id}/active`);
+        } else {
+          navigate("/sessions/active");
+        }
+      },
+    });
+  };
+
+  const handleCancelWorkout = () => {
+    cancelWorkout(scheduledWorkout.id, {
+      onSuccess: () => {
+        setConfirmCancel(false);
+        onClose();
+      },
+    });
+  };
+
+  const getStatusBadge = () => {
+    switch (scheduledWorkout.status) {
+      case "COMPLETED":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-[#5BE584] border border-[#5BE584]/20">
+            <CheckCircle2 size={13} />
+            Completed
+          </span>
+        );
+      case "MISSED":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <AlertTriangle size={13} />
+            Missed
+          </span>
+        );
+      case "CANCELLED":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
+            <X size={13} />
+            Cancelled
+          </span>
+        );
+      case "RESCHEDULED":
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
+            <RotateCcw size={13} />
+            Rescheduled
+          </span>
+        );
+      case "SCHEDULED":
+      default:
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <Clock size={13} />
+            Scheduled
+          </span>
+        );
+    }
+  };
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md">
+      <div className="min-h-full flex items-center justify-center p-4">
+        <div className="bg-[#0D1014] border border-[#1E2329] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          {/* Header */}
+          <div className="flex items-start justify-between p-6 border-b border-[#1E2329]">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#16291D] border border-[#23422E] text-[#5BE584]">
+                <Dumbbell className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white leading-tight">
+                  {scheduledWorkout.workout?.title || "Workout Session"}
+                </h3>
+                <div className="flex items-center gap-2 mt-1">
+                  {getStatusBadge()}
+                  {scheduledWorkout.workout?.difficulty && (
+                    <span className="text-xs text-gray-400 capitalize">
+                      • {scheduledWorkout.workout.difficulty.toLowerCase()}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="text-[#9CA3AF] hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/5"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Content Body */}
+          <div className="p-6 space-y-5">
+            {/* Date & Time Banner */}
+            <div className="grid grid-cols-2 gap-3 p-3.5 bg-[#12161D] border border-[#1E2329] rounded-xl text-sm">
+              <div className="flex items-center gap-2.5 text-gray-300">
+                <Calendar className="h-4 w-4 text-[#5BE584]" />
+                <div>
+                  <div className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">
+                    Date
+                  </div>
+                  <div className="font-semibold text-white">
+                    {scheduledDate.toLocaleDateString(undefined, {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 text-gray-300">
+                <Clock className="h-4 w-4 text-[#5BE584]" />
+                <div>
+                  <div className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">
+                    Time
+                  </div>
+                  <div className="font-semibold text-white">
+                    {scheduledDate.toLocaleTimeString(undefined, {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Coach / Athlete Connection Details */}
+            {scheduledWorkout.trainer && (
+              <div className="flex items-center gap-3 p-3 bg-[#12161D] border border-[#1E2329] rounded-xl">
+                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-[#5BE584]">
+                  <User size={15} />
+                </div>
+                <div className="text-xs">
+                  <span className="text-gray-400">Assigned / Scheduled by:</span>{" "}
+                  <span className="font-semibold text-white">
+                    Coach {scheduledWorkout.trainer.name}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {isCoachView && scheduledWorkout.member && (
+              <div className="flex items-center gap-3 p-3 bg-[#12161D] border border-[#1E2329] rounded-xl">
+                <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                  <User size={15} />
+                </div>
+                <div className="text-xs">
+                  <span className="text-gray-400">Athlete:</span>{" "}
+                  <span className="font-semibold text-white">
+                    {scheduledWorkout.member.name}
+                  </span>
+                  <span className="text-gray-500 ml-1">
+                    ({scheduledWorkout.member.email})
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Coach or Member Notes */}
+            {scheduledWorkout.notes && (
+              <div className="p-3.5 bg-[#12161D] border border-[#1E2329] rounded-xl text-sm">
+                <div className="text-xs font-semibold text-gray-400 mb-1 flex items-center gap-1.5">
+                  <AlertCircle size={13} className="text-[#5BE584]" />
+                  Instructions & Notes
+                </div>
+                <p className="text-gray-300 text-xs leading-relaxed whitespace-pre-wrap">
+                  {scheduledWorkout.notes}
+                </p>
+              </div>
+            )}
+
+            {/* Exercises Preview */}
+            {scheduledWorkout.workout?.exercises &&
+              scheduledWorkout.workout.exercises.length > 0 && (
+                <div>
+                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                    Exercises ({scheduledWorkout.workout.exercises.length})
+                  </div>
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                    {scheduledWorkout.workout.exercises.map((item, idx) => (
+                      <div
+                        key={item.id || idx}
+                        className="flex items-center justify-between p-2.5 rounded-lg bg-[#12161D] border border-[#1E2329] text-xs"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="flex-shrink-0 flex items-center justify-center h-5 w-5 rounded-full bg-[#1A212B] text-gray-400 font-mono text-[10px]">
+                            {idx + 1}
+                          </span>
+                          <span className="font-medium text-white truncate">
+                            {item.exercise?.name || "Exercise"}
+                          </span>
+                        </div>
+                        <div className="flex-shrink-0 text-gray-400 font-medium">
+                          {item.sets} sets × {item.reps} reps
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            {/* Coach restriction notice */}
+            {isScheduledByCoach && (
+              <div className="text-[11px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-lg flex items-center gap-2">
+                <AlertCircle size={14} className="flex-shrink-0" />
+                <span>
+                  This workout was assigned by your coach. To modify or cancel it,
+                  please communicate with Coach {scheduledWorkout.trainer?.name}.
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Action Footer */}
+          <div className="flex items-center justify-between p-5 bg-[#12161D] border-t border-[#1E2329]">
+            {/* Left Action (Cancel / Delete) */}
+            {!confirmCancel ? (
+              <div>
+                {!isScheduledByCoach &&
+                  (scheduledWorkout.status === "SCHEDULED" ||
+                    scheduledWorkout.status === "RESCHEDULED") && (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmCancel(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors"
+                    >
+                      <Trash2 size={14} />
+                      Cancel Schedule
+                    </button>
+                  )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-rose-400 font-medium">
+                  Cancel this?
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCancelWorkout}
+                  disabled={isCancelling}
+                  className="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white transition-colors disabled:opacity-50"
+                >
+                  {isCancelling ? "Cancelling..." : "Yes, Cancel"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmCancel(false)}
+                  className="px-2 py-1 rounded-lg text-xs text-gray-400 hover:text-white"
+                >
+                  No
+                </button>
+              </div>
+            )}
+
+            {/* Right Action: Start Workout */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+              >
+                Close
+              </button>
+
+              {!isCoachView &&
+                (scheduledWorkout.status === "SCHEDULED" ||
+                  scheduledWorkout.status === "RESCHEDULED" ||
+                  scheduledWorkout.status === "MISSED") && (
+                  <button
+                    type="button"
+                    onClick={handleStartWorkout}
+                    disabled={isStarting}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#5BE584] hover:bg-[#4dd273] text-black shadow-lg shadow-[#5BE584]/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+                  >
+                    <Play size={14} className="fill-black" />
+                    {isStarting ? "Starting..." : "Start Workout"}
+                  </button>
+                )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}

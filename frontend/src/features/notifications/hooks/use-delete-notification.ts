@@ -10,6 +10,7 @@ export const useDeleteNotification = () => {
     mutationFn: deleteNotification,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       toast.success("Notification deleted");
     },
     onError: () => {

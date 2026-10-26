@@ -1,0 +1,900 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum Role {
+  admin
+  trainer
+  member
+}
+
+enum Difficulty {
+  beginner
+  intermediate
+  advanced
+}
+
+enum Category {
+  strength
+  hypertrophy
+  cardio
+  mobility
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum WorkoutSessionStatus {
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ScheduledWorkoutStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  MISSED
+  RESCHEDULED
+}
+
+enum AppointmentType {
+  CHECK_IN
+  PROGRESS_REVIEW
+  CONSULTATION
+  ASSESSMENT
+  FORM_ANALYSIS
+  GOAL_SETTING
+  NUTRITION_SYNC
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum RelationshipStatus {
+  PENDING
+  ACTIVE
+  DECLINED
+  REVOKED
+}
+
+enum HistorySharingConsent {
+  PENDING
+  GRANTED
+  DECLINED
+  REVOKED
+}
+
+enum NotificationType {
+  ASSIGNMENT_CREATED
+  ASSIGNMENT_UPDATED
+  ASSIGNMENT_CANCELLED
+  WORKOUT_COMPLETED
+  WORKOUT_STARTED
+  BODY_MEASUREMENT_CREATED
+  BODY_MEASUREMENT_UPDATED
+  BODY_MEASUREMENT_DELETED
+  COACHING_INVITATION_RECEIVED
+  COACHING_INVITATION_ACCEPTED
+  COACHING_INVITATION_DECLINED
+  COACHING_RELATIONSHIP_TERMINATED
+  HISTORY_SHARING_GRANTED
+  HISTORY_SHARING_REVOKED
+  NUTRITION_PLAN_ASSIGNED
+  NUTRITION_PLAN_UPDATED
+  COACHING_APPOINTMENT_SCHEDULED
+  COACHING_APPOINTMENT_RESCHEDULED
+  COACHING_APPOINTMENT_CANCELLED
+  COACHING_APPOINTMENT_COMPLETED
+  COACHING_APPOINTMENT_NO_SHOW
+  WORKOUT_SCHEDULED
+  WORKOUT_SCHEDULE_UPDATED
+  WORKOUT_SCHEDULE_CANCELLED
+  ACHIEVEMENT_UNLOCKED
+  STREAK_MILESTONE
+  WEEKLY_GOAL_COMPLETED
+  COACH_ENCOURAGEMENT
+  SYSTEM
+}
+
+enum NotificationCategory {
+  WORKOUT
+  NUTRITION
+  COACHING
+  ACHIEVEMENT
+  SYSTEM
+}
+
+enum AchievementCategory {
+  WORKOUT
+  CONSISTENCY
+  NUTRITION
+  PROGRESS
+}
+
+enum AchievementTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+enum VerificationPurpose {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  PASSWORD_CHANGE
+}
+
+// ==========================================
+// MODELS
+// ==========================================
+
+model User {
+  id                String    @id @default(uuid())
+  name              String
+  email             String    @unique
+  password          String?
+  role              Role      @default(member)
+  isActive          Boolean   @default(true)
+  isEmailVerified   Boolean   @default(false)
+  emailVerifiedAt   DateTime?
+  googleId          String?   @unique
+  passwordChangedAt DateTime?
+  phone             String?
+  bio               String?
+  specialties       String[]  @default([])
+  certifications    String[]  @default([])
+  yearsOfExperience Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Onboarding metadata
+  onboardingCompleted Boolean  @default(false)
+  onboardingStep      Int      @default(0)
+
+  // Member & Coach specific onboarding profile attributes
+  fitnessGoal         String?
+  experienceLevel     String?
+  professionalTitle   String?
+  coachingPhilosophy  String?
+  languagesSpoken     String[] @default([])
+
+  // Relationships
+  workoutsCreated        Workout[]         @relation("WorkoutCreator")
+  customExercises        Exercise[]        @relation("UserCustomExercises")
+  assignmentsAsTrainer   Assignment[]      @relation("TrainerAssignments")
+  assignmentsAsMember    Assignment[]      @relation("MemberAssignments")
+  workoutSessions        WorkoutSession[]  @relation("MemberSessions")
+  measurementsAsMember   BodyMeasurement[] @relation("MemberMeasurements")
+  measurementsAsTrainer  BodyMeasurement[] @relation("TrainerMeasurements")
+  notifications          Notification[]
+  scheduledWorkouts          ScheduledWorkout[]        @relation("MemberScheduledWorkouts")
+  scheduledWorkoutsAsTrainer ScheduledWorkout[]        @relation("TrainerScheduledWorkouts")
+  coachingAsTrainer          CoachMemberRelationship[] @relation("TrainerCoachingRelationships")
+  coachingAsMember           CoachMemberRelationship[] @relation("MemberCoachingRelationships")
+  appointmentsAsMember       CoachingAppointment[]     @relation("MemberAppointments")
+  appointmentsAsTrainer      CoachingAppointment[]     @relation("TrainerAppointments")
+  nutritionProfile       NutritionProfile?         @relation("UserNutritionProfile")
+  nutritionAssessments   NutritionAssessment[]     @relation("UserNutritionAssessments")
+  nutritionPlansAsMember NutritionPlan[]           @relation("MemberNutritionPlans")
+  nutritionPlansAsCoach  NutritionPlan[]           @relation("CoachNutritionPlans")
+  foodLogs               FoodLog[]                 @relation("MemberFoodLogs")
+  userAchievements       UserAchievement[]
+  notificationPreference NotificationPreference?
+  verificationCodes      VerificationCode[]
+  passwordResetTokens    PasswordResetToken[]
+
+  @@index([role, isActive])
+  @@map("users")
+}
+
+model Exercise {
+  id               String     @id @default(uuid())
+  name             String
+  description      String     @default("")
+  imageUrl         String?
+  videoUrl         String?
+  equipment        String[]
+  difficulty       Difficulty
+  primaryMuscles   String[]
+  secondaryMuscles String[]   @default([])
+  instructions     String[]
+  tips             String[]   @default([])
+  isActive         Boolean    @default(true)
+  createdById      String?
+  isCustom         Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  // Self-referencing M:N relationship for alternatives
+  alternatives     Exercise[] @relation("ExerciseAlternatives")
+  alternativeTo    Exercise[] @relation("ExerciseAlternatives")
+
+  // Relationships
+  creator             User?                @relation("UserCustomExercises", fields: [createdById], references: [id], onDelete: SetNull)
+  workoutExercises    WorkoutExercise[]
+  workoutExerciseLogs WorkoutExerciseLog[]
+
+  @@index([name])
+  @@index([createdById, isCustom])
+  @@index([difficulty])
+  @@index([isActive])
+  @@map("exercises")
+}
+
+model Workout {
+  id                String            @id @default(uuid())
+  title             String
+  description       String            @default("")
+  category          Category
+  difficulty        Difficulty
+  estimatedDuration Int
+  tags              String[]          @default([])
+  isTemplate        Boolean           @default(false)
+  createdBy         String
+  isActive          Boolean           @default(true)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relationships
+  creator     User              @relation("WorkoutCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  exercises   WorkoutExercise[]
+  assignments Assignment[]
+  sessions    WorkoutSession[]   @relation("WorkoutSessions")
+  scheduledWorkouts ScheduledWorkout[] @relation("WorkoutSchedules")
+
+  @@index([createdBy, isActive])
+  @@index([category])
+  @@index([difficulty])
+  @@index([isTemplate])
+  @@map("workouts")
+}
+
+model WorkoutExercise {
+  id          String   @id @default(uuid())
+  workoutId   String
+  exerciseId  String
+  sets        Int
+  reps        String
+  restSeconds Int
+  notes       String?
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  workout     Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  @@unique([workoutId, order])
+  @@index([workoutId])
+  @@index([exerciseId])
+  @@map("workout_exercises")
+}
+
+model Assignment {
+  id           String           @id @default(uuid())
+  memberId     String
+  trainerId    String
+  workoutId    String
+  startDate    DateTime
+  endDate      DateTime
+  status       AssignmentStatus @default(ACTIVE)
+  completedAt  DateTime?
+  cancelledAt  DateTime?
+  cancelReason String?
+  notes        String?
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // Relationships
+  member          User             @relation("MemberAssignments", fields: [memberId], references: [id], onDelete: Restrict)
+  trainer         User             @relation("TrainerAssignments", fields: [trainerId], references: [id], onDelete: Restrict)
+  workout         Workout          @relation(fields: [workoutId], references: [id], onDelete: Restrict)
+  workoutSessions WorkoutSession[]
+  scheduledWorkouts ScheduledWorkout[]
+
+  @@index([trainerId, isActive])
+  @@index([memberId, isActive])
+  @@index([memberId, status, isActive])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@index([memberId, workoutId, status])
+  @@map("assignments")
+}
+
+model WorkoutSession {
+  id                 String               @id @default(uuid())
+  memberId           String
+  assignmentId       String?
+  workoutId          String?
+  status             WorkoutSessionStatus @default(IN_PROGRESS)
+  startedAt          DateTime             @default(now())
+  endedAt            DateTime?
+  duration           Int                  @default(0)
+  progress           Int                  @default(0)
+  totalRestTime      Int                  @default(0)
+  activeTrainingTime Int                  @default(0)
+  totalVolume        Float                @default(0)
+  exercisesCompleted Int                  @default(0)
+  setsCompleted      Int                  @default(0)
+  notes              String?
+  isActive           Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  // Relationships
+  member       User                 @relation("MemberSessions", fields: [memberId], references: [id], onDelete: Restrict)
+  assignment   Assignment?          @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  workout      Workout?             @relation("WorkoutSessions", fields: [workoutId], references: [id], onDelete: SetNull)
+  exerciseLogs WorkoutExerciseLog[]
+  scheduledWorkouts ScheduledWorkout[]
+
+  @@index([memberId])
+  @@index([assignmentId])
+  @@index([workoutId])
+  @@index([status])
+  @@index([startedAt(sort: Desc)])
+  @@index([memberId, startedAt(sort: Desc)])
+  @@index([assignmentId, status])
+  @@map("workout_sessions")
+}
+
+model WorkoutExerciseLog {
+  id           String           @id @default(uuid())
+  sessionId    String
+  exerciseId   String
+  exerciseName String
+  targetSets   Int
+  targetReps   String
+  order        Int
+  completed    Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  // Relationships
+  session      WorkoutSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  exercise     Exercise         @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  sets         WorkoutSetLog[]
+
+  @@unique([sessionId, order])
+  @@index([sessionId, completed])
+  @@index([sessionId])
+  @@map("workout_exercise_logs")
+}
+
+model WorkoutSetLog {
+  id            String             @id @default(uuid())
+  exerciseLogId String
+  setNumber     Int
+  targetReps    String?
+  actualReps    Int                @default(0)
+  weight        Float              @default(0)
+  restDuration  Int                @default(0)
+  startedAt     DateTime?
+  completedAt   DateTime?
+  completed     Boolean            @default(false)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  // Relationships
+  exerciseLog   WorkoutExerciseLog @relation(fields: [exerciseLogId], references: [id], onDelete: Cascade)
+
+  @@unique([exerciseLogId, setNumber])
+  @@index([exerciseLogId, completed])
+  @@index([exerciseLogId])
+  @@index([completedAt(sort: Desc)])
+  @@map("workout_set_logs")
+}
+
+model BodyMeasurement {
+  id          String    @id @default(uuid())
+  memberId    String
+  trainerId   String?
+  weight      Float
+  height      Float
+  bodyFat     Float?
+  
+  // Circumferences
+  chest       Float?
+  waist       Float?
+  hips        Float?
+  shoulders   Float?
+  neck        Float?
+  leftArm     Float?
+  rightArm    Float?
+  leftThigh   Float?
+  rightThigh  Float?
+  leftCalf    Float?
+  rightCalf   Float?
+
+  notes       String?
+  measuredAt  DateTime  @default(now())
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  member      User      @relation("MemberMeasurements", fields: [memberId], references: [id], onDelete: Restrict)
+  trainer     User?     @relation("TrainerMeasurements", fields: [trainerId], references: [id], onDelete: SetNull)
+
+  @@index([memberId, isActive, measuredAt(sort: Desc)])
+  @@index([trainerId, measuredAt(sort: Desc)])
+  @@index([memberId, trainerId])
+  @@map("body_measurements")
+}
+
+model Notification {
+  id        String               @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  category  NotificationCategory @default(SYSTEM)
+  priority  String               @default("NORMAL")
+  readAt    DateTime?
+  actionUrl String?
+  metadata  Json?                @default("{}")
+  isActive  Boolean              @default(true)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  // Relationships
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, category, createdAt(sort: Desc)])
+  @@index([userId, readAt])
+  @@index([userId, isActive])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id                       String   @id @default(uuid())
+  userId                   String   @unique
+  workoutNotifications     Boolean  @default(true)
+  nutritionNotifications   Boolean  @default(true)
+  coachingNotifications    Boolean  @default(true)
+  achievementNotifications Boolean  @default(true)
+  reminderNotifications    Boolean  @default(true)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notification_preferences")
+}
+
+model Achievement {
+  id               String              @id @default(uuid())
+  code             String              @unique
+  title            String
+  description      String
+  category         AchievementCategory
+  tier             AchievementTier     @default(BRONZE)
+  badgeIcon        String
+  points           Int                 @default(10)
+  criteria         Json
+  displayOrder     Int                 @default(0)
+  isActive         Boolean             @default(true)
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  userId        String
+  achievementId String
+  earnedAt      DateTime    @default(now())
+  metadata      Json?       @default("{}")
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@index([userId, earnedAt(sort: Desc)])
+  @@map("user_achievements")
+}
+
+model ScheduledWorkout {
+  id           String                 @id @default(uuid())
+  memberId     String
+  workoutId    String
+  assignmentId String?
+  trainerId    String?
+  scheduledAt  DateTime
+  status       ScheduledWorkoutStatus @default(SCHEDULED)
+  notes        String?
+  sessionId    String?
+  isActive     Boolean                @default(true)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  // Relationships
+  member     User            @relation("MemberScheduledWorkouts", fields: [memberId], references: [id], onDelete: Restrict)
+  trainer    User?           @relation("TrainerScheduledWorkouts", fields: [trainerId], references: [id], onDelete: SetNull)
+  workout    Workout         @relation("WorkoutSchedules", fields: [workoutId], references: [id], onDelete: Restrict)
+  assignment Assignment?     @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  session    WorkoutSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([memberId, scheduledAt])
+  @@index([memberId, status])
+  @@index([trainerId, scheduledAt])
+  @@index([scheduledAt])
+  @@map("scheduled_workouts")
+}
+
+model CoachingAppointment {
+  id                 String            @id @default(uuid())
+  memberId           String
+  trainerId          String
+  title              String
+  type               AppointmentType   @default(CHECK_IN)
+  status             AppointmentStatus @default(SCHEDULED)
+  startTime          DateTime
+  endTime            DateTime
+  memberNotes        String?
+  coachNotes         String?
+  cancellationReason String?
+  cancelledBy        String?
+  location           String?
+  isActive           Boolean           @default(true)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  // Relationships
+  member  User @relation("MemberAppointments", fields: [memberId], references: [id], onDelete: Restrict)
+  trainer User @relation("TrainerAppointments", fields: [trainerId], references: [id], onDelete: Restrict)
+
+  @@index([trainerId, startTime, endTime])
+  @@index([memberId, startTime, endTime])
+  @@index([trainerId, status, isActive])
+  @@index([memberId, status, isActive])
+  @@map("coaching_appointments")
+}
+
+model CoachMemberRelationship {
+  id                    String                @id @default(uuid())
+  trainerId             String
+  memberId              String
+  status                RelationshipStatus    @default(PENDING)
+  historySharingConsent HistorySharingConsent @default(PENDING)
+  invitedAt             DateTime              @default(now())
+  respondedAt           DateTime?
+  startedAt             DateTime?
+  terminatedAt          DateTime?
+  historyConsentAt      DateTime?
+  notes                 String?
+  isActive              Boolean               @default(true)
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  // Relationships
+  trainer User @relation("TrainerCoachingRelationships", fields: [trainerId], references: [id], onDelete: Restrict)
+  member  User @relation("MemberCoachingRelationships", fields: [memberId], references: [id], onDelete: Restrict)
+
+  @@index([trainerId, status, isActive])
+  @@index([memberId, status, isActive])
+  @@index([trainerId, memberId])
+  @@map("coach_member_relationships")
+}
+
+// ==========================================
+// NUTRITION ENUMS
+// ==========================================
+
+enum MealType {
+  BREAKFAST
+  MORNING_SNACK
+  LUNCH
+  AFTERNOON_SNACK
+  DINNER
+  EVENING_SNACK
+  PRE_WORKOUT
+  POST_WORKOUT
+}
+
+enum NutritionGoal {
+  FAT_LOSS
+  MAINTENANCE
+  MUSCLE_GAIN
+  SPORTS_PERFORMANCE
+}
+
+enum ActivityLevel {
+  SEDENTARY
+  LIGHTLY_ACTIVE
+  MODERATELY_ACTIVE
+  VERY_ACTIVE
+  EXTRA_ACTIVE
+}
+
+enum PlanSource {
+  SELF_GUIDED
+  COACH_ASSIGNED
+}
+
+enum PlanStatus {
+  ACTIVE
+  INACTIVE
+  SUPERSEDED
+  DRAFT
+}
+
+enum DietaryPreference {
+  STANDARD
+  VEGETARIAN
+  VEGAN
+  PESCATARIAN
+  KETO
+  PALEO
+  MEDITERRANEAN
+  HIGH_PROTEIN
+}
+
+// ==========================================
+// NUTRITION MODELS
+// ==========================================
+
+model Food {
+  id          String   @id @default(uuid())
+  name        String
+  nameAr      String?
+  category    String   // Proteins, Carbohydrates, Fats, Vegetables, Fruits, Dairy, Snacks, Beverages
+  servingUnit String   // g, ml, piece, scoop, slice, cup
+  servingSize Float    @default(100)
+  calories    Float
+  protein     Float
+  carbs       Float
+  fat         Float
+  fiber       Float?   @default(0)
+  sugar       Float?   @default(0)
+  sodium      Float?   @default(0)
+  allergens   String[] @default([])
+  isVerified  Boolean  @default(true)
+  source      String?  @default("Verified Food Catalog")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  mealItems   NutritionMealItem[]
+  foodLogs    FoodLog[]
+
+  @@index([name])
+  @@index([category])
+  @@index([isVerified])
+  @@map("foods")
+}
+
+model NutritionProfile {
+  id                   String            @id @default(uuid())
+  userId               String            @unique
+  age                  Int
+  gender               String            // "MALE" | "FEMALE"
+  heightCm             Float
+  currentWeightKg      Float
+  activityLevel        ActivityLevel
+  dailyActivityNotes   String?
+  trainingDaysPerWeek  Int               @default(3)
+  trainingType         String?
+  goal                 NutritionGoal
+  targetPace           String?           @default("MODERATE")
+  preferredMealsCount  Int               @default(3)
+  dietaryPreference    DietaryPreference @default(STANDARD)
+  allergies            String[]          @default([])
+  excludedFoods        String[]          @default([])
+  hasMedicalClearance  Boolean           @default(true)
+  safetyScreeningNotes String?
+  onboardingCompleted  Boolean           @default(false)
+  onboardingStep       Int               @default(1)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  // Relationships
+  user User @relation("UserNutritionProfile", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("nutrition_profiles")
+}
+
+model NutritionAssessment {
+  id                 String        @id @default(uuid())
+  userId             String
+  weightKg           Float
+  heightCm           Float
+  age                Int
+  gender             String
+  bmr                Float
+  tdee               Float
+  activityLevel      ActivityLevel
+  activityMultiplier Float
+  goal               NutritionGoal
+  calorieAdjustment  Float
+  targetCalories     Float
+  targetProteinG     Float
+  targetCarbsG       Float
+  targetFatG         Float
+  formulaVersion     String        @default("Mifflin-St Jeor v1.0")
+  assumptions        String?
+  disclaimer         String?
+  createdAt          DateTime      @default(now())
+
+  // Relationships
+  user  User            @relation("UserNutritionAssessments", fields: [userId], references: [id], onDelete: Cascade)
+  plans NutritionPlan[]
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("nutrition_assessments")
+}
+
+model NutritionPlan {
+  id                 String             @id @default(uuid())
+  memberId           String
+  coachId            String?
+  assessmentId       String?
+  name               String
+  source             PlanSource         @default(SELF_GUIDED)
+  status             PlanStatus         @default(ACTIVE)
+  targetCalories     Float
+  targetProteinG     Float
+  targetCarbsG       Float
+  targetFatG         Float
+  totalPlanCalories  Float              @default(0)
+  totalPlanProteinG  Float              @default(0)
+  totalPlanCarbsG    Float              @default(0)
+  totalPlanFatG      Float              @default(0)
+  version            Int                @default(1)
+  notes              String?
+  isActive           Boolean            @default(true)
+  activatedAt        DateTime?          @default(now())
+  deactivatedAt      DateTime?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relationships
+  member     User                 @relation("MemberNutritionPlans", fields: [memberId], references: [id], onDelete: Cascade)
+  coach      User?                @relation("CoachNutritionPlans", fields: [coachId], references: [id], onDelete: SetNull)
+  assessment NutritionAssessment? @relation(fields: [assessmentId], references: [id], onDelete: SetNull)
+  meals      NutritionMeal[]
+
+  @@index([memberId, status, isActive])
+  @@index([coachId])
+  @@index([createdAt(sort: Desc)])
+  @@map("nutrition_plans")
+}
+
+model NutritionMeal {
+  id             String              @id @default(uuid())
+  planId         String
+  name           String
+  mealType       MealType
+  suggestedTime  String?
+  order          Int
+  targetCalories Float?
+  targetProteinG Float?
+  targetCarbsG   Float?
+  targetFatG     Float?
+  totalCalories  Float               @default(0)
+  totalProteinG  Float               @default(0)
+  totalCarbsG    Float               @default(0)
+  totalFatG      Float               @default(0)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  // Relationships
+  plan  NutritionPlan       @relation(fields: [planId], references: [id], onDelete: Cascade)
+  items NutritionMealItem[]
+
+  @@index([planId, order])
+  @@map("nutrition_meals")
+}
+
+model NutritionMealItem {
+  id               String        @id @default(uuid())
+  mealId           String
+  foodId           String
+  quantity         Float
+  unit             String
+  calories         Float
+  protein          Float
+  carbs            Float
+  fat              Float
+  foodNameSnapshot String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  // Relationships
+  meal NutritionMeal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  food Food          @relation(fields: [foodId], references: [id], onDelete: Restrict)
+
+  @@index([mealId])
+  @@index([foodId])
+  @@map("nutrition_meal_items")
+}
+
+model FoodLog {
+  id               String   @id @default(uuid())
+  memberId         String
+  date             DateTime // Day boundary in UTC
+  mealType         MealType
+  foodId           String
+  foodNameSnapshot String
+  quantity         Float
+  unit             String
+  calories         Float
+  protein          Float
+  carbs            Float
+  fat              Float
+  notes            String?
+  loggedAt         DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relationships
+  member User @relation("MemberFoodLogs", fields: [memberId], references: [id], onDelete: Cascade)
+  food   Food @relation(fields: [foodId], references: [id], onDelete: Restrict)
+
+  @@index([memberId, date])
+  @@index([memberId, loggedAt(sort: Desc)])
+  @@index([foodId])
+  @@map("food_logs")
+}
+
+model VerificationCode {
+  id          String              @id @default(uuid())
+  userId      String
+  email       String
+  codeHash    String
+  purpose     VerificationPurpose
+  expiresAt   DateTime
+  attempts    Int                 @default(0)
+  maxAttempts Int                 @default(5)
+  usedAt      DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose])
+  @@index([email, purpose])
+  @@index([expiresAt])
+  @@map("verification_codes")
+}
+
+model PasswordResetToken {
+  id        String              @id @default(uuid())
+  userId    String
+  tokenHash String              @unique
+  purpose   VerificationPurpose @default(PASSWORD_RESET)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}

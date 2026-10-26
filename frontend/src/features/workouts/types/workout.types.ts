@@ -58,6 +58,17 @@ export interface Workout {
 
   isActive: boolean;
 
+  imageUrl?: string | null;
+
+  exerciseCount?: number;
+
+  createdById?: string;
+
+  createdBy?: string | {
+    id: string;
+    name: string;
+  };
+
   createdAt: string;
 
   updatedAt: string;

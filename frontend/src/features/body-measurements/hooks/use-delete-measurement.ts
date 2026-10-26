@@ -15,6 +15,12 @@ export const useDeleteMeasurement = (memberId: string) => {
       queryClient.invalidateQueries({
         queryKey: ["body-measurements", "latest", memberId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["gamification"],
+      });
       toast.success("Measurement deleted successfully.");
     },
     onError: () => {

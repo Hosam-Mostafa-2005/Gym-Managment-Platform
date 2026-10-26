@@ -8,6 +8,7 @@ export interface DashboardWorkoutExercise {
 
 export interface DashboardWorkout {
   _id: string;
+  id?: string;
   title: string;
   description: string;
   category: string;
@@ -18,17 +19,106 @@ export interface DashboardWorkout {
   exercises: DashboardWorkoutExercise[];
   createdBy: string;
   isActive: boolean;
-  __v: number;
+  __v?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SessionStatusPoint {
+  status: string;
+  count: number;
+  percentage: number;
+  color: string;
+}
+
+export interface UpcomingScheduledWorkout {
+  id: string;
+  workoutId: string;
+  scheduledAt: string;
+  notes?: string | null;
+  workout?: {
+    id: string;
+    title: string;
+    difficulty?: string;
+    category?: string;
+    estimatedDuration?: number;
+  };
+}
+
+export interface LatestMeasurement {
+  weight: number;
+  unit: string;
+  measuredAt: string;
+  diffFromPrevious: number | null;
+}
+
+export interface Consistency30Days {
+  activeDays: number;
+  totalDays: number;
+  percentage: number;
+}
+
+export interface CoachConnection {
+  hasActiveCoach: boolean;
+  status: string | null;
+  historySharingConsent: string | null;
+  coach: {
+    id: string;
+    name: string;
+    email: string;
+    avatarUrl?: string | null;
+  } | null;
+  startedAt: string | null;
+}
+
+export interface NeedsAttention {
+  pendingInvitation: {
+    id: string;
+    trainer: {
+      id: string;
+      name: string;
+      email: string;
+    };
+    invitedAt: string;
+    notes?: string | null;
+  } | null;
+  unreadNotificationsCount: number;
+}
+
+export interface DailyNutritionSnapshot {
+  hasActivePlan: boolean;
+  onboardingCompleted: boolean;
+  planName?: string | null;
+  planSource?: string | null;
+  coachName?: string | null;
+  targetCalories: number;
+  loggedCalories: number;
+  remainingCalories: number;
+  calorieProgressPct: number;
+  targetProteinG: number;
+  loggedProteinG: number;
+  proteinProgressPct: number;
+  targetCarbsG: number;
+  loggedCarbsG: number;
+  carbsProgressPct: number;
+  targetFatG: number;
+  loggedFatG: number;
+  fatProgressPct: number;
+  logsCount: number;
 }
 
 export interface MemberDashboardData {
   overview: MemberDashboardOverview;
   charts: MemberDashboardCharts;
+  upcomingWorkouts?: UpcomingScheduledWorkout[];
   rankings: Record<string, never>;
   trends: MemberDashboardTrends;
   recentActivity: MemberDashboardActivity[];
+  latestMeasurement?: LatestMeasurement | null;
+  consistency30Days?: Consistency30Days;
+  coachConnection?: CoachConnection;
+  needsAttention?: NeedsAttention;
+  nutritionSnapshot?: DailyNutritionSnapshot | null;
 }
 
 export interface MemberDashboardResponse {
@@ -38,6 +128,7 @@ export interface MemberDashboardResponse {
 
 export interface DashboardAssignment {
   _id: string;
+  id?: string;
   member: string;
   trainer: string;
   workout: DashboardWorkout;
@@ -46,7 +137,7 @@ export interface DashboardAssignment {
   status: string;
   notes: string;
   isActive: boolean;
-  __v: number;
+  __v?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -75,6 +166,13 @@ export interface MemberDashboardOverview {
 
   workoutsThisWeek: number;
   workoutsThisMonth: number;
+
+  latestMeasurement?: LatestMeasurement | null;
+  consistency30Days?: Consistency30Days;
+  coachConnection?: CoachConnection;
+  needsAttention?: NeedsAttention;
+  nutritionSnapshot?: DailyNutritionSnapshot | null;
+  upcomingWorkouts?: UpcomingScheduledWorkout[];
 }
 
 export interface WorkoutVolumeDaily {
@@ -124,6 +222,7 @@ export interface MemberDashboardCharts {
 
   workoutFrequencyByWeekday: WorkoutFrequencyByWeekday[];
   workoutFrequencyByHour: WorkoutFrequencyByHour[];
+  sessionStatusDistribution?: SessionStatusPoint[];
 }
 
 export interface StrongestExercise {
@@ -164,16 +263,4 @@ export interface MemberDashboardActivity {
   message: string;
   date: string;
   type: string;
-}
-
-export interface MemberDashboardResponse {
-  status: string;
-
-  data: {
-    overview: MemberDashboardOverview;
-    charts: MemberDashboardCharts;
-    rankings: Record<string, never>;
-    trends: MemberDashboardTrends;
-    recentActivity: MemberDashboardActivity[];
-  };
 }

@@ -3,6 +3,7 @@ export interface Exercise {
   _id?: string;
   name: string;
   description: string;
+  imageUrl?: string | null;
   videoUrl?: string;
 
   equipment: string[];
@@ -14,7 +15,10 @@ export interface Exercise {
   instructions: string[];
   tips: string[];
 
-  alternatives: string[];
+  alternatives: (string | Exercise)[];
+
+  isCustom?: boolean;
+  createdById?: string;
 
   isActive: boolean;
 
@@ -25,7 +29,8 @@ export interface Exercise {
 export interface CreateExerciseDto {
   name: string;
   description: string;
-  videoUrl?: string;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
 
   equipment: string[];
   difficulty: string;
@@ -37,4 +42,6 @@ export interface CreateExerciseDto {
   tips: string[];
 }
 
-export type UpdateExerciseDto = Partial<CreateExerciseDto>;
+export type UpdateExerciseDto = Partial<CreateExerciseDto> & {
+  imageUrl?: string | null;
+};

@@ -12,6 +12,8 @@ import type {
   StartWorkoutSessionPayload,
   FinishWorkoutSessionPayload,
   CreateWorkoutSetPayload,
+  UpdateWorkoutSetPayload,
+  PreviousPerformanceMap,
 } from "../types/workout-session.types";
 
 export const getWorkoutSessions = async (
@@ -30,10 +32,7 @@ export const getWorkoutSessions = async (
 
 export const updateWorkoutSet = async (
   id: string,
-  payload: {
-    weight: number;
-    actualReps: number;
-  },
+  payload: UpdateWorkoutSetPayload,
 ) => {
   const { data } = await api.patch(`/workout-set-logs/${id}`, payload);
 
@@ -57,12 +56,32 @@ export const getCurrentWorkoutSession =
     return mapWorkoutSessionDetails(data.data.session);
   };
 
+export const getPreviousPerformance = async (
+  sessionId: string,
+): Promise<PreviousPerformanceMap> => {
+  const { data } = await api.get(
+    `/workout-sessions/${sessionId}/previous-performance`,
+  );
+
+  return data.data.previousPerformance ?? {};
+};
+
+export const getPreviousPerformanceBatch = async (
+  exerciseIds: string[],
+  excludeSessionId?: string,
+): Promise<PreviousPerformanceMap> => {
+  const { data } = await api.post("/workout-sessions/previous-performance", {
+    exerciseIds,
+    excludeSessionId,
+  });
+
+  return data.data.previousPerformance ?? {};
+};
+
 export const startWorkoutSession = async (
   payload: StartWorkoutSessionPayload,
 ) => {
-
   const { data } = await api.post("/workout-sessions/start", payload);
-
 
   return data.data.session;
 };
@@ -73,6 +92,14 @@ export const finishWorkoutSession = async (
 ): Promise<WorkoutSession> => {
   const { data } = await api.patch(`/workout-sessions/${id}/finish`, payload);
 
+  return data.data.session;
+};
+
+export const cancelWorkoutSession = async (
+  id: string,
+  reason?: string,
+): Promise<WorkoutSession> => {
+  const { data } = await api.patch(`/workout-sessions/${id}/cancel`, { reason });
 
   return data.data.session;
 };

@@ -9,7 +9,10 @@ import { MemberProfileError } from "../components/states/MemberProfileError";
 import { MemberProfileEmpty } from "../components/states/MemberProfileEmpty";
 
 import { MemberProfileHeader } from "../components/shared/MemberProfileHeader";
+import { CoachingRelationshipHeaderBanner } from "../components/shared/CoachingRelationshipHeaderBanner";
+import { CoachProgressSeparationView } from "../components/shared/CoachProgressSeparationView";
 import { MemberOverview } from "../components/overview/MemberOverview";
+import { MemberGamificationSection } from "../components/gamification/MemberGamificationSection";
 import { MeasurementHistory } from "../components/measurements/MeasurementHistory";
 import { RecentSessions } from "../components/sessions/RecentSessions";
 import { AssignmentHistory } from "../components/assignments/AssignmentHistory";
@@ -43,7 +46,30 @@ const MemberProfilePage: React.FC = () => {
       <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-8">
         <MemberProfileHeader member={data.member} />
 
+        {/* Coaching Relationship and History Privacy Banner */}
+        {data.coachingRelationship && (
+          <CoachingRelationshipHeaderBanner
+            relationship={data.coachingRelationship}
+          />
+        )}
+
+        {/* Distinct Separation: Progress With Current Coach vs Pre-Coach History */}
+        {(data.currentCoachProgress || data.historicalProgress) && (
+          <CoachProgressSeparationView
+            currentCoachProgress={data.currentCoachProgress}
+            historicalProgress={data.historicalProgress}
+            coachStartedAt={data.coachingRelationship?.startedAt}
+          />
+        )}
+
         <MemberOverview overview={data.overview} />
+
+        {memberId && (
+          <MemberGamificationSection
+            memberId={memberId}
+            memberName={data.member.name || "Member"}
+          />
+        )}
 
         <MeasurementHistory measurements={data.measurementHistory} />
 

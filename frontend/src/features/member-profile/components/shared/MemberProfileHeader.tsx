@@ -1,6 +1,7 @@
 import React from "react";
-import { BarChart3, Ruler } from "lucide-react";
+import { BarChart3, Ruler, Layers } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatMemberDisplay } from "@/features/users/utils/user-display";
 import type { MemberProfileUser } from "../../types/member-profile.types";
 
 interface MemberProfileHeaderProps {
@@ -11,15 +12,7 @@ export const MemberProfileHeader: React.FC<MemberProfileHeaderProps> = ({
   member,
 }) => {
   const navigate = useNavigate();
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .substring(0, 2)
-      .toUpperCase();
-  };
+  const display = formatMemberDisplay(member);
 
   const formattedDate = new Intl.DateTimeFormat("en-US", {
     month: "short",
@@ -31,22 +24,28 @@ export const MemberProfileHeader: React.FC<MemberProfileHeaderProps> = ({
       {/* Member Info */}
       <div className="flex min-w-0 items-center gap-4">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#5BE584] bg-[#1E2329] text-lg font-bold text-[#5BE584] md:h-16 md:w-16 md:text-xl">
-          {getInitials(member.name)}
+          {display.avatarInitials}
         </div>
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="truncate text-xl font-bold text-gray-100 md:text-2xl">
-              {member.name}
+              {display.displayName}
             </h1>
 
             <span className="rounded-md bg-[#1E2329] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
               {member.role}
             </span>
+
+            {display.isTestAccount && (
+              <span className="rounded-md bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[11px] font-mono text-amber-400">
+                Demo Account
+              </span>
+            )}
           </div>
 
           <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-400">
-            <span className="truncate">{member.email}</span>
+            <span className="truncate">{display.displayEmail}</span>
 
             <span className="hidden md:inline">•</span>
 
@@ -57,6 +56,16 @@ export const MemberProfileHeader: React.FC<MemberProfileHeaderProps> = ({
 
       {/* Actions */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        {/* Manage Member Plan */}
+        <button
+          type="button"
+          onClick={() => navigate(`/members/${member.id}/plan`)}
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[#5BE584] bg-[#5BE584] px-4 text-sm font-bold text-black shadow-lg shadow-[#5BE584]/20 transition-all hover:bg-[#4dd375] hover:scale-[1.02] active:scale-[0.98]"
+        >
+          <Layers className="h-4 w-4 shrink-0" />
+          <span>Manage Plan</span>
+        </button>
+
         <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
           {/* View Insights */}
           <button

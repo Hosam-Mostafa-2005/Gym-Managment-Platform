@@ -1,13 +1,12 @@
-import { Types } from "mongoose";
-
 export interface WorkoutSet {
   weight: number;
   reps: number;
 }
 
 export interface IWorkoutLog {
-  session: Types.ObjectId;
-  exercise: Types.ObjectId;
+  id?: string;
+  session: string;
+  exercise: string;
 
   sets: WorkoutSet[];
 

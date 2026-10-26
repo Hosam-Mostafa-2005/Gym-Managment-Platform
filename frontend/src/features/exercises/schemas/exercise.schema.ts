@@ -7,6 +7,7 @@ const stringItemSchema = z.object({
 export const exerciseSchema = z.object({
   name: z.string().min(3, "Exercise name must be at least 3 characters"),
   description: z.string().min(10, "Description is too short"),
+  imageUrl: z.string().url("Invalid image URL").optional().or(z.literal("")),
   videoUrl: z.string().url("Invalid video URL").optional().or(z.literal("")),
   difficulty: z.string(),
   equipment: z.array(z.string()).min(1, "Select at least one equipment"),

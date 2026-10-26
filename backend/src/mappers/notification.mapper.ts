@@ -1,17 +1,17 @@
-import type { INotification } from "../types/notification.types.js";
-
-const mapNotification = (notification: INotification & { _id: unknown }) => ({
-  id: notification._id,
-  user: notification.user,
+const mapNotification = (notification: any) => ({
+  id: notification.id ?? notification._id,
+  user: notification.userId ?? notification.user,
   title: notification.title,
   message: notification.message,
   type: notification.type,
+  category: notification.category,
+  priority: notification.priority || "NORMAL",
   readAt: notification.readAt,
-  isRead: !!notification.readAt,
+  isRead: Boolean(notification.readAt),
   actionUrl: notification.actionUrl,
   metadata: notification.metadata,
-  createdAt: (notification as any).createdAt,
-  updatedAt: (notification as any).updatedAt,
+  createdAt: notification.createdAt,
+  updatedAt: notification.updatedAt,
 });
 
 export default mapNotification;

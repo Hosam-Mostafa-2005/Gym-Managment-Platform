@@ -74,6 +74,7 @@ const EditExerciseDialog = ({
         ) : (
           <ExerciseForm
             initialValues={exerciseDetails}
+            exerciseId={exercise?.id}
             onSubmit={handleSubmit}
             isPending={isPending}
           />

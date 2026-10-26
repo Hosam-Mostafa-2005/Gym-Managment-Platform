@@ -5,9 +5,13 @@ export const mapMemberManagementCard = (data: any): MemberManagementCard => {
   const assignment = data.currentAssignment;
   const trainer = data.trainer;
   const workout = data.workout;
+  const memberId = (data.id ?? data._id)?.toString();
+  const workoutId = workout ? (workout.id ?? workout._id)?.toString() : null;
+  const trainerId = trainer ? (trainer.id ?? trainer._id)?.toString() : null;
+
   return {
     member: {
-      id: data._id.toString(),
+      id: memberId,
       name: data.name,
       email: data.email,
       isActive: data.isActive,
@@ -18,13 +22,13 @@ export const mapMemberManagementCard = (data: any): MemberManagementCard => {
           status: assignment.status,
           currentWorkout: workout
             ? {
-                id: workout._id.toString(),
+                id: workoutId,
                 title: workout.title,
               }
             : null,
           trainer: trainer
             ? {
-                id: trainer._id.toString(),
+                id: trainerId,
                 name: trainer.name,
               }
             : null,
@@ -37,5 +41,15 @@ export const mapMemberManagementCard = (data: any): MemberManagementCard => {
     measurements: {
       latestWeight: data.latestWeight || null,
     },
+    relationship: data.relationship
+      ? {
+          id: data.relationship.id,
+          status: data.relationship.status,
+          historySharingConsent: data.relationship.historySharingConsent,
+          startedAt: data.relationship.startedAt,
+        }
+      : null,
   };
 };
+
+export default mapMemberManagementCard;

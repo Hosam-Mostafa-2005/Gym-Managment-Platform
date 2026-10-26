@@ -1,16 +1,9 @@
 // src/features/dashboard/member/MemberDashboard.tsx
 import React from "react";
+import { Outlet } from "react-router-dom";
 import { useMemberDashboard } from "../hooks/use-dashboard";
 import { DashboardHeader } from "./components/header/DashboardHeader";
-import { OverviewGrid } from "./components/overview/OverviewGrid";
-import { CurrentAssignment } from "./components/assignment/CurrentAssignment";
-import { ProgressOverview } from "./components/progress/ProgressOverview";
-import { WorkoutActivity } from "./components/activity/WorkoutActivity";
-import { ProgressChart } from "./components/analytics/ProgressChart";
-import { SessionDuration } from "./components/analytics/SessionDuration";
-import { WorkoutFrequency } from "./components/analytics/WorkoutFrequency";
-import { PerformanceTelemetry } from "./components/analytics/PerformanceTelemetry";
-import { RecentActivity } from "./components/recent-activity/RecentActivity";
+import { DashboardNav } from "./components/nav/DashboardNav";
 import { DashboardSkeleton } from "./components/states/DashboardSkeleton";
 import { DashboardError } from "./components/states/DashboardError";
 import { DashboardEmpty } from "./components/states/DashboardEmpty";
@@ -25,43 +18,18 @@ export const MemberDashboard: React.FC = () => {
     return <DashboardEmpty />;
   }
 
-  const { overview, charts, trends, recentActivity } = data;
-
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-6 p-4 md:p-6 lg:p-8">
+      {/* 1. Header with greeting and date */}
       <DashboardHeader />
 
-      <OverviewGrid overview={overview} />
+      {/* 2. Secondary Navigation Bar with direct URLs */}
+      <DashboardNav />
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="flex flex-col gap-6 lg:col-span-2">
-          <CurrentAssignment
-            assignment={overview.activeAssignment}
-            workout={overview.currentWorkout}
-          />
-          <WorkoutActivity
-            last30Days={charts?.workoutVolumeLast30Days}
-            last12Months={charts?.workoutVolumeLast12Months}
-          />
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <SessionDuration trend={charts?.sessionDurationTrend} />
-            <ProgressChart
-              exercises={charts?.exercisesCompletedPerWeek}
-              sets={charts?.setsCompletedPerWeek}
-            />
-          </div>
-          <WorkoutFrequency
-            byWeekday={charts?.workoutFrequencyByWeekday}
-            byHour={charts?.workoutFrequencyByHour}
-          />
-        </div>
-
-        <div className="flex flex-col gap-6">
-          <ProgressOverview overview={overview} />
-          <PerformanceTelemetry trends={trends} />
-          <RecentActivity activities={recentActivity} />
-        </div>
-      </div>
+      {/* 3. Subview Content via Router Outlet */}
+      <Outlet context={data} />
     </main>
   );
 };
+
+export default MemberDashboard;

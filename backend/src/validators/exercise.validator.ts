@@ -7,7 +7,19 @@ export const createExerciseSchema = z.object({
 
     description: z.string().trim().optional(),
 
-    videoUrl: z.string().url().optional(),
+    imageUrl: z
+      .string()
+      .url("Invalid image URL")
+      .nullable()
+      .optional()
+      .or(z.literal("")),
+
+    videoUrl: z
+      .string()
+      .url("Invalid video URL")
+      .nullable()
+      .optional()
+      .or(z.literal("")),
 
     equipment: z
       .array(z.enum(Object.values(Equipment) as [string, ...string[]]))

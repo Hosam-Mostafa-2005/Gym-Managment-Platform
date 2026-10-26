@@ -1,3 +1,4 @@
+// src/utils/sendToken.ts
 import type { Response } from "express";
 
 interface SendTokenOptions {
@@ -5,9 +6,18 @@ interface SendTokenOptions {
   statusCode: number;
   user: unknown;
   res: Response;
+  message?: string;
+  delivery?: unknown;
 }
 
-const sendToken = ({ token, statusCode, user, res }: SendTokenOptions) => {
+const sendToken = ({
+  token,
+  statusCode,
+  user,
+  res,
+  message,
+  delivery,
+}: SendTokenOptions) => {
   res.cookie("jwt", token, {
     httpOnly: true,
     secure: false,
@@ -18,6 +28,8 @@ const sendToken = ({ token, statusCode, user, res }: SendTokenOptions) => {
   res.status(statusCode).json({
     status: "success",
     token,
+    ...(message ? { message } : {}),
+    ...(delivery ? { delivery } : {}),
     data: {
       user,
     },

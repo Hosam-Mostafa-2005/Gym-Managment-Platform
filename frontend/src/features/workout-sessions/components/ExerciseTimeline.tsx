@@ -1,5 +1,6 @@
 import { CheckCircle2, Circle } from "lucide-react";
 import type { WorkoutExerciseLog } from "../types/workout-session.types";
+import ExerciseImage from "@/features/exercises/components/ExerciseImage";
 
 interface ExerciseTimelineProps {
   exercises: WorkoutExerciseLog[];
@@ -24,30 +25,38 @@ export default function ExerciseTimeline({ exercises }: ExerciseTimelineProps) {
             ></div>
 
             <div className="bg-[#11151B] border border-white/5 rounded-2xl p-5 shadow-sm transition-colors group-hover:border-white/10 space-y-4">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <h3 className="font-bold text-white text-lg tracking-tight">
-                    {exercise.exerciseName}
-                  </h3>
-                  <p className="mt-1 text-sm text-[#9CA3AF] font-medium">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <h3 className="font-bold text-white text-lg tracking-tight">
+                      {exercise.exerciseName}
+                    </h3>
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium border w-fit ${
+                        exercise.completed
+                          ? "bg-[#5BE584]/10 border-[#5BE584]/20 text-[#5BE584]"
+                          : "bg-white/5 border-white/5 text-[#9CA3AF]"
+                      }`}
+                    >
+                      {exercise.completed ? (
+                        <CheckCircle2 size={13} />
+                      ) : (
+                        <Circle size={13} />
+                      )}
+                      {exercise.completed ? "Completed" : "Pending"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-[#9CA3AF] font-medium">
                     {exercise.targetSets} Sets × {exercise.targetReps}
                   </p>
                 </div>
 
-                <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border w-fit ${
-                    exercise.completed
-                      ? "bg-[#5BE584]/10 border-[#5BE584]/20 text-[#5BE584]"
-                      : "bg-white/5 border-white/5 text-[#9CA3AF]"
-                  }`}
-                >
-                  {exercise.completed ? (
-                    <CheckCircle2 size={14} />
-                  ) : (
-                    <Circle size={14} />
-                  )}
-                  {exercise.completed ? "Completed" : "Pending"}
-                </span>
+                <ExerciseImage
+                  src={exercise.exercise?.imageUrl}
+                  alt={exercise.exerciseName}
+                  size="lg"
+                  fit="contain"
+                />
               </div>
 
               {exercise.sets && exercise.sets.length > 0 && (
@@ -61,9 +70,7 @@ export default function ExerciseTimeline({ exercises }: ExerciseTimelineProps) {
                           : "bg-white/[0.01] border-white/5 text-[#9CA3AF]"
                       }`}
                     >
-                      <span className="font-semibold">
-                        Set {set.setNumber}
-                      </span>
+                      <span className="font-semibold">Set {set.setNumber}</span>
                       <span className="font-mono">
                         {set.weight != null ? `${set.weight} kg` : "— kg"} ×{" "}
                         {set.actualReps != null

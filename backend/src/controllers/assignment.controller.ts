@@ -2,10 +2,19 @@ import type { RequestHandler } from "express";
 
 import catchAsync from "../utils/catchAsync.js";
 import assignmentService from "../services/assignment.service.js";
+import { Roles } from "../constants/roles.js";
 
 export const create: RequestHandler = catchAsync(async (req, res) => {
+  const trainerId =
+    req.user!.role === Roles.ADMIN && req.body.trainer
+      ? req.body.trainer
+      : req.user!.id;
+
   const assignment = await assignmentService.create(
-    req.body,
+    {
+      ...req.body,
+      trainer: trainerId,
+    },
     req.user!.id,
     req.user!.role,
   );

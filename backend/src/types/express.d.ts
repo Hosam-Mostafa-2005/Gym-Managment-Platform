@@ -1,10 +1,11 @@
-import type { HydratedDocument } from "mongoose";
-import type { IUser, IUserMethods } from "../models/User.model.js";
+import type { User } from "@prisma/client";
+import type { ValidatedImageInfo } from "../utils/imageValidator.js";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: HydratedDocument<IUser, IUserMethods>;
+      user?: User;
+      validatedImageInfo?: ValidatedImageInfo;
     }
   }
 }

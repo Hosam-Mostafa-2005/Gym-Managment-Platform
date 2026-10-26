@@ -3,15 +3,14 @@ import { Router } from "express";
 import * as exerciseController from "../controllers/exercise.controller.js";
 
 import validate from "../middleware/validate.middleware.js";
-import { protect } from "../middleware/auth.middleware.js";
+import { protect, optionalProtect } from "../middleware/auth.middleware.js";
 import { authorize } from "../middleware/authorize.middleware.js";
+import { uploadExerciseImageMiddleware } from "../middleware/upload.middleware.js";
 import { Permissions } from "../constants/permissions.js";
 import {
   createExerciseSchema,
   updateExerciseSchema,
 } from "../validators/exercise.validator.js";
-
-import { Roles } from "../constants/roles.js";
 
 const router = Router();
 
@@ -22,12 +21,12 @@ const router = Router();
  *     tags:
  *       - Exercises
  *     summary: Get all exercises
- *     description: Retrieve all active exercises.
+ *     description: Retrieve all active exercises (platform + caller's custom).
  *     responses:
  *       200:
  *         description: Exercises retrieved successfully.
  */
-router.get("/", exerciseController.getAll);
+router.get("/", optionalProtect, exerciseController.getAll);
 
 /**
  * @swagger
@@ -50,10 +49,29 @@ router.get("/", exerciseController.getAll);
  *       404:
  *         description: Exercise not found.
  */
-router.get("/:id", exerciseController.getById);
+router.get("/:id", optionalProtect, exerciseController.getById);
 
 // Protected Routes
 router.use(protect);
+
+/**
+ * Upload an exercise image file (multipart/form-data field "image")
+ */
+router.post(
+  "/upload-image",
+  authorize(Permissions.Exercise.CREATE),
+  uploadExerciseImageMiddleware,
+  exerciseController.uploadImage,
+);
+
+/**
+ * Clean up an unreferenced staged exercise image
+ */
+router.delete(
+  "/upload-image",
+  authorize(Permissions.Exercise.CREATE),
+  exerciseController.deleteStagedImage,
+);
 
 /**
  * @swagger
@@ -62,7 +80,7 @@ router.use(protect);
  *     tags:
  *       - Exercises
  *     summary: Create exercise
- *     description: Create a new exercise.
+ *     description: Create a new exercise (platform or custom).
  *     security:
  *       - bearerAuth: []
  *     requestBody:

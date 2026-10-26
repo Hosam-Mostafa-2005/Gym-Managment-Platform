@@ -7,19 +7,23 @@ import type { CreateExerciseDto } from "../types/exercise.types";
 import { Button } from "@/components/ui/button";
 
 const EditExercisePage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { exerciseId, id } = useParams<{ exerciseId?: string; id?: string }>();
+  const resolvedId = exerciseId || id;
   const navigate = useNavigate();
 
-  const { data: exercise, isLoading, isError } = useExercise(id, !!id);
+  const { data: exercise, isLoading, isError } = useExercise(
+    resolvedId,
+    !!resolvedId,
+  );
   const { mutate: updateExercise, isPending } = useUpdateExercise();
 
   const handleSubmit = (data: CreateExerciseDto) => {
-    if (!id) return;
+    if (!resolvedId) return;
     updateExercise(
-      { id, data },
+      { id: resolvedId, data },
       {
         onSuccess: () => {
-          navigate(`/workout-library/exercises/${id}`);
+          navigate(`/workout-library/exercises/${resolvedId}`);
         },
       },
     );
@@ -58,7 +62,7 @@ const EditExercisePage = () => {
       <div className="border-b border-[#2A3039] pb-6 space-y-1.5">
         <button
           type="button"
-          onClick={() => navigate(`/workout-library/exercises/${id}`)}
+          onClick={() => navigate(`/workout-library/exercises/${resolvedId}`)}
           className="inline-flex items-center gap-2 text-xs font-medium text-[#94A3B8] hover:text-[#F8FAFC] transition-colors mb-1"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
@@ -75,6 +79,7 @@ const EditExercisePage = () => {
 
       <ExerciseForm
         initialValues={exercise}
+        exerciseId={resolvedId}
         onSubmit={handleSubmit}
         isPending={isPending}
       />

@@ -40,7 +40,7 @@ export interface Assignment {
 
 export interface CreateAssignmentPayload {
   member: string;
-  trainer: string;
+  trainer?: string;
   workout: string;
 
   startDate: string;

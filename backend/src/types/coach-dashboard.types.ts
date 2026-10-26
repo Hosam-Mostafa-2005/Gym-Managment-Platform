@@ -1,5 +1,3 @@
-import mongoose from "mongoose";
-
 export interface ChartPoint {
   date: string;
   value: number;
@@ -9,7 +7,8 @@ export interface DashboardActivity {
   type: string;
   action: string;
   member: {
-    _id: mongoose.Types.ObjectId;
+    id?: string;
+    _id?: string;
     name: string;
     email?: string;
   };
@@ -19,7 +18,8 @@ export interface DashboardActivity {
 
 export interface MemberAttention {
   member: {
-    _id: mongoose.Types.ObjectId;
+    id?: string;
+    _id?: string;
     name: string;
     email: string;
   };
@@ -32,12 +32,15 @@ export interface MemberAttention {
 }
 
 export interface UpcomingAssignment {
+  id?: string;
   member: {
-    _id: mongoose.Types.ObjectId;
+    id?: string;
+    _id?: string;
     name: string;
   };
   workout: {
-    _id: mongoose.Types.ObjectId;
+    id?: string;
+    _id?: string;
     title: string;
   };
   endDate: Date;
@@ -50,7 +53,8 @@ export interface DashboardPriority {
   title: string;
   description: string;
   member: {
-    _id: mongoose.Types.ObjectId;
+    id?: string;
+    _id?: string;
     name: string;
     email?: string;
   };
@@ -72,9 +76,49 @@ export interface DashboardOverview {
   workoutsCreated: number;
   completedSessionsToday: number;
   completedSessionsThisWeek: number;
+  completedMemberSessions?: number;
+  overdueAssignments?: number;
   completionRate: number;
   measurementsThisWeek: number;
   healthScore: number;
+  activeCoachingMembers?: number;
+  pendingInvitations?: number;
+  expiringAssignments?: number;
+}
+
+export interface ClientHealthItem {
+  id: string;
+  name: string;
+  email: string;
+  relationshipStatus: string;
+  historySharingConsent: string;
+  lastWorkoutDate: Date | null;
+  daysSinceLastWorkout: number | null;
+  activityStatus: "ACTIVE" | "INACTIVE_7_DAYS" | "NO_WORKOUTS";
+  completedSessionsThisMonth: number;
+  latestMeasurement: {
+    weight: number | null;
+    measuredAt: Date | null;
+    isRestricted: boolean;
+    restrictionReason?: string;
+  };
+}
+
+export interface ActionCenterData {
+  pendingInvitations: Array<{
+    id: string;
+    member: { id: string; name: string; email: string };
+    invitedAt: Date;
+    notes?: string | null;
+  }>;
+  expiringAssignments: UpcomingAssignment[];
+  inactiveClients: Array<{
+    id: string;
+    name: string;
+    email: string;
+    daysSinceLastWorkout: number | null;
+    lastWorkoutDate: Date | null;
+  }>;
 }
 
 export interface DashboardCharts {
@@ -94,22 +138,55 @@ export interface DashboardCharts {
   completionRateTrend: {
     last30Days: ChartPoint[];
   };
+
+  assignmentStatusDistribution?: Array<{
+    status: string;
+    count: number;
+    percentage: number;
+    color: string;
+  }>;
+
+  memberActivityRanking?: Array<{
+    memberId: string;
+    name: string;
+    completedSessions: number;
+  }>;
+}
+
+export interface UpcomingScheduledWorkout {
+  id: string;
+  member: {
+    id: string;
+    name: string;
+    email?: string;
+  };
+  workout: {
+    id: string;
+    title: string;
+    category?: string;
+    difficulty?: string;
+  };
+  scheduledAt: Date;
+  notes?: string | null;
 }
 
 export interface RecentMeasurement {
   member: {
-    _id: mongoose.Types.ObjectId;
+    id?: string;
+    _id?: string;
     name: string;
   };
 
   trainer: {
-    _id: mongoose.Types.ObjectId;
+    id?: string;
+    _id?: string;
     name: string;
   } | null;
 
   weight: number | null;
   bodyFat: number | null;
   measuredAt: Date;
+  isRestricted?: boolean;
 }
 
 export interface CoachDashboardMapperInput {
@@ -119,6 +196,9 @@ export interface CoachDashboardMapperInput {
   recentActivity: DashboardActivity[];
   membersNeedingAttention: MemberAttention[];
   upcomingAssignments: UpcomingAssignment[];
+  upcomingScheduledWorkouts?: UpcomingScheduledWorkout[];
   recentMeasurements: any[];
   quickActions: QuickActions;
+  clientHealthOverview?: ClientHealthItem[];
+  actionCenter?: ActionCenterData;
 }

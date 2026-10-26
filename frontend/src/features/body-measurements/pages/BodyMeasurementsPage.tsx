@@ -18,9 +18,11 @@ import { MeasurementsError } from "../components/states/MeasurementsError";
 import type { BodyMeasurement } from "../types/body-measurements.types";
 
 const BodyMeasurementsPage: React.FC = () => {
-  const { memberId } = useParams<{ memberId: string }>();
+  const { memberId: routeMemberId } = useParams<{ memberId?: string }>();
   const { data: user } = useCurrentUser();
-  const trainerId = user?.id || user?._id || "";
+  
+  const effectiveMemberId = routeMemberId || user?.id || (user as any)?._id || "";
+  const trainerId = user?.role?.toUpperCase() === "TRAINER" ? (user?.id || (user as any)?._id || "") : "";
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingMeasurement, setEditingMeasurement] =
@@ -34,10 +36,10 @@ const BodyMeasurementsPage: React.FC = () => {
     isError: isErrorAll,
     error: errorAll,
     refetch: refetchAll,
-  } = useMemberMeasurements(memberId);
+  } = useMemberMeasurements(effectiveMemberId);
 
   const { data: latestMeasurement, isLoading: isLoadingLatest } =
-    useLatestMeasurement(memberId);
+    useLatestMeasurement(effectiveMemberId);
 
   if (isLoadingAll || isLoadingLatest) {
     return <MeasurementsLoading />;
@@ -56,7 +58,7 @@ const BodyMeasurementsPage: React.FC = () => {
     <div className="min-h-full w-full bg-[#090B0F] p-4 md:p-6 lg:p-8 pb-20">
       <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6">
         <MeasurementsHeader
-          memberId={memberId!}
+          memberId={effectiveMemberId}
           onAddMeasurement={() => setIsCreateOpen(true)}
         />
 
@@ -72,20 +74,20 @@ const BodyMeasurementsPage: React.FC = () => {
         <CreateMeasurementDialog
           isOpen={isCreateOpen}
           onClose={() => setIsCreateOpen(false)}
-          memberId={memberId!}
+          memberId={effectiveMemberId}
           trainerId={trainerId}
         />
 
         <EditMeasurementDialog
           measurement={editingMeasurement}
           onClose={() => setEditingMeasurement(null)}
-          memberId={memberId!}
+          memberId={effectiveMemberId}
         />
 
         <DeleteMeasurementDialog
           measurement={measurementToDelete}
           onClose={() => setMeasurementToDelete(null)}
-          memberId={memberId!}
+          memberId={effectiveMemberId}
         />
       </div>
     </div>

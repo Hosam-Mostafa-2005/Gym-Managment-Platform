@@ -13,19 +13,29 @@ export const mapCoachProfile = (data: {
 }): CoachProfileResponse => {
   return {
     profile: {
-      id: data.coach._id.toString(),
+      id: data.coach.id || data.coach._id?.toString(),
       name: data.coach.name,
       email: data.coach.email,
 
-      phone: data.coach.phone,
+      phone: data.coach.phone ?? null,
 
-      bio: data.coach.bio,
+      bio: data.coach.bio ?? null,
 
-      specialties: data.coach.specialties,
+      specialties: Array.isArray(data.coach.specialties)
+        ? data.coach.specialties
+        : [],
 
-      certifications: data.coach.certifications,
+      certifications: Array.isArray(data.coach.certifications)
+        ? data.coach.certifications
+        : [],
 
-      yearsOfExperience: data.coach.yearsOfExperience,
+      yearsOfExperience: data.coach.yearsOfExperience ?? 0,
+
+      professionalTitle: data.coach.professionalTitle ?? null,
+      coachingPhilosophy: data.coach.coachingPhilosophy ?? null,
+      languagesSpoken: Array.isArray(data.coach.languagesSpoken)
+        ? data.coach.languagesSpoken
+        : [],
 
       joinedAt: data.coach.createdAt,
     },
@@ -37,7 +47,7 @@ export const mapCoachProfile = (data: {
       type: event.type,
       member: event.member
         ? {
-            id: event.member._id?.toString() || event.member.id,
+            id: event.member.id || event.member._id?.toString(),
             name: event.member.name,
           }
         : null,
@@ -54,7 +64,7 @@ export const mapCoachProfile = (data: {
       dueDate: task.dueDate,
       member: task.member
         ? {
-            id: task.member._id?.toString() || task.member.id,
+            id: task.member.id || task.member._id?.toString(),
             name: task.member.name,
           }
         : null,

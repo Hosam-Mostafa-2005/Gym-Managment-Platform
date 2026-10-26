@@ -9,6 +9,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import type { DashboardChartPoint } from "@/features/coach-dashboard/types/coach-dashboard.types";
 
 interface CompletionRateChartProps {
@@ -21,12 +22,22 @@ export const CompletionRateChart: React.FC<CompletionRateChartProps> = ({
   const hasData = data && data.length > 0;
 
   return (
-    <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-5 h-full">
+    <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-5 h-full transition-colors hover:border-[#2a313a]">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-gray-100">
-            Completion Rate Trend
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-gray-100">
+              Completion Rate Trend
+            </h3>
+            <InfoTooltip
+              title="Daily Adherence & Completion Rate"
+              description="Daily ratio of completed sessions to started sessions across all assigned members."
+              calculation="(Completed Sessions / Total Started Sessions) × 100 on each calendar date"
+              unit="%"
+              dateRange="Past 30 rolling days"
+              limitations="On days with zero started sessions, adherence is reported as 0% or neutral."
+            />
+          </div>
           <p className="text-xs text-gray-500 mt-0.5">
             Last 30 Days Efficiency
           </p>
@@ -86,12 +97,12 @@ export const CompletionRateChart: React.FC<CompletionRateChartProps> = ({
                 stroke="#5BE584"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: "#5BE584" }}
+                activeDot={{ r: 4, fill: "#5BE584", stroke: "#0d1014" }}
               />
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-xs text-gray-500">
+          <div className="flex h-full items-center justify-center text-xs text-gray-500">
             No completion rate data available.
           </div>
         )}

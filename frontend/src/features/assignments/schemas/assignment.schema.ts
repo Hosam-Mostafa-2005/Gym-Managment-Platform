@@ -3,7 +3,7 @@ import { z } from "zod";
 export const assignmentSchema = z
   .object({
     member: z.string().min(1, "Please select a member"),
-    trainer: z.string().min(1, "Please assign a trainer"),
+    trainer: z.string().optional(),
     workout: z.string().min(1, "Please select a workout routine"),
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().min(1, "End date is required"),

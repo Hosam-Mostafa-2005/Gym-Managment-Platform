@@ -3,7 +3,8 @@ import type { Difficulty, Equipment } from "../constants/exercise.js";
 export interface CreateExerciseDto {
   name: string;
   description?: string;
-  videoUrl?: string;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
   equipment: Equipment[];
   difficulty: Difficulty;
   primaryMuscles: string[];

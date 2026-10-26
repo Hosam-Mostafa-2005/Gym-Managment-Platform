@@ -1,236 +1,199 @@
+import { Link } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
-import { useExercise } from "../hooks/useExercises";
+import { Badge } from "@/components/ui/badge";
 import {
+  CheckCircle2,
   Dumbbell,
-  Target,
-  Layers,
-  Flame,
+  ExternalLink,
   Lightbulb,
   PlayCircle,
-  ExternalLink,
-  Loader2,
+  Sparkles,
+  Target,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import type { Exercise } from "../types/exercise.types";
+import ExerciseImage from "./ExerciseImage";
 
 interface ViewExerciseDialogProps {
-  exerciseId?: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  exercise: Exercise | null;
+  onClose: () => void;
 }
 
-interface InfoCardProps {
-  icon: React.ReactNode;
-  title: string;
-  children: React.ReactNode;
-  className?: string;
-}
-
-const InfoCard = ({ icon, title, children, className }: InfoCardProps) => (
-  <div
-    className={cn(
-      "flex flex-col justify-between rounded-xl border border-[#1E2329] bg-[#101418] p-5 transition-all duration-200 hover:border-[#2A313A]",
-      className,
-    )}
-  >
-    <div>
-      <div className="mb-3 flex items-center gap-2 text-[#5BE584]">
-        {icon}
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#6B7280]">
-          {title}
-        </h3>
-      </div>
-      {children}
-    </div>
-  </div>
-);
-
-const ViewExerciseDialog: React.FC<ViewExerciseDialogProps> = ({
-  exerciseId,
-  open,
-  onOpenChange,
-}) => {
-  const { data: exercise, isLoading } = useExercise(exerciseId, open);
-
-  if (isLoading) {
-    return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-h-[90vh] w-[95vw] max-w-5xl overflow-hidden rounded-xl border border-[#1E2329] bg-[#101418] p-8 text-[#F3F4F6] shadow-2xl">
-          <div className="flex flex-col items-center justify-center py-20 text-[#6B7280]">
-            <Loader2 className="h-8 w-8 animate-spin text-[#5BE584]" />
-            <p className="mt-4 text-sm font-medium">
-              Loading exercise details...
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
+export default function ViewExerciseDialog({
+  exercise,
+  onClose,
+}: ViewExerciseDialogProps) {
   if (!exercise) return null;
 
+  const exerciseId = exercise.id || exercise._id || "";
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[95vw] max-w-none sm:max-w-4xl md:max-w-5xl lg:max-w-6xl overflow-y-auto rounded-xl border border-[#1E2329] bg-[#101418] p-6 shadow-2xl sm:p-8 text-[#F3F4F6] selection:bg-[#5BE584]/30">
-        {/* Header */}
-        <DialogHeader className="space-y-3 border-b border-[#1E2329] pb-6 text-left">
-          <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase mb-1">
-            <span>Exercises</span>
-            <span>/</span>
-            <span className="text-[#F3F4F6]">View Details</span>
-          </div>
+    <Dialog open={!!exercise} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[88vh] overflow-y-auto border-[#1E2329] bg-[#101418] text-[#F3F4F6] p-6 sm:p-7">
+        <DialogHeader className="pb-4 border-b border-[#1E2329]">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <DialogTitle className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
+                  {exercise.name}
+                </DialogTitle>
+                <Badge
+                  variant="secondary"
+                  className="capitalize border border-[#5BE584]/30 bg-[#5BE584]/10 text-[#5BE584]"
+                >
+                  {exercise.difficulty}
+                </Badge>
+                {exercise.isCustom && (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-[#5BE584]/35 bg-[#5BE584]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#5BE584]">
+                    <Sparkles className="h-2.5 w-2.5" />
+                    Custom
+                  </span>
+                )}
+              </div>
+              <DialogDescription className="text-sm leading-relaxed text-[#9CA3AF]">
+                {exercise.description || "No description provided."}
+              </DialogDescription>
+            </div>
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <DialogTitle className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
-              {exercise.name}
-            </DialogTitle>
-
-            {exercise.videoUrl && (
-              <a
-                href={exercise.videoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-[#16291D] border border-[#23422E] px-4 py-2 text-sm font-semibold text-[#5BE584] transition-colors hover:bg-[#1f3827]"
+            {exerciseId && (
+              <Link
+                to={`/workout-library/exercises/${exerciseId}`}
+                onClick={onClose}
+                className="inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-[#262D36] bg-[#141920] px-3 py-1.5 text-xs font-semibold text-[#F3F4F6] hover:border-[#5BE584]/50 hover:text-[#5BE584] transition-colors self-start"
               >
-                <PlayCircle className="h-4 w-4" />
-                <span>Watch Tutorial</span>
-                <ExternalLink className="ml-1 h-3 w-3 opacity-70" />
-              </a>
+                <ExternalLink className="h-3.5 w-3.5" />
+                Full Page
+              </Link>
             )}
           </div>
-
-          {exercise.description && (
-            <DialogDescription className="max-w-3xl text-sm leading-relaxed text-[#9CA3AF]">
-              {exercise.description}
-            </DialogDescription>
-          )}
         </DialogHeader>
 
-        {/* Quick-Stats Grid */}
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <InfoCard icon={<Dumbbell className="h-4 w-4" />} title="Equipment">
-            <div className="flex flex-wrap gap-1.5">
-              {exercise.equipment?.length ? (
-                exercise.equipment.map((item) => (
-                  <span
-                    key={item}
-                    className="inline-flex items-center rounded bg-[#1E2329] px-2 py-0.5 text-xs text-[#D1D5DB]"
+        <div className="space-y-6 py-4">
+          {/* Top Grid: Metadata on Left, Framed Exercise Image on Right */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center rounded-2xl border border-[#1E2329] bg-[#0D1014] p-4 sm:p-5">
+            <div className="md:col-span-7 space-y-4">
+              {/* Primary & Secondary Muscles */}
+              <div className="space-y-2">
+                <h4 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">
+                  <Target className="h-3.5 w-3.5 text-[#5BE584]" />
+                  Target Muscle Groups
+                </h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {exercise.primaryMuscles?.map((m) => (
+                    <span
+                      key={`prim-${m}`}
+                      className="inline-flex items-center rounded-lg border border-[#5BE584]/35 bg-[#5BE584]/15 px-2.5 py-1 text-xs font-semibold text-[#5BE584]"
+                    >
+                      {m} (Primary)
+                    </span>
+                  ))}
+                  {exercise.secondaryMuscles?.map((m) => (
+                    <span
+                      key={`sec-${m}`}
+                      className="inline-flex items-center rounded-lg border border-[#1E2329] bg-[#13181E] px-2.5 py-1 text-xs font-medium text-[#9CA3AF]"
+                    >
+                      {m}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Equipment */}
+              <div className="space-y-2">
+                <h4 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">
+                  <Dumbbell className="h-3.5 w-3.5 text-[#9CA3AF]" />
+                  Equipment Required
+                </h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {exercise.equipment?.length ? (
+                    exercise.equipment.map((eq) => (
+                      <span
+                        key={eq}
+                        className="inline-flex items-center rounded-lg border border-[#262D36] bg-[#141920] px-2.5 py-1 text-xs font-medium text-white"
+                      >
+                        {eq}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs text-[#6B7280]">None specified</span>
+                  )}
+                </div>
+              </div>
+
+              {/* External Video Link if available */}
+              {exercise.videoUrl && (
+                <div className="pt-1">
+                  <a
+                    href={exercise.videoUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl border border-[#5BE584]/30 bg-[#5BE584]/10 px-3.5 py-2 text-xs font-semibold text-[#5BE584] hover:bg-[#5BE584]/20 transition-colors"
                   >
-                    {item}
-                  </span>
-                ))
-              ) : (
-                <span className="text-xs text-[#9CA3AF]">Bodyweight</span>
+                    <PlayCircle className="h-4 w-4" />
+                    Watch Video Demonstration
+                  </a>
+                </div>
               )}
             </div>
-          </InfoCard>
 
-          <InfoCard
-            icon={<Flame className="h-4 w-4 text-orange-400" />}
-            title="Difficulty"
-          >
-            <div>
-              <span className="inline-flex items-center rounded bg-[#1E2329] px-2.5 py-0.5 text-xs font-medium text-[#F3F4F6] capitalize">
-                {exercise.difficulty || "N/A"}
-              </span>
+            {/* Framed Image on Right */}
+            <div className="md:col-span-5 flex justify-center">
+              <ExerciseImage
+                src={exercise.imageUrl}
+                alt={exercise.name}
+                size="custom"
+                fit="contain"
+                priority
+                className="h-48 w-full rounded-xl border-[#2A313A]"
+              />
             </div>
-          </InfoCard>
+          </div>
 
-          <InfoCard
-            icon={<Target className="h-4 w-4 text-[#5BE584]" />}
-            title="Primary Muscles"
-          >
-            <div className="flex flex-wrap gap-1.5">
-              {exercise.primaryMuscles?.map((muscle) => (
-                <span
-                  key={muscle}
-                  className="inline-flex items-center rounded bg-[#16291D] border border-[#23422E] px-2 py-0.5 text-xs text-[#5BE584] font-medium"
-                >
-                  {muscle}
-                </span>
-              ))}
-            </div>
-          </InfoCard>
-
-          <InfoCard
-            icon={<Layers className="h-4 w-4 text-blue-400" />}
-            title="Secondary Muscles"
-          >
-            <div className="flex flex-wrap gap-1.5">
-              {exercise.secondaryMuscles?.length ? (
-                exercise.secondaryMuscles.map((muscle) => (
-                  <span
-                    key={muscle}
-                    className="inline-flex items-center rounded bg-[#1E2329] px-2 py-0.5 text-xs text-[#9CA3AF]"
-                  >
-                    {muscle}
-                  </span>
-                ))
-              ) : (
-                <span className="text-xs text-[#6B7280]">None</span>
-              )}
-            </div>
-          </InfoCard>
-        </div>
-
-        {/* Instructions Section */}
-        {exercise.instructions?.length > 0 && (
-          <div className="mt-8 rounded-xl border border-[#1E2329] bg-[#101418] p-6">
-            <h3 className="mb-4 text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-              Instructions
-            </h3>
-            <ol className="space-y-3 pl-1">
-              {exercise.instructions.map((step, index) => (
+          {/* Step-by-Step Instructions */}
+          <div className="space-y-3">
+            <h4 className="flex items-center gap-2 text-sm font-bold text-white">
+              <CheckCircle2 className="h-4 w-4 text-[#5BE584]" />
+              Step-by-Step Execution
+            </h4>
+            <ol className="space-y-2.5">
+              {exercise.instructions?.map((inst, index) => (
                 <li
                   key={index}
-                  className="flex items-start gap-3 text-sm leading-relaxed text-[#9CA3AF]"
+                  className="flex items-start gap-3 rounded-xl border border-[#1E2329] bg-[#0D1014] p-3 text-xs sm:text-sm leading-relaxed text-[#E5E7EB]"
                 >
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-[#1E2329] font-mono text-xs text-[#5BE584]">
-                    {(index + 1).toString().padStart(2, "0")}
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-[#5BE584]/30 bg-[#5BE584]/10 font-mono text-xs font-bold text-[#5BE584]">
+                    {index + 1}
                   </span>
-                  <span className="pt-0.5 text-[#F3F4F6]">{step}</span>
+                  <span className="pt-0.5">{inst}</span>
                 </li>
               ))}
             </ol>
           </div>
-        )}
 
-        {/* Tips Section */}
-        <div className="mt-6 rounded-xl border border-[#1E2329] bg-[#101418] p-6">
-          <div className="mb-4 flex items-center gap-2 text-amber-400">
-            <Lightbulb className="h-4 w-4 shrink-0 text-amber-400" />
-            <h3 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-              Pro Tips
-            </h3>
-          </div>
-
-          {exercise.tips?.length ? (
-            <ul className="space-y-2.5 pl-2">
-              {exercise.tips.map((tip, index) => (
-                <li
-                  key={index}
-                  className="flex items-start gap-2.5 text-sm leading-relaxed text-[#9CA3AF]"
-                >
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
-                  <span className="text-[#F3F4F6]">{tip}</span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-xs italic text-[#6B7280]">
-              No specific tips listed for this exercise — focus on controlled
-              form and steady breathing.
-            </p>
+          {/* Pro Tips */}
+          {exercise.tips && exercise.tips.length > 0 && (
+            <div className="space-y-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/5 p-4">
+              <h4 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400">
+                <Lightbulb className="h-4 w-4" />
+                Coaching Cues & Form Tips
+              </h4>
+              <ul className="space-y-1.5 text-xs sm:text-sm text-[#E5E7EB]">
+                {exercise.tips.map((tip, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="text-amber-400 font-bold">•</span>
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       </DialogContent>
     </Dialog>
   );
-};
-
-export default ViewExerciseDialog;
+}

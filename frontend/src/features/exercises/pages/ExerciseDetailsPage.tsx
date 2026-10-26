@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Dumbbell,
@@ -12,17 +12,27 @@ import {
   Target,
 } from "lucide-react";
 import { useExercise } from "../hooks/useExercises";
+import ExerciseImage from "../components/ExerciseImage";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { ROLES } from "@/constants/roles";
 import { Button } from "@/components/ui/button";
 
 const ExerciseDetailsPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { exerciseId, id } = useParams<{ exerciseId?: string; id?: string }>();
+  const resolvedId = exerciseId || id;
   const navigate = useNavigate();
   const { data: user } = useCurrentUser();
-  const canManage = user?.role === ROLES.ADMIN || user?.role === ROLES.TRAINER;
+  const { data: exercise, isLoading, isError } = useExercise(
+    resolvedId,
+    !!resolvedId,
+  );
 
-  const { data: exercise, isLoading, isError } = useExercise(id, !!id);
+  const canManage =
+    user?.role === ROLES.ADMIN ||
+    (user?.role === ROLES.TRAINER &&
+      (!exercise?.isCustom || exercise?.createdById === user?.id)) ||
+    (user?.role === ROLES.MEMBER &&
+      Boolean(exercise?.isCustom && exercise?.createdById === user?.id));
 
   if (isLoading) {
     return (
@@ -101,87 +111,102 @@ const ExerciseDetailsPage = () => {
         </div>
       </div>
 
-      {/* Quick-Stats Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-[20px] border border-[#2A3039] bg-[#13171D] p-5">
-          <div className="mb-3 flex items-center gap-2 text-[#5BE584]">
-            <Dumbbell className="h-4 w-4" />
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">
-              Equipment
-            </h3>
+      {/* Hero Card: Quick-Stats on Left, Framed Exercise Image on Right */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center rounded-[20px] border border-[#2A3039] bg-[#13171D] p-5 sm:p-6 shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
+        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-[#2A3039] bg-[#090B0F]/80 p-4">
+            <div className="mb-2.5 flex items-center gap-2 text-[#5BE584]">
+              <Dumbbell className="h-4 w-4" />
+              <h3 className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">
+                Equipment
+              </h3>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {exercise.equipment?.length ? (
+                exercise.equipment.map((item) => (
+                  <span
+                    key={item}
+                    className="inline-flex items-center rounded-md bg-[#13171D] border border-[#2A3039] px-2.5 py-1 text-xs text-[#F8FAFC]"
+                  >
+                    {item}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs text-[#94A3B8]">Bodyweight</span>
+              )}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-1.5">
-            {exercise.equipment?.length ? (
-              exercise.equipment.map((item) => (
-                <span
-                  key={item}
-                  className="inline-flex items-center rounded-md bg-[#090B0F] border border-[#2A3039] px-2.5 py-1 text-xs text-[#F8FAFC]"
-                >
-                  {item}
-                </span>
-              ))
-            ) : (
-              <span className="text-xs text-[#94A3B8]">Bodyweight</span>
-            )}
+
+          <div className="rounded-2xl border border-[#2A3039] bg-[#090B0F]/80 p-4">
+            <div className="mb-2.5 flex items-center gap-2 text-[#F59E0B]">
+              <Flame className="h-4 w-4" />
+              <h3 className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">
+                Difficulty
+              </h3>
+            </div>
+            <span className="inline-flex items-center rounded-md bg-[#13171D] border border-[#2A3039] px-2.5 py-1 text-xs font-medium text-[#F8FAFC] capitalize">
+              {exercise.difficulty || "Beginner"}
+            </span>
+          </div>
+
+          <div className="rounded-2xl border border-[#2A3039] bg-[#090B0F]/80 p-4">
+            <div className="mb-2.5 flex items-center gap-2 text-[#5BE584]">
+              <Target className="h-4 w-4" />
+              <h3 className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">
+                Primary Muscles
+              </h3>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {exercise.primaryMuscles?.length ? (
+                exercise.primaryMuscles.map((muscle) => (
+                  <span
+                    key={muscle}
+                    className="inline-flex items-center rounded-md bg-[#5BE584]/10 border border-[#5BE584]/25 px-2.5 py-1 text-xs font-medium text-[#5BE584]"
+                  >
+                    {muscle}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs text-[#94A3B8]">—</span>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-[#2A3039] bg-[#090B0F]/80 p-4">
+            <div className="mb-2.5 flex items-center gap-2 text-[#94A3B8]">
+              <Layers className="h-4 w-4" />
+              <h3 className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">
+                Secondary Muscles
+              </h3>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {exercise.secondaryMuscles?.length ? (
+                exercise.secondaryMuscles.map((muscle) => (
+                  <span
+                    key={muscle}
+                    className="inline-flex items-center rounded-md bg-[#13171D] border border-[#2A3039] px-2.5 py-1 text-xs text-[#94A3B8]"
+                  >
+                    {muscle}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs text-[#94A3B8]">None</span>
+              )}
+            </div>
           </div>
         </div>
 
-        <div className="rounded-[20px] border border-[#2A3039] bg-[#13171D] p-5">
-          <div className="mb-3 flex items-center gap-2 text-[#F59E0B]">
-            <Flame className="h-4 w-4" />
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">
-              Difficulty
-            </h3>
-          </div>
-          <span className="inline-flex items-center rounded-md bg-[#090B0F] border border-[#2A3039] px-2.5 py-1 text-xs font-medium text-[#F8FAFC] capitalize">
-            {exercise.difficulty || "Beginner"}
-          </span>
-        </div>
-
-        <div className="rounded-[20px] border border-[#2A3039] bg-[#13171D] p-5">
-          <div className="mb-3 flex items-center gap-2 text-[#5BE584]">
-            <Target className="h-4 w-4" />
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">
-              Primary Muscles
-            </h3>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {exercise.primaryMuscles?.length ? (
-              exercise.primaryMuscles.map((muscle) => (
-                <span
-                  key={muscle}
-                  className="inline-flex items-center rounded-md bg-[#5BE584]/10 border border-[#5BE584]/25 px-2.5 py-1 text-xs font-medium text-[#5BE584]"
-                >
-                  {muscle}
-                </span>
-              ))
-            ) : (
-              <span className="text-xs text-[#94A3B8]">—</span>
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-[20px] border border-[#2A3039] bg-[#13171D] p-5">
-          <div className="mb-3 flex items-center gap-2 text-[#94A3B8]">
-            <Layers className="h-4 w-4" />
-            <h3 className="text-xs font-bold uppercase tracking-widest text-[#94A3B8]">
-              Secondary Muscles
-            </h3>
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {exercise.secondaryMuscles?.length ? (
-              exercise.secondaryMuscles.map((muscle) => (
-                <span
-                  key={muscle}
-                  className="inline-flex items-center rounded-md bg-[#090B0F] border border-[#2A3039] px-2.5 py-1 text-xs text-[#94A3B8]"
-                >
-                  {muscle}
-                </span>
-              ))
-            ) : (
-              <span className="text-xs text-[#94A3B8]">None</span>
-            )}
-          </div>
+        {/* Framed Exercise Image on Right */}
+        <div className="lg:col-span-5 flex justify-center">
+          <ExerciseImage
+            src={exercise.imageUrl}
+            alt={exercise.name}
+            size="custom"
+            fit="contain"
+            priority
+            fallbackLabel="Movement Visual"
+            className="h-60 sm:h-64 w-full rounded-2xl border-[#2A3039]"
+          />
         </div>
       </div>
 
@@ -234,6 +259,50 @@ const ExerciseDetailsPage = () => {
           </p>
         )}
       </div>
+
+      {/* Alternative Exercises */}
+      {exercise.alternatives && exercise.alternatives.length > 0 && (
+        <div className="rounded-[20px] border border-[#2A3039] bg-[#13171D] p-6 space-y-4">
+          <h3 className="text-xs font-bold tracking-widest text-[#94A3B8] uppercase">
+            Alternative Movements
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {exercise.alternatives.map((alt) => {
+              if (typeof alt === "string") return null;
+              const altId = alt.id || alt._id || "";
+              return (
+                <Link
+                  key={altId}
+                  to={`/workout-library/exercises/${altId}`}
+                  className="group flex items-center justify-between gap-4 rounded-xl border border-[#2A3039] bg-[#090B0F]/70 p-3.5 transition-all hover:border-[#5BE584]/40 hover:bg-[#101418]"
+                >
+                  <div className="min-w-0 space-y-1">
+                    <h4 className="truncate text-sm font-bold text-white group-hover:text-[#5BE584] transition-colors">
+                      {alt.name}
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {alt.primaryMuscles?.slice(0, 2).map((m) => (
+                        <span
+                          key={m}
+                          className="rounded border border-[#5BE584]/25 bg-[#5BE584]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#5BE584]"
+                        >
+                          {m}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <ExerciseImage
+                    src={alt.imageUrl}
+                    alt={alt.name}
+                    size="md"
+                    fit="contain"
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

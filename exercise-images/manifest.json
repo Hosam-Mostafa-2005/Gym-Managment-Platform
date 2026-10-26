@@ -1,0 +1,1499 @@
+{
+  "collectionMetadata": {
+    "totalExercisesFound": 49,
+    "imagesSuccessfullyCreated": 49,
+    "imagesBlockedByModelQuota": 0,
+    "exercisesRequiringReview": 1,
+    "imageFormat": "JPEG (10 photorealistic male instructional photos) & PNG (39 high-resolution male anatomical fitness illustrations)",
+    "visualStandard": "Strict male-only athletic demonstrator / neutral male muscular anatomical illustration. Zero female or female-presenting persons.",
+    "applicationIntegration": "NONE - Purely asset collection and inventory per task instructions.",
+    "generatedAt": "2026-10-24T14:52:42.863Z",
+    "lastDatabaseSyncAt": "2026-10-25T23:40:16.928Z",
+    "activeStorageProvider": "cloudinary",
+    "totalDatabaseExercises": 49,
+    "totalExercisesWithMappedImages": 49,
+    "unmatchedExercisesCount": 0
+  },
+  "exercises": [
+    {
+      "exerciseId": "08fd1c13-154f-495c-b42b-3295e029d149",
+      "exerciseName": "Ab Wheel Rollout",
+      "imageFilename": "Ab Wheel Rollout.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 606202,
+      "primaryMuscles": [
+        "Core",
+        "Abs"
+      ],
+      "secondaryMuscles": [
+        "Lats",
+        "Shoulders"
+      ],
+      "targetMuscles": [
+        "Core",
+        "Abs",
+        "Lats",
+        "Shoulders"
+      ],
+      "equipment": [
+        "Machine"
+      ],
+      "difficulty": "advanced",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926215/stren/exercises/08fd1c13-154f-495c-b42b-3295e029d149.jpg",
+      "storageKey": "stren/exercises/08fd1c13-154f-495c-b42b-3295e029d149",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "8f0bca80-832c-4696-bbb0-f52c0658b584",
+      "exerciseName": "Arnold Press",
+      "imageFilename": "Arnold Press.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 702740,
+      "primaryMuscles": [
+        "Shoulders"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Upper Chest"
+      ],
+      "targetMuscles": [
+        "Shoulders",
+        "Triceps",
+        "Upper Chest"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "advanced",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926220/stren/exercises/8f0bca80-832c-4696-bbb0-f52c0658b584.jpg",
+      "storageKey": "stren/exercises/8f0bca80-832c-4696-bbb0-f52c0658b584",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "88743d7a-82a4-408f-aab4-33ebe03fb384",
+      "exerciseName": "Barbell Back Squat",
+      "imageFilename": "Barbell Back Squat.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 675057,
+      "primaryMuscles": [
+        "Quadriceps",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Hamstrings",
+        "Core",
+        "Erector Spinae"
+      ],
+      "targetMuscles": [
+        "Quadriceps",
+        "Glutes",
+        "Hamstrings",
+        "Core",
+        "Erector Spinae"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926223/stren/exercises/88743d7a-82a4-408f-aab4-33ebe03fb384.jpg",
+      "storageKey": "stren/exercises/88743d7a-82a4-408f-aab4-33ebe03fb384",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "ba4dc885-b3ef-433e-9950-ca27750ad1bd",
+      "exerciseName": "Barbell Bench Press",
+      "imageFilename": "Barbell Bench Press.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 666996,
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Anterior Deltoids"
+      ],
+      "targetMuscles": [
+        "Chest",
+        "Triceps",
+        "Anterior Deltoids"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926226/stren/exercises/ba4dc885-b3ef-433e-9950-ca27750ad1bd.jpg",
+      "storageKey": "stren/exercises/ba4dc885-b3ef-433e-9950-ca27750ad1bd",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "3125e74b-790e-4fcb-86c6-52e11418e46c",
+      "exerciseName": "Barbell Bent-Over Row",
+      "imageFilename": "Barbell Bent-Over Row.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 726442,
+      "primaryMuscles": [
+        "Back"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Rear Deltoids",
+        "Erector Spinae"
+      ],
+      "targetMuscles": [
+        "Back",
+        "Biceps",
+        "Rear Deltoids",
+        "Erector Spinae"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "advanced",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926229/stren/exercises/3125e74b-790e-4fcb-86c6-52e11418e46c.jpg",
+      "storageKey": "stren/exercises/3125e74b-790e-4fcb-86c6-52e11418e46c",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "9b0e06d1-4a88-4a6b-91ed-26a4131bb820",
+      "exerciseName": "Barbell Curl",
+      "imageFilename": "Barbell Curl.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 738881,
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "targetMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926235/stren/exercises/9b0e06d1-4a88-4a6b-91ed-26a4131bb820.jpg",
+      "storageKey": "stren/exercises/9b0e06d1-4a88-4a6b-91ed-26a4131bb820",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "2edf52ac-92c4-4a4f-97ed-7c404169fb2e",
+      "exerciseName": "Bench Dips",
+      "imageFilename": "Bench Dips.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 683019,
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [
+        "Chest",
+        "Anterior Deltoids"
+      ],
+      "targetMuscles": [
+        "Triceps",
+        "Chest",
+        "Anterior Deltoids"
+      ],
+      "equipment": [
+        "Bodyweight"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926237/stren/exercises/2edf52ac-92c4-4a4f-97ed-7c404169fb2e.jpg",
+      "storageKey": "stren/exercises/2edf52ac-92c4-4a4f-97ed-7c404169fb2e",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "a2d06a73-d9f6-44ca-b393-90c9c1df3c24",
+      "exerciseName": "Bulgarian Split Squat",
+      "imageFilename": "Bulgarian Split Squat.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 683437,
+      "primaryMuscles": [
+        "Quadriceps",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Hamstrings",
+        "Core"
+      ],
+      "targetMuscles": [
+        "Quadriceps",
+        "Glutes",
+        "Hamstrings",
+        "Core"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "advanced",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926242/stren/exercises/a2d06a73-d9f6-44ca-b393-90c9c1df3c24.jpg",
+      "storageKey": "stren/exercises/a2d06a73-d9f6-44ca-b393-90c9c1df3c24",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "75f7b3b6-19fe-4426-b6ca-e0812fb8986b",
+      "exerciseName": "Cable Crossover",
+      "imageFilename": "Cable Crossover.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 757373,
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Anterior Deltoids"
+      ],
+      "targetMuscles": [
+        "Chest",
+        "Anterior Deltoids"
+      ],
+      "equipment": [
+        "Cable"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926247/stren/exercises/75f7b3b6-19fe-4426-b6ca-e0812fb8986b.jpg",
+      "storageKey": "stren/exercises/75f7b3b6-19fe-4426-b6ca-e0812fb8986b",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "a8e2f160-80b9-4845-8a6e-2b353fec28cc",
+      "exerciseName": "Cable Curl",
+      "imageFilename": "Cable Curl.jpg",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 753938,
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "targetMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "equipment": [
+        "Cable"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Gemini Flash Image AI (Male Demonstration)",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified adult male athletic demonstrator in minimalist fitness studio, high-resolution aesthetic photography, clean neutral background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926250/stren/exercises/a8e2f160-80b9-4845-8a6e-2b353fec28cc.jpg",
+      "storageKey": "stren/exercises/a8e2f160-80b9-4845-8a6e-2b353fec28cc",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "33892e98-2249-4302-b6b9-06366bb99f2c",
+      "exerciseName": "Cable Kickbacks",
+      "imageFilename": "Cable Kickbacks.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 35042,
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [],
+      "targetMuscles": [
+        "Triceps"
+      ],
+      "equipment": [
+        "Cable"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical figure in bent-over tricep kickback peak extension with flat back and upper arm parallel to torso per DB instructions. Zero bystanders.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926251/stren/exercises/33892e98-2249-4302-b6b9-06366bb99f2c.png",
+      "storageKey": "stren/exercises/33892e98-2249-4302-b6b9-06366bb99f2c",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "be883119-1fe0-413b-8208-0c59c97a5aba",
+      "exerciseName": "Cable Upright Row",
+      "imageFilename": "Cable Upright Row.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 33429,
+      "primaryMuscles": [
+        "Shoulders",
+        "Lateral Deltoids",
+        "Traps"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "targetMuscles": [
+        "Shoulders",
+        "Lateral Deltoids",
+        "Traps",
+        "Biceps",
+        "Forearms"
+      ],
+      "equipment": [
+        "Cable"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Cable equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926252/stren/exercises/be883119-1fe0-413b-8208-0c59c97a5aba.png",
+      "storageKey": "stren/exercises/be883119-1fe0-413b-8208-0c59c97a5aba",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "fe21656e-528e-4252-9af8-1adb7621d664",
+      "exerciseName": "Cable Woodchoppers",
+      "imageFilename": "Cable Woodchoppers.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 57289,
+      "primaryMuscles": [
+        "Core",
+        "Obliques"
+      ],
+      "secondaryMuscles": [
+        "Shoulders"
+      ],
+      "targetMuscles": [
+        "Core",
+        "Obliques",
+        "Shoulders"
+      ],
+      "equipment": [
+        "Cable"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Cable equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926253/stren/exercises/fe21656e-528e-4252-9af8-1adb7621d664.png",
+      "storageKey": "stren/exercises/fe21656e-528e-4252-9af8-1adb7621d664",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "31586fee-9597-443c-abd1-da549f9f6e41",
+      "exerciseName": "Chest Dips",
+      "imageFilename": "Chest Dips.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 28936,
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Anterior Deltoids"
+      ],
+      "targetMuscles": [
+        "Chest",
+        "Triceps",
+        "Anterior Deltoids"
+      ],
+      "equipment": [
+        "Bodyweight"
+      ],
+      "difficulty": "advanced",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Bodyweight equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926254/stren/exercises/31586fee-9597-443c-abd1-da549f9f6e41.png",
+      "storageKey": "stren/exercises/31586fee-9597-443c-abd1-da549f9f6e41",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "1e28733e-6c94-490f-add8-cdb54867a9ec",
+      "exerciseName": "Close-Grip Bench Press",
+      "imageFilename": "Close-Grip Bench Press.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 33442,
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [
+        "Chest",
+        "Anterior Deltoids"
+      ],
+      "targetMuscles": [
+        "Triceps",
+        "Chest",
+        "Anterior Deltoids"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Barbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926255/stren/exercises/1e28733e-6c94-490f-add8-cdb54867a9ec.png",
+      "storageKey": "stren/exercises/1e28733e-6c94-490f-add8-cdb54867a9ec",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "c750810a-539c-4fda-acb4-640ab543a0e3",
+      "exerciseName": "Concentration Curl",
+      "imageFilename": "Concentration Curl.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 28761,
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "targetMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926255/stren/exercises/c750810a-539c-4fda-acb4-640ab543a0e3.png",
+      "storageKey": "stren/exercises/c750810a-539c-4fda-acb4-640ab543a0e3",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "7217a0e0-9939-492b-b1d0-8fada2a2de67",
+      "exerciseName": "Conventional Deadlift",
+      "imageFilename": "Conventional Deadlift.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 26405,
+      "primaryMuscles": [
+        "Back",
+        "Erector Spinae",
+        "Hamstrings",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Traps",
+        "Forearms",
+        "Core"
+      ],
+      "targetMuscles": [
+        "Back",
+        "Erector Spinae",
+        "Hamstrings",
+        "Glutes",
+        "Traps",
+        "Forearms",
+        "Core"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "advanced",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Barbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926256/stren/exercises/7217a0e0-9939-492b-b1d0-8fada2a2de67.png",
+      "storageKey": "stren/exercises/7217a0e0-9939-492b-b1d0-8fada2a2de67",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "63209117-9a90-482e-8dd7-b751d3a52cd1",
+      "exerciseName": "Deadlift111",
+      "imageFilename": "Deadlift111.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 26405,
+      "primaryMuscles": [
+        "Back",
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Chest",
+        "Back",
+        "Triceps"
+      ],
+      "targetMuscles": [
+        "Back",
+        "Biceps",
+        "Chest",
+        "Triceps"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular figure in deadlift lockout position. Custom user test record with barbell deadlift mechanics. Zero bystanders.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926257/stren/exercises/63209117-9a90-482e-8dd7-b751d3a52cd1.png",
+      "storageKey": "stren/exercises/63209117-9a90-482e-8dd7-b751d3a52cd1",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "36a1b09d-4a90-461a-80db-20b48b1e35f4",
+      "exerciseName": "Decline Barbell Press",
+      "imageFilename": "Decline Barbell Press.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 32609,
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Anterior Deltoids"
+      ],
+      "targetMuscles": [
+        "Chest",
+        "Triceps",
+        "Anterior Deltoids"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Barbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926258/stren/exercises/36a1b09d-4a90-461a-80db-20b48b1e35f4.png",
+      "storageKey": "stren/exercises/36a1b09d-4a90-461a-80db-20b48b1e35f4",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "6b2c7f2d-3ec0-4074-be86-8c142719fb7b",
+      "exerciseName": "Decline Crunches",
+      "imageFilename": "Decline Crunches.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 53421,
+      "primaryMuscles": [
+        "Core",
+        "Abs"
+      ],
+      "secondaryMuscles": [],
+      "targetMuscles": [
+        "Core",
+        "Abs"
+      ],
+      "equipment": [
+        "Bodyweight"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Bodyweight equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926259/stren/exercises/6b2c7f2d-3ec0-4074-be86-8c142719fb7b.png",
+      "storageKey": "stren/exercises/6b2c7f2d-3ec0-4074-be86-8c142719fb7b",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "2c9b42b9-e396-4f7d-8d6c-b33e061f7887",
+      "exerciseName": "Face Pulls",
+      "imageFilename": "Face Pulls.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 60488,
+      "primaryMuscles": [
+        "Back",
+        "Rear Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Traps",
+        "Rotator Cuff"
+      ],
+      "targetMuscles": [
+        "Back",
+        "Rear Deltoids",
+        "Traps",
+        "Rotator Cuff"
+      ],
+      "equipment": [
+        "Cable"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Cable equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926259/stren/exercises/2c9b42b9-e396-4f7d-8d6c-b33e061f7887.png",
+      "storageKey": "stren/exercises/2c9b42b9-e396-4f7d-8d6c-b33e061f7887",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "6a623378-779c-40b8-8882-5a494ab3c7c6",
+      "exerciseName": "Front Dumbbell Raises",
+      "imageFilename": "Front Dumbbell Raises.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 28656,
+      "primaryMuscles": [
+        "Shoulders",
+        "Anterior Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Upper Chest"
+      ],
+      "targetMuscles": [
+        "Shoulders",
+        "Anterior Deltoids",
+        "Upper Chest"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926260/stren/exercises/6a623378-779c-40b8-8882-5a494ab3c7c6.png",
+      "storageKey": "stren/exercises/6a623378-779c-40b8-8882-5a494ab3c7c6",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "61087e2d-b983-4bc8-8174-2e5b00777057",
+      "exerciseName": "Goblet Squat",
+      "imageFilename": "Goblet Squat.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 48017,
+      "primaryMuscles": [
+        "Quadriceps",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Core",
+        "Shoulders"
+      ],
+      "targetMuscles": [
+        "Quadriceps",
+        "Glutes",
+        "Core",
+        "Shoulders"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926261/stren/exercises/61087e2d-b983-4bc8-8174-2e5b00777057.png",
+      "storageKey": "stren/exercises/61087e2d-b983-4bc8-8174-2e5b00777057",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "df7f2e70-ef4b-49ae-82d4-4adcbb4ff97e",
+      "exerciseName": "Hammer Curls",
+      "imageFilename": "Hammer Curls.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 26895,
+      "primaryMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "secondaryMuscles": [],
+      "targetMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926262/stren/exercises/df7f2e70-ef4b-49ae-82d4-4adcbb4ff97e.png",
+      "storageKey": "stren/exercises/df7f2e70-ef4b-49ae-82d4-4adcbb4ff97e",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "d4e1e36a-2b62-4daa-8f2b-4e168ccc79ce",
+      "exerciseName": "Hanging Leg Raises",
+      "imageFilename": "Hanging Leg Raises.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 52645,
+      "primaryMuscles": [
+        "Core",
+        "Abs"
+      ],
+      "secondaryMuscles": [
+        "Hip Flexors",
+        "Forearms"
+      ],
+      "targetMuscles": [
+        "Core",
+        "Abs",
+        "Hip Flexors",
+        "Forearms"
+      ],
+      "equipment": [
+        "Bodyweight"
+      ],
+      "difficulty": "advanced",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Bodyweight equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926262/stren/exercises/d4e1e36a-2b62-4daa-8f2b-4e168ccc79ce.png",
+      "storageKey": "stren/exercises/d4e1e36a-2b62-4daa-8f2b-4e168ccc79ce",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "0c2422b1-5713-439d-abf5-7c3969700544",
+      "exerciseName": "Incline Dumbbell Curl",
+      "imageFilename": "Incline Dumbbell Curl.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 28031,
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "targetMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926263/stren/exercises/0c2422b1-5713-439d-abf5-7c3969700544.png",
+      "storageKey": "stren/exercises/0c2422b1-5713-439d-abf5-7c3969700544",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "605f37d8-7d9d-48f8-98e3-b154b86938f6",
+      "exerciseName": "Incline Dumbbell Press",
+      "imageFilename": "Incline Dumbbell Press.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 34653,
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Anterior Deltoids",
+        "Triceps"
+      ],
+      "targetMuscles": [
+        "Chest",
+        "Anterior Deltoids",
+        "Triceps"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926264/stren/exercises/605f37d8-7d9d-48f8-98e3-b154b86938f6.png",
+      "storageKey": "stren/exercises/605f37d8-7d9d-48f8-98e3-b154b86938f6",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "36ef6d4f-54ce-40a9-a740-37fee86d419c",
+      "exerciseName": "Lat Pulldown",
+      "imageFilename": "Lat Pulldown.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 30093,
+      "primaryMuscles": [
+        "Back",
+        "Lats"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Rear Deltoids"
+      ],
+      "targetMuscles": [
+        "Back",
+        "Lats",
+        "Biceps",
+        "Rear Deltoids"
+      ],
+      "equipment": [
+        "Cable",
+        "Machine"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Cable/Machine equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926265/stren/exercises/36ef6d4f-54ce-40a9-a740-37fee86d419c.png",
+      "storageKey": "stren/exercises/36ef6d4f-54ce-40a9-a740-37fee86d419c",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "879dde39-3aa5-4d23-92a7-3544e907d12b",
+      "exerciseName": "Lateral Raises",
+      "imageFilename": "Lateral Raises.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 26123,
+      "primaryMuscles": [
+        "Shoulders",
+        "Lateral Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Traps"
+      ],
+      "targetMuscles": [
+        "Shoulders",
+        "Lateral Deltoids",
+        "Traps"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926266/stren/exercises/879dde39-3aa5-4d23-92a7-3544e907d12b.png",
+      "storageKey": "stren/exercises/879dde39-3aa5-4d23-92a7-3544e907d12b",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "7f73bd26-287e-455b-8822-296a890c6b40",
+      "exerciseName": "Leg Extensions",
+      "imageFilename": "Leg Extensions.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 30378,
+      "primaryMuscles": [
+        "Quadriceps"
+      ],
+      "secondaryMuscles": [],
+      "targetMuscles": [
+        "Quadriceps"
+      ],
+      "equipment": [
+        "Machine"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Machine equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926266/stren/exercises/7f73bd26-287e-455b-8822-296a890c6b40.png",
+      "storageKey": "stren/exercises/7f73bd26-287e-455b-8822-296a890c6b40",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "c75adb2f-3a2b-414a-a457-84c209c7dfa5",
+      "exerciseName": "Leg Press",
+      "imageFilename": "Leg Press.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 28046,
+      "primaryMuscles": [
+        "Quadriceps"
+      ],
+      "secondaryMuscles": [
+        "Glutes",
+        "Hamstrings"
+      ],
+      "targetMuscles": [
+        "Quadriceps",
+        "Glutes",
+        "Hamstrings"
+      ],
+      "equipment": [
+        "Machine"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Machine equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926267/stren/exercises/c75adb2f-3a2b-414a-a457-84c209c7dfa5.png",
+      "storageKey": "stren/exercises/c75adb2f-3a2b-414a-a457-84c209c7dfa5",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "6360d0d3-484d-468c-aec7-f3b2a31fbdf4",
+      "exerciseName": "Lying Leg Curls",
+      "imageFilename": "Lying Leg Curls.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 26581,
+      "primaryMuscles": [
+        "Hamstrings"
+      ],
+      "secondaryMuscles": [
+        "Calves"
+      ],
+      "targetMuscles": [
+        "Hamstrings",
+        "Calves"
+      ],
+      "equipment": [
+        "Machine"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Machine equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926268/stren/exercises/6360d0d3-484d-468c-aec7-f3b2a31fbdf4.png",
+      "storageKey": "stren/exercises/6360d0d3-484d-468c-aec7-f3b2a31fbdf4",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "4436ef49-4034-425e-8155-26f43413b983",
+      "exerciseName": "Overhead Barbell Press",
+      "imageFilename": "Overhead Barbell Press.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 48325,
+      "primaryMuscles": [
+        "Shoulders",
+        "Anterior Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Upper Traps",
+        "Core"
+      ],
+      "targetMuscles": [
+        "Shoulders",
+        "Anterior Deltoids",
+        "Triceps",
+        "Upper Traps",
+        "Core"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Barbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926269/stren/exercises/4436ef49-4034-425e-8155-26f43413b983.png",
+      "storageKey": "stren/exercises/4436ef49-4034-425e-8155-26f43413b983",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "85fefece-24bd-40a5-99d4-72af0639cf05",
+      "exerciseName": "Overhead Tricep Extension",
+      "imageFilename": "Overhead Tricep Extension.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 23473,
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [],
+      "targetMuscles": [
+        "Triceps"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926270/stren/exercises/85fefece-24bd-40a5-99d4-72af0639cf05.png",
+      "storageKey": "stren/exercises/85fefece-24bd-40a5-99d4-72af0639cf05",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "3e08e734-73ed-4a04-ac72-eafc94ad2415",
+      "exerciseName": "Pec Deck Fly",
+      "imageFilename": "Pec Deck Fly.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 69005,
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Anterior Deltoids"
+      ],
+      "targetMuscles": [
+        "Chest",
+        "Anterior Deltoids"
+      ],
+      "equipment": [
+        "Machine"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Machine equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926271/stren/exercises/3e08e734-73ed-4a04-ac72-eafc94ad2415.png",
+      "storageKey": "stren/exercises/3e08e734-73ed-4a04-ac72-eafc94ad2415",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "484752a8-fe3a-4031-806d-018840b97f77",
+      "exerciseName": "Plank",
+      "imageFilename": "Plank.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 33837,
+      "primaryMuscles": [
+        "Core",
+        "Abs"
+      ],
+      "secondaryMuscles": [
+        "Shoulders",
+        "Glutes"
+      ],
+      "targetMuscles": [
+        "Core",
+        "Abs",
+        "Shoulders",
+        "Glutes"
+      ],
+      "equipment": [
+        "Bodyweight"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Bodyweight equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926272/stren/exercises/484752a8-fe3a-4031-806d-018840b97f77.png",
+      "storageKey": "stren/exercises/484752a8-fe3a-4031-806d-018840b97f77",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "2b0c0ed5-18ed-4761-945e-24cb3984ae1f",
+      "exerciseName": "Preacher Curl",
+      "imageFilename": "Preacher Curl.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 35158,
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "targetMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "equipment": [
+        "EZ Bar",
+        "Machine"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and EZ Bar/Machine equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926273/stren/exercises/2b0c0ed5-18ed-4761-945e-24cb3984ae1f.png",
+      "storageKey": "stren/exercises/2b0c0ed5-18ed-4761-945e-24cb3984ae1f",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "f72aa8e2-3cf4-4b6e-9491-aa0e3da4371d",
+      "exerciseName": "Pull-Ups",
+      "imageFilename": "Pull-Ups.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 25440,
+      "primaryMuscles": [
+        "Back",
+        "Lats"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Core"
+      ],
+      "targetMuscles": [
+        "Back",
+        "Lats",
+        "Biceps",
+        "Core"
+      ],
+      "equipment": [
+        "Bodyweight"
+      ],
+      "difficulty": "advanced",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Bodyweight equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926274/stren/exercises/f72aa8e2-3cf4-4b6e-9491-aa0e3da4371d.png",
+      "storageKey": "stren/exercises/f72aa8e2-3cf4-4b6e-9491-aa0e3da4371d",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "ae9795a3-af6b-4fd1-9732-bde0af9486f3",
+      "exerciseName": "Push-Ups",
+      "imageFilename": "Push-Ups.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 20358,
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Anterior Deltoids",
+        "Core"
+      ],
+      "targetMuscles": [
+        "Chest",
+        "Triceps",
+        "Anterior Deltoids",
+        "Core"
+      ],
+      "equipment": [
+        "Bodyweight"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Bodyweight equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926275/stren/exercises/ae9795a3-af6b-4fd1-9732-bde0af9486f3.png",
+      "storageKey": "stren/exercises/ae9795a3-af6b-4fd1-9732-bde0af9486f3",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "b5ee3387-5d25-45c3-908b-d7598ea96f1c",
+      "exerciseName": "Reverse Pec Deck",
+      "imageFilename": "Reverse Pec Deck.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 64894,
+      "primaryMuscles": [
+        "Shoulders",
+        "Rear Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Rhomboids",
+        "Traps"
+      ],
+      "targetMuscles": [
+        "Shoulders",
+        "Rear Deltoids",
+        "Rhomboids",
+        "Traps"
+      ],
+      "equipment": [
+        "Machine"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Machine equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926277/stren/exercises/b5ee3387-5d25-45c3-908b-d7598ea96f1c.png",
+      "storageKey": "stren/exercises/b5ee3387-5d25-45c3-908b-d7598ea96f1c",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "3d250964-18bb-4260-b5e6-8a0cfa07311b",
+      "exerciseName": "Romanian Deadlift",
+      "imageFilename": "Romanian Deadlift.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 26832,
+      "primaryMuscles": [
+        "Hamstrings",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Erector Spinae",
+        "Forearms"
+      ],
+      "targetMuscles": [
+        "Hamstrings",
+        "Glutes",
+        "Erector Spinae",
+        "Forearms"
+      ],
+      "equipment": [
+        "Barbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Barbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926277/stren/exercises/3d250964-18bb-4260-b5e6-8a0cfa07311b.png",
+      "storageKey": "stren/exercises/3d250964-18bb-4260-b5e6-8a0cfa07311b",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "095f04c9-6f6d-463a-bc0d-9378dbd880e3",
+      "exerciseName": "Russian Twists",
+      "imageFilename": "Russian Twists.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 47511,
+      "primaryMuscles": [
+        "Core",
+        "Obliques"
+      ],
+      "secondaryMuscles": [
+        "Hip Flexors"
+      ],
+      "targetMuscles": [
+        "Core",
+        "Obliques",
+        "Hip Flexors"
+      ],
+      "equipment": [
+        "Bodyweight"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Bodyweight equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926278/stren/exercises/095f04c9-6f6d-463a-bc0d-9378dbd880e3.png",
+      "storageKey": "stren/exercises/095f04c9-6f6d-463a-bc0d-9378dbd880e3",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "ba884704-564f-4d10-a748-6195d69f55e0",
+      "exerciseName": "Seated Cable Row",
+      "imageFilename": "Seated Cable Row.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 24963,
+      "primaryMuscles": [
+        "Back"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Rear Deltoids"
+      ],
+      "targetMuscles": [
+        "Back",
+        "Biceps",
+        "Rear Deltoids"
+      ],
+      "equipment": [
+        "Cable",
+        "Machine"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Cable/Machine equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926279/stren/exercises/ba884704-564f-4d10-a748-6195d69f55e0.png",
+      "storageKey": "stren/exercises/ba884704-564f-4d10-a748-6195d69f55e0",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "3709fdfa-be25-4397-b19a-14a5bff8f253",
+      "exerciseName": "Seated Dumbbell Press",
+      "imageFilename": "Seated Dumbbell Press.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 59040,
+      "primaryMuscles": [
+        "Shoulders",
+        "Anterior Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Lateral Deltoids"
+      ],
+      "targetMuscles": [
+        "Shoulders",
+        "Anterior Deltoids",
+        "Triceps",
+        "Lateral Deltoids"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926280/stren/exercises/3709fdfa-be25-4397-b19a-14a5bff8f253.png",
+      "storageKey": "stren/exercises/3709fdfa-be25-4397-b19a-14a5bff8f253",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "e410340d-86d9-4427-9260-737a4eeb1727",
+      "exerciseName": "Single-Arm Dumbbell Row",
+      "imageFilename": "Single-Arm Dumbbell Row.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 58703,
+      "primaryMuscles": [
+        "Back",
+        "Lats"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Rear Deltoids"
+      ],
+      "targetMuscles": [
+        "Back",
+        "Lats",
+        "Biceps",
+        "Rear Deltoids"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926280/stren/exercises/e410340d-86d9-4427-9260-737a4eeb1727.png",
+      "storageKey": "stren/exercises/e410340d-86d9-4427-9260-737a4eeb1727",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "fcb5290c-d1a1-444e-adc8-597582edd107",
+      "exerciseName": "Skull Crushers",
+      "imageFilename": "Skull Crushers.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 33488,
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "targetMuscles": [
+        "Triceps",
+        "Forearms"
+      ],
+      "equipment": [
+        "EZ Bar",
+        "Barbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and EZ Bar/Barbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926281/stren/exercises/fcb5290c-d1a1-444e-adc8-597582edd107.png",
+      "storageKey": "stren/exercises/fcb5290c-d1a1-444e-adc8-597582edd107",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "80eb65d2-c5cc-4c20-8d9a-a0bd0c9ec880",
+      "exerciseName": "Standing Calf Raises",
+      "imageFilename": "Standing Calf Raises.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 32127,
+      "primaryMuscles": [
+        "Calves"
+      ],
+      "secondaryMuscles": [],
+      "targetMuscles": [
+        "Calves"
+      ],
+      "equipment": [
+        "Machine"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Machine equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926282/stren/exercises/80eb65d2-c5cc-4c20-8d9a-a0bd0c9ec880.png",
+      "storageKey": "stren/exercises/80eb65d2-c5cc-4c20-8d9a-a0bd0c9ec880",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "aee1a097-1bb5-4cc7-94a2-7da58d25ff68",
+      "exerciseName": "Tricep Rope Pushdown",
+      "imageFilename": "Tricep Rope Pushdown.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 28648,
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [],
+      "targetMuscles": [
+        "Triceps"
+      ],
+      "equipment": [
+        "Cable"
+      ],
+      "difficulty": "beginner",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Cable equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926283/stren/exercises/aee1a097-1bb5-4cc7-94a2-7da58d25ff68.png",
+      "storageKey": "stren/exercises/aee1a097-1bb5-4cc7-94a2-7da58d25ff68",
+      "storageProvider": "cloudinary"
+    },
+    {
+      "exerciseId": "30101432-7aba-4c76-a20f-f55c6ba02dde",
+      "exerciseName": "Walking Lunges",
+      "imageFilename": "Walking Lunges.png",
+      "fileExistsOnDisk": true,
+      "fileSizeBytes": 30364,
+      "primaryMuscles": [
+        "Quadriceps",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Hamstrings",
+        "Calves",
+        "Core"
+      ],
+      "targetMuscles": [
+        "Quadriceps",
+        "Glutes",
+        "Hamstrings",
+        "Calves",
+        "Core"
+      ],
+      "equipment": [
+        "Dumbbell"
+      ],
+      "difficulty": "intermediate",
+      "imageSource": "Everkinetic Male Anatomical Fitness Vector Illustration",
+      "status": "SUCCESS",
+      "visualSubjectRule": "Strictly male-only athletic demonstrator / neutral anatomical illustration. Zero female-presenting individuals.",
+      "notes": "Verified male anatomical muscular illustration demonstrating correct biomechanical form and Dumbbell equipment. High-contrast dark charcoal linework on pure white background. Zero women present.",
+      "mappedImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926284/stren/exercises/30101432-7aba-4c76-a20f-f55c6ba02dde.png",
+      "storageKey": "stren/exercises/30101432-7aba-4c76-a20f-f55c6ba02dde",
+      "storageProvider": "cloudinary"
+    }
+  ]
+}

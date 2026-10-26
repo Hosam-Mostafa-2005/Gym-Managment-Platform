@@ -1,9 +1,7 @@
 // src/validators/body-measurement.validator.ts
 import { z } from "zod";
 
-const objectIdSchema = z
-  .string()
-  .regex(/^[0-9a-fA-F]{24}$/, "Invalid ObjectId format");
+const idSchema = z.string().min(1, "Invalid ID format");
 
 const circumferencesSchema = z
   .object({
@@ -23,8 +21,8 @@ const circumferencesSchema = z
 
 export const createBodyMeasurementSchema = z.object({
   body: z.object({
-    member: objectIdSchema,
-    trainer: objectIdSchema,
+    member: idSchema.optional(),
+    trainer: idSchema.optional(),
     weight: z.number().min(20).max(400),
     height: z.number().min(50).max(300),
     bodyFat: z.number().min(0).max(100).optional(),

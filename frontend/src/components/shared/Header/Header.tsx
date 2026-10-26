@@ -20,6 +20,10 @@ import {
   Zap,
   Flame,
   BookOpen,
+  Trophy,
+  Sparkles,
+  Calendar,
+  Utensils,
 } from "lucide-react";
 
 import { useLogout } from "@/features/auth/hooks/useLogout";
@@ -27,7 +31,7 @@ import { useNotifications } from "@/features/notifications/hooks/use-notificatio
 import { useMarkNotificationRead } from "@/features/notifications/hooks/use-mark-notification-read";
 import { useMarkAllNotificationsRead } from "@/features/notifications/hooks/use-mark-all-notifications-read";
 import type { Notification } from "@/features/notifications/types/notifications.types";
-import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export interface HeaderProps {
   collapsed: boolean;
@@ -55,6 +59,8 @@ function useOnClickOutside<T extends HTMLElement>(
 }
 
 const Breadcrumb = () => {
+  const { isCoachOrAdmin } = useAuth();
+  const homePath = isCoachOrAdmin ? "/coach-dashboard" : "/dashboard";
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter(Boolean);
 
@@ -73,7 +79,7 @@ const Breadcrumb = () => {
     >
       <Link
         className="hover:text-[#F8FAFC] transition-colors shrink-0"
-        to="/dashboard"
+        to={homePath}
       >
         Workspace
       </Link>
@@ -128,31 +134,50 @@ const formatTimeAgo = (dateString: string) => {
 };
 
 // Helper to map notification type to an icon and color
-const getNotificationStyles = (type: string) => {
-  switch (type?.toUpperCase()) {
-    case "WORKOUT":
-    case "SESSION":
-    case "WORKOUT_COMPLETED":
-      return {
-        icon: Dumbbell,
-        color: "text-[#5BE584]",
-        bg: "bg-[#5BE584]/15",
-      };
-    case "ASSIGNMENT":
-    case "WORKOUT_ASSIGNED":
-      return {
-        icon: ClipboardList,
-        color: "text-[#5BE584]",
-        bg: "bg-[#5BE584]/15",
-      };
-    case "MEASUREMENT":
-    case "BODY_MEASUREMENT_RECORDED":
-      return { icon: Scale, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/15" };
-    case "SYSTEM":
-      return { icon: Info, color: "text-[#94A3B8]", bg: "bg-[#1B2028]" };
-    default:
-      return { icon: Bell, color: "text-[#94A3B8]", bg: "bg-[#1B2028]" };
+const getNotificationStyles = (type: string, category?: string) => {
+  const normType = type?.toUpperCase() || "";
+  const normCat = category?.toUpperCase() || "";
+
+  if (normType.includes("ACHIEVEMENT") || normCat === "ACHIEVEMENT") {
+    return { icon: Trophy, color: "text-yellow-400", bg: "bg-yellow-500/15" };
   }
+  if (normType.includes("STREAK")) {
+    return { icon: Flame, color: "text-orange-400", bg: "bg-orange-500/15" };
+  }
+  if (normType.includes("ENCOURAGEMENT")) {
+    return { icon: Sparkles, color: "text-yellow-400", bg: "bg-yellow-500/15" };
+  }
+  if (normType.includes("APPOINTMENT") || normCat === "COACHING") {
+    return { icon: Calendar, color: "text-blue-400", bg: "bg-blue-500/15" };
+  }
+  if (normCat === "NUTRITION") {
+    return { icon: Utensils, color: "text-emerald-400", bg: "bg-emerald-500/15" };
+  }
+  if (
+    normCat === "WORKOUT" ||
+    normType.includes("WORKOUT") ||
+    normType.includes("SESSION")
+  ) {
+    return {
+      icon: Dumbbell,
+      color: "text-[#5BE584]",
+      bg: "bg-[#5BE584]/15",
+    };
+  }
+  if (normType === "ASSIGNMENT" || normType === "WORKOUT_ASSIGNED") {
+    return {
+      icon: ClipboardList,
+      color: "text-[#5BE584]",
+      bg: "bg-[#5BE584]/15",
+    };
+  }
+  if (normType === "MEASUREMENT" || normType === "BODY_MEASUREMENT_RECORDED") {
+    return { icon: Scale, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/15" };
+  }
+  if (normCat === "SYSTEM") {
+    return { icon: Info, color: "text-[#94A3B8]", bg: "bg-[#1B2028]" };
+  }
+  return { icon: Bell, color: "text-[#94A3B8]", bg: "bg-[#1B2028]" };
 };
 
 const NotificationMenu = () => {
@@ -180,6 +205,9 @@ const NotificationMenu = () => {
     if (notification.actionUrl) {
       navigate(notification.actionUrl.replace(window.location.origin, ""));
       setIsOpen(false);
+    } else if (notification.category === "ACHIEVEMENT") {
+      navigate("/gamification");
+      setIsOpen(false);
     }
   };
 
@@ -200,7 +228,9 @@ const NotificationMenu = () => {
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#5BE584] ring-2 ring-[#090B0F]" />
+          <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#5BE584] px-1 text-[9px] font-extrabold text-gray-950 ring-2 ring-[#090B0F]">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
         )}
       </button>
 
@@ -258,7 +288,7 @@ const NotificationMenu = () => {
                   icon: Icon,
                   color,
                   bg,
-                } = getNotificationStyles(notif.type);
+                } = getNotificationStyles(notif.type, notif.category);
 
                 return (
                   <div
@@ -324,9 +354,9 @@ const QuickActionsMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { data: user } = useCurrentUser();
-  const userRole = user?.role?.toUpperCase() || "MEMBER";
-  const isCoachOrAdmin = userRole === "TRAINER" || userRole === "ADMIN";
+  const { user, isCoachOrAdmin } = useAuth();
+
+
 
   useOnClickOutside(ref, () => setIsOpen(false));
 
@@ -430,7 +460,7 @@ const ProfileMenu = () => {
   const navigate = useNavigate();
 
   const { mutate: logoutUser, isPending } = useLogout();
-  const { data: user, isLoading } = useCurrentUser();
+  const { user, isLoading } = useAuth();
 
   useOnClickOutside(ref, () => setIsOpen(false));
 

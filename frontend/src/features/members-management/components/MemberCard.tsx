@@ -1,7 +1,7 @@
 // src/features/members-management/components/MemberCard.tsx
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Dumbbell } from "lucide-react";
+import { ArrowRight, Dumbbell, ShieldCheck, Lock, Clock } from "lucide-react";
 import type { MemberManagementCard } from "../../members-management/types/members-management.types";
 
 interface MemberCardProps {
@@ -9,7 +9,7 @@ interface MemberCardProps {
 }
 
 export const MemberCard: React.FC<MemberCardProps> = ({ data }) => {
-  const { member, assignment, workout, measurements } = data;
+  const { member, assignment, workout, measurements, relationship } = data;
 
   const getInitials = (name: string) => {
     return name
@@ -57,7 +57,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({ data }) => {
             </span>
           </div>
         </div>
-        <div className="shrink-0 pl-2">
+        <div className="flex flex-col items-end gap-1 shrink-0 pl-2">
           {member.isActive ? (
             <span className="inline-flex items-center rounded bg-[#16291d] border border-[#23422e] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#5BE584]">
               Active
@@ -66,6 +66,26 @@ export const MemberCard: React.FC<MemberCardProps> = ({ data }) => {
             <span className="inline-flex items-center rounded bg-[#13171d] border border-[#1e2329] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-gray-500">
               Inactive
             </span>
+          )}
+
+          {/* History Sharing Consent Badge */}
+          {relationship && (
+            relationship.historySharingConsent === "GRANTED" ? (
+              <span className="inline-flex items-center gap-1 rounded bg-[#16291d] border border-[#23422e] px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-[#5BE584]">
+                <ShieldCheck className="h-2.5 w-2.5" />
+                History Shared
+              </span>
+            ) : relationship.historySharingConsent === "PENDING" ? (
+              <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-amber-400">
+                <Clock className="h-2.5 w-2.5" />
+                Consent Pending
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded bg-zinc-800/80 border border-zinc-700 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-gray-400">
+                <Lock className="h-2.5 w-2.5" />
+                History Private
+              </span>
+            )
           )}
         </div>
       </div>

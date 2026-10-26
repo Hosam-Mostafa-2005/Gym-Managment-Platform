@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle } from "lucide-react";
 import DynamicInputList from "./DynamicInputList";
+import ExerciseImageUploader from "./ExerciseImageUploader";
 
 // 1. استدعاء التايب الصحيح الخاص بالفورم
 import type { ExerciseFormValues } from "../schemas/exercise.schema";
@@ -26,18 +28,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { CreateExerciseDto } from "../types/exercise.types.ts";
+import type { CreateExerciseDto, Exercise } from "../types/exercise.types.ts";
 
 interface ExerciseFormProps {
-  initialValues?: Partial<CreateExerciseDto>;
-
+  initialValues?: Partial<CreateExerciseDto> | Partial<Exercise>;
+  exerciseId?: string;
   onSubmit: (data: CreateExerciseDto) => void;
-
   isPending?: boolean;
 }
 
 const ExerciseForm = ({
   initialValues,
+  exerciseId,
   onSubmit,
   isPending,
 }: ExerciseFormProps) => {
@@ -45,17 +47,24 @@ const ExerciseForm = ({
   // 1. FORM SETUP & VALIDATION
   // استخدمنا ExerciseFormValues بدلاً من CreateExerciseDto لحل مشكلة الـ Resolver
   // ==========================================
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const resolvedExerciseId =
+    exerciseId ?? (initialValues as Partial<Exercise> | undefined)?.id;
+
   const {
     register,
     control,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<ExerciseFormValues>({
     resolver: zodResolver(exerciseSchema),
     defaultValues: {
       name: "",
       description: "",
+      imageUrl: "",
       videoUrl: "",
       difficulty: "beginner",
       equipment: [],
@@ -66,6 +75,8 @@ const ExerciseForm = ({
       tips: [],
     },
   });
+
+  const imageUrlValue = watch("imageUrl");
 
   const {
     fields: instructionFields,
@@ -90,6 +101,7 @@ const ExerciseForm = ({
     reset({
       name: initialValues.name ?? "",
       description: initialValues.description ?? "",
+      imageUrl: initialValues.imageUrl ?? "",
       videoUrl: initialValues.videoUrl ?? "",
       difficulty: initialValues.difficulty ?? "beginner",
 
@@ -114,6 +126,8 @@ const ExerciseForm = ({
   const handleFormSubmit = (data: ExerciseFormValues) => {
     const formattedData: CreateExerciseDto = {
       ...data,
+      imageUrl: data.imageUrl ? data.imageUrl.trim() : "",
+      videoUrl: data.videoUrl?.trim() || undefined,
       instructions: data.instructions.map((item) => item.value),
       tips: data.tips.map((item) => item.value),
     };
@@ -228,24 +242,38 @@ const ExerciseForm = ({
 
       {/* ==========================================
           SECTION 3: MEDIA & RESOURCES
-          Handles external tutorials and media links
+          Handles image demonstration and external video tutorial links
           ========================================== */}
-      <section className="space-y-4 rounded-2xl border border-border bg-card/50 p-6 shadow-sm">
+      <section className="space-y-6 rounded-2xl border border-border bg-card/50 p-6 shadow-sm">
         <div className="border-b border-border/60 pb-3">
           <h3 className="text-lg font-semibold tracking-tight text-foreground">
-            Media & Tutorials
+            Media & Resources
           </h3>
           <p className="text-sm text-muted-foreground">
-            Add a visual demonstration link to help users perform the exercise
-            correctly.
+            Add visual references (image banner and video tutorial) to help users perform the exercise with optimal technique.
           </p>
         </div>
 
-        <div className="pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          {/* FIELD: Exercise Image Upload */}
+          <ExerciseImageUploader
+            value={imageUrlValue}
+            onChange={(url) =>
+              setValue("imageUrl", url, {
+                shouldValidate: true,
+                shouldDirty: true,
+              })
+            }
+            exerciseId={resolvedExerciseId}
+            onUploadingChange={setIsUploadingImage}
+            error={errors.imageUrl?.message}
+            disabled={isPending}
+          />
+
           {/* FIELD: Video URL */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Label htmlFor="videoUrl" className="text-sm font-medium">
-              Video URL{" "}
+              Video Tutorial URL{" "}
               <span className="text-xs text-muted-foreground font-normal">
                 (Optional)
               </span>
@@ -258,10 +286,14 @@ const ExerciseForm = ({
               className="bg-background"
             />
             {errors.videoUrl && (
-              <p className="text-xs font-medium text-destructive">
+              <p className="text-xs font-medium text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
                 {errors.videoUrl.message}
               </p>
             )}
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Link a YouTube or Vimeo video demonstration showing proper range of motion and pacing.
+            </p>
           </div>
         </div>
       </section>
@@ -342,8 +374,16 @@ const ExerciseForm = ({
             Triggers form submission or handles loading states
             ========================================== */}
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
-        <Button type="submit" disabled={isPending} className="min-w-[120px]">
-          {isPending ? "Saving..." : "Save Exercise"}
+        <Button
+          type="submit"
+          disabled={isPending || isUploadingImage}
+          className="min-w-[120px]"
+        >
+          {isUploadingImage
+            ? "Uploading Image..."
+            : isPending
+              ? "Saving..."
+              : "Save Exercise"}
         </Button>
       </div>
     </form>

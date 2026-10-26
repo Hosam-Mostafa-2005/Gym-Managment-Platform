@@ -1,5 +1,5 @@
 // src/features/profile/components/member/MemberProfileView.tsx
-import React from "react";
+import React, { useState } from "react";
 import { ProfileHeader } from "../shared/ProfileHeader";
 import { ProfileSection } from "../shared/ProfileSection";
 import { MemberOverview } from "./MemberOverview";
@@ -8,8 +8,25 @@ import { MeasurementHistory } from "./MeasurementHistory";
 import { RecentSessions } from "./RecentSessions";
 import { AssignmentHistory } from "./AssignmentHistory";
 import { MemberTimeline } from "./MemberTimeline";
-import { User, Mail, Shield, Lock } from "lucide-react";
+import { EditProfileDialog } from "./EditProfileDialog";
+import { ChangePasswordDialog } from "../shared/ChangePasswordDialog";
+import { CoachingConsentCard } from "../../../coaching-relationships/components/CoachingConsentCard";
+import { PendingInvitationBanner } from "../../../coaching-relationships/components/PendingInvitationBanner";
+import { User, Mail, Shield, Lock, Phone, Target, Dumbbell } from "lucide-react";
 import type { MemberProfileResponse } from "../../types/profile.types";
+
+const GOAL_LABELS: Record<string, string> = {
+  STRENGTH_HYPERTROPHY: "Strength & Muscle Building",
+  FAT_LOSS_LEANING: "Fat Loss & Conditioning",
+  ATHLETIC_PERFORMANCE: "Athletic Performance",
+  HEALTH_LONGEVITY: "General Fitness & Health",
+};
+
+const EXP_LABELS: Record<string, string> = {
+  BEGINNER: "Beginner (< 1 yr)",
+  INTERMEDIATE: "Intermediate (1–3 yrs)",
+  ADVANCED: "Advanced (3+ yrs)",
+};
 
 interface MemberProfileViewProps {
   data: MemberProfileResponse;
@@ -27,6 +44,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     timeline,
   } = data;
   const { currentAssignment, latestMeasurement, workoutStats } = overview;
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
 
   const formatDate = (dateStr?: string | null) => {
     if (!dateStr) return "N/A";
@@ -42,6 +61,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
   return (
     <div className="flex flex-col gap-6 w-full">
+      {/* Pending Invitation Banner if any */}
+      <PendingInvitationBanner />
+
       {/* Header */}
       <ProfileHeader
         name={member.name}
@@ -52,6 +74,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         actions={
           <button
             type="button"
+            onClick={() => setIsEditOpen(true)}
             className="inline-flex items-center gap-1.5 rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-colors hover:bg-[#4ade80]"
           >
             Edit Profile
@@ -105,6 +128,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       {/* Overview KPI Cards */}
       <MemberOverview workoutStats={workoutStats} />
 
+      {/* Active Coaching Relationship & Privacy Management */}
+      <CoachingConsentCard />
+
       {/* Current Assignment */}
       <CurrentAssignment assignment={currentAssignment} />
 
@@ -136,10 +162,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               </div>
               <div className="flex flex-col gap-1">
                 <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
-                  Account ID
+                  Phone Number
                 </span>
-                <span className="text-sm font-medium text-gray-200 font-mono">
-                  #{member.id.substring(0, 8).toUpperCase()}
+                <span className="text-sm font-medium text-gray-200 flex items-center gap-1.5">
+                  <Phone className="h-3 w-3 text-gray-500" />
+                  {(member as any).phone || "Not specified"}
                 </span>
               </div>
               <div className="flex flex-col gap-1">
@@ -150,6 +177,38 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   {member.isActive ? "Verified Active Member" : "Inactive"}
                 </span>
               </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1">
+                  <Target className="w-3 h-3 text-[#5BE584]" />
+                  Primary Fitness Goal
+                </span>
+                <span className="text-sm font-medium text-gray-200">
+                  {(member as any).fitnessGoal
+                    ? GOAL_LABELS[(member as any).fitnessGoal] || (member as any).fitnessGoal
+                    : "Not specified"}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1">
+                  <Dumbbell className="w-3 h-3 text-[#5BE584]" />
+                  Experience Level
+                </span>
+                <span className="text-sm font-medium text-gray-200">
+                  {(member as any).experienceLevel
+                    ? EXP_LABELS[(member as any).experienceLevel] || (member as any).experienceLevel
+                    : "Not specified"}
+                </span>
+              </div>
+              {(member as any).bio && (
+                <div className="flex flex-col gap-1 md:col-span-2">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                    Bio / Training Focus
+                  </span>
+                  <span className="text-sm font-medium text-gray-300 leading-relaxed">
+                    {(member as any).bio}
+                  </span>
+                </div>
+              )}
             </div>
           </ProfileSection>
         </div>
@@ -162,16 +221,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   <Lock className="h-4 w-4 text-[#5BE584]" />
                   <div className="flex flex-col">
                     <span className="font-semibold text-gray-200">
-                      Password & Auth
+                      Password & Authentication
                     </span>
                     <span className="text-[10px] text-gray-500">
-                      Secured via JWT standard
+                      {(member as any).hasPassword === false
+                        ? "Google account connected"
+                        : "Encrypted & secured via SHA-256 / bcrypt"}
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                  Secured
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsPasswordDialogOpen(true)}
+                  className="rounded border border-[#1e2329] bg-[#161b22] px-2.5 py-1 text-xs font-semibold text-[#5BE584] hover:bg-[#1e2329] hover:text-white transition-colors cursor-pointer"
+                >
+                  {(member as any).hasPassword === false
+                    ? "Set Password"
+                    : "Change Password"}
+                </button>
               </div>
             </div>
           </ProfileSection>
@@ -189,6 +256,29 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         <AssignmentHistory assignments={assignmentHistory} />
         <MemberTimeline timeline={timeline} />
       </div>
+
+      {/* Edit Profile Modal Dialog */}
+      <EditProfileDialog
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        memberId={member.id}
+        initialData={{
+          name: member.name,
+          phone: (member as any).phone,
+          bio: (member as any).bio,
+          fitnessGoal: (member as any).fitnessGoal,
+          experienceLevel: (member as any).experienceLevel,
+        }}
+      />
+
+      {/* Change Password Dialog */}
+      <ChangePasswordDialog
+        isOpen={isPasswordDialogOpen}
+        onClose={() => setIsPasswordDialogOpen(false)}
+        userEmail={member.email}
+        hasPassword={(member as any).hasPassword !== false}
+        googleLinked={(member as any).googleLinked}
+      />
     </div>
   );
 };

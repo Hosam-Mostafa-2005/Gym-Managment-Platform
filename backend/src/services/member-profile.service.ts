@@ -1,57 +1,75 @@
 // src/services/member-profile.service.ts
-import mongoose from "mongoose";
-import User from "../models/User.model.js";
-import { Assignment } from "../models/Assignment.model.js";
-import BodyMeasurement from "../models/BodyMeasurement.model.js";
-import WorkoutSession from "../models/WorkoutSession.model.js";
+import prisma from "../config/prisma.js";
 import AppError from "../utils/AppError.js";
 import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
+import {
+  RELATIONSHIP_STATUS,
+  HISTORY_SHARING_CONSENT,
+} from "../constants/coaching-relationship.js";
 import { mapMemberProfile } from "../mappers/member-profile.mapper.js";
 import type { TimelineEvent } from "../types/member-profile.types.js";
 
 class MemberProfileService {
   private async checkTrainerAccess(trainerId: string, memberId: string) {
-    const isAssigned = await Assignment.exists({
-      trainer: trainerId,
-      member: memberId,
-      isActive: true,
-      status: ASSIGNMENT_STATUS.ACTIVE,
+    const relationship = await prisma.coachMemberRelationship.findFirst({
+      where: {
+        trainerId,
+        memberId,
+        status: RELATIONSHIP_STATUS.ACTIVE,
+        isActive: true,
+      },
     });
-    if (!isAssigned) {
+
+    const isAssigned = await prisma.assignment.findFirst({
+      where: {
+        trainerId,
+        memberId,
+        isActive: true,
+        status: ASSIGNMENT_STATUS.ACTIVE,
+      },
+    });
+
+    if (!relationship && !isAssigned) {
       throw new AppError("Member is not assigned to you.", 403);
     }
+
+    return relationship || null;
   }
 
-  private async getWorkoutStats(memberObjectId: mongoose.Types.ObjectId) {
-    const statsAgg = await WorkoutSession.aggregate([
-      {
-        $match: {
-          member: memberObjectId,
-          isActive: true,
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalSessions: { $sum: 1 },
-          completedSessions: {
-            $sum: {
-              $cond: [
-                { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                1,
-                0,
-              ],
-            },
-          },
-          totalDuration: { $sum: "$duration" },
-          totalVolume: { $sum: "$totalVolume" },
-        },
-      },
-    ]);
+  private calculatePeriodStats(sessions: any[]) {
+    if (sessions.length === 0) {
+      return {
+        totalSessions: 0,
+        completedSessions: 0,
+        totalDuration: 0,
+        totalVolume: 0,
+        completionRate: 0,
+      };
+    }
 
-    return statsAgg[0] || null;
+    const totalSessions = sessions.length;
+    const completedSessions = sessions.filter(
+      (s) => s.status === WORKOUT_SESSION_STATUS.COMPLETED,
+    ).length;
+    const totalDuration = sessions.reduce((acc, s) => acc + (s.duration || 0), 0);
+    const totalVolume = sessions.reduce(
+      (acc, s) => acc + (s.totalVolume || 0),
+      0,
+    );
+    const completionRate =
+      totalSessions > 0
+        ? Math.round((completedSessions / totalSessions) * 100)
+        : 0;
+
+    return {
+      totalSessions,
+      completedSessions,
+      totalDuration,
+      totalVolume,
+      completionRate,
+    };
   }
 
   private buildTimeline(
@@ -97,7 +115,9 @@ class MemberProfileService {
 
     sessions.forEach((s: any) => {
       const workoutTitle =
-        (s.assignment as any)?.workout?.title || "Unknown Workout";
+        (s.workout as any)?.title ||
+        (s.assignment as any)?.workout?.title ||
+        "Workout";
 
       timeline.push({
         type: "WORKOUT_STARTED",
@@ -127,99 +147,216 @@ class MemberProfileService {
 
     timeline.sort((a, b) => {
       if (!a.date || !b.date) return 0;
-
-      return b.date.getTime() - a.date.getTime();
+      const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+      const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+      return dateB.getTime() - dateA.getTime();
     });
 
     return timeline.slice(0, 20);
   }
 
   async getProfile(memberId: string, userId: string, role: Role) {
-    // 1. Authorization checks
     if (role === Roles.MEMBER && userId !== memberId) {
       throw new AppError("You can only view your own profile.", 403);
     }
+
+    let relationship: any = null;
+
     if (role === Roles.TRAINER) {
-      await this.checkTrainerAccess(userId, memberId);
+      relationship = await this.checkTrainerAccess(userId, memberId);
+    } else {
+      relationship = await prisma.coachMemberRelationship.findFirst({
+        where: {
+          memberId,
+          status: RELATIONSHIP_STATUS.ACTIVE,
+          isActive: true,
+        },
+        include: {
+          trainer: { select: { id: true, name: true, email: true } },
+        },
+      });
     }
 
-    const memberObjectId = new mongoose.Types.ObjectId(memberId);
+    const member = await prisma.user.findFirst({
+      where: {
+        id: memberId,
+        isActive: true,
+      },
+    });
 
-    // 2. Fetch the Member to ensure existence and correct role
-    const member = await User.findById(memberObjectId);
-
-    if (!member || !member.isActive) {
+    if (!member) {
       throw new AppError("Member not found.", 404);
     }
+
     if (member.role !== Roles.MEMBER) {
       throw new AppError("Selected user is not a member.", 400);
     }
 
-    // 3. Parallel Queries for Profile Data
+    const isCoachViewing = role === Roles.TRAINER;
+    const canAccessHistory =
+      !isCoachViewing ||
+      relationship?.historySharingConsent === HISTORY_SHARING_CONSENT.GRANTED;
+
+    const relationshipStartDate = relationship?.startedAt || null;
+
+    // Build query filters enforcing history privacy
+    const sessionWhere: any = {
+      memberId,
+      isActive: true,
+    };
+    const measurementWhere: any = {
+      memberId,
+      isActive: true,
+    };
+
+    // If Coach is viewing without consent, NEVER query records before relationship started!
+    if (isCoachViewing && !canAccessHistory) {
+      if (relationshipStartDate) {
+        sessionWhere.startedAt = { gte: relationshipStartDate };
+        measurementWhere.measuredAt = { gte: relationshipStartDate };
+      } else {
+        // Coach has no active relationship (assignment only) - cannot view private history
+        sessionWhere.assignment = { trainerId: userId };
+        measurementWhere.trainerId = userId;
+      }
+    }
+
     const [
       currentAssignment,
       assignmentHistory,
       measurements,
-      recentSessions,
-      workoutStats,
+      sessions,
     ] = await Promise.all([
-      // Current Active Assignment
-      Assignment.findOne({
-        member: memberObjectId,
-        status: ASSIGNMENT_STATUS.ACTIVE,
-        isActive: true,
-      })
-        .populate("workout", "title")
-        .populate("trainer", "name"),
+      prisma.assignment.findFirst({
+        where: {
+          memberId,
+          status: ASSIGNMENT_STATUS.ACTIVE,
+          isActive: true,
+        },
+        include: {
+          workout: { select: { title: true } },
+          trainer: { select: { name: true } },
+        },
+      }),
 
-      // Assignment History (Excluding ACTIVE)
-      Assignment.find({
-        member: memberObjectId,
-        status: { $ne: ASSIGNMENT_STATUS.ACTIVE },
-        isActive: true,
-      })
-        .sort({ createdAt: -1 })
-        .populate("workout", "title")
-        .populate("trainer", "name"),
+      prisma.assignment.findMany({
+        where: {
+          memberId,
+          status: { not: ASSIGNMENT_STATUS.ACTIVE },
+          isActive: true,
+        },
+        orderBy: { createdAt: "desc" },
+        include: {
+          workout: { select: { title: true } },
+          trainer: { select: { name: true } },
+        },
+      }),
 
-      // Body Measurement History (Fetching up to 20 for timeline purposes)
-      BodyMeasurement.find({
-        member: memberObjectId,
-        isActive: true,
-      })
-        .sort({ measuredAt: -1 })
-        .limit(20),
+      prisma.bodyMeasurement.findMany({
+        where: measurementWhere,
+        orderBy: { measuredAt: "desc" },
+        take: 30,
+      }),
 
-      // Recent Workout Sessions (Fetching up to 20 for timeline purposes)
-      WorkoutSession.find({
-        member: memberObjectId,
-        isActive: true,
-      })
-        .sort({ startedAt: -1 })
-        .limit(20)
-        .populate({
-          path: "assignment",
-          select: "workout",
-          populate: { path: "workout", select: "title" },
-        }),
-
-      // Workout Statistics Aggregation
-      this.getWorkoutStats(memberObjectId),
+      prisma.workoutSession.findMany({
+        where: sessionWhere,
+        orderBy: { startedAt: "desc" },
+        take: 30,
+        include: {
+          workout: {
+            select: { id: true, title: true },
+          },
+          assignment: {
+            select: {
+              workout: { select: { id: true, title: true } },
+            },
+          },
+        },
+      }),
     ]);
+
+    // Separate Historical vs Current Coach Progress
+    const historicalSessions: any[] = [];
+    const currentCoachSessions: any[] = [];
+
+    for (const s of sessions) {
+      if (
+        relationshipStartDate &&
+        s.startedAt &&
+        new Date(s.startedAt) < new Date(relationshipStartDate)
+      ) {
+        historicalSessions.push(s);
+      } else {
+        currentCoachSessions.push(s);
+      }
+    }
+
+    const historicalMeasurements: any[] = [];
+    const currentCoachMeasurements: any[] = [];
+
+    for (const m of measurements) {
+      if (
+        relationshipStartDate &&
+        m.measuredAt &&
+        new Date(m.measuredAt) < new Date(relationshipStartDate)
+      ) {
+        historicalMeasurements.push(m);
+      } else {
+        currentCoachMeasurements.push(m);
+      }
+    }
+
+    // Compute period-specific stats & comparisons
+    const historicalStats = canAccessHistory
+      ? this.calculatePeriodStats(historicalSessions)
+      : null;
+    const currentCoachStats = this.calculatePeriodStats(currentCoachSessions);
+    const overallStats = this.calculatePeriodStats(sessions);
+
+    // Weight comparison
+    const preCoachWeight =
+      historicalMeasurements.length > 0
+        ? historicalMeasurements[0].weight
+        : null;
+    const currentWeight =
+      currentCoachMeasurements.length > 0
+        ? currentCoachMeasurements[0].weight
+        : preCoachWeight;
+    const weightChange =
+      preCoachWeight !== null && currentWeight !== null
+        ? Math.round((currentWeight - preCoachWeight) * 10) / 10
+        : null;
+
+    const weightComparison = {
+      preCoachWeight,
+      currentWeight,
+      weightChange,
+    };
+
     const timeline = this.buildTimeline(
       currentAssignment,
       assignmentHistory,
       measurements,
-      recentSessions,
-    ); // 5. Map and Return Profile using the single object parameter
+      sessions,
+    );
+
     return mapMemberProfile({
       member,
       currentAssignment,
       assignmentHistory,
       measurements,
-      workoutStats,
-      recentSessions,
+      workoutStats: overallStats,
+      recentSessions: sessions,
       timeline,
+      coachingRelationship: relationship,
+      historicalSessions,
+      currentCoachSessions,
+      historicalMeasurements,
+      currentCoachMeasurements,
+      historicalStats,
+      currentCoachStats,
+      weightComparison,
+      canAccessHistory,
     });
   }
 }

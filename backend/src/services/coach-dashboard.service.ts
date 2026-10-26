@@ -1,13 +1,12 @@
 // src/services/coach-dashboard.service.ts
-import mongoose from "mongoose";
-import User from "../models/User.model.js";
-import { Assignment } from "../models/Assignment.model.js";
-import WorkoutSession from "../models/WorkoutSession.model.js";
-import BodyMeasurement from "../models/BodyMeasurement.model.js";
-import Workout from "../models/Workout.model.js";
+import prisma from "../config/prisma.js";
 import { Roles, type Role } from "../constants/roles.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
+import {
+  RELATIONSHIP_STATUS,
+  HISTORY_SHARING_CONSENT,
+} from "../constants/coaching-relationship.js";
 import AppError from "../utils/AppError.js";
 import { mapCoachDashboard } from "../mappers/coach-dashboard.mapper.js";
 import { PRIORITY, type Priority } from "../constants/dashboard.js";
@@ -17,6 +16,8 @@ import type {
   UpcomingAssignment,
   DashboardPriority,
   QuickActions,
+  ClientHealthItem,
+  ActionCenterData,
 } from "../types/coach-dashboard.types.js";
 
 // ============================================================================
@@ -30,12 +31,11 @@ const DAYS_CRITICAL_INACTIVITY = 14;
 const DAYS_MEASUREMENT_OVERDUE = 30;
 
 const DAYS_UPCOMING_ASSIGNMENT = 2;
-const DAYS_UPCOMING_ACTION = 3;
 
 const CHART_DAYS_LONG = 30;
 const CHART_DAYS_SHORT = 7;
 
-const MAX_RECENT_ACTIVITY = 10;
+const MAX_RECENT_ACTIVITY = 50;
 const MAX_ATTENTION_MEMBERS = 5;
 const MAX_UPCOMING_ASSIGNMENTS = 5;
 const MAX_RECENT_MEASUREMENTS = 5;
@@ -80,26 +80,66 @@ class CoachDashboardService {
     }
 
     const isAdmin = role === Roles.ADMIN;
-    const userObjectId = new mongoose.Types.ObjectId(userId);
     const now = new Date();
 
-    let memberIds: mongoose.Types.ObjectId[] | null = null;
+    let activeRelationships: any[] = [];
+    let pendingInvitationsCount = 0;
+    let coachedMemberIds: string[] = [];
+
     if (!isAdmin) {
-      memberIds = await this.getTrainerMemberIds(userObjectId);
+      activeRelationships = await prisma.coachMemberRelationship
+        .findMany({
+          where: {
+            trainerId: userId,
+            status: RELATIONSHIP_STATUS.ACTIVE,
+            isActive: true,
+          },
+          include: {
+            member: { select: { id: true, name: true, email: true } },
+          },
+        })
+        .catch(() => []);
+
+      coachedMemberIds = activeRelationships.map((r) => r.memberId);
+
+      pendingInvitationsCount = await prisma.coachMemberRelationship
+        .count({
+          where: {
+            trainerId: userId,
+            status: RELATIONSHIP_STATUS.PENDING,
+            isActive: true,
+          },
+        })
+        .catch(() => 0);
     }
 
-    // Explicitly scope matches for different collection shapes
-    const memberModelMatch = isAdmin
-      ? { role: Roles.MEMBER, isActive: true }
-      : { _id: { $in: memberIds }, role: Roles.MEMBER, isActive: true };
+    let assignedMemberIds: string[] = [];
+    if (!isAdmin) {
+      assignedMemberIds = await this.getTrainerMemberIds(userId);
+    }
 
-    const relatedModelMatch = isAdmin
-      ? { isActive: true }
-      : { member: { $in: memberIds }, isActive: true };
+    // Unified managed member IDs (union of active coached members and assigned members)
+    const memberIds = isAdmin
+      ? []
+      : Array.from(new Set([...coachedMemberIds, ...assignedMemberIds]));
 
-    const assignmentMatch = isAdmin
+    // Members who granted history sharing consent to this coach
+    const grantedMemberIds = activeRelationships
+      .filter((r) => r.historySharingConsent === HISTORY_SHARING_CONSENT.GRANTED)
+      .map((r) => r.memberId);
+
+    // Hardened privacy query filter for body measurements
+    const authorizedMeasurementWhere: any = isAdmin
       ? { isActive: true }
-      : { trainer: userObjectId, isActive: true };
+      : {
+          isActive: true,
+          OR: [
+            { trainerId: userId },
+            ...(grantedMemberIds.length > 0
+              ? [{ memberId: { in: grantedMemberIds } }]
+              : []),
+          ],
+        };
 
     const [
       overview,
@@ -108,32 +148,59 @@ class CoachDashboardService {
       membersNeedingAttention,
       upcomingAssignments,
       recentMeasurements,
+      upcomingScheduledWorkouts,
     ] = await Promise.all([
       this.getOverview(
-        memberModelMatch,
-        assignmentMatch,
-        userObjectId,
+        userId,
         isAdmin,
+        memberIds,
         now,
+        coachedMemberIds.length,
+        pendingInvitationsCount,
+        authorizedMeasurementWhere,
       ),
-      this.getCharts(relatedModelMatch, assignmentMatch, now),
+      this.getCharts(userId, isAdmin, memberIds, now, authorizedMeasurementWhere),
       this.getRecentActivity(
-        relatedModelMatch,
-        assignmentMatch,
+        userId,
+        isAdmin,
+        memberIds,
         MAX_RECENT_ACTIVITY,
+        authorizedMeasurementWhere,
       ),
       this.getMembersNeedingAttention(
-        memberModelMatch,
+        isAdmin,
+        memberIds,
         now,
         MAX_ATTENTION_MEMBERS,
+        grantedMemberIds,
+        userId,
       ),
-      this.getUpcomingAssignments(
-        assignmentMatch,
-        now,
-        MAX_UPCOMING_ASSIGNMENTS,
+      this.getUpcomingAssignments(userId, isAdmin, now, MAX_UPCOMING_ASSIGNMENTS),
+      this.getRecentMeasurements(
+        userId,
+        isAdmin,
+        grantedMemberIds,
+        MAX_RECENT_MEASUREMENTS,
       ),
-      this.getRecentMeasurements(relatedModelMatch, MAX_RECENT_MEASUREMENTS),
+      this.getUpcomingScheduledWorkouts(isAdmin, memberIds, now, 5),
     ]);
+
+    const clientHealthOverview = await this.getClientHealthOverview(
+      userId,
+      isAdmin,
+      memberIds,
+      activeRelationships,
+      grantedMemberIds,
+      now,
+    );
+
+    const actionCenter = await this.getActionCenter(
+      userId,
+      isAdmin,
+      now,
+      clientHealthOverview,
+      upcomingAssignments,
+    );
 
     const todaysPriorities = this.buildTodaysPriorities(
       membersNeedingAttention,
@@ -152,8 +219,11 @@ class CoachDashboardService {
       recentActivity,
       membersNeedingAttention,
       upcomingAssignments,
+      upcomingScheduledWorkouts,
       recentMeasurements,
       quickActions,
+      clientHealthOverview,
+      actionCenter,
     });
   }
 
@@ -161,24 +231,27 @@ class CoachDashboardService {
   // PRIVATE DATA FETCHERS
   // ==========================================================================
 
-  private async getTrainerMemberIds(trainerId: mongoose.Types.ObjectId) {
-    const assignments = await Assignment.find({
-      trainer: trainerId,
-      isActive: true,
-      status: ASSIGNMENT_STATUS.ACTIVE,
-    }).select("member");
+  private async getTrainerMemberIds(trainerId: string): Promise<string[]> {
+    const assignments = await prisma.assignment.findMany({
+      where: {
+        trainerId,
+        isActive: true,
+        status: ASSIGNMENT_STATUS.ACTIVE,
+      },
+      select: { memberId: true },
+    });
 
-    return [...new Set(assignments.map((a) => a.member.toString()))].map(
-      (id) => new mongoose.Types.ObjectId(id),
-    );
+    return Array.from(new Set(assignments.map((a) => a.memberId)));
   }
 
   private async getOverview(
-    memberModelMatch: any,
-    assignMatch: any,
-    userId: mongoose.Types.ObjectId,
+    userId: string,
     isAdmin: boolean,
+    memberIds: string[],
     now: Date,
+    activeCoachingCount: number,
+    pendingInvitationsCount: number,
+    authorizedMeasurementWhere: any,
   ) {
     const today = new Date(now);
     today.setHours(0, 0, 0, 0);
@@ -187,104 +260,98 @@ class CoachDashboardService {
     weekAgo.setDate(weekAgo.getDate() - CHART_DAYS_SHORT);
     weekAgo.setHours(0, 0, 0, 0);
 
-    const workoutMatch = isAdmin
-      ? { isActive: true }
-      : { createdBy: userId, isActive: true };
+    const in7Days = new Date(now);
+    in7Days.setDate(in7Days.getDate() + 7);
 
     const [
       totalMembers,
       totalAssignments,
       activeAssignments,
       workoutsCreated,
-      sessionsAgg,
+      sessions,
       measurementsThisWeek,
+      overdueAssignments,
+      expiringAssignmentsCount,
     ] = await Promise.all([
-      User.countDocuments(memberModelMatch),
-      Assignment.countDocuments(assignMatch),
-      Assignment.countDocuments({
-        ...assignMatch,
-        status: ASSIGNMENT_STATUS.ACTIVE,
+      prisma.user.count({
+        where: {
+          isActive: true,
+          role: Roles.MEMBER,
+          ...(isAdmin ? {} : { id: { in: memberIds } }),
+        },
       }),
-      Workout.countDocuments(workoutMatch),
-
-      WorkoutSession.aggregate([
-        {
-          $lookup: {
-            from: "assignments",
-            localField: "assignment",
-            foreignField: "_id",
-            as: "assignDoc",
-          },
+      prisma.assignment.count({
+        where: {
+          isActive: true,
+          ...(isAdmin ? {} : { trainerId: userId }),
         },
-        { $unwind: "$assignDoc" },
-        {
-          $match: {
-            "assignDoc.isActive": true,
-            ...(isAdmin ? {} : { "assignDoc.trainer": userId }),
-          },
-        },
-        {
-          $group: {
-            _id: null,
-            total: { $sum: 1 },
-            completedTotal: {
-              $sum: {
-                $cond: [
-                  { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                  1,
-                  0,
-                ],
-              },
-            },
-            completedToday: {
-              $sum: {
-                $cond: [
-                  {
-                    $and: [
-                      { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                      { $gte: ["$startedAt", today] },
-                    ],
-                  },
-                  1,
-                  0,
-                ],
-              },
-            },
-            completedWeek: {
-              $sum: {
-                $cond: [
-                  {
-                    $and: [
-                      { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                      { $gte: ["$startedAt", weekAgo] },
-                    ],
-                  },
-                  1,
-                  0,
-                ],
-              },
-            },
-          },
-        },
-      ]),
-
-      BodyMeasurement.countDocuments({
-        ...(isAdmin ? {} : { trainer: userId }),
-        measuredAt: { $gte: weekAgo },
-        isActive: true,
       }),
+      prisma.assignment.count({
+        where: {
+          isActive: true,
+          status: ASSIGNMENT_STATUS.ACTIVE,
+          ...(isAdmin ? {} : { trainerId: userId }),
+        },
+      }),
+      prisma.workout.count({
+        where: {
+          isActive: true,
+          ...(isAdmin ? {} : { createdBy: userId }),
+        },
+      }),
+      prisma.workoutSession.findMany({
+        where: {
+          isActive: true,
+          ...(isAdmin
+            ? {}
+            : { assignment: { trainerId: userId, isActive: true } }),
+        },
+        select: { startedAt: true, status: true },
+      }),
+      prisma.bodyMeasurement.count({
+        where: {
+          ...authorizedMeasurementWhere,
+          measuredAt: { gte: weekAgo },
+        },
+      }).catch(() => 0),
+      prisma.assignment.count({
+        where: {
+          isActive: true,
+          status: ASSIGNMENT_STATUS.ACTIVE,
+          endDate: { lt: now },
+          ...(isAdmin ? {} : { trainerId: userId }),
+        },
+      }),
+      prisma.assignment.count({
+        where: {
+          isActive: true,
+          status: ASSIGNMENT_STATUS.ACTIVE,
+          endDate: { gte: now, lte: in7Days },
+          ...(isAdmin ? {} : { trainerId: userId }),
+        },
+      }).catch(() => 0),
     ]);
 
-    const sessStats = sessionsAgg[0] || {
-      total: 0,
-      completedTotal: 0,
-      completedToday: 0,
-      completedWeek: 0,
-    };
+    const totalSessions = sessions.length;
+    const completedTotal = sessions.filter(
+      (s) => s.status === WORKOUT_SESSION_STATUS.COMPLETED,
+    ).length;
+    const completedToday = sessions.filter(
+      (s) =>
+        s.status === WORKOUT_SESSION_STATUS.COMPLETED &&
+        s.startedAt &&
+        s.startedAt >= today,
+    ).length;
+    const completedWeek = sessions.filter(
+      (s) =>
+        s.status === WORKOUT_SESSION_STATUS.COMPLETED &&
+        s.startedAt &&
+        s.startedAt >= weekAgo,
+    ).length;
 
     const completionRate =
-      sessStats.total > 0
-        ? Math.round((sessStats.completedTotal / sessStats.total) * 100)
+      totalSessions > 0
+        ? Math.round((completedTotal / totalSessions) * 100)
         : 0;
 
     const coverageRatio =
@@ -300,13 +367,17 @@ class CoachDashboardService {
 
     return {
       totalMembers,
-      // Every returned member is active by the applied match.
-      activeMembers: totalMembers, // Safely reused instead of duplicate query
+      activeMembers: totalMembers,
+      activeCoachingMembers: activeCoachingCount,
+      pendingInvitations: pendingInvitationsCount,
+      expiringAssignments: expiringAssignmentsCount,
       totalAssignments,
       activeAssignments,
       workoutsCreated,
-      completedSessionsToday: sessStats.completedToday,
-      completedSessionsThisWeek: sessStats.completedWeek,
+      completedSessionsToday: completedToday,
+      completedSessionsThisWeek: completedWeek,
+      completedMemberSessions: completedTotal,
+      overdueAssignments,
       completionRate,
       measurementsThisWeek,
       healthScore,
@@ -314,179 +385,136 @@ class CoachDashboardService {
   }
 
   private async getMembersNeedingAttention(
-    memberModelMatch: any,
+    isAdmin: boolean,
+    memberIds: string[],
     now: Date,
     limit: number,
-  ) {
-    const pipeline: any[] = [
-      { $match: memberModelMatch },
-      {
-        $lookup: {
-          from: "workoutsessions",
-          let: { mId: "$_id" },
-          pipeline: [
-            {
-              $match: { $expr: { $eq: ["$member", "$$mId"] }, isActive: true },
-            },
-            {
-              $group: {
-                _id: null,
-                total: { $sum: 1 },
-                completed: {
-                  $sum: {
-                    $cond: [
-                      { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                      1,
-                      0,
-                    ],
-                  },
-                },
-                lastWorkout: { $max: "$startedAt" },
-              },
-            },
-          ],
-          as: "sessions",
+    grantedMemberIds: string[],
+    userId: string,
+  ): Promise<MemberAttention[]> {
+    const candidateUsers = await prisma.user.findMany({
+      where: {
+        role: Roles.MEMBER,
+        isActive: true,
+        ...(isAdmin ? {} : { id: { in: memberIds } }),
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        workoutSessions: {
+          where: { isActive: true },
+          select: { startedAt: true, status: true },
+          orderBy: { startedAt: "desc" },
+        },
+        measurementsAsMember: {
+          where: { isActive: true },
+          select: { measuredAt: true, trainerId: true },
+          orderBy: { measuredAt: "desc" },
+          take: 1,
         },
       },
-      {
-        $lookup: {
-          from: "bodymeasurements",
-          let: { mId: "$_id" },
-          pipeline: [
-            {
-              $match: { $expr: { $eq: ["$member", "$$mId"] }, isActive: true },
-            },
-            {
-              $group: { _id: null, latestMeasurement: { $max: "$measuredAt" } },
-            },
-          ],
-          as: "measurements",
-        },
-      },
-      {
-        $addFields: {
-          sessionData: { $arrayElemAt: ["$sessions", 0] },
-          measurementData: { $arrayElemAt: ["$measurements", 0] },
-        },
-      },
-      {
-        $addFields: {
-          completionRate: {
-            $cond: [
-              { $gt: ["$sessionData.total", 0] },
-              {
-                $multiply: [
-                  { $divide: ["$sessionData.completed", "$sessionData.total"] },
-                  100,
-                ],
-              },
-              0,
-            ],
-          },
-          daysSinceWorkout: {
-            $divide: [
-              {
-                $subtract: [
-                  now,
-                  { $ifNull: ["$sessionData.lastWorkout", new Date(0)] },
-                ],
-              },
-              MS_PER_DAY,
-            ],
-          },
-          daysSinceMeasurement: {
-            $divide: [
-              {
-                $subtract: [
-                  now,
-                  {
-                    $ifNull: [
-                      "$measurementData.latestMeasurement",
-                      new Date(0),
-                    ],
-                  },
-                ],
-              },
-              MS_PER_DAY,
-            ],
-          },
-        },
-      },
-      {
-        $addFields: {
-          reasons: {
-            $concatArrays: [
-              {
-                $cond: [
-                  { $gt: ["$daysSinceWorkout", DAYS_INACTIVE] },
-                  [`No workout in over ${DAYS_INACTIVE} days`],
-                  [],
-                ],
-              },
-              {
-                $cond: [
-                  { $gt: ["$daysSinceMeasurement", DAYS_MEASUREMENT_OVERDUE] },
-                  [`No body measurement in ${DAYS_MEASUREMENT_OVERDUE}+ days`],
-                  [],
-                ],
-              },
-              {
-                $cond: [
-                  {
-                    $and: [
-                      { $lt: ["$completionRate", 40] },
-                      { $gt: ["$sessionData.total", 0] },
-                    ],
-                  },
-                  ["Completion rate below 40%"],
-                  [],
-                ],
-              },
-            ],
-          },
-        },
-      },
-      { $match: { $expr: { $gt: [{ $size: "$reasons" }, 0] } } },
-      { $sort: { daysSinceWorkout: -1, daysSinceMeasurement: -1 } },
-      { $limit: limit },
-    ];
+    });
 
-    const results = await User.aggregate(pipeline);
+    const attentionList: MemberAttention[] = [];
 
-    return results.map(
-      (r: any): MemberAttention => ({
-        member: { _id: r._id, name: r.name, email: r.email },
-        reasons: r.reasons,
-        lastWorkout: r.sessionData?.lastWorkout || null,
-        completionRate: Math.round(r.completionRate),
-        latestMeasurement: r.measurementData?.latestMeasurement || null,
-        daysSinceWorkout: r.daysSinceWorkout,
-        daysSinceMeasurement: r.daysSinceMeasurement,
-      }),
+    for (const u of candidateUsers) {
+      const sessions = u.workoutSessions || [];
+      const measurements = u.measurementsAsMember || [];
+      const total = sessions.length;
+      const completed = sessions.filter(
+        (s) => s.status === WORKOUT_SESSION_STATUS.COMPLETED,
+      ).length;
+      const lastWorkout = sessions[0]?.startedAt || null;
+
+      // Only inspect measurement if authorized
+      const isAuthorized =
+        isAdmin ||
+        grantedMemberIds.includes(u.id) ||
+        measurements[0]?.trainerId === userId;
+
+      const latestMeasurement = isAuthorized
+        ? measurements[0]?.measuredAt || null
+        : null;
+
+      const completionRate =
+        total > 0 ? (completed / total) * 100 : 0;
+
+      const daysSinceWorkout = lastWorkout
+        ? (now.getTime() - new Date(lastWorkout).getTime()) / MS_PER_DAY
+        : (now.getTime() - 0) / MS_PER_DAY;
+
+      const daysSinceMeasurement = latestMeasurement
+        ? (now.getTime() - new Date(latestMeasurement).getTime()) / MS_PER_DAY
+        : 0;
+
+      const reasons: string[] = [];
+      if (daysSinceWorkout > DAYS_INACTIVE) {
+        reasons.push(`No workout in over ${DAYS_INACTIVE} days`);
+      }
+      if (isAuthorized && latestMeasurement && daysSinceMeasurement > DAYS_MEASUREMENT_OVERDUE) {
+        reasons.push(
+          `No body measurement in ${DAYS_MEASUREMENT_OVERDUE}+ days`,
+        );
+      }
+      if (total > 0 && completionRate < 40) {
+        reasons.push("Completion rate below 40%");
+      }
+
+      if (reasons.length > 0) {
+        attentionList.push({
+          member: { _id: u.id, name: u.name, email: u.email },
+          reasons,
+          lastWorkout,
+          completionRate: Math.round(completionRate),
+          latestMeasurement,
+          daysSinceWorkout,
+          daysSinceMeasurement,
+        });
+      }
+    }
+
+    attentionList.sort(
+      (a, b) =>
+        b.daysSinceWorkout - a.daysSinceWorkout ||
+        b.daysSinceMeasurement - a.daysSinceMeasurement,
     );
+
+    return attentionList.slice(0, limit);
   }
 
   private async getUpcomingAssignments(
-    assignMatch: any,
+    userId: string,
+    isAdmin: boolean,
     now: Date,
     limit: number,
   ): Promise<UpcomingAssignment[]> {
-    const assignments = await Assignment.find({
-      ...assignMatch,
-      status: ASSIGNMENT_STATUS.ACTIVE,
-      endDate: { $gte: now },
-    })
-      .sort({ endDate: 1 })
-      .limit(limit)
-      .populate("member", "name")
-      .populate("workout", "title");
+    const assignments = await prisma.assignment.findMany({
+      where: {
+        isActive: true,
+        status: ASSIGNMENT_STATUS.ACTIVE,
+        endDate: { gte: now },
+        ...(isAdmin ? {} : { trainerId: userId }),
+      },
+      orderBy: { endDate: "asc" },
+      take: limit,
+      include: {
+        member: { select: { id: true, name: true } },
+        workout: { select: { id: true, title: true } },
+      },
+    });
 
-    return assignments.map((a: any) => {
-      const daysRemaining = Math.max(
-        0,
-        Math.ceil((a.endDate.getTime() - now.getTime()) / MS_PER_DAY),
-      );
+    return assignments.map((a) => {
+      const daysRemaining = a.endDate
+        ? Math.max(
+            0,
+            Math.ceil(
+              (new Date(a.endDate).getTime() - now.getTime()) / MS_PER_DAY,
+            ),
+          )
+        : 0;
       return {
+        id: a.id,
         member: a.member,
         workout: a.workout,
         endDate: a.endDate,
@@ -495,44 +523,99 @@ class CoachDashboardService {
     });
   }
 
-  private async getRecentMeasurements(relatedModelMatch: any, limit: number) {
-    return await BodyMeasurement.find(relatedModelMatch)
-      .sort({ measuredAt: -1 })
-      .limit(limit)
-      .populate("member", "name email")
-      .populate("trainer", "name");
+  private async getRecentMeasurements(
+    userId: string,
+    isAdmin: boolean,
+    grantedMemberIds: string[],
+    limit: number,
+  ) {
+    let where: any = { isActive: true };
+    if (!isAdmin) {
+      where = {
+        isActive: true,
+        OR: [
+          { trainerId: userId },
+          ...(grantedMemberIds.length > 0
+            ? [{ memberId: { in: grantedMemberIds } }]
+            : []),
+        ],
+      };
+    }
+
+    return await prisma.bodyMeasurement.findMany({
+      where,
+      orderBy: { measuredAt: "desc" },
+      take: limit,
+      include: {
+        member: { select: { id: true, name: true, email: true } },
+        trainer: { select: { id: true, name: true } },
+      },
+    });
   }
 
   private async getRecentActivity(
-    relatedModelMatch: any,
-    assignMatch: any,
+    userId: string,
+    isAdmin: boolean,
+    memberIds: string[],
     limit: number,
+    authorizedMeasurementWhere: any,
   ): Promise<DashboardActivity[]> {
     const [sessions, assignments, measurements] = await Promise.all([
-      WorkoutSession.find(relatedModelMatch)
-        .sort({ startedAt: -1 })
-        .limit(limit)
-        .populate("member", "name")
-        .populate({
-          path: "assignment",
-          populate: { path: "workout", select: "title" },
-        }),
-      Assignment.find(assignMatch)
-        .sort({ createdAt: -1 })
-        .limit(limit)
-        .populate("member", "name")
-        .populate("workout", "title"),
-      BodyMeasurement.find(relatedModelMatch)
-        .sort({ measuredAt: -1 })
-        .limit(limit)
-        .populate("member", "name"),
+      prisma.workoutSession.findMany({
+        where: {
+          isActive: true,
+          ...(isAdmin ? {} : { memberId: { in: memberIds } }),
+        },
+        orderBy: { startedAt: "desc" },
+        take: limit,
+        include: {
+          member: { select: { id: true, name: true } },
+          assignment: {
+            include: { workout: { select: { id: true, title: true } } },
+          },
+        },
+      }),
+      prisma.assignment.findMany({
+        where: {
+          isActive: true,
+          ...(isAdmin ? {} : { trainerId: userId }),
+        },
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        include: {
+          member: { select: { id: true, name: true } },
+          workout: { select: { id: true, title: true } },
+        },
+      }),
+      prisma.bodyMeasurement.findMany({
+        where: authorizedMeasurementWhere,
+        orderBy: { measuredAt: "desc" },
+        take: limit,
+        include: {
+          member: { select: { id: true, name: true } },
+        },
+      }).catch(() => []),
     ]);
 
     const events: DashboardActivity[] = [];
 
-    sessions.forEach((s: any) => {
+    sessions.forEach((s) => {
       const title = s.assignment?.workout?.title || "Workout";
-      if (s.startedAt) {
+      if (s.status === WORKOUT_SESSION_STATUS.COMPLETED) {
+        if (s.endedAt || s.startedAt) {
+          events.push({
+            type: ACTIVITY_TYPE.WORKOUT,
+            member: s.member,
+            date: s.endedAt || s.startedAt,
+            action: ACTIVITY_ACTION.COMPLETED,
+            metadata: {
+              workoutTitle: title,
+              duration: s.duration,
+              volume: s.totalVolume,
+            },
+          });
+        }
+      } else if (s.startedAt) {
         events.push({
           type: ACTIVITY_TYPE.WORKOUT,
           member: s.member,
@@ -541,41 +624,22 @@ class CoachDashboardService {
           metadata: { workoutTitle: title },
         });
       }
-      if (s.status === WORKOUT_SESSION_STATUS.COMPLETED && s.endedAt) {
-        events.push({
-          type: ACTIVITY_TYPE.WORKOUT,
-          member: s.member,
-          date: s.endedAt,
-          action: ACTIVITY_ACTION.COMPLETED,
-          metadata: {
-            workoutTitle: title,
-            duration: s.duration,
-            volume: s.totalVolume,
-          },
-        });
-      }
     });
 
-    assignments.forEach((a: any) => {
+    assignments.forEach((a) => {
       events.push({
         type: ACTIVITY_TYPE.ASSIGNMENT,
         member: a.member,
         date: a.createdAt,
         action: ACTIVITY_ACTION.CREATED,
-        metadata: { workoutTitle: a.workout?.title || "Workout" },
+        metadata: {
+          workoutTitle: a.workout?.title || "Custom Workout",
+          endDate: a.endDate,
+        },
       });
-      if (a.status === ASSIGNMENT_STATUS.COMPLETED && a.completedAt) {
-        events.push({
-          type: ACTIVITY_TYPE.ASSIGNMENT,
-          member: a.member,
-          date: a.completedAt,
-          action: ACTIVITY_ACTION.COMPLETED,
-          metadata: { workoutTitle: a.workout?.title || "Workout" },
-        });
-      }
     });
 
-    measurements.forEach((m: any) => {
+    measurements.forEach((m) => {
       events.push({
         type: ACTIVITY_TYPE.BODY_MEASUREMENT,
         member: m.member,
@@ -590,113 +654,436 @@ class CoachDashboardService {
       .slice(0, limit);
   }
 
-  private async getCharts(relatedModelMatch: any, assignMatch: any, now: Date) {
+  private async getCharts(
+    userId: string,
+    isAdmin: boolean,
+    memberIds: string[],
+    now: Date,
+    authorizedMeasurementWhere: any,
+  ) {
     const days30Ago = new Date(now);
     days30Ago.setDate(days30Ago.getDate() - CHART_DAYS_LONG);
 
-    const days7Ago = new Date(now);
-    days7Ago.setDate(days7Ago.getDate() - CHART_DAYS_SHORT);
-
-    const [sessionsAgg, measurementsAgg, assignmentsAgg] = await Promise.all([
-      WorkoutSession.aggregate([
-        {
-          $match: {
-            ...relatedModelMatch,
-            startedAt: { $gte: days30Ago },
-          },
+    const [
+      sessions,
+      measurements,
+      assignments,
+      assignmentStatuses,
+      memberSessionCounts,
+    ] = await Promise.all([
+      prisma.workoutSession.findMany({
+        where: {
+          isActive: true,
+          startedAt: { gte: days30Ago },
+          ...(isAdmin ? {} : { memberId: { in: memberIds } }),
         },
-        {
-          $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$startedAt" } },
-            count: { $sum: 1 },
-            completed: {
-              $sum: {
-                $cond: [
-                  { $eq: ["$status", WORKOUT_SESSION_STATUS.COMPLETED] },
-                  1,
-                  0,
-                ],
-              },
-            },
-          },
+        select: { startedAt: true, status: true },
+      }),
+      prisma.bodyMeasurement.findMany({
+        where: {
+          ...authorizedMeasurementWhere,
+          measuredAt: { gte: days30Ago },
         },
-      ]),
-      BodyMeasurement.aggregate([
-        {
-          $match: {
-            ...relatedModelMatch,
-            measuredAt: { $gte: days30Ago },
-          },
+        select: { measuredAt: true },
+      }).catch(() => []),
+      prisma.assignment.findMany({
+        where: {
+          isActive: true,
+          createdAt: { gte: days30Ago },
+          ...(isAdmin ? {} : { trainerId: userId }),
         },
-        {
-          $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$measuredAt" } },
-            count: { $sum: 1 },
-          },
+        select: { createdAt: true },
+      }),
+      prisma.assignment.groupBy({
+        by: ["status"],
+        where: {
+          isActive: true,
+          ...(isAdmin ? {} : { trainerId: userId }),
         },
-      ]),
-      Assignment.aggregate([
-        { $match: { ...assignMatch, createdAt: { $gte: days30Ago } } },
-        {
-          $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-            count: { $sum: 1 },
-          },
+        _count: { status: true },
+      }).catch(() => []),
+      prisma.workoutSession.groupBy({
+        by: ["memberId"],
+        where: {
+          isActive: true,
+          status: WORKOUT_SESSION_STATUS.COMPLETED,
+          ...(isAdmin ? {} : { memberId: { in: memberIds } }),
         },
-      ]),
+        _count: { memberId: true },
+        orderBy: { _count: { memberId: "desc" } },
+        take: 6,
+      }).catch(() => []),
     ]);
 
+    const sessionStatsByDate = new Map<
+      string,
+      { count: number; completed: number }
+    >();
+    sessions.forEach((s) => {
+      if (!s.startedAt) return;
+      const d = s.startedAt.toISOString().split("T")[0];
+      const cur = sessionStatsByDate.get(d) || { count: 0, completed: 0 };
+      cur.count += 1;
+      if (s.status === WORKOUT_SESSION_STATUS.COMPLETED) {
+        cur.completed += 1;
+      }
+      sessionStatsByDate.set(d, cur);
+    });
+
+    const measurementCountsByDate = new Map<string, number>();
+    measurements.forEach((m) => {
+      if (!m.measuredAt) return;
+      const d = (m.measuredAt instanceof Date ? m.measuredAt : new Date(m.measuredAt))
+        .toISOString()
+        .split("T")[0];
+      measurementCountsByDate.set(
+        d,
+        (measurementCountsByDate.get(d) || 0) + 1,
+      );
+    });
+
+    const assignmentCountsByDate = new Map<string, number>();
+    assignments.forEach((a) => {
+      if (!a.createdAt) return;
+      const d = (a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt))
+        .toISOString()
+        .split("T")[0];
+      assignmentCountsByDate.set(
+        d,
+        (assignmentCountsByDate.get(d) || 0) + 1,
+      );
+    });
+
     const labels30 = getPastDates(now, CHART_DAYS_LONG);
-    const labels7 = getPastDates(now, CHART_DAYS_SHORT);
 
-    const sessions30 = this.fillChartData(
-      labels30,
-      sessionsAgg,
-      (i) => i.count,
-    );
-    const sessions7 = this.fillChartData(labels7, sessionsAgg, (i) => i.count);
-    const measurements30 = this.fillChartData(
-      labels30,
-      measurementsAgg,
-      (i) => i.count,
-    );
-    const assignments30 = this.fillChartData(
-      labels30,
-      assignmentsAgg,
-      (i) => i.count,
-    );
+    const sessions7 = getPastDates(now, CHART_DAYS_SHORT).map((l) => ({
+      date: l.dateStr,
+      value: sessionStatsByDate.get(l.dateStr)?.count || 0,
+    }));
+    const sessions30 = labels30.map((l) => ({
+      date: l.dateStr,
+      value: sessionStatsByDate.get(l.dateStr)?.count || 0,
+    }));
+    const measurements30 = labels30.map((l) => ({
+      date: l.dateStr,
+      value: measurementCountsByDate.get(l.dateStr) || 0,
+    }));
+    const assignments30 = labels30.map((l) => ({
+      date: l.dateStr,
+      value: assignmentCountsByDate.get(l.dateStr) || 0,
+    }));
 
-    const completionRate30 = this.fillChartData(labels30, sessionsAgg, (i) =>
-      i.count > 0 ? Math.round((i.completed / i.count) * 100) : 0,
+    const completionRate30 = labels30.map((l) => {
+      const data = sessionStatsByDate.get(l.dateStr);
+      const val =
+        data && data.count > 0
+          ? Math.round((data.completed / data.count) * 100)
+          : 0;
+      return { date: l.dateStr, value: val };
+    });
+
+    // Donut chart: Assignment Status Distribution
+    const statusMap = new Map(
+      (assignmentStatuses || []).map((s: any) => [s.status, s._count.status]),
     );
+    const activeCount = statusMap.get(ASSIGNMENT_STATUS.ACTIVE) || 0;
+    const completedCount = statusMap.get(ASSIGNMENT_STATUS.COMPLETED) || 0;
+    const cancelledCount = statusMap.get(ASSIGNMENT_STATUS.CANCELLED) || 0;
+    const totalStatusCount = activeCount + completedCount + cancelledCount;
+
+    const assignmentStatusDistribution = [
+      {
+        status: "Active",
+        count: activeCount,
+        percentage:
+          totalStatusCount > 0
+            ? Math.round((activeCount / totalStatusCount) * 100)
+            : 0,
+        color: "#5BE584",
+      },
+      {
+        status: "Completed",
+        count: completedCount,
+        percentage:
+          totalStatusCount > 0
+            ? Math.round((completedCount / totalStatusCount) * 100)
+            : 0,
+        color: "#3B82F6",
+      },
+      {
+        status: "Cancelled",
+        count: cancelledCount,
+        percentage:
+          totalStatusCount > 0
+            ? Math.round((cancelledCount / totalStatusCount) * 100)
+            : 0,
+        color: "#EF4444",
+      },
+    ];
+
+    // Horizontal Bar: Member Activity Ranking
+    const rankingMemberIds = (memberSessionCounts || []).map(
+      (m: any) => m.memberId,
+    );
+    let memberActivityRanking: Array<{
+      memberId: string;
+      name: string;
+      completedSessions: number;
+    }> = [];
+    if (rankingMemberIds.length > 0) {
+      const users = await prisma.user
+        .findMany({
+          where: { id: { in: rankingMemberIds } },
+          select: { id: true, name: true },
+        })
+        .catch(() => []);
+      const userNameMap = new Map(
+        (users || []).map((u: any) => [u.id, u.name]),
+      );
+      memberActivityRanking = (memberSessionCounts || []).map((m: any) => ({
+        memberId: m.memberId,
+        name: userNameMap.get(m.memberId) || "Member",
+        completedSessions: m._count.memberId,
+      }));
+    }
 
     return {
       sessions: { last7Days: sessions7, last30Days: sessions30 },
       measurements: { last30Days: measurements30 },
       assignments: { last30Days: assignments30 },
       completionRateTrend: { last30Days: completionRate30 },
+      assignmentStatusDistribution,
+      memberActivityRanking,
     };
+  }
+
+  private async getClientHealthOverview(
+    userId: string,
+    isAdmin: boolean,
+    memberIds: string[],
+    activeRelationships: any[],
+    grantedMemberIds: string[],
+    now: Date,
+  ): Promise<ClientHealthItem[]> {
+    if (memberIds.length === 0 && !isAdmin) return [];
+
+    const thirtyDaysAgo = new Date(now);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const clientUsers = await prisma.user
+      .findMany({
+        where: {
+          isActive: true,
+          role: Roles.MEMBER,
+          ...(isAdmin ? {} : { id: { in: memberIds } }),
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          workoutSessions: {
+            where: { isActive: true, status: WORKOUT_SESSION_STATUS.COMPLETED },
+            select: { startedAt: true },
+            orderBy: { startedAt: "desc" },
+          },
+        },
+      })
+      .catch(() => []);
+
+    const relMap = new Map(activeRelationships.map((r) => [r.memberId, r]));
+
+    const healthList: ClientHealthItem[] = [];
+
+    for (const client of clientUsers) {
+      const rel = relMap.get(client.id);
+      const relationshipStatus = rel ? rel.status : "ASSIGNED";
+      const historySharingConsent = rel ? rel.historySharingConsent : "NONE";
+
+      const clientSessions = client.workoutSessions || [];
+      const lastWorkout = clientSessions[0]?.startedAt || null;
+      const daysSinceLastWorkout = lastWorkout
+        ? Math.floor(
+            (now.getTime() - new Date(lastWorkout).getTime()) / MS_PER_DAY,
+          )
+        : null;
+
+      let activityStatus: "ACTIVE" | "INACTIVE_7_DAYS" | "NO_WORKOUTS" = "ACTIVE";
+      if (!lastWorkout) {
+        activityStatus = "NO_WORKOUTS";
+      } else if (
+        daysSinceLastWorkout !== null &&
+        daysSinceLastWorkout > DAYS_INACTIVE
+      ) {
+        activityStatus = "INACTIVE_7_DAYS";
+      }
+
+      const completedSessionsThisMonth = clientSessions.filter(
+        (s) => s.startedAt && new Date(s.startedAt) >= thirtyDaysAgo,
+      ).length;
+
+      // Determine measurement authorization
+      const isAuthorized = isAdmin || grantedMemberIds.includes(client.id);
+
+      let latestMeasurement = {
+        weight: null as number | null,
+        measuredAt: null as Date | null,
+        isRestricted: false,
+        restrictionReason: undefined as string | undefined,
+      };
+
+      if (isAuthorized) {
+        const m = await prisma.bodyMeasurement
+          .findFirst({
+            where: { memberId: client.id, isActive: true },
+            orderBy: { measuredAt: "desc" },
+            select: { weight: true, measuredAt: true },
+          })
+          .catch(() => null);
+
+        if (m) {
+          latestMeasurement = {
+            weight: m.weight,
+            measuredAt: m.measuredAt,
+            isRestricted: false,
+            restrictionReason: undefined,
+          };
+        }
+      } else {
+        // Coach is NOT authorized for member's general measurements.
+        // Check if coach recorded any measurement themselves for this member:
+        const coachM = await prisma.bodyMeasurement
+          .findFirst({
+            where: { memberId: client.id, trainerId: userId, isActive: true },
+            orderBy: { measuredAt: "desc" },
+            select: { weight: true, measuredAt: true },
+          })
+          .catch(() => null);
+
+        if (coachM) {
+          latestMeasurement = {
+            weight: coachM.weight,
+            measuredAt: coachM.measuredAt,
+            isRestricted: false,
+            restrictionReason: undefined,
+          };
+        } else {
+          // Explicit safe restriction state
+          latestMeasurement = {
+            weight: null,
+            measuredAt: null,
+            isRestricted: true,
+            restrictionReason: rel
+              ? "CONSENT_REQUIRED"
+              : "NO_ACTIVE_RELATIONSHIP",
+          };
+        }
+      }
+
+      healthList.push({
+        id: client.id,
+        name: client.name,
+        email: client.email,
+        relationshipStatus,
+        historySharingConsent,
+        lastWorkoutDate: lastWorkout,
+        daysSinceLastWorkout,
+        activityStatus,
+        completedSessionsThisMonth,
+        latestMeasurement,
+      });
+    }
+
+    return healthList;
+  }
+
+  private async getActionCenter(
+    userId: string,
+    isAdmin: boolean,
+    now: Date,
+    clientHealthList: ClientHealthItem[],
+    upcomingAssignments: UpcomingAssignment[],
+  ): Promise<ActionCenterData> {
+    const pendingInvitations = isAdmin
+      ? []
+      : await prisma.coachMemberRelationship
+          .findMany({
+            where: {
+              trainerId: userId,
+              status: RELATIONSHIP_STATUS.PENDING,
+              isActive: true,
+            },
+            include: {
+              member: { select: { id: true, name: true, email: true } },
+            },
+            orderBy: { invitedAt: "desc" },
+            take: 5,
+          })
+          .catch(() => []);
+
+    const expiringAssignments = upcomingAssignments.filter(
+      (a) => a.daysRemaining <= 7,
+    );
+
+    const inactiveClients = clientHealthList
+      .filter((c) => c.activityStatus === "INACTIVE_7_DAYS")
+      .map((c) => ({
+        id: c.id,
+        name: c.name,
+        email: c.email,
+        daysSinceLastWorkout: c.daysSinceLastWorkout,
+        lastWorkoutDate: c.lastWorkoutDate,
+      }));
+
+    return {
+      pendingInvitations: pendingInvitations.map((p) => ({
+        id: p.id,
+        member: { id: p.member.id, name: p.member.name, email: p.member.email },
+        invitedAt: p.invitedAt,
+        notes: p.notes,
+      })),
+      expiringAssignments,
+      inactiveClients,
+    };
+  }
+
+  private async getUpcomingScheduledWorkouts(
+    isAdmin: boolean,
+    memberIds: string[],
+    now: Date,
+    limit: number,
+  ) {
+    if (!prisma.scheduledWorkout) return [];
+    try {
+      const schedules = await prisma.scheduledWorkout.findMany({
+        where: {
+          isActive: true,
+          status: "SCHEDULED",
+          scheduledAt: { gte: now },
+          ...(isAdmin ? {} : { memberId: { in: memberIds } }),
+        },
+        orderBy: { scheduledAt: "asc" },
+        take: limit,
+        include: {
+          member: { select: { id: true, name: true, email: true } },
+          workout: {
+            select: {
+              id: true,
+              title: true,
+              category: true,
+              difficulty: true,
+            },
+          },
+        },
+      });
+      return schedules;
+    } catch {
+      return [];
+    }
   }
 
   // ==========================================================================
   // DATA SYNTHESIZERS
   // ==========================================================================
-
-  private fillChartData(
-    dates: any[],
-    aggData: any[],
-    valueMapper: (item: any) => number,
-  ) {
-    const lookup = new Map(aggData.map((item) => [item._id, item]));
-
-    return dates.map((d) => {
-      const found = lookup.get(d.dateStr);
-      return {
-        date: d.dateStr,
-        value: found ? valueMapper(found) : 0,
-      };
-    });
-  }
 
   private buildTodaysPriorities(
     membersNeedingAttention: MemberAttention[],
@@ -706,7 +1093,7 @@ class CoachDashboardService {
 
     // Process Members Needing Attention
     membersNeedingAttention.forEach((m) => {
-      const id = m.member._id.toString();
+      const id = (m.member._id || (m.member as any).id)?.toString();
       let priority: Priority = PRIORITY.LOW;
 
       const hasLongInactivity = m.daysSinceWorkout > DAYS_INACTIVE;
@@ -727,13 +1114,12 @@ class CoachDashboardService {
     // Process Upcoming Assignments
     upcomingAssignments.forEach((a) => {
       if (a.daysRemaining <= DAYS_UPCOMING_ASSIGNMENT) {
-        const id = a.member._id.toString();
+        const id = ((a.member as any)._id || (a.member as any).id)?.toString();
         const reason = `Assignment "${a.workout?.title}" ends in ${a.daysRemaining} days`;
 
         if (prioritiesMap.has(id)) {
           const current = prioritiesMap.get(id);
           current.reasons.push(reason);
-          // Escalate priority if it was LOW
           if (current.priority === PRIORITY.LOW) {
             current.priority = PRIORITY.MEDIUM;
           }
@@ -747,7 +1133,6 @@ class CoachDashboardService {
       }
     });
 
-    // Format map back to array and ensure structure
     return Array.from(prioritiesMap.values()).map((p) => {
       let title = "Member Needs Attention";
       let description = p.reasons[0];
@@ -768,7 +1153,7 @@ class CoachDashboardService {
       }
 
       return {
-        type: "MEMBER_ACTION",
+        type: "MEMBER_ACTION" as const,
         priority: p.priority,
         title,
         description,
@@ -783,16 +1168,16 @@ class CoachDashboardService {
     membersNeedingAttention: MemberAttention[],
     upcomingAssignments: UpcomingAssignment[],
   ): QuickActions {
-    const inactiveMembers = membersNeedingAttention.filter((m) =>
-      m.reasons.some((r: string) => r.includes("workout")),
+    const inactiveMembers = membersNeedingAttention.filter(
+      (m) => m.daysSinceWorkout > DAYS_INACTIVE,
     ).length;
 
-    const overdueMeasurements = membersNeedingAttention.filter((m) =>
-      m.reasons.some((r: string) => r.includes("measurement")),
+    const overdueMeasurements = membersNeedingAttention.filter(
+      (m) => m.daysSinceMeasurement > DAYS_MEASUREMENT_OVERDUE,
     ).length;
 
     const assignmentsEndingSoon = upcomingAssignments.filter(
-      (a) => a.daysRemaining <= DAYS_UPCOMING_ACTION,
+      (a) => a.daysRemaining <= DAYS_UPCOMING_ASSIGNMENT,
     ).length;
 
     return {

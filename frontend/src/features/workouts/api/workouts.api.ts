@@ -36,6 +36,15 @@ export const updateWorkout = async (
   return response.data.data.workout;
 };
 
+export const duplicateWorkout = async (
+  id: string,
+  title?: string,
+): Promise<WorkoutDetails> => {
+  const response = await api.post(`/workouts/${id}/duplicate`, { title });
+
+  return response.data.data.workout;
+};
+
 export const deleteWorkout = async (id: string): Promise<void> => {
   await api.delete(`/workouts/${id}`);
 };

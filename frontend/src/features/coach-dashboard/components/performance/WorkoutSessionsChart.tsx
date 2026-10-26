@@ -9,6 +9,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import type { DashboardChartPoint } from "@/features/coach-dashboard/types/coach-dashboard.types";
 
 interface WorkoutSessionsChartProps {
@@ -21,12 +22,22 @@ export const WorkoutSessionsChart: React.FC<WorkoutSessionsChartProps> = ({
   const hasData = data && data.length > 0;
 
   return (
-    <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-5 h-full">
+    <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-5 h-full transition-colors hover:border-[#2a313a]">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-gray-100">
-            Workout Sessions
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-gray-100">
+              Workout Sessions
+            </h3>
+            <InfoTooltip
+              title="Daily Completed Workout Sessions"
+              description="Daily count of completed workout sessions logged by athletes assigned to you."
+              calculation="COUNT(sessions WHERE status = 'COMPLETED') per calendar day"
+              unit="sessions / day"
+              dateRange="Past 30 rolling days"
+              limitations="Zero-padded for days with no activity across your roster."
+            />
+          </div>
           <p className="text-xs text-gray-500 mt-0.5">Last 30 Days Telemetry</p>
         </div>
       </div>
@@ -100,8 +111,8 @@ export const WorkoutSessionsChart: React.FC<WorkoutSessionsChartProps> = ({
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-xs text-gray-500">
-            No session telemetry available.
+          <div className="flex h-full items-center justify-center text-xs text-gray-500">
+            No session telemetry recorded for this period.
           </div>
         )}
       </div>

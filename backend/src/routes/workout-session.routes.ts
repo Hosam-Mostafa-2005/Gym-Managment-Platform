@@ -16,43 +16,58 @@ const router = Router();
 
 router.use(protect);
 
-// Member فقط يبدأ Session
+// Start Session
 router.post(
   "/start",
-  restrictTo(Roles.MEMBER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   validate(startWorkoutSessionSchema),
   workoutSessionController.start,
 );
 
-// Member فقط ينهي Session
+// Finish Session
 router.patch(
   "/:id/finish",
-  restrictTo(Roles.MEMBER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   validate(finishWorkoutSessionSchema),
   workoutSessionController.finish,
 );
 
-// Current Session للـ Member فقط
+// Cancel Session
+router.patch(
+  "/:id/cancel",
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
+  workoutSessionController.cancel,
+);
+
+// Current Session
 router.get(
   "/current",
-  restrictTo(Roles.MEMBER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   workoutSessionController.getCurrent,
 );
 
-// جميع الـ Sessions
-// Admin يشوف الكل
-// Trainer يشوف Sessions الخاصة بالـ Assignments بتاعته
-// Member يشوف Sessions الخاصة بيه
+// Previous Performance batch by exerciseIds
+router.post(
+  "/previous-performance",
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
+  workoutSessionController.getPreviousPerformanceBatch,
+);
+
+// Previous Performance for specific session
+router.get(
+  "/:id/previous-performance",
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
+  workoutSessionController.getPreviousPerformance,
+);
+
+// All Sessions
 router.get(
   "/",
   restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   workoutSessionController.getAll,
 );
 
-// Session معينة
-// Admin أي Session
-// Trainer لو Assignment بتاعه
-// Member لو Session بتاعته
+// Specific Session
 router.get(
   "/:id",
   restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),

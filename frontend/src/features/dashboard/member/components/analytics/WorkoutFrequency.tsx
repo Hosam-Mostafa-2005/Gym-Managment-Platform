@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Calendar } from "lucide-react";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 interface WorkoutFrequencyProps {
   byWeekday?: any[];
@@ -20,11 +21,19 @@ export const WorkoutFrequency: React.FC<WorkoutFrequencyProps> = ({
   byHour = [],
 }) => {
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 rounded-xl border border-[#1E2329] bg-[#0D1117] p-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 transition-colors hover:border-[#2A313A]">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-400" />
           <h2 className="text-sm font-semibold text-white">Sessions by Day</h2>
+          <InfoTooltip
+            title="Day of Week Distribution"
+            description="Frequency distribution of workout sessions started across each day of the week (Sun–Sat)."
+            calculation="COUNT(sessions) grouped by day of week"
+            unit="sessions / day"
+            dateRange="All time"
+            limitations="Helps identify your preferred workout days vs recovery days."
+          />
         </div>
         <div className="h-[180px] w-full">
           {byWeekday.length > 0 ? (
@@ -52,13 +61,14 @@ export const WorkoutFrequency: React.FC<WorkoutFrequencyProps> = ({
                     borderRadius: "8px",
                     color: "#fff",
                   }}
+                  formatter={(val: any) => [val, "Sessions"]}
                 />
                 <Bar dataKey="sessions" fill="#3B82F6" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-xs text-gray-500">
-              No data
+              No weekday data available.
             </div>
           )}
         </div>
@@ -68,6 +78,14 @@ export const WorkoutFrequency: React.FC<WorkoutFrequencyProps> = ({
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-400" />
           <h2 className="text-sm font-semibold text-white">Sessions by Time</h2>
+          <InfoTooltip
+            title="Time of Day Distribution"
+            description="Frequency distribution of workout sessions started across different hours of the day."
+            calculation="COUNT(sessions) grouped by hour (0–23)"
+            unit="sessions / hour"
+            dateRange="All time"
+            limitations="Assumes sessions logged in the gym's local timezone."
+          />
         </div>
         <div className="h-[180px] w-full">
           {byHour.length > 0 ? (
@@ -95,13 +113,14 @@ export const WorkoutFrequency: React.FC<WorkoutFrequencyProps> = ({
                     borderRadius: "8px",
                     color: "#fff",
                   }}
+                  formatter={(val: any) => [val, "Sessions"]}
                 />
                 <Bar dataKey="sessions" fill="#8B5CF6" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-xs text-gray-500">
-              No data
+              No time-of-day data available.
             </div>
           )}
         </div>

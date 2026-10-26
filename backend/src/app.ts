@@ -1,4 +1,5 @@
 import express from "express";
+import path from "node:path";
 import routes from "./routes/index.js";
 import globalErrorHandler from "./middleware/error.middleware.js";
 import notFound from "./middleware/notFound.middleware.js";
@@ -6,14 +7,16 @@ import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger.js";
 import cors from "cors";
+import { env } from "./config/env.js";
 
 const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
+  env.CLIENT_URL,
   "https://gym-managment-platform-seven.vercel.app",
   "https://gym-managment-platform-54rwrqapc-hosso1.vercel.app",
-];
+].filter(Boolean);
 
 // Middleware
 app.use(express.json());
@@ -32,6 +35,17 @@ app.use(
       }
     },
     credentials: true,
+  }),
+);
+
+// Serve uploaded static assets when local storage is used
+app.use(
+  "/uploads",
+  express.static(path.resolve(process.cwd(), "uploads"), {
+    setHeaders: (res) => {
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    },
   }),
 );
 

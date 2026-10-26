@@ -1,18 +1,15 @@
 // src/types/coach-profile.types.ts
 
-import type { Types } from "mongoose";
-
 export interface UpdateCoachProfileDto {
   name?: string;
   phone?: string;
-
   bio?: string;
-
   specialties?: string[];
-
   certifications?: string[];
-
   yearsOfExperience?: number;
+  professionalTitle?: string;
+  coachingPhilosophy?: string;
+  languagesSpoken?: string[];
 }
 
 export interface CoachProfileResponse {
@@ -20,16 +17,14 @@ export interface CoachProfileResponse {
     id: string;
     name: string;
     email: string;
-    phone?: string;
-
+    phone?: string | null;
     bio?: string | null;
-
     specialties: string[];
-
     certifications: string[];
-
     yearsOfExperience: number;
-
+    professionalTitle?: string | null;
+    coachingPhilosophy?: string | null;
+    languagesSpoken?: string[];
     joinedAt: Date;
   };
 

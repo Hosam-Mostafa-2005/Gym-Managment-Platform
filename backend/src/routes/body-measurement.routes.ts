@@ -18,11 +18,7 @@ router.use(protect);
 
 router.post(
   "/",
-  (req, res, next) => {
-    console.log("🔥 REQUEST BODY:", JSON.stringify(req.body, null, 2));
-    next();
-  },
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   validate(createBodyMeasurementSchema),
   bodyMeasurementController.createBodyMeasurement,
 );
@@ -41,15 +37,15 @@ router.get("/:id", bodyMeasurementController.getBodyMeasurementById);
 
 router.patch(
   "/:id",
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   validate(updateBodyMeasurementSchema),
   bodyMeasurementController.updateBodyMeasurement,
 );
 
 router.delete(
   "/:id",
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   bodyMeasurementController.deleteBodyMeasurement,
 );
-console.log("🔥 BODY MEASUREMENT ROUTES LOADED");
+
 export default router;

@@ -9,6 +9,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import type { DashboardChartPoint } from "@/features/coach-dashboard/types/coach-dashboard.types";
 
 interface AssignmentsChartProps {
@@ -21,12 +22,22 @@ export const AssignmentsChart: React.FC<AssignmentsChartProps> = ({
   const hasData = data && data.length > 0;
 
   return (
-    <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-5 h-full">
+    <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-5 h-full transition-colors hover:border-[#2a313a]">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-gray-100">
-            Assignments Velocity
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-gray-100">
+              Assignments Velocity
+            </h3>
+            <InfoTooltip
+              title="Daily Assignment Creation Velocity"
+              description="Number of new workout assignments dispatched to members each day."
+              calculation="COUNT(assignments WHERE createdAt = date) per day"
+              unit="assignments / day"
+              dateRange="Past 30 rolling days"
+              limitations="Tracks assignment creation volume; does not measure active assignment duration."
+            />
+          </div>
           <p className="text-xs text-gray-500 mt-0.5">
             Last 30 Days Creation Volume
           </p>
@@ -76,20 +87,20 @@ export const AssignmentsChart: React.FC<AssignmentsChartProps> = ({
                   color: "#f3f4f6",
                 }}
                 itemStyle={{ color: "#5BE584" }}
-                formatter={(value: any) => [value, "Assignments"]}
+                formatter={(value: any) => [value, "Assignments Created"]}
                 labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
               />
               <Bar
                 dataKey="value"
                 fill="#5BE584"
-                radius={[2, 2, 0, 0]}
-                opacity={0.85}
+                radius={[4, 4, 0, 0]}
+                maxBarSize={20}
               />
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-xs text-gray-500">
-            No assignments volume data available.
+          <div className="flex h-full items-center justify-center text-xs text-gray-500">
+            No assignments created in the last 30 days.
           </div>
         )}
       </div>

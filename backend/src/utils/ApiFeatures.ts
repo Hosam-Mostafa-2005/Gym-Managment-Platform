@@ -1,9 +1,7 @@
-import type { Query } from "mongoose";
-
 export const escapeRegex = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const PROTECTED_FILTER_FIELDS = [
+export const PROTECTED_FILTER_FIELDS = [
   "page",
   "sort",
   "limit",
@@ -24,14 +22,25 @@ const PROTECTED_FILTER_FIELDS = [
   "$nor",
 ];
 
-class ApiFeatures<T> {
+export class ApiFeatures {
+  public prismaWhere: Record<string, any> = {};
+  public prismaOrderBy: any[] = [{ createdAt: "desc" }];
+  public prismaSkip: number = 0;
+  public prismaTake: number = 10;
   private readonly baseFilter: Record<string, any>;
 
   constructor(
-    public query: Query<T[], T>,
-    public queryString: Record<string, any>,
+    public query: any,
+    public queryString: Record<string, any> = {},
   ) {
-    this.baseFilter = { ...this.query.getFilter() };
+    if (this.query && typeof this.query.getFilter === "function") {
+      this.baseFilter = { ...this.query.getFilter() };
+    } else if (this.query && typeof this.query === "object" && !this.query.find) {
+      this.baseFilter = { ...this.query };
+    } else {
+      this.baseFilter = {};
+    }
+    this.prismaWhere = { ...this.baseFilter };
   }
 
   filter(allowedFields?: string[]) {
@@ -59,10 +68,15 @@ class ApiFeatures<T> {
     }
 
     // Always re-apply server-enforced baseFilter last so client params never override it
-    this.query = this.query.find({
+    const merged = {
       ...queryObj,
       ...this.baseFilter,
-    });
+    };
+
+    if (this.query && typeof this.query.find === "function") {
+      this.query = this.query.find(merged);
+    }
+    this.prismaWhere = merged;
 
     return this;
   }
@@ -72,27 +86,58 @@ class ApiFeatures<T> {
 
     if (typeof rawKeyword !== "string" || !rawKeyword.trim()) return this;
 
-    const safeKeyword = escapeRegex(rawKeyword.trim());
+    const safeKeyword = rawKeyword.trim();
 
-    this.query = this.query.find({
-      $or: fields.map((field) => ({
-        [field]: {
-          $regex: safeKeyword,
-          $options: "i",
-        },
-      })),
-    });
+    if (this.query && typeof this.query.find === "function") {
+      const safeEscaped = escapeRegex(safeKeyword);
+      this.query = this.query.find({
+        $or: fields.map((field) => ({
+          [field]: {
+            $regex: safeEscaped,
+            $options: "i",
+          },
+        })),
+      });
+    }
+
+    const orClauses = fields.map((field) => ({
+      [field]: {
+        contains: safeKeyword,
+        mode: "insensitive",
+      },
+    }));
+
+    if (this.prismaWhere.OR) {
+      this.prismaWhere.AND = [
+        { OR: this.prismaWhere.OR },
+        { OR: orClauses },
+      ];
+      delete this.prismaWhere.OR;
+    } else {
+      this.prismaWhere.OR = orClauses;
+    }
 
     return this;
   }
 
   sort() {
     if (typeof this.queryString?.sort === "string" && this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(",").join(" ");
+      const parts = this.queryString.sort.split(",").map((s: string) => s.trim());
+      this.prismaOrderBy = parts.map((part: string) => {
+        if (part.startsWith("-")) {
+          return { [part.substring(1)]: "desc" };
+        }
+        return { [part]: "asc" };
+      });
 
-      this.query = this.query.sort(sortBy);
+      if (this.query && typeof this.query.sort === "function") {
+        this.query = this.query.sort(parts.join(" "));
+      }
     } else {
-      this.query = this.query.sort("-createdAt");
+      this.prismaOrderBy = [{ createdAt: "desc" }];
+      if (this.query && typeof this.query.sort === "function") {
+        this.query = this.query.sort("-createdAt");
+      }
     }
 
     return this;
@@ -104,7 +149,12 @@ class ApiFeatures<T> {
 
     const skip = (page - 1) * limit;
 
-    this.query = this.query.skip(skip).limit(limit);
+    this.prismaSkip = skip;
+    this.prismaTake = limit;
+
+    if (this.query && typeof this.query.skip === "function") {
+      this.query = this.query.skip(skip).limit(limit);
+    }
 
     return this;
   }

@@ -1,7 +1,8 @@
-import { Trash2, ChevronUp, ChevronDown, GripVertical } from "lucide-react";
-import type { Control } from "react-hook-form";
+import { Trash2, ChevronUp, ChevronDown, GripVertical, Target, Dumbbell } from "lucide-react";
+import { useWatch, type Control } from "react-hook-form";
 
 import type { Exercise } from "@/features/exercises/types/exercise.types";
+import ExerciseImage from "@/features/exercises/components/ExerciseImage";
 import type { CreateWorkoutPayload } from "../types/workout.types";
 
 import {
@@ -31,6 +32,15 @@ export default function WorkoutExerciseItem({
   move,
   total = 0,
 }: WorkoutExerciseItemProps) {
+  const selectedExerciseId = useWatch({
+    control,
+    name: `exercises.${index}.exercise`,
+  });
+
+  const selectedExercise = exercises.find(
+    (ex) => (ex._id || ex.id) === selectedExerciseId,
+  );
+
   return (
     <Card className="group relative border-border/50 bg-card/30 backdrop-blur-sm transition-all duration-200 hover:border-border/80 hover:bg-card/50 shadow-sm">
       {/* ===================================================================== */}
@@ -45,7 +55,7 @@ export default function WorkoutExerciseItem({
           </span>
 
           <h3 className="text-sm font-semibold text-foreground tracking-tight">
-            Exercise Sequence
+            {selectedExercise ? selectedExercise.name : "Exercise Sequence"}
           </h3>
         </div>
 
@@ -99,18 +109,53 @@ export default function WorkoutExerciseItem({
       {/*                      CONTENT: TARGET PARAMETERS                       */}
       {/* ===================================================================== */}
       <CardContent className="p-4 sm:p-6 space-y-5">
-        <FormCombobox
-          control={control}
-          name={`exercises.${index}.exercise`}
-          label="Exercise Movement"
-          items={exercises}
-          // ✅ Check for _id first so it matches MongoDB documents
-          getValue={(exercise) => exercise._id || exercise.id || ""}
-          getLabel={(exercise) => exercise.name}
-          placeholder="Select exercise..."
-          searchPlaceholder="Search training library..."
-          emptyMessage="No exercises found."
-        />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex-1 space-y-3">
+            <FormCombobox
+              control={control}
+              name={`exercises.${index}.exercise`}
+              label="Exercise Movement"
+              items={exercises}
+              getValue={(exercise) => exercise._id || exercise.id || ""}
+              getLabel={(exercise) => exercise.name}
+              placeholder="Select exercise..."
+              searchPlaceholder="Search training library..."
+              emptyMessage="No exercises found."
+            />
+
+            {selectedExercise && (
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                {selectedExercise.primaryMuscles?.map((m) => (
+                  <span
+                    key={m}
+                    className="inline-flex items-center gap-1 rounded-md border border-[#5BE584]/30 bg-[#5BE584]/10 px-2 py-0.5 text-[10px] font-semibold text-[#5BE584]"
+                  >
+                    <Target className="h-2.5 w-2.5" />
+                    {m}
+                  </span>
+                ))}
+                {selectedExercise.equipment?.map((eq) => (
+                  <span
+                    key={eq}
+                    className="inline-flex items-center gap-1 rounded-md border border-[#262D36] bg-[#141920] px-2 py-0.5 text-[10px] font-medium text-[#E5E7EB]"
+                  >
+                    <Dumbbell className="h-2.5 w-2.5 text-[#9CA3AF]" />
+                    {eq}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {selectedExercise && (
+            <ExerciseImage
+              src={selectedExercise.imageUrl}
+              alt={selectedExercise.name}
+              size="lg"
+              fit="contain"
+            />
+          )}
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-lg border border-border/40 bg-background/20 p-3.5">
           <FormNumberInput

@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 
+const idSchema = (name: string) => z.string().min(1, `Invalid ${name} ID`);
+
 export const createAssignmentSchema = z
   .object({
     body: z.object({
-      member: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid member ID"),
-
-      trainer: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid trainer ID"),
-
-      workout: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid workout ID"),
+      member: idSchema("member"),
+      trainer: idSchema("trainer").optional(),
+      workout: idSchema("workout"),
 
       startDate: z.coerce.date({
         error: "Start date is required",
@@ -41,23 +41,11 @@ export const createAssignmentSchema = z
 export const updateAssignmentSchema = z
   .object({
     body: z.object({
-      member: z
-        .string()
-        .regex(/^[0-9a-fA-F]{24}$/, "Invalid member ID")
-        .optional(),
-
-      trainer: z
-        .string()
-        .regex(/^[0-9a-fA-F]{24}$/, "Invalid trainer ID")
-        .optional(),
-
-      workout: z
-        .string()
-        .regex(/^[0-9a-fA-F]{24}$/, "Invalid workout ID")
-        .optional(),
+      member: idSchema("member").optional(),
+      trainer: idSchema("trainer").optional(),
+      workout: idSchema("workout").optional(),
 
       startDate: z.coerce.date().optional(),
-
       endDate: z.coerce.date().optional(),
 
       status: z

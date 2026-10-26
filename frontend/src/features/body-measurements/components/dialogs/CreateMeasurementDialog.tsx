@@ -8,19 +8,25 @@ export const CreateMeasurementDialog: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   memberId: string;
-  trainerId: string;
+  trainerId?: string;
 }> = ({ isOpen, onClose, memberId, trainerId }) => {
   const { mutate, isPending } = useCreateMeasurement();
 
   if (!isOpen) return null;
 
   const handleSubmit = (payload: MeasurementFormPayload) => {
-    mutate(
-      { ...payload, member: memberId, trainer: trainerId },
-      {
-        onSuccess: () => onClose(),
-      },
-    );
+    const data: any = {
+      ...payload,
+      member: memberId,
+    };
+
+    if (trainerId && trainerId.trim() !== "") {
+      data.trainer = trainerId;
+    }
+
+    mutate(data, {
+      onSuccess: () => onClose(),
+    });
   };
 
   return (
@@ -30,7 +36,7 @@ export const CreateMeasurementDialog: React.FC<{
           Add Body Measurement
         </h2>
         <p className="text-xs text-gray-400 mb-6">
-          Record a new body measurement for this member.
+          Record a new body measurement.
         </p>
         <MeasurementForm
           onSubmit={handleSubmit}

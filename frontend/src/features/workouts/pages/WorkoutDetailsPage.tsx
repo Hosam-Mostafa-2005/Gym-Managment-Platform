@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -12,12 +13,21 @@ import {
   ListOrdered,
   AlertCircle,
   Loader2,
+  Copy,
+  UserPlus,
 } from "lucide-react";
 
 import { useWorkout } from "@/features/workouts/hooks/useWorkout";
+import { useDuplicateWorkout } from "@/features/workouts/hooks/useDuplicateWorkout";
+import { useStartWorkoutSession } from "@/features/workout-sessions/hooks/useStartWorkoutSession";
+import { useCurrentWorkoutSession } from "@/features/workout-sessions/hooks/useCurrentWorkoutSession";
+import ScheduleWorkoutDialog from "@/features/workout-sessions/components/ScheduleWorkoutDialog";
+import ActiveWorkoutConflictDialog from "@/features/workout-sessions/components/ActiveWorkoutConflictDialog";
+import { toast } from "sonner";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { ROLES } from "@/constants/roles";
 import type { WorkoutExerciseDetails } from "@/features/workouts/types/workout.types";
+import ExerciseImage from "@/features/exercises/components/ExerciseImage";
 
 export default function WorkoutDetailsPage() {
   const { workoutId } = useParams<{ workoutId: string }>();
@@ -27,6 +37,93 @@ export default function WorkoutDetailsPage() {
 
   // Fetch workout data using custom query hook
   const { data: workout, isLoading, isError } = useWorkout(workoutId || "");
+
+  const { mutate: duplicateWorkout, isPending: isDuplicating } =
+    useDuplicateWorkout();
+  const { mutate: startSession, isPending: isStartingSession } =
+    useStartWorkoutSession();
+  const { data: currentSessionData } = useCurrentWorkoutSession();
+
+  const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [conflictModal, setConflictModal] = useState<{
+    isOpen: boolean;
+    activeSessionId: string;
+    activeWorkoutTitle: string;
+    requestedWorkoutId?: string;
+    requestedWorkoutTitle?: string;
+  }>({
+    isOpen: false,
+    activeSessionId: "",
+    activeWorkoutTitle: "",
+  });
+
+  const ownerId =
+    typeof workout?.createdBy === "object"
+      ? workout?.createdBy?.id
+      : workout?.createdById || workout?.createdBy;
+  const isOwner = Boolean(user?.id && ownerId === user.id);
+  const canEdit = canManage || isOwner;
+  const canAssign =
+    canManage &&
+    (user?.role === ROLES.ADMIN || isOwner || Boolean(workout?.isTemplate));
+
+  const handleStartSession = () => {
+    if (!workoutId) return;
+
+    const active = currentSessionData?.session;
+    if (active && active.status === "IN_PROGRESS") {
+      const activeWorkoutId = active.workout?.id || (active as any).workoutId;
+      if (activeWorkoutId === workoutId) {
+        toast.success("You already have an active workout. Resuming your session.");
+        navigate("/sessions/active");
+        return;
+      }
+
+      setConflictModal({
+        isOpen: true,
+        activeSessionId: active.id,
+        activeWorkoutTitle: active.workout?.title || "Active Workout",
+        requestedWorkoutId: workoutId,
+        requestedWorkoutTitle: workout?.title || "Selected Workout",
+      });
+      return;
+    }
+
+    startSession(
+      { workout: workoutId },
+      {
+        onSuccess: () => {
+          navigate("/sessions/active");
+        },
+        onError: (err: any) => {
+          const conflictData = err?.response?.data?.data;
+          if (err?.response?.status === 409 && conflictData?.activeSessionId) {
+            setConflictModal({
+              isOpen: true,
+              activeSessionId: conflictData.activeSessionId,
+              activeWorkoutTitle: conflictData.activeWorkoutTitle || "Active Workout",
+              requestedWorkoutId: workoutId,
+              requestedWorkoutTitle: workout?.title || "Selected Workout",
+            });
+          } else {
+            toast.error(err?.response?.data?.message || "Failed to start workout session.");
+          }
+        },
+      },
+    );
+  };
+
+  const handleDuplicate = () => {
+    if (!workoutId) return;
+    duplicateWorkout(
+      { id: workoutId },
+      {
+        onSuccess: (newWorkout) => {
+          navigate(`/workout-builder/${newWorkout.id}`);
+        },
+      },
+    );
+  };
 
   /* -------------------------------------------------------------------------- */
   /*                                LOADING SKELETON                            */
@@ -137,7 +234,22 @@ export default function WorkoutDetailsPage() {
 
           {/* Action Controls */}
           <div className="flex items-center gap-2.5 self-end lg:self-start">
-            {canManage && (
+            {canAssign && (
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(`/assignments/new?workoutId=${workoutId}`, {
+                    state: { workoutId },
+                  })
+                }
+                className="inline-flex items-center gap-2 rounded-md border border-[#23422E] bg-[#16291D] px-4 py-2 text-xs font-semibold text-[#5BE584] transition-colors hover:bg-[#1F3A29]"
+              >
+                <UserPlus className="h-3.5 w-3.5" />
+                Assign Workout
+              </button>
+            )}
+
+            {canEdit && (
               <button
                 type="button"
                 onClick={() => navigate(`/workout-builder/${workoutId}/edit`)}
@@ -150,11 +262,35 @@ export default function WorkoutDetailsPage() {
 
             <button
               type="button"
-              onClick={() => navigate("/sessions")}
-              className="inline-flex items-center gap-2 rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#49D472] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
+              onClick={handleDuplicate}
+              disabled={isDuplicating}
+              className="inline-flex items-center gap-2 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white disabled:opacity-50"
             >
-              <Play className="h-3.5 w-3.5 fill-current" />
-              Start Session
+              <Copy className="h-3.5 w-3.5" />
+              {isDuplicating ? "Duplicating..." : "Duplicate"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsScheduleOpen(true)}
+              className="inline-flex items-center gap-2 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
+            >
+              <Calendar className="h-3.5 w-3.5 text-[#5BE584]" />
+              Schedule
+            </button>
+
+            <button
+              type="button"
+              onClick={handleStartSession}
+              disabled={isStartingSession}
+              className="inline-flex items-center gap-2 rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#49D472] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014] disabled:opacity-50"
+            >
+              {isStartingSession ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Play className="h-3.5 w-3.5 fill-current" />
+              )}
+              {isStartingSession ? "Starting..." : "Start Session"}
             </button>
           </div>
         </div>
@@ -207,7 +343,7 @@ export default function WorkoutDetailsPage() {
                   Created By
                 </p>
                 <p className="text-sm font-semibold text-white mt-0.5 truncate max-w-[140px]">
-                  {workout.createdBy?.name || "System Admin"}
+                  {workout.createdBy?.name || "Personal Workout"}
                 </p>
               </div>
             </div>
@@ -265,53 +401,65 @@ export default function WorkoutDetailsPage() {
                       key={idx}
                       className="flex flex-col gap-4 p-4 sm:p-5 sm:flex-row sm:items-center sm:justify-between hover:bg-[#1E2329]/30 transition-colors"
                     >
-                      {/* Index & Exercise Info */}
-                      <div className="flex items-start gap-4">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#1E2329] bg-[#101418] font-mono text-xs font-bold text-[#5BE584]">
-                          {(item.order || idx + 1).toString().padStart(2, "0")}
-                        </div>
-                        <div className="space-y-1">
-                          <h4 className="text-sm font-semibold text-white">
-                            {item.exercise?.name || "Custom Exercise"}
-                          </h4>
-                          <p className="text-xs text-[#9CA3AF] capitalize">
-                            {item.exercise?.equipment || "Barbell"}
-                          </p>
-                          {item.notes && (
-                            <p className="text-[11px] text-[#5BE584] bg-[#16291D] border border-[#23422E] rounded px-2 py-0.5 mt-1 inline-block">
-                              Note: {item.notes}
+                      {/* LEFT: Index, Exercise Info & Target Parameters */}
+                      <div className="flex flex-1 flex-col md:flex-row md:items-center justify-between gap-4 min-w-0">
+                        <div className="flex items-start gap-4 min-w-0">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-[#1E2329] bg-[#101418] font-mono text-xs font-bold text-[#5BE584]">
+                            {(item.order || idx + 1).toString().padStart(2, "0")}
+                          </div>
+                          <div className="space-y-1 min-w-0">
+                            <h4 className="text-sm sm:text-base font-bold text-white truncate">
+                              {item.exercise?.name || "Custom Exercise"}
+                            </h4>
+                            <p className="text-xs text-[#9CA3AF] capitalize">
+                              {Array.isArray(item.exercise?.equipment)
+                                ? item.exercise.equipment.join(", ")
+                                : item.exercise?.equipment || "Barbell"}
                             </p>
-                          )}
+                            {item.notes && (
+                              <p className="text-[11px] text-[#5BE584] bg-[#16291D] border border-[#23422E] rounded px-2 py-0.5 mt-1 inline-block">
+                                Note: {item.notes}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Target Parameters Grid */}
+                        <div className="grid grid-cols-3 gap-6 self-start md:self-center bg-[#101418] border border-[#1E2329] rounded-lg px-4 py-2 text-center shrink-0">
+                          <div>
+                            <span className="block text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
+                              Sets
+                            </span>
+                            <span className="text-xs font-semibold text-white font-mono">
+                              {item.sets}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="block text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
+                              Reps
+                            </span>
+                            <span className="text-xs font-semibold text-white font-mono">
+                              {item.reps}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="block text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
+                              Rest
+                            </span>
+                            <span className="text-xs font-semibold text-[#5BE584] font-mono">
+                              {item.restSeconds}s
+                            </span>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Target Parameters Grid */}
-                      <div className="grid grid-cols-3 gap-6 self-end sm:self-center bg-[#101418] border border-[#1E2329] rounded-lg px-4 py-2 text-center sm:text-right">
-                        <div>
-                          <span className="block text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
-                            Sets
-                          </span>
-                          <span className="text-xs font-semibold text-white font-mono">
-                            {item.sets}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="block text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
-                            Reps
-                          </span>
-                          <span className="text-xs font-semibold text-white font-mono">
-                            {item.reps}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="block text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
-                            Rest
-                          </span>
-                          <span className="text-xs font-semibold text-[#5BE584] font-mono">
-                            {item.restSeconds}s
-                          </span>
-                        </div>
-                      </div>
+                      {/* RIGHT: Framed Exercise Image */}
+                      <ExerciseImage
+                        src={item.exercise?.imageUrl}
+                        alt={item.exercise?.name || "Exercise"}
+                        size="lg"
+                        fit="contain"
+                      />
                     </div>
                   ),
                 )}
@@ -320,6 +468,34 @@ export default function WorkoutDetailsPage() {
           </div>
         </section>
       </main>
+
+      {/* Schedule Workout Dialog */}
+      {isScheduleOpen && workout && (
+        <ScheduleWorkoutDialog
+          isOpen={isScheduleOpen}
+          onClose={() => setIsScheduleOpen(false)}
+          workoutId={workout.id}
+          workoutTitle={workout.title}
+        />
+      )}
+
+      {/* Active Workout Conflict Dialog */}
+      {conflictModal.isOpen && (
+        <ActiveWorkoutConflictDialog
+          isOpen={conflictModal.isOpen}
+          onClose={() =>
+            setConflictModal({
+              isOpen: false,
+              activeSessionId: "",
+              activeWorkoutTitle: "",
+            })
+          }
+          activeSessionId={conflictModal.activeSessionId}
+          activeWorkoutTitle={conflictModal.activeWorkoutTitle}
+          requestedWorkoutId={conflictModal.requestedWorkoutId}
+          requestedWorkoutTitle={conflictModal.requestedWorkoutTitle}
+        />
+      )}
     </div>
   );
 }

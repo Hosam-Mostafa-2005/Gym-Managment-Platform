@@ -47,10 +47,16 @@ export const RolePermissions: Record<Role, readonly Permission[]> = {
     Permissions.Profile.UPDATE,
 
     // Exercises
+    Permissions.Exercise.CREATE,
     Permissions.Exercise.READ,
+    Permissions.Exercise.UPDATE,
+    Permissions.Exercise.DELETE,
 
     // Workouts
+    Permissions.Workout.CREATE,
     Permissions.Workout.READ,
+    Permissions.Workout.UPDATE,
+    Permissions.Workout.DELETE,
 
     // Assignments
     Permissions.Assignment.READ,

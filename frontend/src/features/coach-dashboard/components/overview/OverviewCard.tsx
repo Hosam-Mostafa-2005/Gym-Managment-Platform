@@ -1,7 +1,7 @@
 // src/features/coach-dashboard/components/overview/OverviewCard.tsx
-
 import React from "react";
 import type { LucideIcon } from "lucide-react";
+import { InfoTooltip, type InfoTooltipProps } from "@/components/ui/info-tooltip";
 
 export interface OverviewCardProps {
   title: string;
@@ -9,6 +9,7 @@ export interface OverviewCardProps {
   secondaryValue?: string | number;
   secondaryLabel?: string;
   icon: LucideIcon;
+  infoTooltip?: InfoTooltipProps;
 }
 
 export const OverviewCard: React.FC<OverviewCardProps> = ({
@@ -17,12 +18,13 @@ export const OverviewCard: React.FC<OverviewCardProps> = ({
   secondaryValue,
   secondaryLabel,
   icon: Icon,
+  infoTooltip,
 }) => {
   return (
     <div
       className="
         group relative flex min-h-[145px] flex-col justify-between
-        overflow-hidden rounded-xl
+        overflow-visible rounded-xl
         border border-[#1e2329]
         bg-[#0d1014]
         p-5
@@ -38,25 +40,27 @@ export const OverviewCard: React.FC<OverviewCardProps> = ({
           absolute left-0 top-0 h-[2px] w-0
           bg-[#5BE584]
           transition-all duration-300
-          group-hover:w-full
+          group-hover:w-full rounded-t-xl
         "
       />
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-3">
-        <h3
-          className="
-            max-w-[130px]
-            text-[11px]
-            font-semibold
-            uppercase
-            tracking-[0.12em]
-            leading-relaxed
-            text-gray-500
-          "
-        >
-          {title}
-        </h3>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <h3
+            className="
+              text-[11px]
+              font-semibold
+              uppercase
+              tracking-[0.12em]
+              leading-relaxed
+              text-gray-400
+            "
+          >
+            {title}
+          </h3>
+          {infoTooltip && <InfoTooltip {...infoTooltip} />}
+        </div>
 
         <div
           className="
@@ -77,7 +81,7 @@ export const OverviewCard: React.FC<OverviewCardProps> = ({
       </div>
 
       {/* Value */}
-      <div className="mt-6 flex items-baseline gap-2">
+      <div className="mt-5 flex items-baseline gap-2">
         <span
           className="
             text-3xl
@@ -92,7 +96,7 @@ export const OverviewCard: React.FC<OverviewCardProps> = ({
         </span>
 
         {secondaryValue !== undefined && (
-          <span className="text-xs font-medium text-gray-600 tabular-nums">
+          <span className="text-xs font-medium text-gray-500 tabular-nums">
             / {secondaryValue} {secondaryLabel}
           </span>
         )}

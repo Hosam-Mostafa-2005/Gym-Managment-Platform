@@ -1,36 +1,34 @@
-import { Types } from "mongoose";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
 
 export type WorkoutSessionStatus =
   (typeof WORKOUT_SESSION_STATUS)[keyof typeof WORKOUT_SESSION_STATUS];
 
 export interface IWorkoutSession {
-  member: Types.ObjectId;
-
-  assignment: Types.ObjectId;
+  id?: string;
+  member: string;
+  assignment: string;
 
   status: WorkoutSessionStatus;
 
   startedAt: Date;
-
   endedAt?: Date;
 
-  // مدة السيشن بالكامل (بالدقائق)
+  // Total session duration (in minutes)
   duration: number;
 
-  // إجمالي وقت الراحة (بالثواني)
+  // Total rest time (in seconds)
   totalRestTime: number;
 
-  // الوقت الفعلي للتمرين بدون الراحة (بالثواني)
+  // Actual active training time (in seconds)
   activeTrainingTime: number;
 
-  // إجمالي الحجم (Weight × Reps)
+  // Total volume (Weight × Reps)
   totalVolume: number;
 
-  // عدد التمارين المكتملة
+  // Number of exercises completed
   exercisesCompleted: number;
 
-  // عدد المجموعات المكتملة
+  // Number of sets completed
   setsCompleted: number;
 
   notes?: string;
