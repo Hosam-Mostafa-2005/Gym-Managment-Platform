@@ -224,6 +224,22 @@ export const LandingFooter: React.FC = () => {
                   Create Account
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/privacy-policy"
+                  className="transition-colors hover:text-[#5BE584]"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms-of-service"
+                  className="transition-colors hover:text-[#5BE584]"
+                >
+                  Terms of Service
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -231,10 +247,22 @@ export const LandingFooter: React.FC = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-[#1F2630] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#94A3B8]">
           <p>© {currentYear} STREN. All rights reserved.</p>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <Link
+              to="/privacy-policy"
+              className="transition-colors hover:text-[#5BE584]"
+            >
+              Privacy Policy
+            </Link>
+            <span className="text-[#38414D]">·</span>
+            <Link
+              to="/terms-of-service"
+              className="transition-colors hover:text-[#5BE584]"
+            >
+              Terms of Service
+            </Link>
+            <span className="text-[#38414D]">·</span>
             <span>Built for Coaches and Athletes</span>
-            <span className="text-[#38414D]">|</span>
-            <span>Real-Time Performance Engine</span>
           </div>
         </div>
       </div>

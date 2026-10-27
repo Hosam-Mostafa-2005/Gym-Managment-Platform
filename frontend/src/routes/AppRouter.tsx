@@ -13,6 +13,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import LandingPage from "@/features/landing/pages/LandingPage";
 import HomePage from "@/features/homelayout/pages/HomePage";
 
+// Legal (Public)
+import PrivacyPolicyPage from "@/features/legal/pages/PrivacyPolicyPage";
+import TermsOfServicePage from "@/features/legal/pages/TermsOfServicePage";
+
 // Auth
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
@@ -22,8 +26,6 @@ import VerifyResetCodePage from "@/features/auth/pages/VerifyResetCodePage";
 import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 import NotFoundPage from "@/features/auth/pages/NotFoundPage";
 import OnboardingPage from "@/features/auth/pages/OnboardingPage";
-import MemberOnboardingPage from "@/features/auth/pages/MemberOnboardingPage";
-import CoachOnboardingPage from "@/features/auth/pages/CoachOnboardingPage";
 
 // Home & Dashboard
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
@@ -59,7 +61,6 @@ import WorkoutSessionsPage from "@/features/workout-sessions/pages/WorkoutSessio
 import WorkoutSessionPage from "@/features/workout-sessions/pages/WorkoutSessionPage";
 import ActiveWorkoutPage from "@/features/workout-sessions/pages/ActiveWorkoutPage";
 import SessionSummaryPage from "@/features/workout-sessions/pages/SessionSummaryPage";
-import ScheduledWorkoutsPage from "@/features/workout-sessions/pages/ScheduledWorkoutsPage";
 
 // Profile & Measurements
 import ProfilePage from "@/features/profile/pages/ProfilePage";
@@ -92,6 +93,22 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />,
+  },
+  {
+    path: "/privacy-policy",
+    element: <PrivacyPolicyPage />,
+  },
+  {
+    path: "/privacy",
+    element: <Navigate to="/privacy-policy" replace />,
+  },
+  {
+    path: "/terms-of-service",
+    element: <TermsOfServicePage />,
+  },
+  {
+    path: "/terms",
+    element: <Navigate to="/terms-of-service" replace />,
   },
   {
     element: <AuthLayout />,
@@ -160,6 +177,10 @@ const router = createBrowserRouter([
             element: <ProtectedRoute allowedRoles={["MEMBER"]} />,
             children: [
               {
+                path: "member",
+                element: <Navigate to="/dashboard" replace />,
+              },
+              {
                 path: "dashboard",
                 element: <DashboardPage />,
                 children: [
@@ -188,6 +209,14 @@ const router = createBrowserRouter([
           {
             element: <ProtectedRoute allowedRoles={["TRAINER", "ADMIN"]} />,
             children: [
+              {
+                path: "coach",
+                element: <Navigate to="/coach-dashboard" replace />,
+              },
+              {
+                path: "coach/members",
+                element: <Navigate to="/members" replace />,
+              },
               {
                 path: "coach-dashboard",
                 element: <CoachDashboardPage />,
@@ -308,8 +337,16 @@ const router = createBrowserRouter([
                 element: <Navigate to="/workout-builder/all" replace />,
               },
               {
+                path: "new",
+                element: <Navigate to="/workout-builder/new" replace />,
+              },
+              {
                 path: ":workoutId",
                 element: <WorkoutDetailsPage />,
+              },
+              {
+                path: ":workoutId/edit",
+                element: <EditWorkoutPage />,
               },
             ],
           },
@@ -323,8 +360,16 @@ const router = createBrowserRouter([
                 element: <Navigate to="/workout-library/exercises" replace />,
               },
               {
+                path: "new",
+                element: <CreateExercisePage />,
+              },
+              {
                 path: ":exerciseId",
                 element: <ExerciseDetailsPage />,
+              },
+              {
+                path: ":exerciseId/edit",
+                element: <EditExercisePage />,
               },
             ],
           },
@@ -480,6 +525,14 @@ const router = createBrowserRouter([
           {
             path: "calendar",
             element: <MemberCalendarPage />,
+          },
+          {
+            path: "schedule",
+            element: <Navigate to="/calendar" replace />,
+          },
+          {
+            path: "scheduled-workouts",
+            element: <Navigate to="/calendar" replace />,
           },
           {
             path: "measurements",
