@@ -65,7 +65,7 @@ export const SetRow: React.FC<SetRowProps> = ({
 
   return (
     <div
-      className={`grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 py-3 items-center rounded-xl border transition-all duration-200 ${
+      className={`grid grid-cols-12 gap-1.5 sm:gap-4 px-2 sm:px-4 py-2.5 sm:py-3 items-center rounded-xl border transition-all duration-200 ${
         isCompleted
           ? "bg-[#5BE584]/5 border-[#5BE584]/25 shadow-[0_0_15px_rgba(91,229,132,0.04)]"
           : "bg-[#090B0F]/70 border-white/5 hover:border-white/10"
@@ -121,7 +121,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             onChange={(e) => setWeight(Number(e.target.value))}
             placeholder="0"
             disabled={isCompleted || isPending}
-            className="w-full min-w-0 bg-[#101418] border border-[#1E2329] rounded-xl py-2 px-3 text-center text-sm font-semibold font-mono text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
+            className="w-full min-w-0 bg-[#101418] border border-[#1E2329] rounded-lg sm:rounded-xl py-1.5 sm:py-2 px-1.5 sm:px-3 text-center text-xs sm:text-sm font-semibold font-mono text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
           />
           <span className="hidden sm:inline absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[#6B7280] font-mono uppercase pointer-events-none">
             kg
@@ -139,7 +139,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             onChange={(e) => setReps(Number(e.target.value))}
             placeholder="0"
             disabled={isCompleted || isPending}
-            className="w-full min-w-0 bg-[#101418] border border-[#1E2329] rounded-xl py-2 px-3 text-center text-sm font-semibold font-mono text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
+            className="w-full min-w-0 bg-[#101418] border border-[#1E2329] rounded-lg sm:rounded-xl py-1.5 sm:py-2 px-1.5 sm:px-3 text-center text-xs sm:text-sm font-semibold font-mono text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
           />
           <span className="hidden sm:inline absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[#6B7280] font-mono uppercase pointer-events-none">
             reps
@@ -151,7 +151,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           onClick={handleToggleComplete}
           disabled={isPending}
           title={isCompleted ? "Click to uncheck or edit set" : "Mark set complete"}
-          className={`h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center rounded-xl transition-all shrink-0 cursor-pointer ${
+          className={`h-8 w-8 sm:h-10 sm:w-10 flex items-center justify-center rounded-lg sm:rounded-xl transition-all shrink-0 cursor-pointer ${
             isCompleted
               ? "bg-[#5BE584] text-[#090B0F] shadow-[0_0_12px_rgba(91,229,132,0.3)] hover:bg-[#4ade80]"
               : "bg-[#101418] text-[#9CA3AF] border border-[#1E2329] hover:border-[#5BE584] hover:text-[#5BE584]"

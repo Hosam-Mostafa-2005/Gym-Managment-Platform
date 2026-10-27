@@ -120,7 +120,7 @@ export const SwapExerciseDialog: React.FC<SwapExerciseDialogProps> = ({
   return createPortal(
     <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md">
       <div className="min-h-full flex items-center justify-center p-4 sm:p-6">
-        <div className="bg-[#0D1014] border border-[#1E2329] rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="bg-[#0D1014] border border-[#1E2329] rounded-2xl w-full max-w-2xl max-h-[calc(100dvh-2rem)] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
           {/* Header */}
           <div className="flex items-center justify-between p-5 sm:p-6 border-b border-[#1E2329]">
             <div className="flex items-center gap-3">
@@ -147,7 +147,7 @@ export const SwapExerciseDialog: React.FC<SwapExerciseDialogProps> = ({
             </button>
           </div>
 
-          <div className="p-5 sm:p-6 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[calc(100dvh-12rem)] overflow-y-auto flex-1 custom-scrollbar">
             {/* Preservation Safety Banner */}
             <div className="flex items-start gap-3 rounded-xl border border-amber-900/40 bg-amber-950/20 p-3.5 text-xs text-amber-200/90">
               <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />

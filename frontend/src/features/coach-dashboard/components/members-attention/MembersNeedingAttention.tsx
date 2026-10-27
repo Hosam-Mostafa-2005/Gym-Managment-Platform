@@ -45,7 +45,7 @@ export const MembersNeedingAttention: React.FC<
       {/* Table Content */}
       {hasMembers ? (
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-gray-300">
+          <table className="w-full min-w-[560px] text-left text-xs text-gray-300">
             <thead className="border-b border-[#1e2329] bg-[#13171d]/50 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
               <tr>
                 <th scope="col" className="px-5 py-3 font-medium">

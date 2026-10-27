@@ -275,7 +275,7 @@ export default function MemberPlanManagementPage() {
               </h3>
               {assignmentHistory && assignmentHistory.length > 0 ? (
                 <div className="overflow-x-auto rounded-xl border border-[#1E2329]">
-                  <table className="w-full text-left text-xs text-gray-300">
+                  <table className="w-full min-w-[540px] text-left text-xs text-gray-300">
                     <thead className="border-b border-[#1E2329] bg-[#0D1117] uppercase tracking-wider text-gray-500 font-semibold">
                       <tr>
                         <th className="px-4 py-3">Workout</th>

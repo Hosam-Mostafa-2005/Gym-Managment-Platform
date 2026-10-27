@@ -133,7 +133,7 @@ export const NutritionHistoryPage: React.FC = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full min-w-[540px] text-left text-xs">
               <thead>
                 <tr className="border-b border-zinc-800 text-zinc-400 uppercase tracking-wider text-[10px]">
                   <th className="pb-2.5">Date</th>

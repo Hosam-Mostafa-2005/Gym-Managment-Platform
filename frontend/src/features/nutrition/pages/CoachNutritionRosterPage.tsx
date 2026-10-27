@@ -66,7 +66,7 @@ export const CoachNutritionRosterPage: React.FC = () => {
         ) : (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full min-w-[620px] text-left text-xs">
                 <thead>
                   <tr className="border-b border-zinc-800 bg-[#161B22]/80 text-zinc-400 uppercase tracking-wider text-[10px]">
                     <th className="py-3 px-5">Athlete</th>

@@ -1,7 +1,7 @@
 // src/components/shared/sidebar/Sidebar.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import {
   Dumbbell,
@@ -226,6 +226,25 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
     logoutUser();
   };
 
+  useEffect(() => {
+    if (!collapsed) {
+      if (typeof window !== "undefined" && window.innerWidth < 1024) {
+        document.body.style.overflow = "hidden";
+      }
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape" && onCloseMobile) {
+          onCloseMobile();
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        document.body.style.overflow = "";
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [collapsed, onCloseMobile]);
+
+
   // On desktop (lg+), sidebar opens when !collapsed or hovered.
   // On mobile (< lg), when !collapsed it opens as a full-width drawer (isOpen = true).
   const isOpen = !collapsed || isHovered;
@@ -278,11 +297,11 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
-          fixed inset-y-0 left-0 z-50 flex h-screen flex-col border-r border-[#2A3039] bg-[#13171D]
+          fixed inset-y-0 left-0 z-50 flex h-[100dvh] flex-col border-r border-[#2A3039] bg-[#13171D]
           transition-all duration-200 ease-in-out shrink-0 select-none
           lg:static lg:z-30
           ${collapsed ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}
-          ${isOpen ? "w-[264px]" : "lg:w-20"}
+          ${isOpen ? "w-[264px] max-w-[85vw]" : "lg:w-20"}
         `}
         aria-label="Main Navigation"
       >

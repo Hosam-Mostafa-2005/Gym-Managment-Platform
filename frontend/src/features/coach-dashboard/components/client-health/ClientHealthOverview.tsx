@@ -94,7 +94,7 @@ export const ClientHealthOverview: React.FC<ClientHealthOverviewProps> = ({
       {/* Table or Cards */}
       <div className="mt-4 overflow-x-auto">
         {filteredClients.length > 0 ? (
-          <table className="w-full text-left text-xs">
+          <table className="w-full min-w-[620px] text-left text-xs">
             <thead>
               <tr className="border-b border-[#1E2329] text-gray-400 uppercase tracking-wider text-[11px]">
                 <th className="pb-3 font-semibold">Member</th>

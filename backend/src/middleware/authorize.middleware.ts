@@ -1,4 +1,4 @@
-import type { RequestHandler } from "express";
+import type { Request, Response, NextFunction, RequestHandler } from "express";
 
 import type { Permission } from "../constants/permissions.js";
 import AppError from "../utils/AppError.js";
@@ -6,7 +6,7 @@ import { hasPermission } from "../utils/hasPermission.js";
 
 export const authorize =
   (permission: Permission): RequestHandler =>
-  (req, _res, next) => {
+  (req: Request, _res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(new AppError("You are not logged in.", 401));
     }

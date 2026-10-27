@@ -53,7 +53,7 @@ export const AssignmentHistory: React.FC<AssignmentHistoryProps> = ({
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-gray-300">
+            <table className="w-full min-w-[540px] text-left text-sm text-gray-300">
               <thead className="border-b border-[#1E2329] bg-[#090B0F] text-xs uppercase tracking-wider text-gray-500">
                 <tr>
                   <th className="px-6 py-4 font-medium">Workout</th>

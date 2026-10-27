@@ -1,4 +1,4 @@
-import type { RequestHandler } from "express";
+import type { Request, Response, NextFunction, RequestHandler } from "express";
 import multer from "multer";
 import AppError from "../utils/AppError.js";
 import {
@@ -32,13 +32,13 @@ const upload = multer({
 });
 
 export const uploadExerciseImageMiddleware: RequestHandler = (
-  req,
-  res,
-  next,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   const singleUpload = upload.single("image");
 
-  singleUpload(req, res, (err: any) => {
+  singleUpload(req, res, (err: unknown) => {
     if (err) {
       if (err instanceof multer.MulterError) {
         if (err.code === "LIMIT_FILE_SIZE") {

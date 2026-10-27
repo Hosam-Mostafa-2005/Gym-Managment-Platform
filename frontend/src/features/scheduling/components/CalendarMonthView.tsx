@@ -145,7 +145,9 @@ export default function CalendarMonthView({
 
   return (
     <div className="bg-[#101418] border border-[#1E2329] rounded-2xl overflow-hidden shadow-xl">
-      {/* Weekday headers */}
+      <div className="overflow-x-auto">
+        <div className="min-w-[620px] sm:min-w-0">
+          {/* Weekday headers */}
       <div className="grid grid-cols-7 border-b border-[#1E2329] bg-[#161B22]/50 text-center text-xs font-semibold text-gray-400">
         {WEEKDAY_NAMES.map((day) => (
           <div key={day} className="py-3 uppercase tracking-wider">
@@ -267,6 +269,8 @@ export default function CalendarMonthView({
             </div>
           );
         })}
+      </div>
+        </div>
       </div>
     </div>
   );

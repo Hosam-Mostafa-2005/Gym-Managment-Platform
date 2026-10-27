@@ -341,7 +341,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
       {createPortal(
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <div
-            className="bg-[#0D1014] border border-[#1E2329] rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]"
+            className="bg-[#0D1014] border border-[#1E2329] rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[calc(100dvh-2rem)]"
             role="dialog"
             aria-modal="true"
           >

@@ -29,7 +29,7 @@ export default function SessionSummaryPage() {
   if (isLoading) {
     return (
       <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
-        <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
         </div>
         <div className="relative z-10 mx-auto max-w-4xl px-6 py-32 flex flex-col items-center justify-center text-[#6B7280]">
@@ -94,7 +94,7 @@ export default function SessionSummaryPage() {
   return (
     <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30 pb-32">
       {/* Background Atmosphere */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
         <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(91,229,132,0.06)_0%,_rgba(13,16,20,0)_70%)] blur-3xl" />
       </div>
@@ -295,7 +295,7 @@ export default function SessionSummaryPage() {
                   {/* Sets Comparison Table */}
                   <div className="p-5 space-y-4">
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs">
+                      <table className="w-full min-w-[500px] text-left text-xs">
                         <thead>
                           <tr className="border-b border-[#1E2329] text-[11px] uppercase tracking-wider text-[#6B7280]">
                             <th className="pb-3 font-semibold">Set</th>

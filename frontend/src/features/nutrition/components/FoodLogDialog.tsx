@@ -113,7 +113,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl border border-zinc-800 bg-[#0D1014] shadow-2xl overflow-hidden">
+      <div className="w-full max-w-2xl max-h-[calc(100dvh-2rem)] flex flex-col rounded-2xl border border-zinc-800 bg-[#0D1014] shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-800/80 px-6 py-4 bg-[#101418]">
           <div className="flex items-center gap-3">

@@ -1,5 +1,5 @@
 // src/routes/auth.routes.ts
-import { Router } from "express";
+import { Router, type Request, type Response } from "express";
 import validate from "../middleware/validate.middleware.js";
 
 import {
@@ -101,7 +101,7 @@ router.post(
 );
 
 // Admin testing route
-router.get("/admin", protect, restrictTo(Roles.ADMIN), (req, res) => {
+router.get("/admin", protect, restrictTo(Roles.ADMIN), (req: Request, res: Response) => {
   res.status(200).json({
     status: "success",
     message: "Welcome Admin",

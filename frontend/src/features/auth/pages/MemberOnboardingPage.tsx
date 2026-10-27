@@ -85,7 +85,7 @@ export const MemberOnboardingPage: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-[#090B0F] text-[#F3F4F6] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative selection:bg-[#5BE584]/30">
       {/* Background radial atmosphere */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-[radial-gradient(circle_at_center,_rgba(91,229,132,0.04)_0%,_rgba(9,11,15,0)_70%)] blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
       </div>

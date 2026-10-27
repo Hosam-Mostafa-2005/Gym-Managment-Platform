@@ -1,4 +1,4 @@
-import type { RequestHandler } from "express";
+import type { Request, Response, NextFunction, RequestHandler } from "express";
 import jwt from "jsonwebtoken";
 
 import prisma from "../config/prisma.js";
@@ -7,7 +7,7 @@ import type { Role } from "../constants/roles.js";
 import catchAsync from "../utils/catchAsync.js";
 import type { JwtPayload } from "../types/jwt.types.js";
 
-export const protect: RequestHandler = catchAsync(async (req, res, next) => {
+export const protect: RequestHandler = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   let token: string | undefined;
 
   // 1. Bearer Token
@@ -64,7 +64,7 @@ export const protect: RequestHandler = catchAsync(async (req, res, next) => {
 });
 
 export const optionalProtect: RequestHandler = catchAsync(
-  async (req, _res, next) => {
+  async (req: Request, _res: Response, next: NextFunction) => {
     let token: string | undefined;
 
     if (
@@ -98,7 +98,7 @@ export const optionalProtect: RequestHandler = catchAsync(
 );
 
 export const restrictTo = (...roles: Role[]): RequestHandler => {
-  return (req, res, next) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user) {
       return next(new AppError("You are not logged in.", 401));
     }

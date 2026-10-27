@@ -193,7 +193,7 @@ export default function WorkoutForm({
           />
 
           <div className="flex flex-wrap items-center gap-3 pt-1">
-            <div className="w-36">
+            <div className="w-full sm:w-36">
               <FormSelect
                 control={control}
                 name="category"
@@ -203,7 +203,7 @@ export default function WorkoutForm({
               />
             </div>
 
-            <div className="w-36">
+            <div className="w-full sm:w-36">
               <FormSelect
                 control={control}
                 name="difficulty"
@@ -213,7 +213,7 @@ export default function WorkoutForm({
               />
             </div>
 
-            <div className="w-40">
+            <div className="w-full sm:w-40">
               <FormNumberInput
                 control={control}
                 name="estimatedDuration"
@@ -235,7 +235,7 @@ export default function WorkoutForm({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-3 self-end lg:self-start">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end self-end lg:self-start">
           <Button
             type="button"
             variant="ghost"

@@ -9,7 +9,7 @@
 
     "strict": true,
 
-    "types": ["node"],
+    "types": ["node", "express"],
 
     "sourceMap": true,
 

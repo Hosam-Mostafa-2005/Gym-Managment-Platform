@@ -19,13 +19,13 @@ const AppLayout = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#090B0F] text-[#F8FAFC]">
+    <div className="flex h-[100dvh] overflow-hidden bg-[#090B0F] text-[#F8FAFC]">
       <Sidebar collapsed={collapsed} onCloseMobile={handleCloseMobile} />
 
-      <div className="flex flex-1 flex-col overflow-hidden h-screen min-w-0">
+      <div className="flex flex-1 flex-col overflow-hidden h-[100dvh] min-w-0">
         <Header collapsed={collapsed} onToggle={handleToggle} />
 
-        <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
+        <main className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
           <Outlet />
         </main>
       </div>

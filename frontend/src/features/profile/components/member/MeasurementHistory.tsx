@@ -32,7 +32,7 @@ export const MeasurementHistory: React.FC<MeasurementHistoryProps> = ({
     >
       {measurements?.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-gray-300">
+          <table className="w-full min-w-[500px] text-left text-xs text-gray-300">
             <thead className="border-b border-[#1e2329] bg-[#13171d]/50 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
               <tr>
                 <th scope="col" className="px-4 py-3 font-medium">

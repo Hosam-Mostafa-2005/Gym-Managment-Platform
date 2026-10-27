@@ -31,7 +31,7 @@ export const CreateMeasurementDialog: React.FC<{
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-xl max-h-[85vh] overflow-y-auto rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 shadow-2xl">
+      <div className="w-full max-w-xl max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-xl border border-[#1E2329] bg-[#0D1117] p-4 sm:p-6 shadow-2xl">
         <h2 className="text-lg font-bold text-gray-100 mb-1">
           Add Body Measurement
         </h2>

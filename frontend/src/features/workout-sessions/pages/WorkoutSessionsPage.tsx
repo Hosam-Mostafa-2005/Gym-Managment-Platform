@@ -124,7 +124,7 @@ export default function WorkoutSessionsPage() {
   return (
     <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
       {/* Background Atmosphere */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
         <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,_rgba(91,229,132,0.02)_0%,_rgba(13,16,20,0)_70%)] blur-3xl" />
       </div>
@@ -362,7 +362,7 @@ export default function WorkoutSessionsPage() {
             {!isLoading && !isError && filteredSessions.length > 0 && (
               <>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm whitespace-nowrap">
+                  <table className="w-full min-w-[580px] text-left text-sm whitespace-nowrap">
                     <thead className="text-[#6B7280] border-b border-[#1E2329] uppercase text-[10px] font-bold tracking-widest bg-[#101418]">
                       <tr>
                         <th className="px-5 py-4">Workout</th>

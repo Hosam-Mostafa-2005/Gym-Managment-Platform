@@ -94,9 +94,9 @@ export default function ActiveWorkoutConflictDialog({
       {createPortal(
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md">
           <div className="min-h-full flex items-center justify-center p-4">
-            <div className="bg-[#0D1014] border border-amber-500/30 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-[#0D1014] border border-amber-500/30 rounded-2xl w-full max-w-lg max-h-[calc(100dvh-2rem)] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-[#1E2329] bg-amber-500/5">
+              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[#1E2329] bg-amber-500/5 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
                     <AlertTriangle className="h-6 w-6" />
@@ -120,7 +120,7 @@ export default function ActiveWorkoutConflictDialog({
               </div>
 
               {/* Body */}
-              <div className="p-6 space-y-5">
+              <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
                 <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-4 space-y-2">
                   <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">
                     Currently In Progress
@@ -167,7 +167,7 @@ export default function ActiveWorkoutConflictDialog({
                     <button
                       type="button"
                       onClick={handleResume}
-                      className="w-full flex items-center justify-between p-3.5 rounded-xl bg-[#5BE584] hover:bg-[#49D472] text-[#090B0F] font-semibold text-xs transition-all shadow-[0_0_15px_rgba(91,229,132,0.15)] group"
+                      className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 gap-2 sm:gap-3 rounded-xl bg-[#5BE584] hover:bg-[#49D472] text-[#090B0F] font-semibold text-xs transition-all shadow-[0_0_15px_rgba(91,229,132,0.15)] group"
                     >
                       <div className="flex items-center gap-3">
                         <Play size={16} className="fill-current" />
@@ -188,7 +188,7 @@ export default function ActiveWorkoutConflictDialog({
                       <button
                         type="button"
                         onClick={handleOpenSchedule}
-                        className="w-full flex items-center justify-between p-3.5 rounded-xl border border-[#1E2329] bg-[#101418] hover:border-[#2A313A] hover:bg-[#161B22] text-white text-xs font-medium transition-all group"
+                        className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 gap-2 sm:gap-3 rounded-xl border border-[#1E2329] bg-[#101418] hover:border-[#2A313A] hover:bg-[#161B22] text-white text-xs font-medium transition-all group"
                       >
                         <div className="flex items-center gap-3">
                           <Calendar size={16} className="text-[#5BE584]" />
@@ -208,7 +208,7 @@ export default function ActiveWorkoutConflictDialog({
                     <button
                       type="button"
                       onClick={() => setIsAbandonConfirming(true)}
-                      className="w-full flex items-center justify-between p-3.5 rounded-xl border border-[#1E2329] bg-[#101418] hover:border-red-900/50 hover:bg-red-950/10 text-red-300 text-xs font-medium transition-all group"
+                      className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 gap-2 sm:gap-3 rounded-xl border border-[#1E2329] bg-[#101418] hover:border-red-900/50 hover:bg-red-950/10 text-red-300 text-xs font-medium transition-all group"
                     >
                       <div className="flex items-center gap-3">
                         <RotateCcw size={16} className="text-red-400" />

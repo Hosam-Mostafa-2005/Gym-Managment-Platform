@@ -78,9 +78,9 @@ export default function FinishWorkoutDialog({
         createPortal(
           <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/75 backdrop-blur-md">
             <div className="min-h-full flex items-center justify-center p-4">
-              <div className="bg-[#0D1014] border border-[#1E2329] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="bg-[#0D1014] border border-[#1E2329] rounded-2xl w-full max-w-lg max-h-[calc(100dvh-2rem)] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-[#1E2329]">
+                <div className="flex items-center justify-between p-4 sm:p-6 border-b border-[#1E2329] shrink-0">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#16291D] border border-[#23422E] text-[#5BE584]">
                       <Trophy className="h-5 w-5" />
@@ -104,7 +104,7 @@ export default function FinishWorkoutDialog({
                 </div>
 
                 {/* Content */}
-                <div className="p-6 space-y-5">
+                <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
                   {/* Stats Grid Preview */}
                   {stats && (
                     <div className="grid grid-cols-3 gap-3 p-3.5 rounded-xl border border-[#1E2329] bg-[#101418]">
@@ -163,7 +163,7 @@ export default function FinishWorkoutDialog({
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-10 gap-1 sm:gap-1.5">
+                    <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5 sm:gap-1.5">
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => {
                         const isSelected = sessionRpe === score;
                         return (
@@ -206,7 +206,7 @@ export default function FinishWorkoutDialog({
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-end gap-3 p-6 border-t border-[#1E2329] bg-[#101418]/50">
+                <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-[#1E2329] bg-[#101418]/50 shrink-0">
                   <button
                     type="button"
                     onClick={() => setIsOpen(false)}

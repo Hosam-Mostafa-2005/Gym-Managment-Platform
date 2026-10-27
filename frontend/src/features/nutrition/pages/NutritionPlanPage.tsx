@@ -194,7 +194,7 @@ export const NutritionPlanPage: React.FC = () => {
 
                     {/* Meal Food Items Table */}
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs">
+                      <table className="w-full min-w-[500px] text-left text-xs">
                         <thead>
                           <tr className="border-b border-zinc-800/60 text-zinc-400 uppercase tracking-wider text-[10px]">
                             <th className="pb-2">Food Item</th>

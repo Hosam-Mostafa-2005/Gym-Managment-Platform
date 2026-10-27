@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type Request, type Response } from "express";
 import path from "node:path";
 import routes from "./routes/index.js";
 import globalErrorHandler from "./middleware/error.middleware.js";
@@ -42,7 +42,7 @@ app.use(
 app.use(
   "/uploads",
   express.static(path.resolve(process.cwd(), "uploads"), {
-    setHeaders: (res) => {
+    setHeaders: (res: Response) => {
       res.setHeader("X-Content-Type-Options", "nosniff");
       res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
     },
@@ -56,7 +56,7 @@ app.use("/api/v1", routes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Test Route
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
     status: "success",
     message: "Gym Management API is running...",

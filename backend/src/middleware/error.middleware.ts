@@ -1,8 +1,8 @@
-import type { ErrorRequestHandler } from "express";
+import type { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
 import AppError from "../utils/AppError.js";
 
-const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
+const globalErrorHandler: ErrorRequestHandler = (err, req: Request, res: Response, next: NextFunction) => {
   // AppError
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({

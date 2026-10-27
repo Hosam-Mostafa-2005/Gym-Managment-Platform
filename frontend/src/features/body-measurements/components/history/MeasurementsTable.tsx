@@ -25,7 +25,7 @@ export const MeasurementsTable: React.FC<MeasurementsTableProps> = ({
         Measurement History
       </h2>
       <div className="rounded-xl border border-[#1E2329] bg-[#0D1117] overflow-hidden overflow-x-auto">
-        <table className="w-full text-left text-sm">
+        <table className="w-full min-w-[700px] text-left text-sm">
           <thead className="bg-[#090B0F] text-[10px] font-semibold uppercase tracking-wider text-gray-500 border-b border-[#1E2329]">
             <tr>
               <th className="px-4 py-3">Date</th>

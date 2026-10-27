@@ -29,7 +29,7 @@ export const ExerciseNavigator: React.FC<ExerciseNavigatorProps> = ({
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-[#1E2329] bg-[#101418] p-3 sm:p-4 backdrop-blur-sm">
       {/* Top Header Controls */}
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF]">
             Exercise Sequence

@@ -1,3 +1,4 @@
+import "express";
 import type { User } from "@prisma/client";
 import type { ValidatedImageInfo } from "../utils/imageValidator.js";
 

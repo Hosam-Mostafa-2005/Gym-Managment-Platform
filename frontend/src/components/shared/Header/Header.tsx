@@ -415,7 +415,7 @@ const QuickActionsMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 flex flex-col overflow-hidden">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-72 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 flex flex-col overflow-hidden">
           <div className="flex items-center border-b border-[#2A3039] px-4 py-3 shrink-0">
             <h3 className="text-sm font-semibold text-[#F8FAFC]">
               Quick Actions
@@ -522,7 +522,7 @@ const ProfileMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-56 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 overflow-hidden">
           <div className="border-b border-[#2A3039] px-4 py-3">
             <p className="truncate text-sm font-semibold text-[#F8FAFC]">
               {displayName}
