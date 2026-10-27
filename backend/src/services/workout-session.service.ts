@@ -10,6 +10,7 @@ import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
 import type {
   FinishWorkoutSessionDto,
   ReviewWorkoutSessionDto,
+  SwapExerciseDto,
 } from "../types/workout-session.types.js";
 import mapWorkoutSession from "../mappers/workout-session.mapper.js";
 import { Roles, type Role } from "../constants/roles.js";
@@ -328,8 +329,29 @@ class WorkoutSessionService {
       }
     }
 
+    const originalIds = exerciseLogs
+      .map((l) => l.originalExerciseId)
+      .filter(Boolean) as string[];
+
+    const originalMap: Record<
+      string,
+      { id: string; name: string; imageUrl?: string | null }
+    > = {};
+    if (originalIds.length > 0) {
+      const originals = await prisma.exercise.findMany({
+        where: { id: { in: originalIds } },
+        select: { id: true, name: true, imageUrl: true },
+      });
+      for (const orig of originals) {
+        originalMap[orig.id] = orig;
+      }
+    }
+
     return exerciseLogs.map((log) => ({
       ...log,
+      originalExercise: log.originalExerciseId
+        ? originalMap[log.originalExerciseId] || null
+        : null,
       previousBestSet:
         bestSetsByExerciseId[log.exerciseId || log.exercise?.id] || null,
     }));
@@ -777,6 +799,113 @@ class WorkoutSessionService {
     }
 
     return mapWorkoutSession(reviewedSession);
+  }
+
+  async swapExercise(
+    sessionId: string,
+    exerciseLogId: string,
+    userId: string,
+    data: SwapExerciseDto,
+  ) {
+    const session = await prisma.workoutSession.findFirst({
+      where: {
+        id: sessionId,
+        memberId: userId,
+        status: WORKOUT_SESSION_STATUS.IN_PROGRESS,
+        isActive: true,
+      },
+    });
+
+    if (!session) {
+      throw new AppError(
+        "Active workout session not found or you are not authorized to modify it.",
+        404,
+      );
+    }
+
+    const exerciseLog = await prisma.workoutExerciseLog.findFirst({
+      where: {
+        id: exerciseLogId,
+        sessionId: session.id,
+      },
+      include: {
+        sets: {
+          orderBy: { setNumber: "asc" },
+        },
+      },
+    });
+
+    if (!exerciseLog) {
+      throw new AppError("Exercise log not found in this session.", 404);
+    }
+
+    if (exerciseLog.exerciseId === data.newExerciseId) {
+      throw new AppError(
+        "Replacement exercise must be different from current exercise.",
+        400,
+      );
+    }
+
+    const newExercise = await prisma.exercise.findFirst({
+      where: {
+        id: data.newExerciseId,
+        isActive: true,
+      },
+      include: {
+        memberAccess: {
+          where: {
+            memberId: userId,
+            isActive: true,
+          },
+        },
+      },
+    });
+
+    if (!newExercise) {
+      throw new AppError("Replacement exercise not found.", 404);
+    }
+
+    if (
+      newExercise.isCustom &&
+      newExercise.createdById !== userId &&
+      newExercise.memberAccess.length === 0
+    ) {
+      throw new AppError("You do not have access to this custom exercise.", 403);
+    }
+
+    const originalExerciseId =
+      exerciseLog.originalExerciseId || exerciseLog.exerciseId;
+    const reasonText = data.notes?.trim()
+      ? `${data.reason}: ${data.notes.trim()}`
+      : data.reason;
+
+    await prisma.$transaction(async (tx) => {
+      // 1. Reset pre-filled weights on uncompleted sets to 0 (since load was for previous movement)
+      await tx.workoutSetLog.updateMany({
+        where: {
+          exerciseLogId: exerciseLog.id,
+          completed: false,
+        },
+        data: {
+          weight: 0,
+        },
+      });
+
+      // 2. Update exerciseLog with new exercise and swap tracking
+      await tx.workoutExerciseLog.update({
+        where: { id: exerciseLog.id },
+        data: {
+          exerciseId: newExercise.id,
+          exerciseName: newExercise.name,
+          originalExerciseId,
+          swapReason: reasonText,
+          targetWeight: null,
+          targetRpe: null,
+        },
+      });
+    });
+
+    return this.getCurrent(userId);
   }
 
   async getPreviousPerformanceForSession(

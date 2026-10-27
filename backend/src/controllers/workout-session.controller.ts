@@ -75,6 +75,22 @@ export const review: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+export const swapExercise: RequestHandler = catchAsync(async (req, res) => {
+  const result = await workoutSessionService.swapExercise(
+    req.params.id as string,
+    req.params.exerciseLogId as string,
+    req.user!.id,
+    req.body,
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      session: result,
+    },
+  });
+});
+
 export const getAll: RequestHandler = catchAsync(async (req, res) => {
   const sessions = await workoutSessionService.getAll(
     req.query,

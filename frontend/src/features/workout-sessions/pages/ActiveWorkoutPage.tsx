@@ -185,6 +185,7 @@ export default function ActiveWorkoutPage() {
                 <ExerciseCard
                   key={exercise.id}
                   exercise={exercise}
+                  sessionId={sessionId}
                   previousPerformance={prev}
                   onSetCompleted={handleSetCompleted}
                   isFocused={idx === currentExerciseIndex}
@@ -197,6 +198,7 @@ export default function ActiveWorkoutPage() {
             currentLog && (
               <ExerciseCard
                 exercise={currentLog}
+                sessionId={sessionId}
                 previousPerformance={
                   previousPerformance?.[currentLog.exercise?.id || ""]
                 }

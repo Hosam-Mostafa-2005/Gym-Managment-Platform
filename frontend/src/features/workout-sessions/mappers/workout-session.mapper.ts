@@ -43,6 +43,18 @@ const mapExerciseLog = (log: any): WorkoutExerciseLog => {
     exerciseName: log.exerciseName,
     targetSets: log.targetSets,
     targetReps: log.targetReps,
+    targetWeight: log.targetWeight ?? null,
+    targetRpe: log.targetRpe ?? null,
+    previousBestSet: log.previousBestSet ?? null,
+    originalExerciseId: log.originalExerciseId ?? null,
+    originalExercise: log.originalExercise
+      ? {
+          id: log.originalExercise.id ?? log.originalExercise._id ?? "",
+          name: log.originalExercise.name ?? "",
+          imageUrl: log.originalExercise.imageUrl ?? null,
+        }
+      : null,
+    swapReason: log.swapReason ?? null,
     order: log.order,
     completed: log.completed,
     sets: log.sets?.map(mapSet) ?? [],

@@ -9,6 +9,7 @@ import {
   startWorkoutSessionSchema,
   finishWorkoutSessionSchema,
   reviewWorkoutSessionSchema,
+  swapExerciseLogSchema,
 } from "../validators/workout-session.validator.js";
 
 import { Roles } from "../constants/roles.js";
@@ -46,6 +47,14 @@ router.patch(
   restrictTo(Roles.ADMIN, Roles.TRAINER),
   validate(reviewWorkoutSessionSchema),
   workoutSessionController.review,
+);
+
+// Swap Exercise (Member / Admin)
+router.patch(
+  "/:id/exercises/:exerciseLogId/swap",
+  restrictTo(Roles.ADMIN, Roles.MEMBER),
+  validate(swapExerciseLogSchema),
+  workoutSessionController.swapExercise,
 );
 
 // Current Session

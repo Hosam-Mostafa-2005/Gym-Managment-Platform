@@ -157,6 +157,7 @@ export default function WorkoutExerciseItem({
           )}
         </div>
 
+        {/* Core Parameters: Sets, Reps, Rest */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 rounded-lg border border-border/40 bg-background/20 p-3.5">
           <FormNumberInput
             control={control}
@@ -178,6 +179,39 @@ export default function WorkoutExerciseItem({
             label="Rest Interval (sec)"
             min={0}
           />
+        </div>
+
+        {/* Prescription Targets: Target Weight & Target RPE */}
+        <div className="rounded-lg border border-border/40 bg-background/20 p-3.5 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Prescription Targets (Optional)
+            </span>
+            <span className="text-[11px] text-muted-foreground/80">
+              Coaching targets for member guidance
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormNumberInput
+              control={control}
+              name={`exercises.${index}.targetWeight`}
+              label="Target Load (kg)"
+              placeholder="e.g. 80 or 82.5"
+              min={0}
+              step={0.5}
+            />
+
+            <FormNumberInput
+              control={control}
+              name={`exercises.${index}.targetRpe`}
+              label="Target Exertion (RPE 1–10)"
+              placeholder="e.g. 8"
+              min={1}
+              max={10}
+              step={0.5}
+            />
+          </div>
         </div>
 
         <FormTextarea

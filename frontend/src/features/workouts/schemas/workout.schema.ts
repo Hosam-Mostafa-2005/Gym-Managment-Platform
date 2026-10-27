@@ -7,6 +7,19 @@ const workoutExerciseSchema = z.object({
 
   reps: z.string().min(1, "Reps is required"),
 
+  targetWeight: z
+    .number()
+    .min(0, "Target weight cannot be negative")
+    .nullable()
+    .optional(),
+
+  targetRpe: z
+    .number()
+    .min(1, "Target RPE must be at least 1")
+    .max(10, "Target RPE cannot exceed 10")
+    .nullable()
+    .optional(),
+
   restSeconds: z.number().min(0, "Rest must be positive"),
 
   notes: z.string().optional(),

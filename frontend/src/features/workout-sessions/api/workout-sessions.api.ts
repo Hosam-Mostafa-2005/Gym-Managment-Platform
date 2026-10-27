@@ -14,6 +14,7 @@ import type {
   CreateWorkoutSetPayload,
   UpdateWorkoutSetPayload,
   PreviousPerformanceMap,
+  SwapExercisePayload,
 } from "../types/workout-session.types";
 
 export const getWorkoutSessions = async (
@@ -123,4 +124,18 @@ export const getMyAssignments = async () => {
   const { data } = await api.get("/assignments/me");
 
   return data.data.assignments;
+};
+
+export const swapExercise = async (
+  sessionId: string,
+  exerciseLogId: string,
+  payload: SwapExercisePayload,
+): Promise<WorkoutSessionDetails> => {
+  const { data } = await api.patch(
+    `/workout-sessions/${sessionId}/exercises/${exerciseLogId}/swap`,
+    payload,
+  );
+
+  const rawSession = data.data.session ?? data.data;
+  return mapWorkoutSessionDetails(rawSession);
 };

@@ -35,6 +35,9 @@ export interface WorkoutExerciseLog {
   targetWeight?: number | null;
   targetRpe?: number | null;
   previousBestSet?: { weight: number; actualReps: number } | null;
+  originalExerciseId?: string | null;
+  originalExercise?: { id: string; name: string; imageUrl?: string | null } | null;
+  swapReason?: string | null;
   order: number;
   completed: boolean;
   sets: WorkoutSetLog[];
@@ -126,6 +129,12 @@ export interface UpdateWorkoutSetPayload {
   actualReps?: number;
   completed?: boolean;
   restDuration?: number;
+}
+
+export interface SwapExercisePayload {
+  newExerciseId: string;
+  reason: string;
+  notes?: string;
 }
 
 export interface PreviousSetPerformance {

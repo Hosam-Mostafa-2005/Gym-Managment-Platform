@@ -50,3 +50,9 @@ export interface FinishWorkoutSessionDto {
 export interface ReviewWorkoutSessionDto {
   feedback: string;
 }
+
+export interface SwapExerciseDto {
+  newExerciseId: string;
+  reason: string;
+  notes?: string;
+}

@@ -1,5 +1,6 @@
 import React, { useState, type ReactNode } from "react";
 import {
+  ArrowLeftRight,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
@@ -19,10 +20,13 @@ import type {
 } from "../types/workout-session.types";
 import { SetRow } from "./SetRow";
 import { useCreateWorkoutSet } from "../hooks/useCreateWorkoutSet";
+import { useCurrentWorkoutSession } from "../hooks/useCurrentWorkoutSession";
 import ExerciseImage from "@/features/exercises/components/ExerciseImage";
+import SwapExerciseDialog from "./SwapExerciseDialog";
 
 export interface ExerciseCardProps {
   exercise: WorkoutExerciseLog;
+  sessionId?: string;
   previousPerformance?: PreviousExercisePerformance | null;
   onSetCompleted?: (restSeconds?: number) => void;
   isFocused?: boolean;
@@ -32,6 +36,7 @@ export interface ExerciseCardProps {
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   exercise,
+  sessionId,
   previousPerformance,
   onSetCompleted,
   isFocused = false,
@@ -39,6 +44,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   children,
 }) => {
   const [showInstructions, setShowInstructions] = useState(false);
+  const [isSwapDialogOpen, setIsSwapDialogOpen] = useState(false);
+  const { data: currentSessionData } = useCurrentWorkoutSession();
+  const effectiveSessionId = sessionId || currentSessionData?.session?.id || "";
   const { mutate: createSet, isPending: isCreatingSet } = useCreateWorkoutSet();
 
   const sets = exercise.sets || [];
@@ -158,6 +166,25 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     </span>
                   )}
                 </div>
+
+                {/* Replacement Indicator Banner */}
+                {exercise.originalExerciseId && (
+                  <div className="mt-2.5 flex flex-wrap items-center gap-2 rounded-lg bg-[#141920] border border-[#262D36] px-3 py-1.5 text-xs text-[#9CA3AF]">
+                    <ArrowLeftRight className="h-3.5 w-3.5 text-[#5BE584] shrink-0" />
+                    <span>
+                      Replaced from:{" "}
+                      <strong className="text-white font-medium">
+                        {exercise.originalExercise?.name || "Original Movement"}
+                      </strong>
+                    </span>
+                    {exercise.swapReason && (
+                      <>
+                        <span className="text-[#6B7280]">•</span>
+                        <span className="text-[#5BE584]/90 font-medium">{exercise.swapReason}</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Target Muscles & Equipment Pills */}
@@ -248,6 +275,19 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     <span>Video Demo</span>
                     <ExternalLink className="h-3 w-3 opacity-70" />
                   </a>
+                )}
+
+                {/* In-Session Exercise Swap Action */}
+                {!isExerciseDone && effectiveSessionId && (
+                  <button
+                    type="button"
+                    onClick={() => setIsSwapDialogOpen(true)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] hover:border-[#5BE584]/40 hover:text-white transition-colors"
+                    title="Swap with another exercise"
+                  >
+                    <ArrowLeftRight className="h-3.5 w-3.5 text-[#5BE584]" />
+                    <span>Swap Exercise</span>
+                  </button>
                 )}
               </div>
             </div>
@@ -369,6 +409,16 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
       {showConnector && (
         <div className="mx-auto h-6 w-0.5 bg-gradient-to-b from-[#2A313A] to-transparent" />
+      )}
+
+      {/* Swap Exercise Dialog Modal */}
+      {effectiveSessionId && (
+        <SwapExerciseDialog
+          isOpen={isSwapDialogOpen}
+          onClose={() => setIsSwapDialogOpen(false)}
+          sessionId={effectiveSessionId}
+          exerciseLog={exercise}
+        />
       )}
     </div>
   );

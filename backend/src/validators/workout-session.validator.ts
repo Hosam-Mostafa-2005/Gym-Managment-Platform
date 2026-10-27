@@ -37,3 +37,19 @@ export const reviewWorkoutSessionSchema = z.object({
       .max(1000, "Feedback must not exceed 1000 characters"),
   }),
 });
+
+export const swapExerciseLogSchema = z.object({
+  body: z.object({
+    newExerciseId: z.string().min(1, "Replacement exercise is required"),
+    reason: z
+      .string()
+      .trim()
+      .min(1, "Swap reason is required")
+      .max(500, "Reason must not exceed 500 characters"),
+    notes: z
+      .string()
+      .trim()
+      .max(500, "Notes must not exceed 500 characters")
+      .optional(),
+  }),
+});

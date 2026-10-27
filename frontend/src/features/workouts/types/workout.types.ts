@@ -13,6 +13,10 @@ export interface WorkoutExercise {
 
   reps: string;
 
+  targetWeight?: number | null;
+
+  targetRpe?: number | null;
+
   restSeconds: number;
 
   notes?: string;
@@ -26,6 +30,10 @@ export interface WorkoutExerciseDetails {
   sets: number;
 
   reps: string;
+
+  targetWeight?: number | null;
+
+  targetRpe?: number | null;
 
   restSeconds: number;
 

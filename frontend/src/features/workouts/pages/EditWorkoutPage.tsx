@@ -123,6 +123,8 @@ export default function EditWorkoutPage() {
       restSeconds: item.restSeconds,
       notes: item.notes ?? "",
       order: item.order,
+      targetWeight: item.targetWeight ?? undefined,
+      targetRpe: item.targetRpe ?? undefined,
     })),
   };
 

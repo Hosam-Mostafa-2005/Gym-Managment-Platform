@@ -149,6 +149,8 @@ export default function WorkoutForm({
       restSeconds: 180,
       notes: "",
       order: fields.length + 1,
+      targetWeight: undefined,
+      targetRpe: undefined,
     });
   };
 
