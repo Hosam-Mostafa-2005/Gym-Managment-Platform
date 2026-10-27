@@ -128,3 +128,39 @@ export const remove: RequestHandler = catchAsync(async (req, res) => {
     data: null,
   });
 });
+
+export const grantAccess: RequestHandler = catchAsync(async (req, res) => {
+  const { memberId } = req.body;
+  if (!memberId) {
+    throw new AppError("memberId is required.", 400);
+  }
+
+  const access = await exerciseService.grantAccess(
+    req.params.id as string,
+    memberId,
+    req.user!.id,
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: { access },
+  });
+});
+
+export const revokeAccess: RequestHandler = catchAsync(async (req, res) => {
+  const { memberId } = req.body;
+  if (!memberId) {
+    throw new AppError("memberId is required.", 400);
+  }
+
+  const result = await exerciseService.revokeAccess(
+    req.params.id as string,
+    memberId,
+    req.user!.id,
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: result,
+  });
+});

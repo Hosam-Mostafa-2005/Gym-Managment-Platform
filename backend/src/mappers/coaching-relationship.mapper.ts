@@ -20,8 +20,12 @@ export const mapCoachingRelationship = (entity: any) => ({
         email: entity.trainer.email,
         phone: entity.trainer.phone ?? null,
         bio: entity.trainer.bio ?? null,
+        professionalTitle: entity.trainer.professionalTitle ?? null,
         specialties: entity.trainer.specialties ?? [],
+        certifications: entity.trainer.certifications ?? [],
         yearsOfExperience: entity.trainer.yearsOfExperience ?? 0,
+        coachingPhilosophy: entity.trainer.coachingPhilosophy ?? null,
+        languagesSpoken: entity.trainer.languagesSpoken ?? [],
       }
     : null,
   member: entity.member

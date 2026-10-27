@@ -222,20 +222,21 @@ class MemberProfileService {
     }
 
     const [
-      currentAssignment,
+      activeAssignmentsRaw,
       assignmentHistory,
       measurements,
       sessions,
     ] = await Promise.all([
-      prisma.assignment.findFirst({
+      prisma.assignment.findMany({
         where: {
           memberId,
           status: ASSIGNMENT_STATUS.ACTIVE,
           isActive: true,
         },
+        orderBy: { createdAt: "desc" },
         include: {
-          workout: { select: { title: true } },
-          trainer: { select: { name: true } },
+          workout: { select: { id: true, title: true, category: true, difficulty: true } },
+          trainer: { select: { id: true, name: true } },
         },
       }),
 
@@ -333,6 +334,8 @@ class MemberProfileService {
       weightChange,
     };
 
+    const currentAssignment = activeAssignmentsRaw[0] || null;
+
     const timeline = this.buildTimeline(
       currentAssignment,
       assignmentHistory,
@@ -343,6 +346,7 @@ class MemberProfileService {
     return mapMemberProfile({
       member,
       currentAssignment,
+      activeAssignments: activeAssignmentsRaw,
       assignmentHistory,
       measurements,
       workoutStats: overallStats,

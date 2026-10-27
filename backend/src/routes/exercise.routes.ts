@@ -177,4 +177,16 @@ router.delete(
   exerciseController.remove,
 );
 
+router.post(
+  "/:id/grant-access",
+  authorize(Permissions.Exercise.UPDATE),
+  exerciseController.grantAccess,
+);
+
+router.post(
+  "/:id/revoke-access",
+  authorize(Permissions.Exercise.UPDATE),
+  exerciseController.revokeAccess,
+);
+
 export default router;

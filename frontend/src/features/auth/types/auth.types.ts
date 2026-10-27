@@ -25,6 +25,7 @@ export interface User {
 }
 
 export interface OnboardingRequest {
+  role?: string;
   name?: string;
   phone?: string | null;
   bio?: string | null;

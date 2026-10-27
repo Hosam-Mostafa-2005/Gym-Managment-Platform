@@ -19,10 +19,10 @@ export const useAuth = () => {
   return {
     user,
     role,
-    isMember: role === ROLES.MEMBER,
-    isCoach: role === ROLES.TRAINER,
-    isAdmin: role === ROLES.ADMIN,
-    isCoachOrAdmin: role === ROLES.TRAINER || role === ROLES.ADMIN,
+    isMember: role === "MEMBER",
+    isCoach: role === "TRAINER" || role === "COACH",
+    isAdmin: role === "ADMIN",
+    isCoachOrAdmin: role === "TRAINER" || role === "COACH" || role === "ADMIN",
     isAuthenticated,
     isLoading,
   };

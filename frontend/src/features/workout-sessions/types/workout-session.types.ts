@@ -27,10 +27,14 @@ export interface WorkoutSetLog {
 
 export interface WorkoutExerciseLog {
   id: string;
+  exerciseId?: string;
   exercise: Exercise;
   exerciseName: string;
   targetSets: number;
   targetReps: string;
+  targetWeight?: number | null;
+  targetRpe?: number | null;
+  previousBestSet?: { weight: number; actualReps: number } | null;
   order: number;
   completed: boolean;
   sets: WorkoutSetLog[];
@@ -78,6 +82,11 @@ export interface WorkoutSession {
   exercisesCompleted: number;
   setsCompleted: number;
   notes?: string;
+  sessionRpe?: number | null;
+  coachFeedback?: string | null;
+  coachReviewedAt?: string | null;
+  coachReviewedById?: string | null;
+  coachReviewedBy?: { id: string; name: string; email: string } | null;
 }
 
 export interface WorkoutSessionDetails {
@@ -97,6 +106,11 @@ export interface StartWorkoutSessionPayload {
 
 export interface FinishWorkoutSessionPayload {
   notes?: string;
+  sessionRpe?: number;
+}
+
+export interface ReviewWorkoutSessionPayload {
+  feedback: string;
 }
 
 export interface CreateWorkoutSetPayload {
@@ -129,6 +143,7 @@ export interface PreviousExercisePerformance {
   totalVolume?: number;
   maxWeight?: number;
   totalReps?: number;
+  bestSet?: { weight: number; actualReps: number } | null;
   sets: PreviousSetPerformance[];
 }
 

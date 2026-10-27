@@ -21,6 +21,7 @@ import ForgotPasswordPage from "@/features/auth/pages/ForgotPasswordPage";
 import VerifyResetCodePage from "@/features/auth/pages/VerifyResetCodePage";
 import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 import NotFoundPage from "@/features/auth/pages/NotFoundPage";
+import OnboardingPage from "@/features/auth/pages/OnboardingPage";
 import MemberOnboardingPage from "@/features/auth/pages/MemberOnboardingPage";
 import CoachOnboardingPage from "@/features/auth/pages/CoachOnboardingPage";
 
@@ -131,22 +132,16 @@ const router = createBrowserRouter([
         path: "onboarding",
         children: [
           {
-            element: <ProtectedRoute allowedRoles={["MEMBER"]} />,
-            children: [
-              {
-                path: "member",
-                element: <MemberOnboardingPage />,
-              },
-            ],
+            index: true,
+            element: <OnboardingPage />,
           },
           {
-            element: <ProtectedRoute allowedRoles={["TRAINER", "ADMIN"]} />,
-            children: [
-              {
-                path: "coach",
-                element: <CoachOnboardingPage />,
-              },
-            ],
+            path: "member",
+            element: <OnboardingPage initialRole="member" />,
+          },
+          {
+            path: "coach",
+            element: <OnboardingPage initialRole="trainer" />,
           },
         ],
       },
@@ -159,25 +154,32 @@ const router = createBrowserRouter([
             path: "home",
             element: <LandingPage />,
           },
+
+          // ─── Member Only ────────────────────────────────────
           {
-            path: "dashboard",
-            element: <DashboardPage />,
+            element: <ProtectedRoute allowedRoles={["MEMBER"]} />,
             children: [
               {
-                index: true,
-                element: <MemberOverviewView />,
-              },
-              {
-                path: "overview",
-                element: <Navigate to="/dashboard" replace />,
-              },
-              {
-                path: "analytics",
-                element: <MemberAnalyticsView />,
-              },
-              {
-                path: "activity",
-                element: <MemberActivityView />,
+                path: "dashboard",
+                element: <DashboardPage />,
+                children: [
+                  {
+                    index: true,
+                    element: <MemberOverviewView />,
+                  },
+                  {
+                    path: "overview",
+                    element: <Navigate to="/dashboard" replace />,
+                  },
+                  {
+                    path: "analytics",
+                    element: <MemberAnalyticsView />,
+                  },
+                  {
+                    path: "activity",
+                    element: <MemberActivityView />,
+                  },
+                ],
               },
             ],
           },

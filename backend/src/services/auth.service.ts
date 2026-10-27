@@ -1,7 +1,7 @@
 // src/services/auth.service.ts
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
-import { VerificationPurpose } from "@prisma/client";
+import { VerificationPurpose, Role } from "@prisma/client";
 import prisma from "../config/prisma.js";
 import { env } from "../config/env.js";
 import type {
@@ -65,49 +65,24 @@ class AuthService {
         );
       }
 
-      // Existing unverified account: update user details and re-dispatch verification code
+      // Existing unverified account: update user details and activate account
       const hashedPassword = await bcrypt.hash(userData.password, 12);
       const updatedUser = await prisma.user.update({
         where: { id: existingUser.id },
         data: {
           name: userData.name.trim(),
           password: hashedPassword,
+          isEmailVerified: true,
+          emailVerifiedAt: new Date(),
         },
       });
-
-      let delivery: EmailDeliveryResult | undefined;
-      try {
-        const otpResult = await verificationService.createAndSendOtp({
-          userId: updatedUser.id,
-          email: updatedUser.email,
-          name: updatedUser.name,
-          purpose: VerificationPurpose.EMAIL_VERIFICATION,
-        });
-        delivery = otpResult.delivery;
-      } catch (err: any) {
-        if (err.statusCode === 429) {
-          delivery = {
-            success: true,
-            provider: (env.EMAIL_PROVIDER || "console") as any,
-            accepted: true,
-            notice: "A verification code was recently dispatched. Cooldown active.",
-          };
-        } else {
-          console.error(
-            "[AuthService] Failed to dispatch pending registration OTP:",
-            err,
-          );
-        }
-      }
 
       const token = generateToken(updatedUser.id);
       return {
         user: mapUser(updatedUser),
         token,
-        isPendingRegistration: true,
-        delivery,
-        message:
-          "An unverified account with this email is pending verification. A fresh verification code has been dispatched.",
+        isPendingRegistration: false,
+        message: "Account registered successfully.",
       };
     }
 
@@ -119,23 +94,12 @@ class AuthService {
         email: normalizedEmail,
         password: hashedPassword,
         role: "member",
+        isEmailVerified: true,
+        emailVerifiedAt: new Date(),
         onboardingCompleted: false,
         onboardingStep: 0,
       },
     });
-
-    let delivery: EmailDeliveryResult | undefined;
-    try {
-      const otpResult = await verificationService.createAndSendOtp({
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-        purpose: VerificationPurpose.EMAIL_VERIFICATION,
-      });
-      delivery = otpResult.delivery;
-    } catch (err) {
-      console.error("[AuthService] Failed to dispatch registration OTP:", err);
-    }
 
     const token = generateToken(user.id);
 
@@ -143,11 +107,7 @@ class AuthService {
       user: mapUser(user),
       token,
       isPendingRegistration: false,
-      delivery,
-      message:
-        delivery?.accepted
-          ? "Account registered successfully. A verification code has been sent to your email."
-          : "Account registered successfully. Please enter your 6-digit verification code.",
+      message: "Account registered successfully.",
     };
   }
 
@@ -235,23 +195,15 @@ class AuthService {
       throw new AppError("Incorrect email or password", 401);
     }
 
-    // Email verification check
+    // Email verification check (temporarily disabled: seamlessly activate unverified accounts)
     if (!user.isEmailVerified) {
-      try {
-        await verificationService.createAndSendOtp({
-          userId: user.id,
-          email: user.email,
-          name: user.name,
-          purpose: VerificationPurpose.EMAIL_VERIFICATION,
-        });
-      } catch {
-        // Cooldown active, ignore
-      }
-
-      throw new AppError(
-        "Please verify your email address to continue. A new verification code has been sent.",
-        403,
-      );
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          isEmailVerified: true,
+          emailVerifiedAt: new Date(),
+        },
+      });
     }
 
     const token = generateToken(user.id);
@@ -387,7 +339,7 @@ class AuthService {
   }
 
   /**
-   * Request password reset code
+   * Request password reset authorization
    */
   async forgotPassword(data: ForgotPasswordDto) {
     const normalizedEmail = data.email.trim().toLowerCase();
@@ -395,29 +347,21 @@ class AuthService {
       where: { email: normalizedEmail },
     });
 
-    let delivery: EmailDeliveryResult | undefined;
+    let resetToken: string | undefined;
+
     if (user && user.isActive) {
-      try {
-        const otpResult = await verificationService.createAndSendOtp({
-          userId: user.id,
-          email: user.email,
-          name: user.name,
-          purpose: VerificationPurpose.PASSWORD_RESET,
-        });
-        delivery = otpResult.delivery;
-      } catch (err: any) {
-        // If rate-limited, surface error message
-        if (err.statusCode === 429) {
-          throw err;
-        }
-      }
+      // Issue single-use password reset authorization token directly
+      resetToken = await verificationService.createPasswordResetToken(
+        user.id,
+        VerificationPurpose.PASSWORD_RESET,
+      );
     }
 
-    // Generic safe response to prevent user enumeration
     return {
       message:
-        "If an account exists with that email, a password reset code has been sent.",
-      delivery,
+        "If an account exists with that email, password reset authorization has been generated.",
+      resetToken,
+      email: user ? user.email : normalizedEmail,
     };
   }
 
@@ -628,6 +572,7 @@ class AuthService {
   async completeOnboarding(
     userId: string,
     data: {
+      role?: string;
       name?: string;
       phone?: string | null;
       bio?: string | null;
@@ -654,6 +599,11 @@ class AuthService {
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
+        ...(data.role &&
+          (data.role.toLowerCase() === Roles.MEMBER || data.role.toLowerCase() === Roles.TRAINER) &&
+          existing.role !== Roles.ADMIN && {
+            role: data.role.toLowerCase() as Role,
+          }),
         ...(data.name !== undefined && { name: data.name.trim() }),
         ...(data.phone !== undefined && {
           phone: data.phone ? data.phone.trim() : null,

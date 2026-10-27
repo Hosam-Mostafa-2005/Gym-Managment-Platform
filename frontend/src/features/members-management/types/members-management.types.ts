@@ -19,6 +19,13 @@ export interface MemberManagementCard {
     } | null;
   } | null;
 
+  activeAssignments?: Array<{
+    id: string;
+    workoutTitle: string;
+    startDate: string;
+    endDate: string;
+  }>;
+
   workout: {
     completionRate: number;
     lastWorkout: string | null;

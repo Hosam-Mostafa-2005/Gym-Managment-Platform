@@ -112,12 +112,12 @@ class MembersManagementService {
           }
         : null;
 
-      // Find active assignment first, or fallback to latest assignment
-      const activeAssignment = member.assignmentsAsMember.find(
+      // Find active assignments first, or fallback to latest assignment
+      const activeAssignments = member.assignmentsAsMember.filter(
         (a) => a.status === ASSIGNMENT_STATUS.ACTIVE,
       );
       const currentAssignment =
-        activeAssignment || member.assignmentsAsMember[0] || null;
+        activeAssignments[0] || member.assignmentsAsMember[0] || null;
 
       const latestWeight = member.measurementsAsMember[0]?.weight ?? null;
 
@@ -145,6 +145,7 @@ class MembersManagementService {
         isActive: member.isActive,
         createdAt: member.createdAt,
         currentAssignment,
+        activeAssignments,
         trainer: currentAssignment?.trainer || null,
         workout: currentAssignment?.workout || null,
         relationship,

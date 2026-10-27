@@ -1,7 +1,7 @@
 // src/features/dashboard/member/components/analytics/UpcomingScheduledWorkouts.tsx
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, Play, Dumbbell, ChevronRight } from "lucide-react";
+import { Calendar, Play, Dumbbell, ChevronRight, RotateCcw, AlertTriangle } from "lucide-react";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { useStartScheduledWorkout } from "@/features/scheduling/hooks/useScheduling";
 import { toast } from "sonner";
@@ -28,6 +28,8 @@ export const UpcomingScheduledWorkouts: React.FC<
       },
     });
   };
+
+  const now = new Date();
 
   return (
     <div className="flex flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 transition-colors hover:border-[#2A313A]">
@@ -59,6 +61,7 @@ export const UpcomingScheduledWorkouts: React.FC<
         <div className="flex flex-col gap-3">
           {schedules.map((schedule) => {
             const date = new Date(schedule.scheduledAt);
+            const isPastDue = date < now;
             const dateStr = date.toLocaleDateString("en-US", {
               weekday: "short",
               month: "short",
@@ -72,18 +75,40 @@ export const UpcomingScheduledWorkouts: React.FC<
             return (
               <div
                 key={schedule.id}
-                className="flex flex-col gap-3 rounded-lg border border-[#1E2329] bg-[#101418] p-4 sm:flex-row sm:items-center sm:justify-between"
+                className={`flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between transition-colors ${
+                  isPastDue
+                    ? "border-amber-500/30 bg-amber-500/[0.03]"
+                    : "border-[#1E2329] bg-[#101418]"
+                }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[#23422E] bg-[#16291D] text-[#5BE584]">
+                  <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${
+                      isPastDue
+                        ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
+                        : "border-[#23422E] bg-[#16291D] text-[#5BE584]"
+                    }`}
+                  >
                     <Dumbbell className="h-5 w-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white">
-                      {schedule.workout?.title || "Scheduled Routine"}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-white">
+                        {schedule.workout?.title || "Scheduled Routine"}
+                      </h3>
+                      {isPastDue && (
+                        <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">
+                          <AlertTriangle className="h-2.5 w-2.5" />
+                          Past Scheduled Time
+                        </span>
+                      )}
+                    </div>
                     <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-400">
-                      <span className="font-mono text-[#5BE584]">
+                      <span
+                        className={`font-mono font-medium ${
+                          isPastDue ? "text-amber-400" : "text-[#5BE584]"
+                        }`}
+                      >
                         {dateStr} at {timeStr}
                       </span>
                       {schedule.workout?.category && (
@@ -100,7 +125,16 @@ export const UpcomingScheduledWorkouts: React.FC<
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 self-end sm:self-auto">
+                  {isPastDue && (
+                    <Link
+                      to="/calendar"
+                      className="flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#161B22] px-2.5 py-1.5 text-xs font-medium text-gray-300 transition-colors hover:border-gray-500 hover:text-white"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                      <span>Reschedule</span>
+                    </Link>
+                  )}
                   <button
                     onClick={() => handleStartSchedule(schedule.id)}
                     disabled={isPending}

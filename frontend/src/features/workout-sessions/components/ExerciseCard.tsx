@@ -57,6 +57,15 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const tips = exerciseDetails?.tips || [];
   const videoUrl = exerciseDetails?.videoUrl;
 
+  const bestSet =
+    exercise.previousBestSet ||
+    previousPerformance?.bestSet ||
+    (previousPerformance?.sets && previousPerformance.sets.length > 0
+      ? [...previousPerformance.sets].sort((a, b) =>
+          b.weight !== a.weight ? b.weight - a.weight : b.actualReps - a.actualReps,
+        )[0]
+      : null);
+
   const handleAddExtraSet = () => {
     const nextSetNumber = sets.length + 1;
     const lastSet = sets[sets.length - 1];
@@ -126,15 +135,29 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 <h2 className="text-lg sm:text-xl font-extrabold text-white tracking-tight leading-snug">
                   {exercise.exerciseName}
                 </h2>
-                <p className="mt-1 text-xs sm:text-sm font-medium text-[#9CA3AF] flex items-center gap-1.5">
-                  <Dumbbell className="h-3.5 w-3.5 text-[#5BE584]" />
-                  <span>
-                    Target:{" "}
-                    <strong className="text-white font-semibold">
-                      {exercise.targetSets} Sets × {exercise.targetReps} Reps
-                    </strong>
+                <div className="mt-1 text-xs sm:text-sm font-medium text-[#9CA3AF] flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                  <span className="flex items-center gap-1.5">
+                    <Dumbbell className="h-3.5 w-3.5 text-[#5BE584]" />
+                    <span>
+                      Target:{" "}
+                      <strong className="text-white font-semibold">
+                        {exercise.targetSets} Sets × {exercise.targetReps} Reps
+                      </strong>
+                    </span>
                   </span>
-                </p>
+
+                  {exercise.targetWeight != null && exercise.targetWeight > 0 && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#16291D] border border-[#23422E] text-[11px] font-mono text-[#5BE584] font-semibold">
+                      Target Load: {exercise.targetWeight} kg
+                    </span>
+                  )}
+
+                  {exercise.targetRpe != null && exercise.targetRpe > 0 && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#1E2329] text-[11px] font-mono text-[#E5E7EB] font-semibold">
+                      Target RPE {exercise.targetRpe}
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Target Muscles & Equipment Pills */}
@@ -175,7 +198,15 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
               {/* Previous Session Benchmark + Form Guide / Video Controls */}
               <div className="flex flex-wrap items-center gap-2 pt-1">
-                {previousPerformance && (
+                {bestSet && bestSet.weight > 0 ? (
+                  <div className="inline-flex items-center gap-1.5 rounded-xl border border-[#5BE584]/25 bg-[#16291D]/60 px-3 py-1.5 text-[11px] text-[#9CA3AF]">
+                    <History className="h-3.5 w-3.5 text-[#5BE584] shrink-0" />
+                    <span>Best previous set:</span>
+                    <span className="font-mono font-bold text-white">
+                      {bestSet.weight} kg × {bestSet.actualReps} reps
+                    </span>
+                  </div>
+                ) : previousPerformance ? (
                   <div className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[11px] text-[#9CA3AF]">
                     <History className="h-3.5 w-3.5 text-[#5BE584] shrink-0" />
                     <span>Last Session:</span>
@@ -183,6 +214,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                       {previousPerformance.maxWeight ?? 0} kg max •{" "}
                       {previousPerformance.totalVolume ?? 0} kg vol
                     </span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-2.5 py-1 text-[11px] text-[#6B7280]">
+                    <span>No previous performance yet</span>
                   </div>
                 )}
 

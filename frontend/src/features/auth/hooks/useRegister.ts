@@ -1,33 +1,32 @@
 // src/features/auth/hooks/useRegister.ts
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 import { register } from "../api/auth.api";
+import { tokenService } from "@/services/token.service";
+import { useAuthStore } from "@/store/auth.store";
 
 export const useRegister = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const setUser = useAuthStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: register,
 
-    onSuccess: (response, variables) => {
-      const isPending = response.data?.user?.isPendingRegistration;
-      if (isPending) {
-        toast.info(
-          response.message ||
-            "An unverified account with this email already exists. A fresh verification code was sent.",
-        );
-      } else {
-        toast.success(
-          response.message ||
-            "Account created! Please enter the 6-digit verification code sent to your email.",
-        );
+    onSuccess: (response) => {
+      if (response.token) {
+        tokenService.saveToken(response.token);
       }
-      navigate(`/verify-email?email=${encodeURIComponent(variables.email)}`, {
-        state: { delivery: response.delivery },
-      });
+      if (response.data?.user) {
+        setUser(response.data.user);
+        queryClient.setQueryData(["current-user"], response.data.user);
+      }
+
+      toast.success(response.message || "Account created successfully! Welcome to STREN.");
+      navigate("/onboarding", { replace: true });
     },
 
     onError: (error: AxiosError<{ message: string }>) => {

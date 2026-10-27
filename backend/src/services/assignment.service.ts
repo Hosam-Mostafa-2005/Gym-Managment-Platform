@@ -57,6 +57,13 @@ class AssignmentService {
         id: data.workout,
         isActive: true,
       },
+      include: {
+        exercises: {
+          include: {
+            exercise: true,
+          },
+        },
+      },
     });
 
     if (!workout) {
@@ -149,6 +156,32 @@ class AssignmentService {
         },
       },
     });
+
+    // Ensure member has access to any custom exercises included in this workout
+    if (workout.exercises?.length) {
+      for (const we of workout.exercises) {
+        if (we.exercise?.isCustom && we.exercise.createdById) {
+          await prisma.memberExerciseAccess.upsert({
+            where: {
+              memberId_exerciseId: {
+                memberId: data.member,
+                exerciseId: we.exerciseId,
+              },
+            },
+            create: {
+              memberId: data.member,
+              exerciseId: we.exerciseId,
+              grantedById: selectedTrainerId,
+              isActive: true,
+            },
+            update: {
+              isActive: true,
+              revokedAt: null,
+            },
+          });
+        }
+      }
+    }
 
     await notificationService.create({
       user: assignment.memberId,
@@ -255,17 +288,38 @@ class AssignmentService {
   }
 
   async getById(id: string, userId: string, role: Role) {
-    const filter =
-      role === Roles.ADMIN
-        ? {
-            id,
-            isActive: true,
-          }
-        : {
-            id,
-            isActive: true,
-            trainerId: userId,
-          };
+    let filter: any;
+    if (role === Roles.ADMIN) {
+      filter = {
+        id,
+        isActive: true,
+      };
+    } else if (role === Roles.MEMBER) {
+      filter = {
+        id,
+        memberId: userId,
+        isActive: true,
+      };
+    } else {
+      filter = {
+        id,
+        isActive: true,
+        OR: [
+          { trainerId: userId },
+          {
+            member: {
+              coachingAsMember: {
+                some: {
+                  trainerId: userId,
+                  status: RELATIONSHIP_STATUS.ACTIVE,
+                  isActive: true,
+                },
+              },
+            },
+          },
+        ],
+      };
+    }
 
     const assignment = await prisma.assignment.findFirst({
       where: filter,
@@ -290,8 +344,45 @@ class AssignmentService {
       throw new AppError("Assignment not found.", 404);
     }
 
+    const [scheduledCount, completedScheduledCount, completedSessionCount] =
+      await Promise.all([
+        prisma.scheduledWorkout.count({
+          where: { assignmentId: id, isActive: true },
+        }),
+        prisma.scheduledWorkout.count({
+          where: {
+            assignmentId: id,
+            status: "COMPLETED",
+            isActive: true,
+          },
+        }),
+        prisma.workoutSession.count({
+          where: {
+            assignmentId: id,
+            status: "COMPLETED",
+            isActive: true,
+          },
+        }),
+      ]);
+
+    let progressPercentage = 0;
+    if (assignment.status === "COMPLETED") {
+      progressPercentage = 100;
+    } else if (scheduledCount > 0) {
+      progressPercentage = Math.min(
+        100,
+        Math.round((completedScheduledCount / scheduledCount) * 100),
+      );
+    } else if (completedSessionCount > 0) {
+      progressPercentage = Math.min(100, completedSessionCount * 25);
+    }
+
     return mapAssignment({
       ...assignment,
+      progressPercentage,
+      totalScheduled: scheduledCount,
+      completedScheduled: completedScheduledCount,
+      completedSessions: completedSessionCount,
       workout: {
         ...assignment.workout,
         createdBy: assignment.workout.creator,

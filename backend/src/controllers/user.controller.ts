@@ -3,11 +3,15 @@ import userService from "../services/user.service.js";
 import catchAsync from "../utils/catchAsync.js";
 
 export const getAllUsers: RequestHandler = catchAsync(async (req, res) => {
-  const users = await userService.getAll(req.query);
+  const users = await userService.getAll(
+    req.query,
+    req.user?.id,
+    req.user?.role,
+  );
 
   res.status(200).json({
     status: "success",
     results: users.length,
-    data: users, // ببعت الـ array مباشر جوه data عشان واجهة الفرونت تلقطها فوراً
+    data: users,
   });
 });

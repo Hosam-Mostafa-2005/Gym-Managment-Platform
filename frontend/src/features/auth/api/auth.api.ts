@@ -54,9 +54,16 @@ export const googleAuth = async (
 
 export const forgotPassword = async (
   data: ForgotPasswordRequest,
-): Promise<{ message: string; delivery?: EmailDeliveryInfo }> => {
+): Promise<{
+  message: string;
+  resetToken?: string;
+  email?: string;
+  delivery?: EmailDeliveryInfo;
+}> => {
   const response = await api.post<{
     message: string;
+    resetToken?: string;
+    email?: string;
     delivery?: EmailDeliveryInfo;
   }>("/auth/forgot-password", data);
   return response.data;

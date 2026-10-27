@@ -32,10 +32,9 @@ class ExerciseService {
       }
     } else if (
       role === Roles.TRAINER &&
-      exercise.isCustom &&
-      exercise.createdById !== userId
+      (!exercise.isCustom || exercise.createdById !== userId)
     ) {
-      throw new AppError("You can only modify your own exercises.", 403);
+      throw new AppError("You can only modify your own custom exercises.", 403);
     }
 
     return exercise;
@@ -75,7 +74,8 @@ class ExerciseService {
   async create(data: CreateExerciseDto, userId?: string, role?: Role) {
     try {
       const isMember = role === Roles.MEMBER;
-      const isCustom = isMember || false;
+      const isTrainer = role === Roles.TRAINER;
+      const isCustom = isMember || isTrainer;
       const createdById = userId || null;
 
       // Duplicate check
@@ -165,7 +165,18 @@ class ExerciseService {
     const baseWhere: any = { isActive: true };
 
     if (isMember && userId) {
-      baseWhere.OR = [{ isCustom: false }, { createdById: userId }];
+      baseWhere.OR = [
+        { isCustom: false },
+        { createdById: userId },
+        {
+          memberAccess: {
+            some: {
+              memberId: userId,
+              isActive: true,
+            },
+          },
+        },
+      ];
     } else if (role === Roles.TRAINER && userId) {
       baseWhere.OR = [{ isCustom: false }, { createdById: userId }];
     } else if (role !== Roles.ADMIN) {
@@ -237,12 +248,77 @@ class ExerciseService {
     }
 
     if (exercise.isCustom && role !== Roles.ADMIN) {
-      if (!userId || exercise.createdById !== userId) {
-        throw new AppError("Exercise not found.", 404);
+      if (role === Roles.TRAINER) {
+        if (!userId || exercise.createdById !== userId) {
+          throw new AppError("Exercise not found.", 404);
+        }
+      } else if (role === Roles.MEMBER) {
+        if (exercise.createdById !== userId) {
+          const hasAccess = await prisma.memberExerciseAccess.findFirst({
+            where: {
+              memberId: userId,
+              exerciseId: id,
+              isActive: true,
+            },
+          });
+          if (!hasAccess) {
+            throw new AppError("Exercise not found.", 404);
+          }
+        }
       }
     }
 
     return mapExercise(exercise);
+  }
+
+  async grantAccess(exerciseId: string, memberId: string, coachId: string) {
+    const exercise = await prisma.exercise.findFirst({
+      where: { id: exerciseId, isActive: true, createdById: coachId },
+    });
+    if (!exercise) {
+      throw new AppError("Custom exercise not found or not owned by you.", 404);
+    }
+
+    const access = await prisma.memberExerciseAccess.upsert({
+      where: {
+        memberId_exerciseId: { memberId, exerciseId },
+      },
+      create: {
+        memberId,
+        exerciseId,
+        grantedById: coachId,
+        isActive: true,
+      },
+      update: {
+        isActive: true,
+        revokedAt: null,
+      },
+    });
+
+    return access;
+  }
+
+  async revokeAccess(exerciseId: string, memberId: string, coachId: string) {
+    const exercise = await prisma.exercise.findFirst({
+      where: { id: exerciseId, isActive: true, createdById: coachId },
+    });
+    if (!exercise) {
+      throw new AppError("Custom exercise not found or not owned by you.", 404);
+    }
+
+    await prisma.memberExerciseAccess.updateMany({
+      where: {
+        exerciseId,
+        memberId,
+        grantedById: coachId,
+      },
+      data: {
+        isActive: false,
+        revokedAt: new Date(),
+      },
+    });
+
+    return { success: true };
   }
 
   // Update Exercise

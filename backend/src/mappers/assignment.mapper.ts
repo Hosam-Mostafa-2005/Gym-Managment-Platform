@@ -56,6 +56,17 @@ const mapAssignment = (assignment: any) => {
 
     status: assignment.status,
 
+    progressPercentage:
+      assignment.progressPercentage !== undefined
+        ? assignment.progressPercentage
+        : assignment.status === "COMPLETED"
+          ? 100
+          : 0,
+
+    totalScheduled: assignment.totalScheduled ?? 0,
+    completedScheduled: assignment.completedScheduled ?? 0,
+    completedSessions: assignment.completedSessions ?? 0,
+
     completedAt: assignment.completedAt,
 
     cancelledAt: assignment.cancelledAt,

@@ -104,6 +104,15 @@ export const cancelWorkoutSession = async (
   return data.data.session;
 };
 
+export const reviewWorkoutSession = async (
+  id: string,
+  payload: { feedback: string },
+): Promise<WorkoutSession> => {
+  const { data } = await api.patch(`/workout-sessions/${id}/review`, payload);
+
+  return data.data.session;
+};
+
 export const createWorkoutSet = async (payload: CreateWorkoutSetPayload) => {
   const { data } = await api.post("/workout-set-logs", payload);
 

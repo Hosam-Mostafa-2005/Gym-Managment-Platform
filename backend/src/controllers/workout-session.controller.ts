@@ -59,6 +59,22 @@ export const cancel: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+export const review: RequestHandler = catchAsync(async (req, res) => {
+  const session = await workoutSessionService.review(
+    req.params.id as string,
+    req.user!.id,
+    req.user!.role,
+    req.body,
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      session,
+    },
+  });
+});
+
 export const getAll: RequestHandler = catchAsync(async (req, res) => {
   const sessions = await workoutSessionService.getAll(
     req.query,
@@ -107,6 +123,7 @@ export const getPreviousPerformance: RequestHandler = catchAsync(
   },
 );
 
+
 export const getPreviousPerformanceBatch: RequestHandler = catchAsync(
   async (req, res) => {
     const { exerciseIds, excludeSessionId } = req.body;
@@ -125,3 +142,4 @@ export const getPreviousPerformanceBatch: RequestHandler = catchAsync(
     });
   },
 );
+

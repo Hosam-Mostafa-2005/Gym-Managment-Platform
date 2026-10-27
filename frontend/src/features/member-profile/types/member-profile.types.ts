@@ -69,6 +69,7 @@ export interface MemberWorkoutStats {
 
 export interface MemberOverview {
   currentAssignment: MemberAssignment | null;
+  activeAssignments?: MemberAssignment[];
   latestMeasurement: MemberMeasurement | null;
   workoutStats: MemberWorkoutStats;
 }

@@ -18,6 +18,7 @@ const mapWorkout = (workout: any) => {
     imageUrl: firstExercise?.imageUrl ?? null,
     tags: workout.tags ?? [],
     isTemplate: workout.isTemplate ?? false,
+    version: workout.version ?? 1,
     createdBy: workout.createdBy,
   };
 };

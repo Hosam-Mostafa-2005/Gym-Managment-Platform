@@ -16,7 +16,10 @@ export const MemberOverview: React.FC<MemberOverviewProps> = ({ overview }) => {
       <h2 className="text-lg font-semibold text-gray-100">Overview</h2>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <CurrentAssignment assignment={overview.currentAssignment} />
+          <CurrentAssignment
+            assignment={overview.currentAssignment}
+            activeAssignments={overview.activeAssignments}
+          />
         </div>
         <div className="lg:col-span-4">
           <WorkoutStats stats={overview.workoutStats} />

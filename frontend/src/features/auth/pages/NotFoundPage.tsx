@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Dumbbell } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { getRoleHomeRoute } from "../utils/auth-redirect";
 
 const NotFoundPage = () => {
+  const { role } = useAuth();
+  const homeRoute = getRoleHomeRoute(role);
+
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center bg-[#090B0F] px-4 text-center text-[#F8FAFC]">
       <div className="mx-auto flex max-w-md flex-col items-center rounded-[20px] border border-[#2A3039] bg-[#13171D] p-8 shadow-[0_12px_40px_rgba(0,0,0,0.35)]">
@@ -19,7 +24,7 @@ const NotFoundPage = () => {
         </p>
         <div className="mt-6 flex flex-col sm:flex-row gap-3 w-full">
           <Link
-            to="/dashboard"
+            to={homeRoute}
             className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[14px] bg-[#5BE584] px-4 text-sm font-semibold text-[#090B0F] transition-colors hover:bg-[#49D472]"
           >
             <ArrowLeft className="h-4 w-4" />

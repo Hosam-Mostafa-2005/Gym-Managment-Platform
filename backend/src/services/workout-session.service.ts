@@ -7,13 +7,17 @@ import AppError from "../utils/AppError.js";
 import { ASSIGNMENT_STATUS } from "../constants/assignment.js";
 import { WORKOUT_SESSION_STATUS } from "../constants/workout-session.js";
 
-import type { FinishWorkoutSessionDto } from "../types/workout-session.types.js";
+import type {
+  FinishWorkoutSessionDto,
+  ReviewWorkoutSessionDto,
+} from "../types/workout-session.types.js";
 import mapWorkoutSession from "../mappers/workout-session.mapper.js";
 import { Roles, type Role } from "../constants/roles.js";
 
 import notificationService from "./notification.service.js";
 import { NOTIFICATION_TYPE } from "../constants/notification.js";
 import gamificationService from "./gamification.service.js";
+import coachAccessService from "./coach-access.service.js";
 
 class WorkoutSessionService {
   async start(
@@ -166,6 +170,8 @@ class WorkoutSessionService {
             exerciseName: item.exercise.name,
             targetSets: item.sets,
             targetReps: item.reps,
+            targetWeight: item.targetWeight,
+            targetRpe: item.targetRpe,
             order: item.order,
           },
         });
@@ -176,6 +182,7 @@ class WorkoutSessionService {
               exerciseLogId: exerciseLog.id,
               setNumber: setIndex + 1,
               targetReps: item.reps,
+              weight: item.targetWeight ?? 0,
             },
           });
         }
@@ -255,10 +262,77 @@ class WorkoutSessionService {
       orderBy: { order: "asc" },
     });
 
-    return {
-      session: mapWorkoutSession(session, exerciseLogs),
+    const enrichedLogs = await this.attachPreviousBestSets(
+      memberId,
+      session.id,
       exerciseLogs,
+    );
+
+    return {
+      session: mapWorkoutSession(session, enrichedLogs),
+      exerciseLogs: enrichedLogs,
     };
+  }
+
+  private async attachPreviousBestSets(
+    memberId: string,
+    currentSessionId: string,
+    exerciseLogs: any[],
+  ) {
+    const exerciseIds = exerciseLogs
+      .map((l) => l.exerciseId || l.exercise?.id)
+      .filter(Boolean);
+
+    if (exerciseIds.length === 0) return exerciseLogs;
+
+    const priorCompletedSets = await prisma.workoutSetLog.findMany({
+      where: {
+        completed: true,
+        weight: { gt: 0 },
+        exerciseLog: {
+          exerciseId: { in: exerciseIds },
+          session: {
+            memberId,
+            status: WORKOUT_SESSION_STATUS.COMPLETED,
+            id: { not: currentSessionId },
+            isActive: true,
+          },
+        },
+      },
+      select: {
+        weight: true,
+        actualReps: true,
+        completedAt: true,
+        exerciseLog: {
+          select: {
+            exerciseId: true,
+          },
+        },
+      },
+      orderBy: [{ weight: "desc" }, { actualReps: "desc" }],
+    });
+
+    const bestSetsByExerciseId: Record<
+      string,
+      { weight: number; actualReps: number; completedAt: Date | null }
+    > = {};
+
+    for (const s of priorCompletedSets) {
+      const exId = s.exerciseLog.exerciseId;
+      if (!bestSetsByExerciseId[exId]) {
+        bestSetsByExerciseId[exId] = {
+          weight: s.weight,
+          actualReps: s.actualReps,
+          completedAt: s.completedAt,
+        };
+      }
+    }
+
+    return exerciseLogs.map((log) => ({
+      ...log,
+      previousBestSet:
+        bestSetsByExerciseId[log.exerciseId || log.exercise?.id] || null,
+    }));
   }
 
   async finish(
@@ -299,6 +373,13 @@ class WorkoutSessionService {
       duration * 60 - session.totalRestTime,
     );
 
+    const sessionRpe =
+      typeof data.sessionRpe === "number" &&
+      data.sessionRpe >= 1 &&
+      data.sessionRpe <= 10
+        ? Math.round(data.sessionRpe)
+        : null;
+
     const updatedSession = await prisma.workoutSession.update({
       where: { id: sessionId },
       data: {
@@ -307,6 +388,7 @@ class WorkoutSessionService {
         activeTrainingTime,
         status: WORKOUT_SESSION_STATUS.COMPLETED,
         notes: data.notes ?? session.notes,
+        ...(sessionRpe !== null && { sessionRpe }),
       },
       include: {
         workout: true,
@@ -437,13 +519,6 @@ class WorkoutSessionService {
       filter.memberId = userId;
     }
 
-    if (role === Roles.TRAINER) {
-      filter.assignment = {
-        trainerId: userId,
-        isActive: true,
-      };
-    }
-
     const normalizedQuery: Record<string, any> = { ...query };
     if (normalizedQuery.member) {
       normalizedQuery.memberId = normalizedQuery.member;
@@ -454,8 +529,36 @@ class WorkoutSessionService {
       delete normalizedQuery.assignment;
     }
 
+    if (role === Roles.TRAINER) {
+      if (normalizedQuery.memberId) {
+        const access = await coachAccessService.verifyAccess(
+          userId,
+          normalizedQuery.memberId,
+          role,
+          { throwError: false },
+        );
+        if (!access.isAuthorized) {
+          filter.id = "unauthorized_scope";
+        } else if (access.canAccessHistory) {
+          filter.memberId = normalizedQuery.memberId;
+        } else if (access.relationshipStartDate) {
+          filter.memberId = normalizedQuery.memberId;
+          filter.startedAt = { gte: access.relationshipStartDate };
+        } else {
+          filter.memberId = normalizedQuery.memberId;
+          filter.assignment = { trainerId: userId, isActive: true };
+        }
+      } else {
+        const managedMemberIds = await coachAccessService.getManagedMemberIds(userId);
+        filter.OR = [
+          { assignment: { trainerId: userId, isActive: true } },
+          { memberId: { in: managedMemberIds } },
+        ];
+      }
+    }
+
     const allowedFilters =
-      role === Roles.ADMIN ? ["status", "memberId", "assignmentId"] : ["status"];
+      role === Roles.ADMIN ? ["status", "memberId", "assignmentId"] : ["status", "memberId"];
 
     const features = new ApiFeatures(filter, normalizedQuery)
       .filter(allowedFilters)
@@ -494,6 +597,12 @@ class WorkoutSessionService {
             },
           },
         },
+        member: {
+          select: { id: true, name: true, email: true },
+        },
+        coachReviewedBy: {
+          select: { id: true, name: true, email: true },
+        },
       },
     });
 
@@ -501,24 +610,11 @@ class WorkoutSessionService {
   }
 
   async getById(id: string, userId: string, role: Role) {
-    const filter: any = {
-      id,
-      isActive: true,
-    };
-
-    if (role === Roles.MEMBER) {
-      filter.memberId = userId;
-    }
-
-    if (role === Roles.TRAINER) {
-      filter.OR = [
-        { assignment: { trainerId: userId, isActive: true } },
-        { memberId: userId },
-      ];
-    }
-
     const session = await prisma.workoutSession.findFirst({
-      where: filter,
+      where: {
+        id,
+        isActive: true,
+      },
       include: {
         workout: {
           include: {
@@ -546,11 +642,32 @@ class WorkoutSessionService {
             },
           },
         },
+        member: {
+          select: { id: true, name: true, email: true },
+        },
+        coachReviewedBy: {
+          select: { id: true, name: true, email: true },
+        },
       },
     });
 
     if (!session) {
       throw new AppError("Workout session not found.", 404);
+    }
+
+    if (role === Roles.MEMBER && session.memberId !== userId) {
+      throw new AppError("Workout session not found.", 404);
+    }
+
+    if (role === Roles.TRAINER) {
+      const isAllowed = await coachAccessService.canCoachAccessSession(
+        userId,
+        session,
+        role,
+      );
+      if (!isAllowed) {
+        throw new AppError("Workout session not found.", 404);
+      }
     }
 
     const exerciseLogs = await prisma.workoutExerciseLog.findMany({
@@ -566,10 +683,100 @@ class WorkoutSessionService {
       orderBy: { order: "asc" },
     });
 
-    return {
-      session: mapWorkoutSession(session, exerciseLogs),
+    const enrichedLogs = await this.attachPreviousBestSets(
+      session.memberId,
+      session.id,
       exerciseLogs,
+    );
+
+    return {
+      session: mapWorkoutSession(session, enrichedLogs),
+      exerciseLogs: enrichedLogs,
     };
+  }
+
+  async review(
+    sessionId: string,
+    coachId: string,
+    role: Role,
+    data: ReviewWorkoutSessionDto,
+  ) {
+    const session = await prisma.workoutSession.findFirst({
+      where: {
+        id: sessionId,
+        isActive: true,
+      },
+      include: {
+        assignment: true,
+        member: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    if (!session) {
+      throw new AppError("Workout session not found.", 404);
+    }
+
+    if (session.status !== WORKOUT_SESSION_STATUS.COMPLETED) {
+      throw new AppError(
+        "Only completed workout sessions can be reviewed.",
+        400,
+      );
+    }
+
+    const isAuthorized = await coachAccessService.canCoachAccessSession(
+      coachId,
+      session,
+      role,
+    );
+
+    if (!isAuthorized) {
+      throw new AppError(
+        "You are not authorized to review this workout session.",
+        403,
+      );
+    }
+
+    const coach = await prisma.user.findUnique({
+      where: { id: coachId },
+      select: { name: true },
+    });
+
+    const reviewedSession = await prisma.workoutSession.update({
+      where: { id: sessionId },
+      data: {
+        coachFeedback: data.feedback.trim(),
+        coachReviewedAt: new Date(),
+        coachReviewedById: coachId,
+      },
+      include: {
+        workout: true,
+        assignment: true,
+        member: { select: { id: true, name: true, email: true } },
+        coachReviewedBy: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+    });
+
+    try {
+      await notificationService.create({
+        user: session.memberId,
+        title: "Coach Feedback on Your Workout",
+        message: `${coach?.name || "Your Coach"} reviewed your workout session and left feedback.`,
+        type: NOTIFICATION_TYPE.COACH_ENCOURAGEMENT,
+        category: "COACHING" as any,
+        priority: "HIGH",
+        actionUrl: `/sessions/${sessionId}`,
+        metadata: {
+          sessionId,
+          coachId,
+        },
+      });
+    } catch {
+      // Do not block review if notification delivery fails
+    }
+
+    return mapWorkoutSession(reviewedSession);
   }
 
   async getPreviousPerformanceForSession(
@@ -657,6 +864,7 @@ class WorkoutSessionService {
         totalVolume: number;
         maxWeight: number;
         totalReps: number;
+        bestSet?: { weight: number; actualReps: number } | null;
         sets: Array<{
           setNumber: number;
           actualReps: number;
@@ -702,6 +910,17 @@ class WorkoutSessionService {
           0,
         );
 
+        let bestSet: { weight: number; actualReps: number } | null = null;
+        if (completedSets.length > 0) {
+          const sorted = [...completedSets].sort((a, b) => {
+            if (b.weight !== a.weight) return b.weight - a.weight;
+            return b.actualReps - a.actualReps;
+          });
+          if (sorted[0].weight > 0) {
+            bestSet = { weight: sorted[0].weight, actualReps: sorted[0].actualReps };
+          }
+        }
+
         performanceMap[log.exerciseId] = {
           sessionId: log.session.id,
           sessionDate: log.session.endedAt || log.session.startedAt,
@@ -709,6 +928,7 @@ class WorkoutSessionService {
           totalVolume,
           maxWeight,
           totalReps,
+          bestSet,
           sets: completedSets,
         };
       }

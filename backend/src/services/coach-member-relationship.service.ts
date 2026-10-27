@@ -223,6 +223,9 @@ class CoachMemberRelationshipService {
             specialties: true,
             bio: true,
             yearsOfExperience: true,
+            professionalTitle: true,
+            certifications: true,
+            coachingPhilosophy: true,
           },
         },
       },
@@ -250,6 +253,9 @@ class CoachMemberRelationshipService {
             specialties: true,
             bio: true,
             yearsOfExperience: true,
+            professionalTitle: true,
+            certifications: true,
+            coachingPhilosophy: true,
           },
         },
       },
@@ -468,6 +474,19 @@ class CoachMemberRelationshipService {
       include: {
         trainer: { select: { id: true, name: true, email: true } },
         member: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    // Deactivate custom exercise access granted by this trainer to this member
+    await prisma.memberExerciseAccess.updateMany({
+      where: {
+        memberId: relationship.memberId,
+        grantedById: relationship.trainerId,
+        isActive: true,
+      },
+      data: {
+        isActive: false,
+        revokedAt: new Date(),
       },
     });
 

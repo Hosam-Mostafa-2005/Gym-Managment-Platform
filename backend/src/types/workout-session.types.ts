@@ -44,4 +44,9 @@ export interface StartWorkoutSessionDto {
 
 export interface FinishWorkoutSessionDto {
   notes?: string;
+  sessionRpe?: number;
+}
+
+export interface ReviewWorkoutSessionDto {
+  feedback: string;
 }

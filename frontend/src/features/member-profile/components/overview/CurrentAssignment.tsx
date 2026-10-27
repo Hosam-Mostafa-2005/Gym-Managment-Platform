@@ -1,17 +1,28 @@
 // src/features/member-profile/components/overview/CurrentAssignment.tsx
 
-import React from "react";
-import { Dumbbell, UserRound, CalendarDays } from "lucide-react";
+import React, { useState } from "react";
+import { Dumbbell, UserRound, CalendarDays, Layers } from "lucide-react";
 import type { MemberAssignment } from "../../types/member-profile.types";
 
 interface CurrentAssignmentProps {
   assignment: MemberAssignment | null;
+  activeAssignments?: MemberAssignment[];
 }
 
 export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
   assignment,
+  activeAssignments = [],
 }) => {
-  if (!assignment) {
+  const assignmentsList =
+    activeAssignments.length > 0
+      ? activeAssignments
+      : assignment
+        ? [assignment]
+        : [];
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  if (assignmentsList.length === 0) {
     return (
       <div className="flex h-full min-h-[220px] flex-col items-center justify-center rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 text-center">
         <Dumbbell className="mb-3 h-8 w-8 text-gray-500" />
@@ -24,6 +35,9 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
       </div>
     );
   }
+
+  const currentAssignment =
+    assignmentsList[selectedIndex] || assignmentsList[0];
 
   const getStatusStyle = (status: string) => {
     switch (status?.toUpperCase()) {
@@ -49,24 +63,60 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
 
   return (
     <div className="flex h-full flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400">
-          Current Assignment
-        </h3>
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400">
+            {assignmentsList.length > 1
+              ? "Active Split Assignments"
+              : "Current Assignment"}
+          </h3>
+          {assignmentsList.length > 1 && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-[#16291D] border border-[#23422E] px-2 py-0.5 text-[10px] font-semibold text-[#5BE584]">
+              <Layers className="h-3 w-3" />
+              {assignmentsList.length} Routines
+            </span>
+          )}
+        </div>
+
         <span
-          className={`rounded-md border px-2 py-0.5 text-xs font-semibold uppercase ${getStatusStyle(assignment.status)}`}
+          className={`rounded-md border px-2 py-0.5 text-xs font-semibold uppercase ${getStatusStyle(
+            currentAssignment.status,
+          )}`}
         >
-          {assignment.status || "UNKNOWN"}
+          {currentAssignment.status || "UNKNOWN"}
         </span>
       </div>
 
-      <div className="flex flex-col gap-5">
+      {/* Routine Split Selector when multiple active assignments exist */}
+      {assignmentsList.length > 1 && (
+        <div className="mb-4 flex flex-wrap gap-1.5 border-b border-[#1E2329] pb-3">
+          {assignmentsList.map((item, idx) => {
+            const isSelected = idx === selectedIndex;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => setSelectedIndex(idx)}
+                className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+                  isSelected
+                    ? "bg-[#5BE584] text-[#090B0F] font-semibold"
+                    : "bg-[#161B22] border border-[#1E2329] text-[#9CA3AF] hover:text-white"
+                }`}
+              >
+                {item.workout?.title || `Routine ${idx + 1}`}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <div className="flex flex-col gap-4">
         <div className="flex items-start gap-3">
           <Dumbbell className="mt-1 h-5 w-5 shrink-0 text-[#5BE584]" />
           <div>
             <p className="text-xs text-gray-500">Workout Plan</p>
             <p className="text-base font-semibold text-gray-100">
-              {assignment.workout?.title ?? "—"}
+              {currentAssignment.workout?.title ?? "—"}
             </p>
           </div>
         </div>
@@ -76,7 +126,7 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
           <div>
             <p className="text-xs text-gray-500">Trainer</p>
             <p className="text-sm font-medium text-gray-100">
-              {assignment.trainer?.name ?? "—"}
+              {currentAssignment.trainer?.name ?? "—"}
             </p>
           </div>
         </div>
@@ -86,8 +136,8 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
           <div>
             <p className="text-xs text-gray-500">Timeline</p>
             <p className="text-sm font-medium text-gray-100">
-              {formatDate(assignment.startDate)} –{" "}
-              {formatDate(assignment.endDate)}
+              {formatDate(currentAssignment.startDate)} –{" "}
+              {formatDate(currentAssignment.endDate)}
             </p>
           </div>
         </div>

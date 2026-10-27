@@ -8,6 +8,9 @@ const router = Router();
 
 router.use(protect);
 
+// Public / member-facing coach profile lookup
+router.get("/coach/:coachId", coachProfileController.getPublicCoachProfile);
+
 router
   .route("/")
   .get(

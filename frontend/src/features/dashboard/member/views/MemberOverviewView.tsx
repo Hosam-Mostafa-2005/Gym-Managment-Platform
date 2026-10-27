@@ -21,7 +21,8 @@ export const MemberOverviewView: React.FC = () => {
   if (!data || !data.overview) return null;
 
   const { overview, charts } = data;
-  const upcomingWorkouts = data.upcomingWorkouts || overview.upcomingWorkouts || [];
+  const upcomingWorkouts =
+    data.upcomingWorkouts || overview.upcomingWorkouts || [];
   const needsAttention = overview.needsAttention || data.needsAttention;
   const coachConnection = overview.coachConnection || data.coachConnection;
 
@@ -37,6 +38,7 @@ export const MemberOverviewView: React.FC = () => {
           {/* Section 3: Next Workout */}
           <NextWorkoutCard
             assignment={overview.activeAssignment}
+            activeAssignments={overview.activeAssignments}
             workout={overview.currentWorkout}
             upcomingWorkouts={upcomingWorkouts}
           />

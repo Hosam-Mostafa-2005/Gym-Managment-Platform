@@ -563,7 +563,7 @@ class DashboardService {
     months12Ago.setMonth(months12Ago.getMonth() - 12);
 
     const [
-      activeAssignment,
+      activeAssignmentsRaw,
       latestPersonalWorkout,
       sessions,
       favExLogs,
@@ -579,7 +579,7 @@ class DashboardService {
       unreadNotificationsCount,
       nutritionOverview,
     ] = await Promise.all([
-      prisma.assignment.findFirst({
+      prisma.assignment.findMany({
         where: {
           memberId,
           status: ASSIGNMENT_STATUS.ACTIVE,
@@ -601,6 +601,10 @@ class DashboardService {
       prisma.workoutSession.findMany({
         where: sessionWhere,
         orderBy: { startedAt: "desc" },
+        include: {
+          workout: true,
+          assignment: { include: { workout: true } },
+        },
       }),
       prisma.workoutExerciseLog.groupBy({
         by: ["exerciseId"],
@@ -697,7 +701,19 @@ class DashboardService {
           isActive: true,
         },
         include: {
-          trainer: { select: { id: true, name: true, email: true } },
+          trainer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              professionalTitle: true,
+              specialties: true,
+              certifications: true,
+              yearsOfExperience: true,
+              bio: true,
+              coachingPhilosophy: true,
+            },
+          },
         },
       }).catch(() => null),
       prisma.coachMemberRelationship.findFirst({
@@ -971,6 +987,16 @@ class DashboardService {
                 name: activeRelationship.trainer.name,
                 email: activeRelationship.trainer.email,
                 avatarUrl: (activeRelationship.trainer as any).avatarUrl || null,
+                professionalTitle:
+                  activeRelationship.trainer.professionalTitle || null,
+                specialties: activeRelationship.trainer.specialties || [],
+                certifications:
+                  activeRelationship.trainer.certifications || [],
+                yearsOfExperience:
+                  activeRelationship.trainer.yearsOfExperience || 0,
+                bio: activeRelationship.trainer.bio || null,
+                coachingPhilosophy:
+                  activeRelationship.trainer.coachingPhilosophy || null,
               }
             : null,
           startedAt: activeRelationship.startedAt,
@@ -1030,15 +1056,26 @@ class DashboardService {
       trainer: sw.trainer || null,
     }));
 
+    const activeAssignments = activeAssignmentsRaw || [];
+    const activeAssignment = activeAssignments[0] || null;
+
+    const inProgressSession = sessions.find(
+      (s) => s.status === WORKOUT_SESSION_STATUS.IN_PROGRESS,
+    );
+
+    const resolvedCurrentWorkout = inProgressSession
+      ? inProgressSession.workout || (inProgressSession.assignment as any)?.workout
+      : upcomingWorkouts.length > 0 && upcomingWorkouts[0].workout
+        ? upcomingWorkouts[0].workout
+        : activeAssignment
+          ? activeAssignment.workout
+          : latestPersonalWorkout || null;
+
     return {
       overview: {
         activeAssignment: activeAssignment || null,
-        currentWorkout:
-          upcomingWorkouts.length > 0 && upcomingWorkouts[0].workout
-            ? upcomingWorkouts[0].workout
-            : activeAssignment
-              ? activeAssignment.workout
-              : latestPersonalWorkout || null,
+        activeAssignments,
+        currentWorkout: resolvedCurrentWorkout,
         upcomingWorkouts,
         totalSessions,
         completedSessions,

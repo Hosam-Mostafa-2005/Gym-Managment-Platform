@@ -71,6 +71,8 @@ class WorkoutService {
             exerciseId: e.exercise,
             sets: e.sets,
             reps: e.reps,
+            targetWeight: e.targetWeight,
+            targetRpe: e.targetRpe,
             restSeconds: e.restSeconds,
             notes: e.notes,
             order: e.order,
@@ -334,9 +336,99 @@ class WorkoutService {
       }
     }
 
+    const hasExistingUsage = Boolean(
+      (await prisma.assignment.findFirst({
+        where: { workoutId: id, isActive: true },
+        select: { id: true },
+      })) ||
+        (await prisma.workoutSession.findFirst({
+          where: { workoutId: id, isActive: true },
+          select: { id: true },
+        })) ||
+        (await prisma.scheduledWorkout.findFirst({
+          where: { workoutId: id, isActive: true },
+          select: { id: true },
+        })),
+    );
+
     const isMember = role === Roles.MEMBER;
 
-    // Execute in transaction if exercises are being updated
+    // If this is a reusable template that has active assignments or sessions,
+    // editing the template creates a new immutable version (v2, v3, ...)
+    // so active assignments and scheduled workouts retain their original prescription.
+    if (workout.isTemplate && hasExistingUsage) {
+      const existingExercises = await prisma.workoutExercise.findMany({
+        where: { workoutId: id },
+        orderBy: { order: "asc" },
+      });
+
+      const updated = await prisma.$transaction(async (tx) => {
+        // Demote the current workout from being the active template for future assignments
+        await tx.workout.update({
+          where: { id },
+          data: { isTemplate: false },
+        });
+
+        // Create the new published template version
+        const newVersionNumber = (workout.version ?? 1) + 1;
+        const newTemplate = await tx.workout.create({
+          data: {
+            title: data.title ?? workout.title,
+            description: data.description ?? workout.description,
+            category: (data.category as any) ?? workout.category,
+            difficulty: (data.difficulty as any) ?? workout.difficulty,
+            estimatedDuration:
+              data.estimatedDuration ?? workout.estimatedDuration,
+            tags: data.tags ?? workout.tags,
+            isTemplate: true,
+            version: newVersionNumber,
+            parentWorkoutId: workout.parentWorkoutId || workout.id,
+            createdBy: creatorId,
+            exercises: {
+              create: data.exercises
+                ? data.exercises.map((e) => ({
+                    exerciseId: e.exercise,
+                    sets: e.sets,
+                    reps: e.reps,
+                    targetWeight: e.targetWeight,
+                    targetRpe: e.targetRpe,
+                    restSeconds: e.restSeconds,
+                    notes: e.notes,
+                    order: e.order,
+                  }))
+                : existingExercises.map((e) => ({
+                    exerciseId: e.exerciseId,
+                    sets: e.sets,
+                    reps: e.reps,
+                    targetWeight: e.targetWeight,
+                    targetRpe: e.targetRpe,
+                    restSeconds: e.restSeconds,
+                    notes: e.notes,
+                    order: e.order,
+                  })),
+            },
+          },
+          include: {
+            exercises: {
+              include: { exercise: true },
+              orderBy: { order: "asc" },
+            },
+          },
+        });
+
+        return newTemplate;
+      });
+
+      return {
+        ...updated,
+        exercises: updated.exercises.map((item) => ({
+          ...item,
+          exercise: item.exercise,
+        })),
+      };
+    }
+
+    // In-place update for workouts without active assignments or non-templates
     const updated = await prisma.$transaction(async (tx) => {
       if (data.exercises) {
         await tx.workoutExercise.deleteMany({
@@ -349,6 +441,8 @@ class WorkoutService {
             exerciseId: e.exercise,
             sets: e.sets,
             reps: e.reps,
+            targetWeight: e.targetWeight,
+            targetRpe: e.targetRpe,
             restSeconds: e.restSeconds,
             notes: e.notes,
             order: e.order,

@@ -35,21 +35,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   const isOnboardingRoute = location.pathname.startsWith("/onboarding");
 
-  // If visiting /onboarding root directly, resolve to appropriate role destination
-  if (location.pathname === "/onboarding" || location.pathname === "/onboarding/") {
-    if (user && user.onboardingCompleted === false) {
-      return <Navigate to={getOnboardingRoute(role)} replace />;
-    }
-    return <Navigate to={getRoleHomeRoute(role)} replace />;
-  }
-
-  // If user hasn't completed onboarding and tries to access regular app, direct to onboarding
+  // If user has NOT completed onboarding and tries to access regular app, direct to /onboarding
   if (user && user.onboardingCompleted === false && !isOnboardingRoute) {
-    const onboardingTarget = getOnboardingRoute(role);
-    return <Navigate to={onboardingTarget} replace />;
+    return <Navigate to="/onboarding" replace />;
   }
 
-  // If user has completed onboarding and navigates to onboarding, direct to their role home
+  // If user has ALREADY completed onboarding and visits /onboarding, direct to their role home
   if (user && user.onboardingCompleted === true && isOnboardingRoute) {
     const homeTarget = getRoleHomeRoute(role);
     return <Navigate to={homeTarget} replace />;

@@ -10,6 +10,7 @@ import {
   Sparkles,
   UserCheck,
   CalendarDays,
+  Layers,
 } from "lucide-react";
 import { useStartWorkoutSession } from "@/features/workout-sessions/hooks/useStartWorkoutSession";
 import { useCurrentWorkoutSession } from "@/features/workout-sessions/hooks/useCurrentWorkoutSession";
@@ -24,12 +25,14 @@ import type {
 
 interface NextWorkoutCardProps {
   assignment?: DashboardAssignment | null;
+  activeAssignments?: DashboardAssignment[];
   workout?: DashboardWorkout | null;
   upcomingWorkouts?: UpcomingScheduledWorkout[];
 }
 
 export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
   assignment,
+  activeAssignments = [],
   workout,
   upcomingWorkouts = [],
 }) => {
@@ -41,6 +44,8 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
   const { data: currentSessionData } = useCurrentWorkoutSession();
 
   const isPending = isStartingSession || isStartingScheduled;
+
+  const [selectedSplitIdx, setSelectedSplitIdx] = useState(0);
 
   const [conflictModal, setConflictModal] = useState<{
     isOpen: boolean;
@@ -55,29 +60,42 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
     activeWorkoutTitle: "",
   });
 
+  const assignmentsList =
+    activeAssignments.length > 0
+      ? activeAssignments
+      : assignment
+        ? [assignment]
+        : [];
+
+  const effectiveAssignment =
+    assignmentsList[selectedSplitIdx] || assignmentsList[0] || assignment;
+
   // Determine the next relevant actionable workout:
   // 1. Earliest upcoming scheduled workout (ready to perform today or upcoming)
   // 2. Active assignment workout (assigned program ready to perform)
   // 3. Personal custom workout routine
-  const nextSchedule = upcomingWorkouts.length > 0 ? upcomingWorkouts[0] : null;
+  const nextSchedule =
+    upcomingWorkouts.length > 0 ? upcomingWorkouts[0] : null;
   const isScheduled = Boolean(nextSchedule);
-  const targetWorkout = nextSchedule?.workout || assignment?.workout || workout;
+  const targetWorkout =
+    nextSchedule?.workout || effectiveAssignment?.workout || workout;
 
   // Determine whether the active assignment is the same as the scheduled workout
-  const isAssigned = Boolean(assignment);
+  const isAssigned = Boolean(effectiveAssignment);
   const isAssignedAndScheduled = Boolean(
     isScheduled &&
-      assignment &&
-      (nextSchedule?.workoutId === assignment.workout?.id ||
-        nextSchedule?.workoutId === (assignment as any).workoutId),
+      effectiveAssignment &&
+      (nextSchedule?.workoutId === effectiveAssignment.workout?.id ||
+        nextSchedule?.workoutId === (effectiveAssignment as any).workoutId),
   );
 
   const reqWorkoutId =
     targetWorkout?.id ||
     (targetWorkout as any)?._id ||
-    assignment?.workout?.id ||
-    (assignment as any)?.workoutId;
-  const reqAssignmentId = assignment?.id || (assignment as any)?._id;
+    effectiveAssignment?.workout?.id ||
+    (effectiveAssignment as any)?.workoutId;
+  const reqAssignmentId =
+    effectiveAssignment?.id || (effectiveAssignment as any)?._id;
   const reqWorkoutTitle = targetWorkout?.title || "Workout Session";
 
   const handleStartWorkout = () => {
@@ -102,7 +120,7 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
       return;
     }
 
-    // Prioritize scheduled session start
+    // Start by scheduled workout
     if (nextSchedule) {
       startScheduled(nextSchedule.id, {
         onSuccess: () => navigate("/sessions/active"),
@@ -120,7 +138,8 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
             });
           } else {
             toast.error(
-              err?.response?.data?.message || "Failed to start scheduled workout.",
+              err?.response?.data?.message ||
+                "Failed to start scheduled workout.",
             );
           }
         },
@@ -129,14 +148,17 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
     }
 
     // Start by assigned workout program
-    if (assignment) {
+    if (effectiveAssignment) {
       startSession(
         { assignment: reqAssignmentId },
         {
           onSuccess: () => navigate("/sessions/active"),
           onError: (err: any) => {
             const conflictData = err?.response?.data?.data;
-            if (err?.response?.status === 409 && conflictData?.activeSessionId) {
+            if (
+              err?.response?.status === 409 &&
+              conflictData?.activeSessionId
+            ) {
               setConflictModal({
                 isOpen: true,
                 activeSessionId: conflictData.activeSessionId,
@@ -148,7 +170,8 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
               });
             } else {
               toast.error(
-                err?.response?.data?.message || "Failed to start workout session.",
+                err?.response?.data?.message ||
+                  "Failed to start workout session.",
               );
             }
           },
@@ -165,7 +188,10 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
           onSuccess: () => navigate("/sessions/active"),
           onError: (err: any) => {
             const conflictData = err?.response?.data?.data;
-            if (err?.response?.status === 409 && conflictData?.activeSessionId) {
+            if (
+              err?.response?.status === 409 &&
+              conflictData?.activeSessionId
+            ) {
               setConflictModal({
                 isOpen: true,
                 activeSessionId: conflictData.activeSessionId,
@@ -176,7 +202,8 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
               });
             } else {
               toast.error(
-                err?.response?.data?.message || "Failed to start workout session.",
+                err?.response?.data?.message ||
+                  "Failed to start workout session.",
               );
             }
           },
@@ -232,6 +259,37 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
             </span>
           )}
         </div>
+
+        {/* Multi-Assignment Split Tabs */}
+        {assignmentsList.length > 1 && !isScheduled && (
+          <div className="mt-3 flex items-center gap-2 border-b border-[#1E2329] pb-3">
+            <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF]">
+              <Layers className="h-3.5 w-3.5 text-[#5BE584]" />
+              <span className="font-semibold uppercase tracking-wider text-[10px]">
+                Assigned Split:
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {assignmentsList.map((a, idx) => {
+                const isSelected = idx === selectedSplitIdx;
+                return (
+                  <button
+                    key={a.id || idx}
+                    type="button"
+                    onClick={() => setSelectedSplitIdx(idx)}
+                    className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+                      isSelected
+                        ? "bg-[#5BE584] text-[#090B0F] font-semibold shadow-sm"
+                        : "bg-[#161B22] border border-[#1E2329] text-[#9CA3AF] hover:text-white hover:border-[#2A313C]"
+                    }`}
+                  >
+                    {a.workout?.title || `Routine ${idx + 1}`}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Content Body */}
         {targetWorkout ? (

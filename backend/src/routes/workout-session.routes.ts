@@ -8,6 +8,7 @@ import { protect, restrictTo } from "../middleware/auth.middleware.js";
 import {
   startWorkoutSessionSchema,
   finishWorkoutSessionSchema,
+  reviewWorkoutSessionSchema,
 } from "../validators/workout-session.validator.js";
 
 import { Roles } from "../constants/roles.js";
@@ -37,6 +38,14 @@ router.patch(
   "/:id/cancel",
   restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   workoutSessionController.cancel,
+);
+
+// Review Session (Coach / Admin)
+router.patch(
+  "/:id/review",
+  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  validate(reviewWorkoutSessionSchema),
+  workoutSessionController.review,
 );
 
 // Current Session

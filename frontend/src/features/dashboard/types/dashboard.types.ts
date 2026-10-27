@@ -67,6 +67,12 @@ export interface CoachConnection {
     name: string;
     email: string;
     avatarUrl?: string | null;
+    professionalTitle?: string | null;
+    specialties?: string[];
+    certifications?: string[];
+    yearsOfExperience?: number | null;
+    bio?: string | null;
+    coachingPhilosophy?: string | null;
   } | null;
   startedAt: string | null;
 }
@@ -144,6 +150,7 @@ export interface DashboardAssignment {
 
 export interface MemberDashboardOverview {
   activeAssignment: DashboardAssignment | null;
+  activeAssignments?: DashboardAssignment[];
   currentWorkout: DashboardWorkout | null;
 
   totalSessions: number;

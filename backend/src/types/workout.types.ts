@@ -2,15 +2,12 @@ import type { Difficulty, Category } from "../constants/workout.js";
 
 export interface WorkoutExerciseDto {
   exercise: string; // Exercise ID
-
   sets: number;
-
   reps: string;
-
+  targetWeight?: number;
+  targetRpe?: number;
   restSeconds: number;
-
   notes?: string;
-
   order: number;
 }
 

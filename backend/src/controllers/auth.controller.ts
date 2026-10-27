@@ -17,7 +17,7 @@ export const register: RequestHandler = catchAsync(async (req, res) => {
     statusCode: result.isPendingRegistration ? 200 : 201,
     res,
     message: result.message,
-    delivery: result.delivery,
+    ...("delivery" in result ? { delivery: (result as any).delivery } : {}),
   });
 });
 
@@ -76,7 +76,9 @@ export const forgotPassword: RequestHandler = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     message: result.message,
-    ...(result.delivery && { delivery: result.delivery }),
+    ...(result.resetToken && { resetToken: result.resetToken }),
+    ...(result.email && { email: result.email }),
+    ...("delivery" in result ? { delivery: (result as any).delivery } : {}),
   });
 });
 

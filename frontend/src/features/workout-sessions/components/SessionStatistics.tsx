@@ -1,10 +1,11 @@
-import { Clock, Activity, Dumbbell, Layers } from "lucide-react";
+import { Clock, Activity, Dumbbell, Layers, Gauge } from "lucide-react";
 
 interface SessionStatisticsProps {
   duration: number;
   totalVolume: number;
   exercisesCompleted: number;
   setsCompleted: number;
+  sessionRpe?: number | null;
 }
 
 export default function SessionStatistics({
@@ -12,6 +13,7 @@ export default function SessionStatistics({
   totalVolume,
   exercisesCompleted,
   setsCompleted,
+  sessionRpe,
 }: SessionStatisticsProps) {
   const stats = [
     {
@@ -34,6 +36,15 @@ export default function SessionStatistics({
       value: setsCompleted,
       icon: Layers,
     },
+    ...(sessionRpe
+      ? [
+          {
+            label: "Exertion (RPE)",
+            value: `${sessionRpe} / 10`,
+            icon: Gauge,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -42,7 +53,11 @@ export default function SessionStatistics({
         Session Statistics
       </h2>
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div
+        className={`grid grid-cols-2 gap-4 ${
+          stats.length === 5 ? "md:grid-cols-5" : "md:grid-cols-4"
+        }`}
+      >
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (

@@ -7,6 +7,7 @@ import WorkoutHeader from "../components/WorkoutHeader";
 import SessionStatistics from "../components/SessionStatistics";
 import ExerciseTimeline from "../components/ExerciseTimeline";
 import SessionNotes from "../components/SessionNotes";
+import CoachReviewCard from "../components/CoachReviewCard";
 
 export default function WorkoutSessionPage() {
   const navigate = useNavigate();
@@ -128,7 +129,12 @@ export default function WorkoutSessionPage() {
           totalVolume={session.totalVolume}
           exercisesCompleted={session.exercisesCompleted}
           setsCompleted={session.setsCompleted}
+          sessionRpe={session.sessionRpe}
         />
+
+        <div className="h-px w-full bg-gradient-to-r from-[#1E2329] to-transparent" />
+
+        <CoachReviewCard session={session} />
 
         <div className="h-px w-full bg-gradient-to-r from-[#1E2329] to-transparent" />
 

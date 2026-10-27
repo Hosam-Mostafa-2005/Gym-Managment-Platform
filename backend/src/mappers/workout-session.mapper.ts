@@ -53,6 +53,13 @@ const mapWorkoutSession = (session: any, exerciseLogs?: any[] | unknown) => {
     assignment: enrichedAssignment,
     workout: enrichedWorkout,
     workoutId: session.workoutId ?? session.assignment?.workoutId ?? null,
+    member: session.member
+      ? {
+          id: session.member.id ?? session.member._id,
+          name: session.member.name,
+          email: session.member.email,
+        }
+      : undefined,
     status: session.status,
     startedAt: session.startedAt,
     endedAt: session.endedAt,
@@ -64,6 +71,17 @@ const mapWorkoutSession = (session: any, exerciseLogs?: any[] | unknown) => {
     exercisesCompleted: session.exercisesCompleted ?? 0,
     setsCompleted: session.setsCompleted ?? 0,
     notes: session.notes,
+    sessionRpe: session.sessionRpe ?? null,
+    coachFeedback: session.coachFeedback ?? null,
+    coachReviewedAt: session.coachReviewedAt ?? null,
+    coachReviewedById: session.coachReviewedById ?? null,
+    coachReviewedBy: session.coachReviewedBy
+      ? {
+          id: session.coachReviewedBy.id,
+          name: session.coachReviewedBy.name,
+          email: session.coachReviewedBy.email,
+        }
+      : null,
   };
 };
 

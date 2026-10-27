@@ -95,6 +95,7 @@ export const updateProfileSchema = z.object({
 
 export const onboardingSchema = z.object({
   body: z.object({
+    role: z.enum([Roles.MEMBER, Roles.TRAINER]).optional(),
     name: z.string().trim().min(2).max(50).optional(),
     phone: z.string().trim().max(25).optional().nullable(),
     bio: z.string().trim().max(500).optional().nullable(),

@@ -91,7 +91,13 @@ export default function AssignmentDetailsPage() {
     }
   };
 
-  const progress = getProgressPercentage(item?.status);
+  const progress =
+    typeof item?.progressPercentage === "number"
+      ? item.progressPercentage
+      : getProgressPercentage(item?.status);
+
+  const backPath = canManage ? "/assignments" : "/member-dashboard";
+  const backLabel = canManage ? "Assignments" : "Dashboard";
 
   return (
     <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
@@ -108,9 +114,9 @@ export default function AssignmentDetailsPage() {
             <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase">
               <span
                 className="hover:text-[#9CA3AF] cursor-pointer transition-colors"
-                onClick={() => navigate("/assignments")}
+                onClick={() => navigate(backPath)}
               >
-                Assignments
+                {backLabel}
               </span>
               <span>/</span>
               <span className="text-[#F3F4F6]">Details</span>
@@ -129,7 +135,7 @@ export default function AssignmentDetailsPage() {
 
           <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
             <button
-              onClick={() => navigate("/assignments")}
+              onClick={() => navigate(backPath)}
               className="group flex items-center justify-center gap-2 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
             >
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
@@ -320,7 +326,9 @@ export default function AssignmentDetailsPage() {
                   <button
                     onClick={() =>
                       navigate(
-                        `/workout-builder/${item.workout.id || item.workout._id}`,
+                        canManage
+                          ? `/workout-builder/${item.workout.id || item.workout._id}`
+                          : `/workouts/${item.workout.id || item.workout._id}`,
                       )
                     }
                     className="flex items-center gap-1.5 text-xs font-medium text-[#5BE584] hover:text-[#4ade80] transition-colors"

@@ -33,7 +33,7 @@ router.get(
 
 router.get(
   "/:id",
-  restrictTo(Roles.ADMIN, Roles.TRAINER),
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
   assignmentController.getById,
 );
 

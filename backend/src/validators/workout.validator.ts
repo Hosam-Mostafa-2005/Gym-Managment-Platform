@@ -26,6 +26,10 @@ export const createWorkoutSchema = z.object({
 
           reps: z.string(),
 
+          targetWeight: z.number().min(0).optional(),
+
+          targetRpe: z.number().min(1).max(10).optional(),
+
           restSeconds: z.number().min(0),
 
           notes: z.string().optional(),

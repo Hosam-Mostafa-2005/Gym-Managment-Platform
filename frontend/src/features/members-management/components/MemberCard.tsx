@@ -95,10 +95,14 @@ export const MemberCard: React.FC<MemberCardProps> = ({ data }) => {
         <div className="flex flex-col gap-0.5">
           <span className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-gray-500">
             <Dumbbell className="h-3 w-3" />
-            CURRENT WORKOUT
+            {data.activeAssignments && data.activeAssignments.length > 1
+              ? `ROUTINE SPLIT (${data.activeAssignments.length})`
+              : "CURRENT WORKOUT"}
           </span>
           <span className="text-xs font-semibold text-gray-200 line-clamp-1">
-            {assignment?.currentWorkout?.title || "No Active Routine"}
+            {data.activeAssignments && data.activeAssignments.length > 1
+              ? data.activeAssignments.map((a) => a.workoutTitle).join(" • ")
+              : assignment?.currentWorkout?.title || "No Active Routine"}
           </span>
           {assignment?.trainer && (
             <span className="text-[10px] text-gray-500">

@@ -3,6 +3,7 @@
 interface MemberProfileMapperInput {
   member: any;
   currentAssignment: any;
+  activeAssignments?: any[];
   assignmentHistory: any[];
   measurements: any[];
   workoutStats: any;
@@ -22,6 +23,7 @@ interface MemberProfileMapperInput {
 export const mapMemberProfile = ({
   member,
   currentAssignment,
+  activeAssignments = [],
   assignmentHistory,
   measurements,
   workoutStats,
@@ -78,6 +80,32 @@ export const mapMemberProfile = ({
             status: currentAssignment.status,
           }
         : null,
+      activeAssignments: (
+        activeAssignments.length > 0
+          ? activeAssignments
+          : currentAssignment
+            ? [currentAssignment]
+            : []
+      ).map((a: any) => ({
+        id: a.id ?? a._id?.toString(),
+        workout: a.workout
+          ? {
+              id: a.workout.id ?? a.workout._id?.toString(),
+              title: a.workout.title,
+              category: a.workout.category,
+              difficulty: a.workout.difficulty,
+            }
+          : null,
+        trainer: a.trainer
+          ? {
+              id: a.trainer.id ?? a.trainer._id?.toString(),
+              name: a.trainer.name,
+            }
+          : null,
+        startDate: a.startDate,
+        endDate: a.endDate,
+        status: a.status,
+      })),
       latestMeasurement: latestMeasurement
         ? {
             id: latestMeasurement.id ?? latestMeasurement._id?.toString(),

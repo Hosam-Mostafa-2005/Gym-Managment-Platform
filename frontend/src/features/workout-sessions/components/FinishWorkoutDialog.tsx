@@ -23,6 +23,7 @@ export default function FinishWorkoutDialog({
 }: FinishWorkoutDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [notes, setNotes] = useState("");
+  const [sessionRpe, setSessionRpe] = useState<number | null>(null);
 
   const { mutate: finishSession, isPending } = useFinishWorkoutSession();
   const navigate = useNavigate();
@@ -33,12 +34,14 @@ export default function FinishWorkoutDialog({
         id: sessionId,
         payload: {
           notes: notes.trim() || undefined,
+          sessionRpe: sessionRpe ?? undefined,
         },
       },
       {
         onSuccess: (completedSession) => {
           setIsOpen(false);
           setNotes("");
+          setSessionRpe(null);
           toast.success("Workout session finished! Great job!");
           navigate(`/sessions/${completedSession.id || sessionId}/summary`);
         },
@@ -148,6 +151,43 @@ export default function FinishWorkoutDialog({
                       </p>
                     </div>
                   )}
+
+                  {/* Session RPE / Intensity Rating */}
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF]">
+                        Session Exertion (RPE 1–10)
+                      </label>
+                      <span className="text-xs font-mono font-medium text-[#5BE584]">
+                        {sessionRpe ? `RPE ${sessionRpe} / 10` : "Optional"}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-10 gap-1 sm:gap-1.5">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => {
+                        const isSelected = sessionRpe === score;
+                        return (
+                          <button
+                            key={score}
+                            type="button"
+                            onClick={() => setSessionRpe(isSelected ? null : score)}
+                            className={`h-9 flex items-center justify-center rounded-lg text-xs font-bold transition-all ${
+                              isSelected
+                                ? "bg-[#5BE584] text-[#090B0F] ring-2 ring-[#5BE584]/50 shadow-[0_0_12px_rgba(91,229,132,0.3)]"
+                                : "bg-[#101418] border border-[#1E2329] text-[#9CA3AF] hover:text-white hover:border-[#2A313A]"
+                            }`}
+                          >
+                            {score}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div className="flex justify-between text-[10px] text-[#6B7280] px-0.5">
+                      <span>1: Very Light</span>
+                      <span>5: Moderate</span>
+                      <span>10: Max Effort</span>
+                    </div>
+                  </div>
 
                   {/* Reflection Notes */}
                   <div className="space-y-2">

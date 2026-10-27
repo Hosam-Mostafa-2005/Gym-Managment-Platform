@@ -22,23 +22,15 @@ export const getRoleHomeRoute = (role?: string | null): string => {
 
 /**
  * Returns the onboarding route for each role when initial setup is required.
- * - Member -> /onboarding/member
- * - Coach/Trainer -> /onboarding/coach
  * - Admin -> /coach-dashboard (Admins bypass onboarding directly to workspace)
+ * - All other users -> /onboarding
  */
 export const getOnboardingRoute = (role?: string | null): string => {
   const normalized = role?.toUpperCase();
-  switch (normalized) {
-    case "MEMBER":
-      return "/onboarding/member";
-    case "TRAINER":
-    case "COACH":
-      return "/onboarding/coach";
-    case "ADMIN":
-      return "/coach-dashboard";
-    default:
-      return "/onboarding/member";
+  if (normalized === "ADMIN") {
+    return "/coach-dashboard";
   }
+  return "/onboarding";
 };
 
 /**
@@ -99,15 +91,9 @@ export const isRouteAuthorizedForRole = (
   if (
     path.startsWith("/coach-dashboard") ||
     path.startsWith("/members") ||
-    path.startsWith("/coach/") ||
-    path.startsWith("/onboarding/coach")
+    path.startsWith("/coach/")
   ) {
     return isCoachOrAdmin;
-  }
-
-  // Member-only onboarding route
-  if (path.startsWith("/onboarding/member")) {
-    return normalized === "MEMBER";
   }
 
   // Member dashboard: coaches and admins should land on coach-dashboard instead of member dashboard

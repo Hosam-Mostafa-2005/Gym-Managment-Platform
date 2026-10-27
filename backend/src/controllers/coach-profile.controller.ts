@@ -15,6 +15,19 @@ export const getProfile: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+export const getPublicCoachProfile: RequestHandler = catchAsync(
+  async (req, res) => {
+    const profile = await coachProfileService.getPublicCoachProfile(
+      req.params.coachId as string,
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: profile,
+    });
+  },
+);
+
 export const updateProfile: RequestHandler = catchAsync(async (req, res) => {
   const profile = await coachProfileService.updateProfile(
     req.user!.id,

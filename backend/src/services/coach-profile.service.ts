@@ -189,33 +189,83 @@ class CoachProfileService {
     };
   }
 
+  async getPublicCoachProfile(coachId: string) {
+    const coach = await prisma.user.findFirst({
+      where: {
+        id: coachId,
+        role: { in: [Roles.TRAINER, Roles.ADMIN] },
+        isActive: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        bio: true,
+        professionalTitle: true,
+        specialties: true,
+        certifications: true,
+        yearsOfExperience: true,
+        coachingPhilosophy: true,
+        languagesSpoken: true,
+        createdAt: true,
+      },
+    });
+
+    if (!coach) {
+      throw new AppError("Coach profile not found.", 404);
+    }
+
+    return coach;
+  }
+
   private async getMemberStats(userId: string, now: Date) {
-    const [assignments, activeAssignmentsCount, completedProgramsCount] =
-      await Promise.all([
-        prisma.assignment.findMany({
-          where: { trainerId: userId, isActive: true },
-          include: { member: true },
-        }),
-        prisma.assignment.count({
-          where: {
-            trainerId: userId,
-            isActive: true,
-            status: ASSIGNMENT_STATUS.ACTIVE,
+    const [
+      assignments,
+      activeAssignmentsCount,
+      completedProgramsCount,
+      relationships,
+    ] = await Promise.all([
+      prisma.assignment.findMany({
+        where: { trainerId: userId, isActive: true },
+        include: { member: true },
+      }),
+      prisma.assignment.count({
+        where: {
+          trainerId: userId,
+          isActive: true,
+          status: ASSIGNMENT_STATUS.ACTIVE,
+        },
+      }),
+      prisma.assignment.count({
+        where: {
+          trainerId: userId,
+          isActive: true,
+          status: ASSIGNMENT_STATUS.COMPLETED,
+        },
+      }),
+      prisma.coachMemberRelationship.findMany({
+        where: {
+          trainerId: userId,
+          status: "ACTIVE",
+          isActive: true,
+        },
+        include: {
+          member: {
+            select: { id: true, name: true, email: true, createdAt: true },
           },
-        }),
-        prisma.assignment.count({
-          where: {
-            trainerId: userId,
-            isActive: true,
-            status: ASSIGNMENT_STATUS.COMPLETED,
-          },
-        }),
-      ]);
+        },
+      }),
+    ]);
 
     const memberMap = new Map<string, any>();
     assignments.forEach((a) => {
       if (a.member) {
         memberMap.set(a.member.id, a.member);
+      }
+    });
+    relationships.forEach((r) => {
+      if (r.member) {
+        memberMap.set(r.member.id, r.member);
       }
     });
 

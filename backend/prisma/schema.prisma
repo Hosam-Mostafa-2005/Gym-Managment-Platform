@@ -197,6 +197,9 @@ model User {
   nutritionPlansAsCoach  NutritionPlan[]           @relation("CoachNutritionPlans")
   foodLogs               FoodLog[]                 @relation("MemberFoodLogs")
   userAchievements       UserAchievement[]
+  exerciseAccessAsMember MemberExerciseAccess[] @relation("MemberExerciseAccess")
+  exerciseAccessGranted  MemberExerciseAccess[] @relation("GrantedExerciseAccess")
+  reviewedWorkoutSessions WorkoutSession[]      @relation("CoachSessionReviews")
   notificationPreference NotificationPreference?
   verificationCodes      VerificationCode[]
   passwordResetTokens    PasswordResetToken[]
@@ -231,6 +234,7 @@ model Exercise {
   creator             User?                @relation("UserCustomExercises", fields: [createdById], references: [id], onDelete: SetNull)
   workoutExercises    WorkoutExercise[]
   workoutExerciseLogs WorkoutExerciseLog[]
+  memberAccess        MemberExerciseAccess[]
 
   @@index([name])
   @@index([createdById, isCustom])
@@ -248,14 +252,18 @@ model Workout {
   estimatedDuration Int
   tags              String[]          @default([])
   isTemplate        Boolean           @default(false)
+  version           Int               @default(1)
+  parentWorkoutId   String?
   createdBy         String
   isActive          Boolean           @default(true)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
   // Relationships
-  creator     User              @relation("WorkoutCreator", fields: [createdBy], references: [id], onDelete: Restrict)
-  exercises   WorkoutExercise[]
+  creator           User              @relation("WorkoutCreator", fields: [createdBy], references: [id], onDelete: Restrict)
+  parentWorkout     Workout?          @relation("WorkoutVersions", fields: [parentWorkoutId], references: [id], onDelete: SetNull)
+  childVersions     Workout[]         @relation("WorkoutVersions")
+  exercises         WorkoutExercise[]
   assignments Assignment[]
   sessions    WorkoutSession[]   @relation("WorkoutSessions")
   scheduledWorkouts ScheduledWorkout[] @relation("WorkoutSchedules")
@@ -273,6 +281,8 @@ model WorkoutExercise {
   exerciseId  String
   sets        Int
   reps        String
+  targetWeight Float?
+  targetRpe    Float?
   restSeconds Int
   notes       String?
   order       Int
@@ -336,14 +346,19 @@ model WorkoutSession {
   totalVolume        Float                @default(0)
   exercisesCompleted Int                  @default(0)
   setsCompleted      Int                  @default(0)
+  sessionRpe         Int?
+  coachFeedback      String?
+  coachReviewedAt    DateTime?
+  coachReviewedById  String?
   notes              String?
   isActive           Boolean              @default(true)
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 
   // Relationships
-  member       User                 @relation("MemberSessions", fields: [memberId], references: [id], onDelete: Restrict)
-  assignment   Assignment?          @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  member          User                 @relation("MemberSessions", fields: [memberId], references: [id], onDelete: Restrict)
+  coachReviewedBy User?                @relation("CoachSessionReviews", fields: [coachReviewedById], references: [id], onDelete: SetNull)
+  assignment      Assignment?          @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
   workout      Workout?             @relation("WorkoutSessions", fields: [workoutId], references: [id], onDelete: SetNull)
   exerciseLogs WorkoutExerciseLog[]
   scheduledWorkouts ScheduledWorkout[]
@@ -363,9 +378,13 @@ model WorkoutExerciseLog {
   sessionId    String
   exerciseId   String
   exerciseName String
-  targetSets   Int
-  targetReps   String
-  order        Int
+  targetSets         Int
+  targetReps         String
+  targetWeight       Float?
+  targetRpe          Float?
+  originalExerciseId String?
+  swapReason         String?
+  order              Int
   completed    Boolean          @default(false)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -599,6 +618,27 @@ model CoachMemberRelationship {
   @@index([memberId, status, isActive])
   @@index([trainerId, memberId])
   @@map("coach_member_relationships")
+}
+
+model MemberExerciseAccess {
+  id          String    @id @default(uuid())
+  memberId    String
+  exerciseId  String
+  grantedById String
+  isActive    Boolean   @default(true)
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  member      User      @relation("MemberExerciseAccess", fields: [memberId], references: [id], onDelete: Cascade)
+  exercise    Exercise  @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  grantedBy   User      @relation("GrantedExerciseAccess", fields: [grantedById], references: [id], onDelete: Cascade)
+
+  @@unique([memberId, exerciseId])
+  @@index([memberId, isActive])
+  @@index([exerciseId])
+  @@index([grantedById])
+  @@map("member_exercise_access")
 }
 
 // ==========================================
