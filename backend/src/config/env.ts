@@ -39,6 +39,8 @@ export const env = {
   RESEND_API_KEY: process.env.RESEND_API_KEY || "",
 
   // Google OAuth Configuration
-  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",
+  GOOGLE_CLIENT_ID:
+    process.env.GOOGLE_CLIENT_ID ||
+    "223238339735-74boaq5cf0ntijdv7of6eb358cgkoqo2.apps.googleusercontent.com",
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || "",
 };

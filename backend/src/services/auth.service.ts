@@ -244,6 +244,18 @@ class AuthService {
         throw new AppError("Google token audience mismatch.", 401);
       }
 
+      // Explicitly verify issuer is Google
+      const validIssuers = ["accounts.google.com", "https://accounts.google.com"];
+      if (googlePayload.iss && !validIssuers.includes(googlePayload.iss)) {
+        throw new AppError("Invalid Google token issuer.", 401);
+      }
+
+      // Explicitly verify expiration
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      if (googlePayload.exp && googlePayload.exp < nowInSeconds) {
+        throw new AppError("Google token has expired.", 401);
+      }
+
       payload = {
         sub: googlePayload.sub,
         email: googlePayload.email,

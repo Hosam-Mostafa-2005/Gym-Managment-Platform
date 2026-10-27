@@ -16,17 +16,19 @@ export type AchievementTier =
 export interface Achievement {
   id: string;
   code: string;
-  name: string;
+  name?: string;
+  title?: string;
   description: string;
   category: AchievementCategory;
   tier: AchievementTier;
   badgeIcon: string;
-  criteriaType: string;
-  criteriaTarget: number;
+  criteriaType?: string;
+  criteriaTarget?: number;
+  targetProgress?: number;
   points: number;
-  isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UserAchievement {
@@ -34,7 +36,7 @@ export interface UserAchievement {
   userId: string;
   achievementId: string;
   earnedAt: string;
-  progress: number;
+  progress?: number;
   achievement: Achievement;
 }
 
@@ -43,6 +45,7 @@ export interface AchievementWithStatus extends Achievement {
   earnedAt: string | null;
   currentProgress: number;
   progressPercent: number;
+  progressPct?: number;
 }
 
 export interface StreakInfo {

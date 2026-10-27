@@ -16,6 +16,7 @@ import {
   Calendar,
 } from "lucide-react";
 import type { AchievementWithStatus } from "../types/gamification.types";
+import { calculateAchievementProgress } from "../utils/achievement-progress";
 
 interface AchievementDetailModalProps {
   achievement: AchievementWithStatus | null;
@@ -53,7 +54,6 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
   if (!achievement) return null;
 
   const {
-    name,
     description,
     tier,
     points,
@@ -61,10 +61,10 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
     badgeIcon,
     isEarned,
     earnedAt,
-    currentProgress,
-    criteriaTarget,
-    progressPercent,
   } = achievement;
+
+  const displayName = achievement.name || achievement.title || "Achievement";
+  const { current, target, percent } = calculateAchievementProgress(achievement);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -106,7 +106,7 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
           </div>
 
           <h3 className="mt-3 text-xl font-bold text-white flex items-center gap-2">
-            {name}
+            {displayName}
             {isEarned && <CheckCircle className="h-5 w-5 text-[#5BE584]" />}
           </h3>
 
@@ -133,13 +133,13 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
                   <Lock className="h-4 w-4 text-gray-500" /> Goal Requirement
                 </span>
                 <span className="font-semibold text-gray-200">
-                  {currentProgress} / {criteriaTarget} ({progressPercent}%)
+                  {current} / {target} ({percent}%)
                 </span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#161B22] overflow-hidden">
                 <div
                   className="h-full rounded-full bg-[#5BE584] transition-all duration-500"
-                  style={{ width: `${progressPercent}%` }}
+                  style={{ width: `${percent}%` }}
                 />
               </div>
             </div>

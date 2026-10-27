@@ -347,26 +347,33 @@ export class GamificationService {
           currentVal = isEarned ? criteria.target : 0;
       }
 
-      const progressPct = isEarned
+      const target = Math.max(0, Number(criteria?.target) || 0);
+      const progressPercent = isEarned
         ? 100
-        : Math.min(100, Math.round((currentVal / criteria.target) * 100));
+        : target > 0
+          ? Math.min(100, Math.max(0, Math.round((currentVal / target) * 100)))
+          : 0;
 
       return {
         id: ach.id,
         code: ach.code,
         title: ach.title,
+        name: ach.title, // Standard alias for frontend components
         description: ach.description,
         category: ach.category,
         tier: ach.tier,
         badgeIcon: ach.badgeIcon,
         points: ach.points,
         criteria: ach.criteria,
+        criteriaType: (criteria?.type as string) || "",
+        criteriaTarget: target, // Standard alias for frontend components
+        targetProgress: target,
         displayOrder: ach.displayOrder,
         isEarned,
         earnedAt,
         currentProgress: currentVal,
-        targetProgress: criteria.target,
-        progressPct,
+        progressPct: progressPercent,
+        progressPercent, // Standard alias for frontend components
       };
     });
 
@@ -375,27 +382,46 @@ export class GamificationService {
       0,
     );
 
+    const totalEarned = userAchievements.length;
+    const totalAvailable = allAchievements.length;
+    const completionRate =
+      totalAvailable > 0
+        ? Math.min(100, Math.max(0, Math.round((totalEarned / totalAvailable) * 100)))
+        : 0;
+
     return {
       streak: {
         current: currentStreak,
         longest: longestStreak,
+        currentStreak,
+        longestStreak,
+        lastWorkoutDate: workoutDateStrings[0] || null,
+        isActiveStreak: currentStreak > 0,
       },
       weeklyGoal: {
         target: weeklyGoalTarget,
         current: weeklyWorkouts,
         isMet: weeklyWorkouts >= weeklyGoalTarget,
         percentage: Math.min(100, Math.round((weeklyWorkouts / weeklyGoalTarget) * 100)),
+        targetWorkouts: weeklyGoalTarget,
+        completedThisWeek: weeklyWorkouts,
+        percent: Math.min(100, Math.round((weeklyWorkouts / weeklyGoalTarget) * 100)),
+        weekStartDate: new Date().toISOString(),
       },
       summary: {
         totalPoints,
-        unlockedCount: userAchievements.length,
-        totalAchievements: allAchievements.length,
+        unlockedCount: totalEarned,
+        totalAchievements: totalAvailable,
         completedWorkouts: completedSessions.length,
+        totalEarned,
+        totalAvailable,
+        completionRate,
       },
       recentAchievements: userAchievements.slice(0, 4).map((ua) => ({
         id: ua.id,
         code: ua.achievement.code,
         title: ua.achievement.title,
+        name: ua.achievement.title,
         description: ua.achievement.description,
         category: ua.achievement.category,
         tier: ua.achievement.tier,

@@ -14,6 +14,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import type { AchievementWithStatus, AchievementTier } from "../types/gamification.types";
+import { calculateAchievementProgress } from "../utils/achievement-progress";
 
 interface BadgeCardProps {
   achievement: AchievementWithStatus;
@@ -93,18 +94,16 @@ const getBadgeIcon = (iconName: string, className = "h-6 w-6") => {
 
 export const BadgeCard: React.FC<BadgeCardProps> = ({ achievement, onClick }) => {
   const {
-    name,
     description,
     tier,
     points,
     isEarned,
     earnedAt,
     badgeIcon,
-    currentProgress,
-    criteriaTarget,
-    progressPercent,
   } = achievement;
 
+  const displayName = achievement.name || achievement.title || "Achievement";
+  const { current, target, percent } = calculateAchievementProgress(achievement);
   const styles = getTierStyles(tier);
 
   return (
@@ -159,7 +158,7 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({ achievement, onClick }) =>
         <div className="mt-3">
           <div className="flex items-center gap-1.5">
             <h4 className="text-sm font-bold text-gray-100 group-hover:text-white">
-              {name}
+              {displayName}
             </h4>
             {isEarned && (
               <CheckCircle className="h-3.5 w-3.5 shrink-0 text-[#5BE584]" />
@@ -191,13 +190,13 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({ achievement, onClick }) =>
             <div className="flex items-center justify-between text-[11px] text-gray-400 mb-1.5">
               <span>Progress</span>
               <span className="font-semibold text-gray-300">
-                {currentProgress} / {criteriaTarget}
+                {current} / {target} ({percent}%)
               </span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-[#161B22] overflow-hidden">
               <div
                 className="h-full rounded-full bg-[#5BE584] transition-all duration-300"
-                style={{ width: `${progressPercent}%` }}
+                style={{ width: `${percent}%` }}
               />
             </div>
           </div>

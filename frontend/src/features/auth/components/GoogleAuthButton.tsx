@@ -33,7 +33,9 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   const [scriptError, setScriptError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
 
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const googleClientId =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+    "223238339735-74boaq5cf0ntijdv7of6eb358cgkoqo2.apps.googleusercontent.com";
 
   useEffect(() => {
     if (!googleClientId) {
@@ -68,10 +70,9 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
 
         if (containerRef.current) {
           containerRef.current.innerHTML = "";
-          const containerWidth = Math.min(
-            containerRef.current.clientWidth || 360,
-            400,
-          );
+          const clientWidth = containerRef.current.clientWidth || 360;
+          // Google Identity Services requires width between 200 and 400 pixels
+          const containerWidth = Math.max(200, Math.min(clientWidth, 400));
 
           window.google.accounts.id.renderButton(containerRef.current, {
             type: "standard",
@@ -80,7 +81,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
             text: mode === "signup" ? "signup_with" : "continue_with",
             shape: "pill",
             logo_alignment: "left",
-            width: containerWidth > 0 ? containerWidth : 360,
+            width: containerWidth,
           });
         }
 
