@@ -8,13 +8,25 @@ import mapUser from "../mappers/user.mapper.js";
 export const register: RequestHandler = catchAsync(async (req, res) => {
   const result = await authService.register(req.body);
 
+  if (result.isPendingVerification) {
+    res.status(201).json({
+      status: "success",
+      isPendingVerification: true,
+      message: result.message,
+      data: {
+        user: result.user,
+      },
+    });
+    return;
+  }
+
   sendToken({
-    token: result.token,
+    token: (result as any).token,
     user: {
       ...result.user,
-      isPendingRegistration: result.isPendingRegistration || false,
+      isPendingRegistration: (result as any).isPendingRegistration || false,
     },
-    statusCode: result.isPendingRegistration ? 200 : 201,
+    statusCode: (result as any).isPendingRegistration ? 200 : 201,
     res,
     message: result.message,
     ...("delivery" in result ? { delivery: (result as any).delivery } : {}),
@@ -40,7 +52,6 @@ export const resendVerificationCode: RequestHandler = catchAsync(
     res.status(200).json({
       status: "success",
       message: result.message,
-      ...(result.delivery && { delivery: result.delivery }),
     });
   },
 );

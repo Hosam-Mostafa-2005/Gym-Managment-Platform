@@ -65,6 +65,16 @@ export interface LoginResponse {
   };
 }
 
+export interface RegisterResponse {
+  status: string;
+  token?: string;
+  isPendingVerification?: boolean;
+  message?: string;
+  data: {
+    user: User & { isPendingRegistration?: boolean };
+  };
+}
+
 export interface RegisterRequest {
   name: string;
   email: string;

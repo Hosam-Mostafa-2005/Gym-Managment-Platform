@@ -16,7 +16,16 @@ export const useRegister = () => {
   return useMutation({
     mutationFn: register,
 
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
+      // If verification is pending, navigate to Verify Email page without issuing session
+      if (response.isPendingVerification || !response.token) {
+        toast.success(
+          response.message || "Verification code sent! Please check your email.",
+        );
+        navigate(`/verify-email?email=${encodeURIComponent(variables.email.trim())}`);
+        return;
+      }
+
       if (response.token) {
         tokenService.saveToken(response.token);
       }

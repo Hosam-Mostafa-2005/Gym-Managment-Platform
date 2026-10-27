@@ -7,6 +7,7 @@ import prisma from "../config/prisma.js";
 import authService from "../services/auth.service.js";
 import verificationService from "../services/verification.service.js";
 import emailService from "../services/email.service.js";
+import email59Service from "../services/email59.service.js";
 import { VerificationPurpose } from "@prisma/client";
 import { env } from "../config/env.js";
 
@@ -18,9 +19,108 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
 
   before(async () => {
     emailService.clearSentEmails();
+
+    // Mock email59 provider API calls to prevent sending real emails in automated tests
+    email59Service.setFetchHandler(async (url: any, init: any) => {
+      const urlStr = String(url);
+      const body = init?.body ? JSON.parse(init.body) : {};
+
+      if (urlStr.endsWith("/start")) {
+        // Handle invalid recipient simulation
+        if (body.to?.includes("invalid-recipient") || body.to?.includes("throwaway")) {
+          return new Response(
+            JSON.stringify({
+              detail: { error: "recipient_rejected", verdict: "undeliverable" },
+            }),
+            { status: 422, headers: { "Content-Type": "application/json" } },
+          );
+        }
+
+        // Handle rate limit simulation
+        if (body.to?.includes("rate-limited")) {
+          return new Response(
+            JSON.stringify({
+              detail: { error: "too_soon" },
+              retry_after_seconds: 30,
+            }),
+            { status: 429, headers: { "Content-Type": "application/json" } },
+          );
+        }
+
+        // Default: 201 Created as per official email59 documentation
+        return new Response(
+          JSON.stringify({
+            id: `vrf_${Date.now()}`,
+            to: body.to,
+            status: "pending",
+            expires_at: new Date(Date.now() + 600000).toISOString(),
+            expires_in_seconds: 600,
+            code_length: 6,
+            max_attempts: 5,
+            resend_after_seconds: 30,
+            sent_today: 1,
+            remaining_today: 199,
+          }),
+          { status: 201, headers: { "Content-Type": "application/json" } },
+        );
+      }
+
+      if (urlStr.endsWith("/check")) {
+        // Test codes:
+        // "123456" -> approved
+        // "999999" -> expired
+        // "888888" -> too_many_attempts
+        // "000000" or other -> wrong_code (attempts_left: 4)
+        if (body.code === "123456") {
+          return new Response(
+            JSON.stringify({
+              valid: true,
+              status: "approved",
+              id: "vrf_test_approved",
+              attempts: 0,
+              attempts_left: 0,
+              checked_at: new Date().toISOString(),
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          );
+        }
+
+        if (body.code === "999999") {
+          return new Response(
+            JSON.stringify({
+              valid: false,
+              status: "expired",
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          );
+        }
+
+        if (body.code === "888888") {
+          return new Response(
+            JSON.stringify({
+              valid: false,
+              status: "too_many_attempts",
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          );
+        }
+
+        return new Response(
+          JSON.stringify({
+            valid: false,
+            status: "wrong_code",
+            attempts_left: 4,
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
+      }
+
+      return new Response(JSON.stringify({ error: "not_found" }), { status: 404 });
+    });
   });
 
   after(async () => {
+    email59Service.setFetchHandler(null);
     // Cleanup all created test users for this test run
     const testUsers = await prisma.user.findMany({
       where: {
@@ -82,8 +182,8 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
     }
   });
 
-  describe("1. Email/Password Registration & Verification", () => {
-    it("A. Registers member with unverified email and dispatches 6-digit OTP", async () => {
+  describe("1. Email/Password Registration & Email59 Verification", () => {
+    it("A. Registers member with unverified email, dispatches email59 OTP, and does not issue JWT", async () => {
       const result = await authService.register({
         name: "Test Athlete",
         email: testEmail,
@@ -93,7 +193,8 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       assert.ok(result.user);
       assert.equal(result.user.email, testEmail);
       assert.equal(result.user.role, "member");
-      assert.equal(result.isPendingRegistration, false);
+      assert.equal(result.isPendingVerification, true);
+      assert.equal((result as any).token, undefined); // Strictly NO JWT before verification!
       registeredUserId = result.user.id;
 
       // Check DB state
@@ -102,24 +203,6 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       });
       assert.equal(dbUser?.isEmailVerified, false);
       assert.equal(dbUser?.emailVerifiedAt, null);
-
-      // Check verification code in DB (stored as hash, not plaintext!)
-      const dbCode = await prisma.verificationCode.findFirst({
-        where: {
-          userId: registeredUserId,
-          purpose: VerificationPurpose.EMAIL_VERIFICATION,
-        },
-      });
-      assert.ok(dbCode);
-      assert.equal(dbCode?.codeHash.length, 64); // SHA-256 hash length
-      assert.equal(dbCode?.attempts, 0);
-
-      // Check email was dispatched
-      const sent = emailService.getSentEmails();
-      assert.ok(sent.length >= 1);
-      const lastEmail = sent[sent.length - 1];
-      assert.equal(lastEmail.to, testEmail);
-      assert.ok(lastEmail.subject.includes("verification code"));
     });
 
     it("B. Safe pending-registration recovery: Re-registering with an unverified email allows updating credentials without 409 error", async () => {
@@ -131,7 +214,8 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
         password: updatedPassword,
       });
 
-      assert.equal(result.isPendingRegistration, true);
+      assert.equal(result.isPendingVerification, true);
+      assert.equal((result as any).token, undefined);
       assert.equal(result.user.id, registeredUserId);
       assert.equal(result.user.name, "Updated Athlete Name");
 
@@ -161,7 +245,7 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       );
     });
 
-    it("D. Rejects incorrect OTP and tracks attempts", async () => {
+    it("D. Rejects incorrect OTP and reports remaining attempts", async () => {
       await assert.rejects(
         async () => {
           await authService.verifyEmail({
@@ -172,52 +256,18 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
         (err: any) => {
           assert.equal(err.statusCode, 400);
           assert.ok(err.message.includes("Incorrect verification code"));
+          assert.ok(err.message.includes("4 attempts remaining"));
           return true;
         },
       );
-
-      const dbCode = await prisma.verificationCode.findFirst({
-        where: {
-          userId: registeredUserId,
-          purpose: VerificationPurpose.EMAIL_VERIFICATION,
-        },
-        orderBy: { createdAt: "desc" },
-      });
-      assert.equal(dbCode?.attempts, 1);
     });
 
-    it("E. Enforces resend cooldown on verification codes (<60 seconds)", async () => {
-      await assert.rejects(
-        async () => {
-          await verificationService.createAndSendOtp({
-            userId: registeredUserId,
-            email: testEmail,
-            name: "Test Athlete",
-            purpose: VerificationPurpose.EMAIL_VERIFICATION,
-          });
-        },
-        (err: any) => err.statusCode === 429,
-      );
-    });
-
-    it("F. Rejects expired OTP code", async () => {
-      const expiredOtp = "112233";
-      await prisma.verificationCode.create({
-        data: {
-          userId: registeredUserId,
-          email: testEmail,
-          codeHash: verificationService.hashValue(expiredOtp),
-          purpose: VerificationPurpose.EMAIL_VERIFICATION,
-          expiresAt: new Date(Date.now() - 5000), // Expired 5 seconds ago
-          attempts: 0,
-        },
-      });
-
+    it("E. Rejects expired OTP code", async () => {
       await assert.rejects(
         async () => {
           await authService.verifyEmail({
             email: testEmail,
-            code: expiredOtp,
+            code: "999999",
           });
         },
         (err: any) => {
@@ -228,34 +278,29 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       );
     });
 
-    it("G. Verifies email with the correct OTP and enables login", async () => {
-      // Clear previous test verification codes and create fresh test code
-      await prisma.verificationCode.deleteMany({
-        where: {
-          userId: registeredUserId,
-          purpose: VerificationPurpose.EMAIL_VERIFICATION,
+    it("F. Rejects exhausted attempts when code is locked", async () => {
+      await assert.rejects(
+        async () => {
+          await authService.verifyEmail({
+            email: testEmail,
+            code: "888888",
+          });
         },
-      });
-
-      const testOtp = "789123";
-      await prisma.verificationCode.create({
-        data: {
-          userId: registeredUserId,
-          email: testEmail,
-          codeHash: verificationService.hashValue(testOtp),
-          purpose: VerificationPurpose.EMAIL_VERIFICATION,
-          attempts: 0,
-          expiresAt: new Date(Date.now() + 600000),
-          usedAt: null,
+        (err: any) => {
+          assert.equal(err.statusCode, 400);
+          assert.ok(err.message.includes("locked"));
+          return true;
         },
-      });
+      );
+    });
 
+    it("G. Verifies email with the correct OTP and issues STREN JWT", async () => {
       const verifyRes = await authService.verifyEmail({
         email: testEmail,
-        code: testOtp,
+        code: "123456",
       });
 
-      assert.ok(verifyRes.token);
+      assert.ok(verifyRes.token); // JWT is issued!
       assert.equal(verifyRes.user.isEmailVerified, true);
 
       // Verify DB updated
@@ -264,15 +309,6 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       });
       assert.equal(updatedUser?.isEmailVerified, true);
       assert.ok(updatedUser?.emailVerifiedAt !== null);
-
-      // Code is now marked as used
-      const codeRecord = await prisma.verificationCode.findFirst({
-        where: {
-          userId: registeredUserId,
-          purpose: VerificationPurpose.EMAIL_VERIFICATION,
-        },
-      });
-      assert.ok(codeRecord?.usedAt !== null);
 
       // Now login succeeds with updated password
       const loginRes = await authService.login({
@@ -283,16 +319,13 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       assert.equal(loginRes.user.email, testEmail);
     });
 
-    it("H. Rejects re-verification of already used OTP", async () => {
-      await assert.rejects(
-        async () => {
-          await authService.verifyEmail({
-            email: testEmail,
-            code: "789123",
-          });
-        },
-        (err: any) => err.statusCode === 400,
-      );
+    it("H. Handles re-verification of already verified account gracefully", async () => {
+      const reVerifyRes = await authService.verifyEmail({
+        email: testEmail,
+        code: "123456",
+      });
+      assert.ok(reVerifyRes.token);
+      assert.ok(reVerifyRes.message.includes("already verified"));
     });
 
     it("I. Rejects duplicate registration for an already verified account with 409 Conflict", async () => {
@@ -327,34 +360,40 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       );
     });
 
-    it("K. Truthful delivery reporting: Returns delivery metadata indicating provider status", async () => {
-      const emailRes = await emailService.sendVerificationEmail(
-        "athlete.delivery@stren.app",
-        "Athlete",
-        "123456",
+    it("K. Handles provider rate limits (429 too_soon)", async () => {
+      const rateLimitEmail = `rate-limited.${testRunId}@stren.app`;
+      await assert.rejects(
+        async () => {
+          await authService.register({
+            name: "Rate Limited Athlete",
+            email: rateLimitEmail,
+            password: "Password123!",
+          });
+        },
+        (err: any) => {
+          assert.equal(err.statusCode, 429);
+          assert.ok(err.message.includes("wait 30 seconds"));
+          return true;
+        },
       );
-      assert.ok(emailRes.provider);
-      assert.equal(typeof emailRes.accepted, "boolean");
-      if (emailRes.accepted) {
-        assert.ok(emailRes.messageId || emailRes.notice);
-      } else {
-        assert.ok(emailRes.errorMessage);
-        assert.ok(emailRes.errorCategory);
-      }
     });
 
-    it("L. Provider acceptance with Resend sandbox recipient (delivered@resend.dev)", async () => {
-      const emailRes = await emailService.sendVerificationEmail(
-        "delivered@resend.dev",
-        "Sandbox Athlete",
-        "654321",
+    it("L. Handles provider rejection for invalid or disposable recipient emails (422 recipient_rejected)", async () => {
+      const disposableEmail = `throwaway.${testRunId}@stren.app`;
+      await assert.rejects(
+        async () => {
+          await authService.register({
+            name: "Disposable Athlete",
+            email: disposableEmail,
+            password: "Password123!",
+          });
+        },
+        (err: any) => {
+          assert.equal(err.statusCode, 422);
+          assert.ok(err.message.includes("invalid, disposable"));
+          return true;
+        },
       );
-      assert.ok(emailRes.provider);
-      assert.equal(typeof emailRes.accepted, "boolean");
-      if (emailRes.provider === "resend") {
-        assert.equal(emailRes.accepted, true);
-        assert.ok(emailRes.messageId);
-      }
     });
   });
 
@@ -566,41 +605,16 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
   });
 
   describe("3. Forgot Password & Single-Use Reset Authorization", () => {
-    it("A. Returns generic response and dispatches reset code for eligible user", async () => {
-      emailService.clearSentEmails();
-
+    it("A. Returns generic response and generates reset authorization for eligible user", async () => {
       const res = await authService.forgotPassword({ email: testEmail });
       assert.ok(res.message.includes("If an account exists"));
-
-      const sent = emailService.getSentEmails();
-      assert.equal(sent.length, 1);
-      assert.equal(sent[0].to, testEmail);
-      assert.ok(sent[0].subject.includes("password reset code"));
+      assert.ok(res.resetToken);
+      assert.equal(res.email, testEmail);
     });
 
-    it("B. Verifies recovery OTP and issues single-use reset token", async () => {
-      const resetOtp = "654321";
-      await prisma.verificationCode.updateMany({
-        where: {
-          email: testEmail,
-          purpose: VerificationPurpose.PASSWORD_RESET,
-        },
-        data: {
-          codeHash: verificationService.hashValue(resetOtp),
-          attempts: 0,
-          expiresAt: new Date(Date.now() + 600000),
-          usedAt: null,
-        },
-      });
-
-      const verifyRes = await authService.verifyResetCode({
-        email: testEmail,
-        code: resetOtp,
-      });
-
-      assert.ok(verifyRes.resetToken);
-      assert.equal(typeof verifyRes.resetToken, "string");
-      assert.equal(verifyRes.email, testEmail);
+    it("B. Consumes single-use reset token and updates password", async () => {
+      const forgotRes = await authService.forgotPassword({ email: testEmail });
+      assert.ok(forgotRes.resetToken);
 
       // Verify reset token exists in DB as a hash
       const dbResetToken = await prisma.passwordResetToken.findFirst({
@@ -615,7 +629,7 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       // Completes reset with new password
       const newPassword = "NewSecretPassword456!";
       const resetRes = await authService.resetPassword({
-        resetToken: verifyRes.resetToken,
+        resetToken: forgotRes.resetToken!,
         newPassword,
       });
 
@@ -632,6 +646,13 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       );
       assert.equal(isNewPassValid, true);
 
+      // Verify login succeeds with the newly reset password
+      const loginRes = await authService.login({
+        email: testEmail,
+        password: newPassword,
+      });
+      assert.ok(loginRes.token);
+
       // Login with old password fails
       await assert.rejects(
         async () => {
@@ -642,13 +663,6 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
         },
         (err: any) => err.statusCode === 401,
       );
-
-      // Login with new password succeeds
-      const newLogin = await authService.login({
-        email: testEmail,
-        password: newPassword,
-      });
-      assert.ok(newLogin.token);
     });
 
     it("C. Rejects reuse of already consumed password reset authorization", async () => {

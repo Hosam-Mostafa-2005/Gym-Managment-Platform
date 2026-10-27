@@ -22,6 +22,7 @@ import mapUser from "../mappers/user.mapper.js";
 import { Roles } from "../constants/roles.js";
 import verificationService from "./verification.service.js";
 import emailService, { type EmailDeliveryResult } from "./email.service.js";
+import email59Service from "./email59.service.js";
 
 const defaultGoogleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID || undefined);
 
@@ -65,24 +66,26 @@ class AuthService {
         );
       }
 
-      // Existing unverified account: update user details and activate account
+      // Existing unverified account: update user details and restart verification
       const hashedPassword = await bcrypt.hash(userData.password, 12);
       const updatedUser = await prisma.user.update({
         where: { id: existingUser.id },
         data: {
           name: userData.name.trim(),
           password: hashedPassword,
-          isEmailVerified: true,
-          emailVerifiedAt: new Date(),
+          isEmailVerified: false,
+          emailVerifiedAt: null,
         },
       });
 
-      const token = generateToken(updatedUser.id);
+      // Dispatch real verification OTP via email59
+      await email59Service.startVerification(normalizedEmail);
+
       return {
         user: mapUser(updatedUser),
-        token,
-        isPendingRegistration: false,
-        message: "Account registered successfully.",
+        isPendingVerification: true,
+        message:
+          "Verification code sent to your email. Please enter the 6-digit code to complete registration.",
       };
     }
 
@@ -94,52 +97,70 @@ class AuthService {
         email: normalizedEmail,
         password: hashedPassword,
         role: "member",
-        isEmailVerified: true,
-        emailVerifiedAt: new Date(),
+        isEmailVerified: false,
+        emailVerifiedAt: null,
         onboardingCompleted: false,
         onboardingStep: 0,
       },
     });
 
-    const token = generateToken(user.id);
+    // Dispatch real verification OTP via email59
+    await email59Service.startVerification(normalizedEmail);
 
     return {
       user: mapUser(user),
-      token,
-      isPendingRegistration: false,
-      message: "Account registered successfully.",
+      isPendingVerification: true,
+      message:
+        "Verification code sent to your email. Please enter the 6-digit code to complete registration.",
     };
   }
 
   /**
-   * Verify email with 6-digit OTP
+   * Verify email with 6-digit OTP via email59
    */
   async verifyEmail(data: VerifyEmailDto) {
-    const { user: verifiedSummary } = await verificationService.verifyOtp({
-      email: data.email,
-      code: data.code,
-      purpose: VerificationPurpose.EMAIL_VERIFICATION,
+    const normalizedEmail = data.email.trim().toLowerCase();
+
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
     });
 
-    const user = await prisma.user.update({
-      where: { id: verifiedSummary.id },
+    if (!user) {
+      throw new AppError("No account found for this email address.", 404);
+    }
+
+    if (user.isEmailVerified) {
+      const token = generateToken(user.id);
+      return {
+        user: mapUser(user),
+        token,
+        message: "Email is already verified.",
+      };
+    }
+
+    // Verify OTP with email59 check endpoint
+    await email59Service.checkVerification(normalizedEmail, data.code);
+
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
       data: {
         isEmailVerified: true,
         emailVerifiedAt: new Date(),
       },
     });
 
-    const token = generateToken(user.id);
+    // Only issue STREN JWT after successful verification
+    const token = generateToken(updatedUser.id);
 
     return {
-      user: mapUser(user),
+      user: mapUser(updatedUser),
       token,
-      message: "Email address verified successfully.",
+      message: "Email address verified successfully! Welcome to STREN.",
     };
   }
 
   /**
-   * Resend email verification code
+   * Resend email verification code via email59
    */
   async resendVerificationCode(data: ResendVerificationDto) {
     const normalizedEmail = data.email.trim().toLowerCase();
@@ -147,21 +168,13 @@ class AuthService {
       where: { email: normalizedEmail },
     });
 
-    let delivery: EmailDeliveryResult | undefined;
     if (user && !user.isEmailVerified && user.isActive) {
-      const otpResult = await verificationService.createAndSendOtp({
-        userId: user.id,
-        email: user.email,
-        name: user.name,
-        purpose: VerificationPurpose.EMAIL_VERIFICATION,
-      });
-      delivery = otpResult.delivery;
+      await email59Service.startVerification(normalizedEmail);
     }
 
     return {
       message:
         "If an unverified account exists with that email, a verification code has been sent.",
-      delivery,
     };
   }
 
@@ -195,15 +208,18 @@ class AuthService {
       throw new AppError("Incorrect email or password", 401);
     }
 
-    // Email verification check (temporarily disabled: seamlessly activate unverified accounts)
+    // Strictly enforce email verification
     if (!user.isEmailVerified) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          isEmailVerified: true,
-          emailVerifiedAt: new Date(),
-        },
-      });
+      try {
+        await email59Service.startVerification(user.email);
+      } catch {
+        // Suppress provider or rate limit error on login attempt
+      }
+
+      throw new AppError(
+        "Please verify your email address before logging in. A verification code has been sent to your email.",
+        403,
+      );
     }
 
     const token = generateToken(user.id);

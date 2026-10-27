@@ -5,6 +5,7 @@ import type {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
+  RegisterResponse,
   VerifyEmailRequest,
   ResendVerificationRequest,
   GoogleAuthRequest,
@@ -23,8 +24,8 @@ export const login = async (data: LoginRequest): Promise<LoginResponse> => {
   return response.data;
 };
 
-export const register = async (data: RegisterRequest): Promise<LoginResponse> => {
-  const response = await api.post<LoginResponse>("/auth/register", data);
+export const register = async (data: RegisterRequest): Promise<RegisterResponse> => {
+  const response = await api.post<RegisterResponse>("/auth/register", data);
   return response.data;
 };
 

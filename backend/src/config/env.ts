@@ -37,6 +37,7 @@ export const env = {
   SMTP_USER: process.env.SMTP_USER || "",
   SMTP_PASS: process.env.SMTP_PASS || "",
   RESEND_API_KEY: process.env.RESEND_API_KEY || "",
+  EMAIL59_KEY: process.env.EMAIL59_KEY || "",
 
   // Google OAuth Configuration
   GOOGLE_CLIENT_ID:

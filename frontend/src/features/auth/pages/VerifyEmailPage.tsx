@@ -8,14 +8,14 @@ import {
   Loader2,
   ArrowLeft,
   AlertCircle,
-  Info,
+  Edit2,
+  Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import { verifyEmail, resendVerification } from "../api/auth.api";
 import { tokenService } from "@/services/token.service";
 import { useAuthStore } from "@/store/auth.store";
 import { useQueryClient } from "@tanstack/react-query";
-import type { EmailDeliveryInfo } from "../types/auth.types";
 import { resolveAuthRedirect } from "../utils/auth-redirect";
 
 export const VerifyEmailPage: React.FC = () => {
@@ -26,20 +26,16 @@ export const VerifyEmailPage: React.FC = () => {
   const setUser = useAuthStore((state) => state.setUser);
 
   const initialEmail = searchParams.get("email") || "";
-  const initialDelivery = (location.state as any)?.delivery as
-    | EmailDeliveryInfo
-    | undefined;
 
   const [email, setEmail] = useState(initialEmail);
+  const [isEditingEmail, setIsEditingEmail] = useState(!initialEmail);
   const [code, setCode] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [cooldown, setCooldown] = useState(60);
-  const [delivery, setDelivery] = useState<EmailDeliveryInfo | undefined>(
-    initialDelivery,
-  );
+  const [cooldown, setCooldown] = useState(30);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Resend cooldown timer countdown
+  // Resend cooldown timer countdown (email59 rate limits to one code every 30 seconds)
   useEffect(() => {
     if (cooldown <= 0) return;
     const timer = setInterval(() => {
@@ -50,26 +46,35 @@ export const VerifyEmailPage: React.FC = () => {
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !code.trim()) {
-      toast.error("Please enter both your email address and 6-digit code.");
+    setErrorMessage(null);
+
+    const targetEmail = email.trim().toLowerCase();
+    const targetCode = code.trim().replace(/\D/g, "");
+
+    if (!targetEmail || !targetCode) {
+      setErrorMessage("Please enter both your email address and 6-digit verification code.");
       return;
     }
 
-    if (code.trim().length !== 6) {
-      toast.error("Verification code must be 6 digits.");
+    if (targetCode.length !== 6) {
+      setErrorMessage("Verification code must be exactly 6 digits.");
       return;
     }
 
     setIsVerifying(true);
     try {
       const response = await verifyEmail({
-        email: email.trim(),
-        code: code.trim(),
+        email: targetEmail,
+        code: targetCode,
       });
 
-      tokenService.saveToken(response.token);
-      setUser(response.data.user);
-      queryClient.setQueryData(["current-user"], response.data.user);
+      if (response.token) {
+        tokenService.saveToken(response.token);
+      }
+      if (response.data?.user) {
+        setUser(response.data.user);
+        queryClient.setQueryData(["current-user"], response.data.user);
+      }
 
       toast.success(response.message || "Email verified successfully!");
 
@@ -84,7 +89,10 @@ export const VerifyEmailPage: React.FC = () => {
 
       navigate(destination, { replace: true });
     } catch (err: any) {
-      const msg = err.response?.data?.message || "Verification failed. Please try again.";
+      const msg =
+        err.response?.data?.message ||
+        "Verification failed. Please check your code and try again.";
+      setErrorMessage(msg);
       toast.error(msg);
     } finally {
       setIsVerifying(false);
@@ -92,21 +100,22 @@ export const VerifyEmailPage: React.FC = () => {
   };
 
   const handleResend = async () => {
-    if (!email.trim()) {
-      toast.error("Please provide your email address.");
+    const targetEmail = email.trim().toLowerCase();
+    if (!targetEmail) {
+      setErrorMessage("Please enter your email address to receive a verification code.");
       return;
     }
 
+    setErrorMessage(null);
     setIsResending(true);
     try {
-      const res = await resendVerification({ email: email.trim() });
-      toast.success(res.message);
-      if (res.delivery) {
-        setDelivery(res.delivery);
-      }
-      setCooldown(60);
+      const res = await resendVerification({ email: targetEmail });
+      toast.success(res.message || "A new verification code has been sent.");
+      setCooldown(30);
     } catch (err: any) {
-      const msg = err.response?.data?.message || "Failed to resend code.";
+      const msg =
+        err.response?.data?.message || "Failed to resend verification code. Please try again later.";
+      setErrorMessage(msg);
       toast.error(msg);
     } finally {
       setIsResending(false);
@@ -133,82 +142,65 @@ export const VerifyEmailPage: React.FC = () => {
           Verify Your Email
         </h2>
         <p className="mt-2 text-sm text-[#91A0B5] leading-relaxed">
-          We&apos;ve sent a 6-digit confirmation code to{" "}
-          <strong className="text-white">{email || "your email"}</strong>.
-          Enter the code below to complete registration and access your workspace.
+          We&apos;ve sent a 6-digit verification code to your email. Enter the code below to
+          complete registration and unlock your STREN account.
         </p>
       </div>
 
-      {/* Delivery Diagnostic Notification Banner */}
-      {delivery?.provider === "console" && (
-        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 text-xs text-amber-200">
-          <Info className="h-5 w-5 shrink-0 text-amber-400 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-semibold text-amber-300">
-              Development Notice: Real email delivery is disabled
-            </p>
-            <p className="text-amber-200/90 leading-relaxed">
-              <code>EMAIL_PROVIDER=console</code> is active in{" "}
-              <code>backend/.env</code>. No external email was sent to your
-              inbox. The OTP was securely hashed in PostgreSQL. To deliver
-              real emails, configure Resend (<code>RESEND_API_KEY</code>) or SMTP in{" "}
-              <code>backend/.env</code>.
-            </p>
+      {/* Email pill / editable input */}
+      <div className="mb-6 rounded-2xl border border-[#1E2329] bg-[#0E1217] p-3.5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <span className="block text-[11px] font-medium uppercase tracking-wider text-[#91A0B5]">
+              Target Email Address
+            </span>
+            {isEditingEmail ? (
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="athlete@example.com"
+                className="mt-1 w-full rounded-lg border border-[#2A313A] bg-[#161B22] px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+              />
+            ) : (
+              <p className="mt-0.5 truncate text-sm font-semibold text-white">
+                {email || "(No email specified)"}
+              </p>
+            )}
           </div>
+          <button
+            type="button"
+            onClick={() => setIsEditingEmail(!isEditingEmail)}
+            className="flex items-center gap-1 rounded-lg border border-[#252B33] bg-[#171B20] px-2.5 py-1.5 text-xs text-[#91A0B5] hover:text-white hover:border-[#374151] transition-colors"
+          >
+            {isEditingEmail ? (
+              <>
+                <Check className="h-3 w-3 text-[#5BE584]" />
+                <span>Done</span>
+              </>
+            ) : (
+              <>
+                <Edit2 className="h-3 w-3" />
+                <span>Change</span>
+              </>
+            )}
+          </button>
         </div>
-      )}
+      </div>
 
-      {delivery && delivery.provider !== "console" && !delivery.accepted && (
+      {/* Provider / Error Alert */}
+      {errorMessage && (
         <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-500/25 bg-red-500/10 p-4 text-xs text-red-200">
           <AlertCircle className="h-5 w-5 shrink-0 text-red-400 mt-0.5" />
           <div className="space-y-1">
-            <p className="font-semibold text-red-300">Email Delivery Issue</p>
-            <p className="text-red-200/90 leading-relaxed">
-              {delivery.errorMessage ||
-                "The email provider encountered an error while attempting delivery. Please check backend settings or click Resend."}
-            </p>
+            <p className="font-semibold text-red-300">Verification Issue</p>
+            <p className="text-red-200/90 leading-relaxed">{errorMessage}</p>
           </div>
         </div>
       )}
 
-      {delivery && delivery.provider !== "console" && delivery.accepted && (
-        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-green-500/25 bg-green-500/10 p-4 text-xs text-green-200">
-          <CheckCircle2 className="h-5 w-5 shrink-0 text-green-400 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-semibold text-green-300">
-              Email Dispatched Successfully
-            </p>
-            <p className="text-green-200/90 leading-relaxed">
-              Accepted by {delivery.provider.toUpperCase()}
-              {delivery.messageId ? ` (ID: ${delivery.messageId})` : ""}. Please
-              check your inbox and spam folder.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Form */}
+      {/* Code Input Form */}
       <form onSubmit={handleVerify} className="space-y-4">
-        {!initialEmail && (
-          <div>
-            <label
-              htmlFor="verify-email-input"
-              className="block text-xs font-semibold text-[#CBD5E1] mb-1.5"
-            >
-              Email Address
-            </label>
-            <input
-              id="verify-email-input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="athlete@example.com"
-              required
-              className="w-full rounded-xl border border-[#1E2329] bg-[#0E1217] px-4 py-2.5 text-xs text-white placeholder-gray-500 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
-            />
-          </div>
-        )}
-
         <div>
           <label
             htmlFor="verification-code-input"
@@ -230,25 +222,25 @@ export const VerifyEmailPage: React.FC = () => {
             className="w-full text-center tracking-[0.5em] text-2xl font-bold rounded-xl border border-[#1E2329] bg-[#0E1217] py-3 text-[#5BE584] placeholder-gray-600 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
           />
           <p className="mt-1.5 text-[11px] text-[#91A0B5]">
-            Code expires in 10 minutes. Check your spam folder if not received.
+            Code expires in 10 minutes. Check your spam or promotions folder if not received.
           </p>
         </div>
 
         {/* Submit */}
         <button
           type="submit"
-          disabled={isVerifying || code.length !== 6}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#5BE584] py-3 text-xs font-bold text-[#0B0D10] transition-all hover:bg-[#49D472] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isVerifying || code.trim().length !== 6}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#5BE584] py-3 text-xs font-bold text-[#0B0D10] transition-all hover:bg-[#49D472] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isVerifying ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin text-[#0B0D10]" />
               Verifying Code...
             </>
           ) : (
             <>
-              <CheckCircle2 className="h-4 w-4" />
-              Verify & Continue
+              <CheckCircle2 className="h-4 w-4 text-[#0B0D10]" />
+              Verify & Activate Account
             </>
           )}
         </button>
@@ -261,7 +253,7 @@ export const VerifyEmailPage: React.FC = () => {
           type="button"
           onClick={handleResend}
           disabled={cooldown > 0 || isResending}
-          className="inline-flex items-center gap-1 font-semibold text-[#5BE584] hover:text-[#49D472] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-1.5 font-semibold text-[#5BE584] hover:text-[#49D472] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <RotateCcw className={`h-3.5 w-3.5 ${isResending ? "animate-spin" : ""}`} />
           {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
