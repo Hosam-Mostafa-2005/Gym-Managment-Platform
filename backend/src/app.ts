@@ -13,6 +13,8 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:4173",
+  "http://localhost:3000",
   env.CLIENT_URL,
   "https://gym-managment-platform-seven.vercel.app",
   "https://gym-managment-platform-54rwrqapc-hosso1.vercel.app",

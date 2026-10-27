@@ -1,42 +1,32 @@
 // src/features/landing/pages/LandingPage.tsx
-
 import React, { useEffect } from "react";
-
-// 1. Hero
+import { LandingNavbar } from "../components/navigation/LandingNavbar";
 import { HeroSection } from "../components/hero/HeroSection";
-
-// 2. Platform Overview
 import { PlatformOverview } from "../components/overview/PlatformOverview";
-
-// 3. The Problem
-import { ProblemSection } from "../components/problem/ProblemSection";
-
-// 4. The Connected Platform
-import { ConnectedPlatform } from "../components/ecosystem/ConnectedPlatform";
-
-// 5 & 6. Coach & Member Journeys (Encapsulated in Timeline)
-import { JourneyTimeline } from "../components/journeys/JourneyTimeline";
-
-// 7. Product Showcase
+import { CoachExperienceSection } from "../components/coaches/CoachExperienceSection";
+import { MemberExperienceSection } from "../components/members/MemberExperienceSection";
+import { HowItWorksSection } from "../components/how-it-works/HowItWorksSection";
+import { FeaturesInContext } from "../components/features/FeaturesInContext";
+import { DualPerspectiveSection } from "../components/comparison/DualPerspectiveSection";
 import { ProductShowcase } from "../components/showcase/ProductShowcase";
-
-// 8. Notification Story
-import { NotificationStory } from "../components/notifications/NotificationStory";
-
-// 9. Feature Ecosystem
-import { FeatureEcosystem } from "../components/features/FeatureEcosystem";
-
-// 10. Product Roadmap
-import { ProductRoadmap } from "../components/roadmap/ProductRoadmap";
-
-// 11. Final CTA
 import { FinalCTA } from "../components/cta/FinalCTA";
+import { LandingFooter } from "../components/footer/LandingFooter";
 
 /**
- * Main Landing Page Composition
+ * STREN Public & Platform Landing Page
  *
- * Orchestrates the narrative flow of the gym management platform.
- * Relies on the existing global public layout for Navbar and Footer.
+ * Fully redesigned, production-grade landing experience comprising 11 narrative sections:
+ * - Section A: LandingNavbar (Sticky, responsive, role-aware, accessible drawer)
+ * - Section B: HeroSection (Editorial messaging, dual CTAs, live badge, HeroProductPreview)
+ * - Section C: PlatformOverview (The Closed Coaching Loop architecture)
+ * - Section D: CoachExperienceSection (Programming engine, roster management, targets)
+ * - Section E: MemberExperienceSection (Live session logging, previous benchmarks, swap)
+ * - Section F: HowItWorksSection (6-stage training lifecycle timeline)
+ * - Section G: FeaturesInContext (Asymmetric bento grid of verified capabilities)
+ * - Section H: DualPerspectiveSection (Side-by-side Coach vs Member perspectives)
+ * - Section I: ProductShowcase (Interactive authentic UI preview with 4 tabs)
+ * - Section J: FinalCTA (High-impact closing call to action)
+ * - Section K: LandingFooter (Semantic links, valid routes, branding)
  */
 export default function LandingPage() {
   useEffect(() => {
@@ -44,25 +34,48 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="relative m-0 min-h-screen w-full rounded-[20px] border border-[#2A3039] bg-[#090B0F] p-0 text-[#F8FAFC] shadow-[0_20px_60px_rgba(0,0,0,0.45)] selection:bg-[#5BE584] selection:text-[#090B0F] font-sans overflow-x-hidden">
-      {/* Top container specular hairline */}
+    <div className="relative min-h-screen w-full bg-[#090B0F] text-[#F3F4F6] selection:bg-[#5BE584] selection:text-[#090B0F] font-sans overflow-x-hidden">
+      {/* Top container specular highlight hairline */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 z-20 h-px bg-gradient-to-r from-transparent via-[#5BE584]/45 to-transparent"
+        className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-gradient-to-r from-transparent via-[#5BE584]/45 to-transparent"
       />
+
+      {/* Section A: Navigation */}
+      <LandingNavbar />
+
+      {/* Main Narrative Flow */}
       <main className="relative z-10 flex w-full flex-col">
+        {/* Section B: Hero */}
         <HeroSection />
+
+        {/* Section C: Product Overview / The Big Idea */}
         <PlatformOverview />
-        <ProblemSection />
-        <ConnectedPlatform />
-        <JourneyTimeline />
+
+        {/* Section D: The Coach Experience */}
+        <CoachExperienceSection />
+
+        {/* Section E: The Member Experience */}
+        <MemberExperienceSection />
+
+        {/* Section F: How It Works */}
+        <HowItWorksSection />
+
+        {/* Section G: Features in Context */}
+        <FeaturesInContext />
+
+        {/* Section H: Designed for Both Sides */}
+        <DualPerspectiveSection />
+
+        {/* Section I: Real Product Preview */}
         <ProductShowcase />
-        <NotificationStory />
-        <FeatureEcosystem />
-        <ProductRoadmap />
+
+        {/* Section J: Final Call to Action */}
         <FinalCTA />
       </main>
+
+      {/* Section K: Semantic Footer */}
+      <LandingFooter />
     </div>
   );
 }
-
