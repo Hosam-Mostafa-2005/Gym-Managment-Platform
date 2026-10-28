@@ -108,3 +108,25 @@ export const createCoachPlanSchema = z.object({
       .min(1, "A nutrition plan must contain at least one meal"),
   }),
 });
+
+export const createCustomFoodSchema = z.object({
+  body: z.object({
+    name: z.string().trim().min(2, "Food name must be at least 2 characters").max(100),
+    nameAr: z.string().trim().max(100).optional(),
+    category: z.string().trim().min(1, "Category is required").max(50),
+    servingSize: z.coerce.number().positive("Serving size must be greater than zero"),
+    servingUnit: z.string().trim().min(1, "Serving unit is required").max(30),
+    calories: z.coerce.number().nonnegative("Calories cannot be negative"),
+    protein: z.coerce.number().nonnegative("Protein cannot be negative"),
+    carbs: z.coerce.number().nonnegative("Carbs cannot be negative"),
+    fat: z.coerce.number().nonnegative("Fat cannot be negative"),
+    fiber: z.coerce.number().nonnegative("Fiber cannot be negative").optional().default(0),
+    sugar: z.coerce.number().nonnegative("Sugar cannot be negative").optional().default(0),
+    sodium: z.coerce.number().nonnegative("Sodium cannot be negative").optional().default(0),
+    allergens: z.array(z.string().trim()).optional().default([]),
+  }),
+});
+
+export const updateCustomFoodSchema = z.object({
+  body: createCustomFoodSchema.shape.body.partial(),
+});

@@ -2,7 +2,7 @@ import { Search, SlidersHorizontal, X, Sparkles } from "lucide-react";
 import {
   DIFFICULTY_OPTIONS,
   EQUIPMENT_OPTIONS,
-  MUSCLE_OPTIONS,
+  ALL_MUSCLE_CATEGORIES,
 } from "../constants/exercise.constants";
 
 export type ExerciseSortOption = "name-asc" | "name-desc" | "difficulty" | "muscle";
@@ -25,13 +25,7 @@ interface ExerciseFiltersProps {
   onResetFilters?: () => void;
 }
 
-const FILTER_MUSCLES = [
-  ...MUSCLE_OPTIONS,
-  "Core",
-  "Lats",
-  "Obliques",
-  "Traps",
-].filter((v, i, a) => a.indexOf(v) === i);
+const FILTER_MUSCLES = [...ALL_MUSCLE_CATEGORIES];
 
 export default function ExerciseFilters({
   searchTerm,
@@ -137,6 +131,43 @@ export default function ExerciseFilters({
           )}
         </div>
       </div>
+
+      {/* Quick Muscle Category Chips */}
+      {onMuscleChange && (
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin pt-0.5">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mr-1 shrink-0">
+            Muscle:
+          </span>
+          <button
+            type="button"
+            onClick={() => onMuscleChange("all")}
+            className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+              selectedMuscle === "all"
+                ? "bg-[#5BE584] text-[#090B0F] font-bold shadow-[0_0_12px_rgba(91,229,132,0.25)]"
+                : "border border-[#1E2329] bg-[#090B0F] text-[#9CA3AF] hover:border-[#2A313A] hover:text-white"
+            }`}
+          >
+            All
+          </button>
+          {FILTER_MUSCLES.map((muscle) => {
+            const isActive = selectedMuscle.toLowerCase() === muscle.toLowerCase();
+            return (
+              <button
+                key={muscle}
+                type="button"
+                onClick={() => onMuscleChange(isActive ? "all" : muscle)}
+                className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+                  isActive
+                    ? "bg-[#5BE584] text-[#090B0F] font-bold shadow-[0_0_12px_rgba(91,229,132,0.25)]"
+                    : "border border-[#1E2329] bg-[#090B0F] text-[#9CA3AF] hover:border-[#2A313A] hover:text-white"
+                }`}
+              >
+                {muscle}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Bottom Row: Difficulty Pills + Custom Toggle + Results Summary */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#1E2329]/80">

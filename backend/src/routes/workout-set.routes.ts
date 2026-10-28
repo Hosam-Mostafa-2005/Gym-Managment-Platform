@@ -14,12 +14,27 @@ import {
 
 const router = Router();
 
+router.post(
+  "/",
+  protect,
+  restrictTo(Roles.MEMBER),
+  validate(createWorkoutSetSchema),
+  workoutSetController.createWorkoutSet,
+);
+
 router.patch(
   "/:id",
   protect,
   restrictTo(Roles.MEMBER),
   validate(updateWorkoutSetSchema),
   workoutSetController.updateWorkoutSet,
+);
+
+router.delete(
+  "/:id",
+  protect,
+  restrictTo(Roles.MEMBER),
+  workoutSetController.deleteWorkoutSet,
 );
 
 export default router;

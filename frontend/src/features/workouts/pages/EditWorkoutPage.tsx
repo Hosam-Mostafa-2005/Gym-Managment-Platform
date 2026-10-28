@@ -110,6 +110,8 @@ export default function EditWorkoutPage() {
     category: workout.category,
     difficulty: workout.difficulty,
     estimatedDuration: workout.estimatedDuration,
+    defaultRestLarge: (workout as any).defaultRestLarge ?? 90,
+    defaultRestSmall: (workout as any).defaultRestSmall ?? 60,
     tags: workout.tags ?? [],
     isTemplate: workout.isTemplate,
 
@@ -125,6 +127,8 @@ export default function EditWorkoutPage() {
       order: item.order,
       targetWeight: item.targetWeight ?? undefined,
       targetRpe: item.targetRpe ?? undefined,
+      isRestOverridden: (item as any).isRestOverridden ?? false,
+      setsDetail: (item as any).setsDetail ?? undefined,
     })),
   };
 

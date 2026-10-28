@@ -60,7 +60,7 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
   const [professionalTitle, setProfessionalTitle] = useState(
     initialData.professionalTitle || "",
   );
-  const [yearsOfExperience, setYearsOfExperience] = useState<number>(
+  const [yearsOfExperience, setYearsOfExperience] = useState<number | string>(
     initialData.yearsOfExperience || 0,
   );
   const [phone, setPhone] = useState(initialData.phone || "");
@@ -253,7 +253,8 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
                   min={0}
                   max={50}
                   value={yearsOfExperience}
-                  onChange={(e) => setYearsOfExperience(Number(e.target.value))}
+                  inputMode="numeric"
+                  onChange={(e) => setYearsOfExperience(e.target.value)}
                   className="w-full rounded-xl border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
                   placeholder="e.g. 5"
                 />

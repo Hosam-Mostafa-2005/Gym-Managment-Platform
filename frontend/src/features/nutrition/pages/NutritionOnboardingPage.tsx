@@ -23,7 +23,6 @@ import type {
   TargetPace,
   DietaryPreference,
 } from "../types/nutrition.types";
-
 const ALLERGEN_OPTIONS = [
   { id: "dairy", label: "Dairy / Lactose" },
   { id: "eggs", label: "Eggs" },
@@ -34,14 +33,11 @@ const ALLERGEN_OPTIONS = [
   { id: "gluten", label: "Wheat / Gluten" },
   { id: "soy", label: "Soy" },
 ];
-
 export const NutritionOnboardingPage: React.FC = () => {
   const navigate = useNavigate();
   const { data: profileData, isLoading: isLoadingProfile } = useNutritionProfile();
   const { mutate: completeOnboardingMutation, isPending: isSaving } = useCompleteOnboarding();
-
   const [currentStep, setCurrentStep] = useState(1);
-
   // Form State
   const [age, setAge] = useState<number>(28);
   const [gender, setGender] = useState<"MALE" | "FEMALE">("MALE");
@@ -57,7 +53,6 @@ export const NutritionOnboardingPage: React.FC = () => {
   const [allergies, setAllergies] = useState<string[]>([]);
   const [hasMedicalClearance, setHasMedicalClearance] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
   // Auto pre-populate from profile or latest measurement
   useEffect(() => {
     if (profileData) {
@@ -83,7 +78,6 @@ export const NutritionOnboardingPage: React.FC = () => {
       }
     }
   }, [profileData]);
-
   const toggleAllergen = (allergenId: string) => {
     setAllergies((prev) =>
       prev.includes(allergenId)
@@ -91,7 +85,6 @@ export const NutritionOnboardingPage: React.FC = () => {
         : [...prev, allergenId],
     );
   };
-
   // Live Scientific Target Preview (Mifflin–St Jeor)
   const calculationPreview = useMemo(() => {
     if (!currentWeightKg || !heightCm || !age) {
@@ -101,7 +94,6 @@ export const NutritionOnboardingPage: React.FC = () => {
       gender === "MALE"
         ? Math.round(10 * currentWeightKg + 6.25 * heightCm - 5 * age + 5)
         : Math.round(10 * currentWeightKg + 6.25 * heightCm - 5 * age - 161);
-
     const multipliers: Record<ActivityLevel, number> = {
       SEDENTARY: 1.2,
       LIGHTLY_ACTIVE: 1.375,
@@ -110,7 +102,6 @@ export const NutritionOnboardingPage: React.FC = () => {
       EXTREMELY_ACTIVE: 1.9,
     };
     const tdee = Math.round(bmr * multipliers[activityLevel]);
-
     let adjustmentPct = 0;
     if (goal === "FAT_LOSS") {
       adjustmentPct = targetPace === "CONSERVATIVE" ? -0.15 : targetPace === "AGGRESSIVE" ? -0.25 : -0.2;
@@ -119,7 +110,6 @@ export const NutritionOnboardingPage: React.FC = () => {
     } else if (goal === "SPORTS_PERFORMANCE") {
       adjustmentPct = 0.05;
     }
-
     let targetCalories = Math.round(tdee * (1 + adjustmentPct));
     const floor = gender === "MALE" ? 1500 : 1200;
     let floorApplied = false;
@@ -127,11 +117,9 @@ export const NutritionOnboardingPage: React.FC = () => {
       targetCalories = floor;
       floorApplied = true;
     }
-
     const proteinG = Math.round(currentWeightKg * (goal === "FAT_LOSS" || goal === "MUSCLE_GAIN" ? 2.0 : 1.8));
     const fatG = Math.round((targetCalories * 0.25) / 9);
     const carbsG = Math.max(50, Math.round((targetCalories - (proteinG * 4 + fatG * 9)) / 4));
-
     return {
       bmr,
       tdee,
@@ -143,7 +131,6 @@ export const NutritionOnboardingPage: React.FC = () => {
       fatG,
     };
   }, [age, gender, heightCm, currentWeightKg, activityLevel, goal, targetPace]);
-
   const handleNext = () => {
     setErrorMsg(null);
     if (currentStep === 1) {
@@ -162,12 +149,10 @@ export const NutritionOnboardingPage: React.FC = () => {
     }
     setCurrentStep((prev) => Math.min(5, prev + 1));
   };
-
   const handleBack = () => {
     setErrorMsg(null);
     setCurrentStep((prev) => Math.max(1, prev - 1));
   };
-
   const handleComplete = () => {
     setErrorMsg(null);
     completeOnboardingMutation(
@@ -197,7 +182,6 @@ export const NutritionOnboardingPage: React.FC = () => {
       },
     );
   };
-
   if (isLoadingProfile) {
     return (
       <div className="flex min-h-[60vh] w-full items-center justify-center bg-[#090B0F]">
@@ -205,14 +189,11 @@ export const NutritionOnboardingPage: React.FC = () => {
       </div>
     );
   }
-
   const suggested = profileData?.suggestedMeasurement;
-
   return (
     <div className="min-h-full w-full bg-[#090B0F] p-4 md:p-6 lg:p-8 pb-24 text-zinc-100">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <NutritionNavTabs onboardingCompleted={profileData?.profile?.onboardingCompleted} />
-
         {/* Wizard Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[#5BE584]/15 border border-[#5BE584]/30 px-3 py-1 text-xs font-semibold text-[#5BE584]">
@@ -226,7 +207,6 @@ export const NutritionOnboardingPage: React.FC = () => {
             Science-backed Mifflin–St Jeor energy expenditure, optimal macro distributions, and tailored meal planning.
           </p>
         </div>
-
         {/* Step Indicator Progress */}
         <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
           {[
@@ -258,13 +238,11 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           ))}
         </div>
-
         {errorMsg && (
           <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-xs text-red-300">
             {errorMsg}
           </div>
         )}
-
         {/* Step 1: Body Metrics */}
         {currentStep === 1 && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
@@ -284,7 +262,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 </div>
               </div>
             )}
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Gender */}
               <div className="sm:col-span-2">
@@ -308,7 +285,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                   ))}
                 </div>
               </div>
-
               {/* Age */}
               <div>
                 <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
@@ -323,7 +299,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                   className="w-full rounded-xl border border-zinc-800 bg-[#161B22] px-4 py-2.5 text-sm text-zinc-100 font-semibold focus:border-[#5BE584] focus:outline-none"
                 />
               </div>
-
               {/* Height */}
               <div>
                 <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
@@ -338,7 +313,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                   className="w-full rounded-xl border border-zinc-800 bg-[#161B22] px-4 py-2.5 text-sm text-zinc-100 font-semibold focus:border-[#5BE584] focus:outline-none"
                 />
               </div>
-
               {/* Weight */}
               <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
@@ -357,7 +331,6 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           </div>
         )}
-
         {/* Step 2: Activity & Training */}
         {currentStep === 2 && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
@@ -409,7 +382,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 ))}
               </div>
             </div>
-
             {/* Training Frequency */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
@@ -434,7 +406,6 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           </div>
         )}
-
         {/* Step 3: Goal & Pace */}
         {currentStep === 3 && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
@@ -481,7 +452,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 ))}
               </div>
             </div>
-
             {/* Target Pace */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
@@ -511,7 +481,6 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           </div>
         )}
-
         {/* Step 4: Dietary Preference & Allergies */}
         {currentStep === 4 && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
@@ -537,7 +506,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 ))}
               </div>
             </div>
-
             {/* Dietary Preference */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
@@ -569,7 +537,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 ))}
               </div>
             </div>
-
             {/* Common Allergens to Exclude */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
@@ -595,7 +562,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 })}
               </div>
             </div>
-
             {/* Health Disclaimer Check */}
             <div className="rounded-xl border border-zinc-800 bg-[#161B22] p-4 flex items-center gap-3">
               <input
@@ -611,7 +577,6 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           </div>
         )}
-
         {/* Step 5: Review & Activate */}
         {currentStep === 5 && calculationPreview && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
@@ -619,7 +584,6 @@ export const NutritionOnboardingPage: React.FC = () => {
               <ShieldCheck className="h-4 w-4" />
               <span>Calculated Target Summary</span>
             </div>
-
             {/* Macro Cards Preview */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-xl bg-[#161B22] p-4 text-center border border-zinc-800">
@@ -629,7 +593,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 </div>
                 <div className="text-[10px] text-zinc-500">kcal / day</div>
               </div>
-
               <div className="rounded-xl bg-[#161B22] p-4 text-center border border-zinc-800">
                 <div className="text-xs text-zinc-400">Protein</div>
                 <div className="text-2xl font-black text-emerald-400 mt-1">
@@ -637,7 +600,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 </div>
                 <div className="text-[10px] text-zinc-500">~2.0 g/kg bodyweight</div>
               </div>
-
               <div className="rounded-xl bg-[#161B22] p-4 text-center border border-zinc-800">
                 <div className="text-xs text-zinc-400">Carbohydrates</div>
                 <div className="text-2xl font-black text-blue-400 mt-1">
@@ -645,7 +607,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 </div>
                 <div className="text-[10px] text-zinc-500">Energy & glycogen</div>
               </div>
-
               <div className="rounded-xl bg-[#161B22] p-4 text-center border border-zinc-800">
                 <div className="text-xs text-zinc-400">Dietary Fat</div>
                 <div className="text-2xl font-black text-purple-400 mt-1">
@@ -654,7 +615,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 <div className="text-[10px] text-zinc-500">~25% of energy</div>
               </div>
             </div>
-
             {/* Scientific Breakdown Details */}
             <div className="rounded-xl bg-[#161B22] p-4 border border-zinc-800/80 space-y-2 text-xs text-zinc-300">
               <div className="flex justify-between">
@@ -675,7 +635,6 @@ export const NutritionOnboardingPage: React.FC = () => {
                 </div>
               )}
             </div>
-
             <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/50 p-3.5 text-[11px] text-zinc-400 flex items-start gap-2.5">
               <Info className="h-4 w-4 text-zinc-500 shrink-0 mt-0.5" />
               <span>
@@ -686,7 +645,6 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           </div>
         )}
-
         {/* Wizard Controls */}
         <div className="flex items-center justify-between pt-2">
           {currentStep > 1 ? (
@@ -702,7 +660,6 @@ export const NutritionOnboardingPage: React.FC = () => {
           ) : (
             <div />
           )}
-
           {currentStep < 5 ? (
             <button
               type="button"
@@ -737,5 +694,4 @@ export const NutritionOnboardingPage: React.FC = () => {
     </div>
   );
 };
-
 export default NutritionOnboardingPage;

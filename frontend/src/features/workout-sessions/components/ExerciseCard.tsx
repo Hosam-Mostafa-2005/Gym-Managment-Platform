@@ -1,5 +1,6 @@
-import React, { useState, type ReactNode } from "react";
+import React, { useState, useMemo, type ReactNode } from "react";
 import {
+  AlertTriangle,
   ArrowLeftRight,
   CheckCircle2,
   ChevronDown,
@@ -7,19 +8,31 @@ import {
   Circle,
   Dumbbell,
   ExternalLink,
+  Flame,
   History,
   Info,
+  Layers,
   Loader2,
   PlayCircle,
   Plus,
   Target,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import type {
   WorkoutExerciseLog,
+  WorkoutSetLog,
   PreviousExercisePerformance,
 } from "../types/workout-session.types";
 import { SetRow } from "./SetRow";
 import { useCreateWorkoutSet } from "../hooks/useCreateWorkoutSet";
+import { useDeleteWorkoutSet } from "../hooks/useDeleteWorkoutSet";
 import { useCurrentWorkoutSession } from "../hooks/useCurrentWorkoutSession";
 import ExerciseImage from "@/features/exercises/components/ExerciseImage";
 import SwapExerciseDialog from "./SwapExerciseDialog";
@@ -45,16 +58,58 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 }) => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [isSwapDialogOpen, setIsSwapDialogOpen] = useState(false);
+  const [setPendingDelete, setSetPendingDelete] = useState<{
+    set: WorkoutSetLog;
+    hasChildren: boolean;
+    childrenCount: number;
+  } | null>(null);
   const { data: currentSessionData } = useCurrentWorkoutSession();
   const effectiveSessionId = sessionId || currentSessionData?.session?.id || "";
   const { mutate: createSet, isPending: isCreatingSet } = useCreateWorkoutSet();
+  const { mutate: deleteSet, isPending: isDeletingSet } = useDeleteWorkoutSet();
 
   const sets = exercise.sets || [];
-  const totalSets = sets.length || exercise.targetSets || 0;
-  const completedSetsCount = sets.filter((s) => s.completed).length;
+
+  // Group sets by parent setNumber:
+  const setsByNumber = useMemo(() => {
+    const map = new Map<number, WorkoutSetLog[]>();
+    for (const s of sets) {
+      if (!map.has(s.setNumber)) {
+        map.set(s.setNumber, []);
+      }
+      map.get(s.setNumber)!.push(s);
+    }
+    // Sort stages inside each set by segmentIndex
+    for (const stageList of map.values()) {
+      stageList.sort((a, b) => (a.segmentIndex ?? 0) - (b.segmentIndex ?? 0));
+    }
+    return map;
+  }, [sets]);
+
+  const uniqueSetNumbers = useMemo(
+    () => Array.from(setsByNumber.keys()).sort((a, b) => a - b),
+    [setsByNumber],
+  );
+
+  const totalParentSets = Math.max(
+    uniqueSetNumbers.length,
+    exercise.targetSets || 0,
+  );
+
+  // A parent set is complete ONLY when all its stages are completed
+  const completedParentSetsCount = useMemo(() => {
+    let count = 0;
+    for (const stageList of setsByNumber.values()) {
+      if (stageList.length > 0 && stageList.every((s) => s.completed)) {
+        count++;
+      }
+    }
+    return count;
+  }, [setsByNumber]);
+
   const isExerciseDone =
     exercise.completed ||
-    (sets.length > 0 && completedSetsCount === sets.length);
+    (uniqueSetNumbers.length > 0 && completedParentSetsCount >= totalParentSets);
 
   const exerciseDetails = exercise.exercise;
   const exerciseImage = exerciseDetails?.imageUrl || null;
@@ -70,19 +125,71 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     previousPerformance?.bestSet ||
     (previousPerformance?.sets && previousPerformance.sets.length > 0
       ? [...previousPerformance.sets].sort((a, b) =>
-          b.weight !== a.weight ? b.weight - a.weight : b.actualReps - a.actualReps,
+          b.weight !== a.weight
+            ? b.weight - a.weight
+            : b.actualReps - a.actualReps,
         )[0]
       : null);
 
   const handleAddExtraSet = () => {
-    const nextSetNumber = sets.length + 1;
+    const nextSetNumber =
+      (uniqueSetNumbers[uniqueSetNumbers.length - 1] || 0) + 1;
     const lastSet = sets[sets.length - 1];
     createSet({
       exerciseLog: exercise.id,
       setNumber: nextSetNumber,
+      segmentIndex: 0,
+      setType: "NORMAL",
+      isIntermediateSegment: false,
+      isFinalSegment: true,
       targetReps: exercise.targetReps || "10",
       actualReps: lastSet?.actualReps || 10,
       weight: lastSet?.weight || 0,
+      completed: false,
+    });
+  };
+
+  const handleAddBreakSet = (
+    setNumber: number,
+    stageList: WorkoutSetLog[],
+  ) => {
+    const lastStage = stageList[stageList.length - 1];
+    const nextSegmentIndex = stageList.length;
+    const lastWeight = lastStage?.weight || exercise.targetWeight || 40;
+    const nextWeight = Math.max(
+      0,
+      lastWeight > 10 ? lastWeight - 10 : Math.max(0, lastWeight - 5),
+    );
+    const targetReps = lastStage?.targetReps || exercise.targetReps || "8";
+
+    createSet({
+      exerciseLog: exercise.id,
+      setNumber,
+      segmentIndex: nextSegmentIndex,
+      setType: "DROP_SET",
+      isIntermediateSegment: false,
+      isFinalSegment: true,
+      targetReps,
+      weight: nextWeight,
+      actualReps: 0,
+      completed: false,
+    });
+  };
+
+  const handlePromptDelete = (
+    set: WorkoutSetLog,
+    hasChildren: boolean,
+    childrenCount: number,
+  ) => {
+    setSetPendingDelete({ set, hasChildren, childrenCount });
+  };
+
+  const handleConfirmDelete = () => {
+    if (!setPendingDelete) return;
+    deleteSet(setPendingDelete.set.id, {
+      onSuccess: () => {
+        setSetPendingDelete(null);
+      },
     });
   };
 
@@ -119,7 +226,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 )}
 
                 <span className="inline-flex items-center rounded-md border border-[#262D36] bg-[#141920] px-2.5 py-0.5 text-[11px] font-mono font-semibold text-white">
-                  {completedSetsCount} / {totalSets} Sets Done
+                  {completedParentSetsCount} / {totalParentSets} Sets Done
                 </span>
 
                 <span
@@ -180,7 +287,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     {exercise.swapReason && (
                       <>
                         <span className="text-[#6B7280]">•</span>
-                        <span className="text-[#5BE584]/90 font-medium">{exercise.swapReason}</span>
+                        <span className="text-[#5BE584]/90 font-medium">
+                          {exercise.swapReason}
+                        </span>
                       </>
                     )}
                   </div>
@@ -356,44 +465,162 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           ) : (
             <>
               <div className="grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 pb-2 border-b border-[#1E2329] text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                <div className="col-span-1">Set</div>
-                <div className="col-span-2">Target</div>
-                <div className="col-span-3">Previous</div>
-                <div className="col-span-3 text-center">Weight (kg)</div>
-                <div className="col-span-3 text-right pr-11">Actual Reps</div>
+                <div className="col-span-2 sm:col-span-2">Set & Stage</div>
+                <div className="col-span-2 sm:col-span-2">Target</div>
+                <div className="col-span-2 sm:col-span-3">Previous</div>
+                <div className="col-span-3 sm:col-span-2 text-center">Weight (kg)</div>
+                <div className="col-span-3 sm:col-span-3 text-right pr-11">Actual Reps</div>
               </div>
 
-              <div className="space-y-2.5">
-                {sets.map((set) => {
-                  const prevSet = previousPerformance?.sets?.find(
-                    (ps) => ps.setNumber === set.setNumber,
+              <div className="space-y-3">
+                {uniqueSetNumbers.map((setNum) => {
+                  const stageList = setsByNumber.get(setNum) || [];
+                  if (stageList.length === 0) return null;
+
+                  const parentSet = stageList[0];
+                  const childStages = stageList.slice(1);
+                  const hasBreakSets = childStages.length > 0;
+
+                  const prevSetParent = previousPerformance?.sets?.find(
+                    (ps) =>
+                      ps.setNumber === setNum &&
+                      (ps.segmentIndex ?? 0) === 0,
                   );
+
                   return (
-                    <SetRow
-                      key={set.id}
-                      set={set}
-                      previousSet={prevSet}
-                      onSetCompleted={onSetCompleted}
-                    />
+                    <div key={`set-group-${setNum}`} className="space-y-1.5">
+                      {/* Parent Set Row (1.0, 2.0, etc.) */}
+                      <SetRow
+                        set={parentSet}
+                        previousSet={prevSetParent}
+                        targetRestSeconds={exercise.restSeconds || 60}
+                        stageLabel={
+                          hasBreakSets
+                            ? "Prescribed Parent Set"
+                            : parentSet.setType === "WARMUP"
+                              ? "Warmup Set"
+                              : undefined
+                        }
+                        stageBadge={
+                          hasBreakSets
+                            ? "PARENT"
+                            : parentSet.setType !== "NORMAL"
+                              ? parentSet.setType
+                              : undefined
+                        }
+                        onSetCompleted={onSetCompleted}
+                        onDelete={() =>
+                          handlePromptDelete(
+                            parentSet,
+                            hasBreakSets,
+                            childStages.length,
+                          )
+                        }
+                        isDeleting={
+                          isDeletingSet &&
+                          setPendingDelete?.set.id === parentSet.id
+                        }
+                        hasChildren={hasBreakSets}
+                      />
+
+                      {/* If Break Sets exist, render indented children directly underneath */}
+                      {hasBreakSets ? (
+                        <div className="ml-3 sm:ml-6 pl-3 sm:pl-4 border-l-2 border-amber-500/35 space-y-2 py-1 bg-amber-500/[0.02] rounded-r-xl">
+                          {childStages.map((child, cIdx) => {
+                            const breakIndex =
+                              child.segmentIndex ?? (cIdx + 1);
+                            const prevSetChild =
+                              previousPerformance?.sets?.find(
+                                (ps) =>
+                                  ps.setNumber === setNum &&
+                                  (ps.segmentIndex ?? 0) === breakIndex,
+                              );
+
+                            return (
+                              <SetRow
+                                key={child.id}
+                                set={child}
+                                previousSet={prevSetChild}
+                                targetRestSeconds={
+                                  exercise.restSeconds || 60
+                                }
+                                stageLabel={`Break Set ${breakIndex} under Set ${setNum}.0 (No rest)`}
+                                stageBadge={`BREAK ${breakIndex}`}
+                                onSetCompleted={onSetCompleted}
+                                onDelete={() =>
+                                  handlePromptDelete(child, false, 0)
+                                }
+                                isDeleting={
+                                  isDeletingSet &&
+                                  setPendingDelete?.set.id === child.id
+                                }
+                                isChild={true}
+                              />
+                            );
+                          })}
+
+                          {/* Action to add another Break Set under this parent */}
+                          <div className="pt-1 flex items-center justify-between">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleAddBreakSet(setNum, stageList)
+                              }
+                              disabled={isCreatingSet}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 hover:border-amber-500/40 transition-colors disabled:opacity-50 cursor-pointer"
+                            >
+                              {isCreatingSet ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Plus className="h-3 w-3" />
+                              )}
+                              <span>Add Break Set</span>
+                            </button>
+
+                            <span className="text-[10px] text-amber-400/80 font-mono">
+                              Rest timer triggers after final break set
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Action to add the first Break Set under this parent */
+                        <div className="flex justify-end pr-2 pt-0.5">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleAddBreakSet(setNum, [parentSet])
+                            }
+                            disabled={isCreatingSet}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium text-[#9CA3AF] hover:text-amber-400 hover:bg-amber-500/10 transition-colors cursor-pointer"
+                            title={`Add a break set under Set ${setNum}.0`}
+                          >
+                            <Plus className="h-3 w-3" />
+                            <span>Add Break Set</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>
 
-              {/* Add Extra Set Action */}
-              <div className="pt-2 flex justify-between items-center">
-                <button
-                  type="button"
-                  onClick={handleAddExtraSet}
-                  disabled={isCreatingSet}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-dashed border-[#2A313A] bg-[#090B0F]/60 px-3.5 py-2 text-xs font-medium text-[#9CA3AF] hover:border-[#5BE584]/50 hover:text-[#5BE584] transition-colors disabled:opacity-50"
-                >
-                  {isCreatingSet ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Plus className="h-3.5 w-3.5" />
-                  )}
-                  <span>Add Set</span>
-                </button>
+              {/* Add Extra Set Actions */}
+              <div className="pt-3 flex flex-wrap justify-between items-center gap-2 border-t border-border/30">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleAddExtraSet}
+                    disabled={isCreatingSet}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-dashed border-[#2A313A] bg-[#090B0F]/60 px-3.5 py-2 text-xs font-medium text-[#9CA3AF] hover:border-[#5BE584]/50 hover:text-[#5BE584] transition-colors disabled:opacity-50 cursor-pointer"
+                  >
+                    {isCreatingSet ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Plus className="h-3.5 w-3.5" />
+                    )}
+                    <span>Add Set</span>
+                  </button>
+                </div>
 
                 {isExerciseDone && (
                   <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5BE584]">
@@ -410,6 +637,79 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       {showConnector && (
         <div className="mx-auto h-6 w-0.5 bg-gradient-to-b from-[#2A313A] to-transparent" />
       )}
+
+      {/* Set Removal Confirmation Dialog Modal */}
+      <Dialog
+        open={Boolean(setPendingDelete)}
+        onOpenChange={(open) => !open && setSetPendingDelete(null)}
+      >
+        <DialogContent className="border-[#1E2329] bg-[#0D1014] text-[#F3F4F6] sm:max-w-md p-6">
+          <DialogHeader className="space-y-2">
+            <div className="flex items-center gap-2 text-red-400">
+              <AlertTriangle className="h-5 w-5 shrink-0" />
+              <DialogTitle className="text-base font-bold text-white">
+                {setPendingDelete?.hasChildren
+                  ? `Remove Set ${setPendingDelete.set.setNumber}.0 and ${setPendingDelete.childrenCount} Break Set${setPendingDelete.childrenCount > 1 ? "s" : ""} ?`
+                  : `Remove Set ${setPendingDelete?.set.setNumber}.${setPendingDelete?.set.segmentIndex ?? 0}?`}
+              </DialogTitle>
+            </div>
+            <DialogDescription className="text-xs text-[#9CA3AF] leading-relaxed">
+              {setPendingDelete?.hasChildren ? (
+                <>
+                  This parent set contains{" "}
+                  <strong className="text-amber-400 font-semibold">
+                    {setPendingDelete.childrenCount} break set
+                    {setPendingDelete.childrenCount > 1 ? "s" : ""}
+                  </strong>
+                  . Removing Set {setPendingDelete.set.setNumber}.0 will also
+                  remove all of its child break sets. This action cannot be
+                  undone.
+                </>
+              ) : setPendingDelete?.set.completed ? (
+                <>
+                  This set has already been completed and logged. Removing it
+                  will remove its weight ({setPendingDelete.set.weight} kg ×{" "}
+                  {setPendingDelete.set.actualReps} reps) from your session
+                  volume.
+                </>
+              ) : (
+                <>
+                  Are you sure you want to remove Set{" "}
+                  {setPendingDelete?.set.setNumber}.
+                  {setPendingDelete?.set.segmentIndex ?? 0} from this active
+                  workout session?
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-end gap-2.5 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setSetPendingDelete(null)}
+              className="border-[#262D36] bg-[#141920] hover:bg-[#1E2329] text-white text-xs cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleConfirmDelete}
+              disabled={isDeletingSet}
+              className="bg-red-500 hover:bg-red-600 text-white text-xs font-semibold cursor-pointer"
+            >
+              {isDeletingSet ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                  Removing...
+                </>
+              ) : (
+                "Confirm Removal"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Swap Exercise Dialog Modal */}
       {effectiveSessionId && (

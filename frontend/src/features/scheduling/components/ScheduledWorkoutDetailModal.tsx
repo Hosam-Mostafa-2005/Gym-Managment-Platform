@@ -18,6 +18,7 @@ import {
 import type { ScheduledWorkout } from "../types/scheduling.types";
 import {
   useCancelScheduledWorkout,
+  useCancelCoachScheduledWorkout,
   useStartScheduledWorkout,
 } from "../hooks/useScheduling";
 
@@ -26,6 +27,7 @@ interface ScheduledWorkoutDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   isCoachView?: boolean;
+  onReschedule?: (scheduledWorkout: ScheduledWorkout) => void;
 }
 
 export default function ScheduledWorkoutDetailModal({
@@ -33,14 +35,19 @@ export default function ScheduledWorkoutDetailModal({
   isOpen,
   onClose,
   isCoachView = false,
+  onReschedule,
 }: ScheduledWorkoutDetailModalProps) {
   const navigate = useNavigate();
   const [confirmCancel, setConfirmCancel] = useState(false);
 
-  const { mutate: cancelWorkout, isPending: isCancelling } =
+  const { mutate: cancelWorkout, isPending: isCancellingMember } =
     useCancelScheduledWorkout();
+  const { mutate: cancelCoachWorkout, isPending: isCancellingCoach } =
+    useCancelCoachScheduledWorkout();
   const { mutate: startWorkout, isPending: isStarting } =
     useStartScheduledWorkout();
+
+  const isCancelling = isCancellingMember || isCancellingCoach;
 
   if (!isOpen || !scheduledWorkout) return null;
 
@@ -62,12 +69,24 @@ export default function ScheduledWorkoutDetailModal({
   };
 
   const handleCancelWorkout = () => {
-    cancelWorkout(scheduledWorkout.id, {
-      onSuccess: () => {
-        setConfirmCancel(false);
-        onClose();
-      },
-    });
+    if (isCoachView) {
+      cancelCoachWorkout(
+        { id: scheduledWorkout.id, reason: "Cancelled by coach" },
+        {
+          onSuccess: () => {
+            setConfirmCancel(false);
+            onClose();
+          },
+        },
+      );
+    } else {
+      cancelWorkout(scheduledWorkout.id, {
+        onSuccess: () => {
+          setConfirmCancel(false);
+          onClose();
+        },
+      });
+    }
   };
 
   const getStatusBadge = () => {
@@ -269,10 +288,10 @@ export default function ScheduledWorkoutDetailModal({
 
           {/* Action Footer */}
           <div className="flex items-center justify-between p-5 bg-[#12161D] border-t border-[#1E2329]">
-            {/* Left Action (Cancel / Delete) */}
+            {/* Left Action (Cancel / Delete & Reschedule) */}
             {!confirmCancel ? (
-              <div>
-                {!isScheduledByCoach &&
+              <div className="flex items-center gap-2">
+                {(!isScheduledByCoach || isCoachView) &&
                   (scheduledWorkout.status === "SCHEDULED" ||
                     scheduledWorkout.status === "RESCHEDULED") && (
                     <button
@@ -282,6 +301,24 @@ export default function ScheduledWorkoutDetailModal({
                     >
                       <Trash2 size={14} />
                       Cancel Schedule
+                    </button>
+                  )}
+
+                {onReschedule &&
+                  (!isScheduledByCoach || isCoachView) &&
+                  (scheduledWorkout.status === "SCHEDULED" ||
+                    scheduledWorkout.status === "RESCHEDULED" ||
+                    scheduledWorkout.status === "MISSED") && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onReschedule(scheduledWorkout);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-purple-400 hover:bg-purple-500/10 transition-colors"
+                    >
+                      <RotateCcw size={14} />
+                      Reschedule
                     </button>
                   )}
               </div>

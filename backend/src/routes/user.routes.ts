@@ -1,11 +1,21 @@
 import { Router } from "express";
-import { getAllUsers } from "../controllers/user.controller.js";
+import * as userController from "../controllers/user.controller.js";
 import { protect, restrictTo } from "../middleware/auth.middleware.js";
+import { uploadAvatarMiddleware } from "../middleware/upload.middleware.js";
 import { Roles } from "../constants/roles.js";
 
 const router = Router();
 
-// أي راوت جاي تحت السطر ده لازم يكون معاه Token شغال
+// Profile Avatar management for all authenticated users (Member, Trainer, Admin)
+router.post(
+  "/me/avatar",
+  protect,
+  uploadAvatarMiddleware,
+  userController.uploadAvatar,
+);
+router.delete("/me/avatar", protect, userController.deleteAvatar);
+
+// Coach & Admin user discovery
 router.use(protect, restrictTo(Roles.ADMIN, Roles.TRAINER));
 
 /**
@@ -18,6 +28,6 @@ router.use(protect, restrictTo(Roles.ADMIN, Roles.TRAINER));
  *     security:
  *       - bearerAuth: []
  */
-router.route("/").get(getAllUsers);
+router.route("/").get(userController.getAllUsers);
 
 export default router;

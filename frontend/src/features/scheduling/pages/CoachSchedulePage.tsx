@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   AlertCircle,
   FileText,
+  List,
 } from "lucide-react";
 import { formatMemberDisplay } from "@/features/users/utils/user-display";
 import {
@@ -25,15 +26,18 @@ import { useMembersManagement } from "@/features/members-management/hooks/use-me
 import CalendarMonthView from "../components/CalendarMonthView";
 import CalendarWeekView from "../components/CalendarWeekView";
 import CalendarAgendaView from "../components/CalendarAgendaView";
+import ScheduledWorkoutsListView from "../components/ScheduledWorkoutsListView";
 import ScheduledWorkoutDetailModal from "../components/ScheduledWorkoutDetailModal";
 import AppointmentDetailModal from "../components/AppointmentDetailModal";
 import ScheduleWorkoutDialog from "../components/ScheduleWorkoutDialog";
 import BookAppointmentDialog from "../components/BookAppointmentDialog";
+import RescheduleWorkoutDialog from "../components/RescheduleWorkoutDialog";
 import type {
   ScheduledWorkout,
   CoachingAppointment,
 } from "../types/scheduling.types";
 
+type PrimaryView = "calendar" | "list";
 type CalendarViewMode = "month" | "week" | "agenda";
 type FilterMode = "all" | "workouts" | "appointments";
 
@@ -43,6 +47,7 @@ export default function CoachSchedulePage() {
   const memberFromUrl = searchParams.get("memberId");
 
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [primaryView, setPrimaryView] = useState<PrimaryView>("calendar");
   const [viewMode, setViewMode] = useState<CalendarViewMode>("week");
   const [filterMode, setFilterMode] = useState<FilterMode>("all");
   const [selectedMemberId, setSelectedMemberId] = useState<string>(
@@ -57,6 +62,8 @@ export default function CoachSchedulePage() {
 
   // Selected item modal states
   const [selectedWorkout, setSelectedWorkout] =
+    useState<ScheduledWorkout | null>(null);
+  const [workoutToReschedule, setWorkoutToReschedule] =
     useState<ScheduledWorkout | null>(null);
   const [selectedAppointment, setSelectedAppointment] =
     useState<CoachingAppointment | null>(null);
@@ -201,34 +208,52 @@ export default function CoachSchedulePage() {
 
       {/* Control Bar with Athlete Filter & Action Buttons */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-[#101418] border border-[#1E2329] p-4 rounded-2xl shadow-xl">
-        {/* Navigation & Month */}
+        {/* Navigation & Month (in calendar view) or Title (in list view) */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 bg-[#161B22] p-1 rounded-xl border border-[#1E2329]">
-            <button
-              onClick={handlePrev}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-              title="Previous"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button
-              onClick={handleToday}
-              className="px-3 py-1 rounded-lg text-xs font-semibold text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
-            >
-              Today
-            </button>
-            <button
-              onClick={handleNext}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-              title="Next"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
+          {primaryView === "calendar" ? (
+            <>
+              <div className="flex items-center gap-1 bg-[#161B22] p-1 rounded-xl border border-[#1E2329]">
+                <button
+                  onClick={handlePrev}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                  title="Previous"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  onClick={handleToday}
+                  className="px-3 py-1 rounded-lg text-xs font-semibold text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                >
+                  Today
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                  title="Next"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
 
-          <h2 className="text-lg font-bold text-white tracking-tight">
-            {formattedMonthYear}
-          </h2>
+              <h2 className="text-lg font-bold text-white tracking-tight">
+                {formattedMonthYear}
+              </h2>
+            </>
+          ) : (
+            <div className="flex items-center gap-2.5">
+              <div className="h-9 w-9 rounded-xl bg-[#16291D] border border-[#23422E] flex items-center justify-center text-[#5BE584]">
+                <Dumbbell size={18} />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white tracking-tight">
+                  Coach Workouts & Schedule
+                </h2>
+                <p className="text-xs text-gray-400">
+                  Manage athlete training schedules and appointments
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Athlete Filter Selector */}
@@ -257,13 +282,47 @@ export default function CoachSchedulePage() {
 
         {/* Filters, View Toggle & Actions */}
         <div className="flex flex-wrap items-center gap-3">
+          {/* Primary View Switcher: Calendar vs List */}
+          <div
+            className="flex items-center bg-[#161B22] p-1 rounded-xl border border-[#1E2329]"
+            role="tablist"
+            aria-label="View Switcher"
+          >
+            <button
+              role="tab"
+              aria-selected={primaryView === "calendar"}
+              onClick={() => setPrimaryView("calendar")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                primaryView === "calendar"
+                  ? "bg-[#5BE584] text-[#090B0F] font-bold shadow-sm"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              <Calendar size={13} />
+              Calendar
+            </button>
+            <button
+              role="tab"
+              aria-selected={primaryView === "list"}
+              onClick={() => setPrimaryView("list")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                primaryView === "list"
+                  ? "bg-[#5BE584] text-[#090B0F] font-bold shadow-sm"
+                  : "text-gray-400 hover:text-white"
+              }`}
+            >
+              <List size={13} />
+              List
+            </button>
+          </div>
+
           {/* Filter Pills */}
           <div className="flex items-center bg-[#161B22] p-1 rounded-xl border border-[#1E2329] text-xs font-medium">
             <button
               onClick={() => setFilterMode("all")}
               className={`px-3 py-1.5 rounded-lg transition-colors ${
                 filterMode === "all"
-                  ? "bg-white/10 text-white font-bold"
+                  ? "bg-[#1E2530] text-white font-bold shadow-sm"
                   : "text-gray-400 hover:text-white"
               }`}
             >
@@ -273,7 +332,7 @@ export default function CoachSchedulePage() {
               onClick={() => setFilterMode("workouts")}
               className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
                 filterMode === "workouts"
-                  ? "bg-[#5BE584] text-black font-bold"
+                  ? "bg-[#1E2530] text-white font-bold shadow-sm"
                   : "text-gray-400 hover:text-white"
               }`}
             >
@@ -283,7 +342,7 @@ export default function CoachSchedulePage() {
               onClick={() => setFilterMode("appointments")}
               className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
                 filterMode === "appointments"
-                  ? "bg-purple-600 text-white font-bold"
+                  ? "bg-purple-600/30 text-purple-300 font-bold shadow-sm"
                   : "text-gray-400 hover:text-white"
               }`}
             >
@@ -291,39 +350,41 @@ export default function CoachSchedulePage() {
             </button>
           </div>
 
-          {/* View Mode Toggle */}
-          <div className="flex items-center bg-[#161B22] p-1 rounded-xl border border-[#1E2329] text-xs font-semibold">
-            <button
-              onClick={() => setViewMode("month")}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
-                viewMode === "month"
-                  ? "bg-white/10 text-white"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              Month
-            </button>
-            <button
-              onClick={() => setViewMode("week")}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
-                viewMode === "week"
-                  ? "bg-white/10 text-white"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              Week
-            </button>
-            <button
-              onClick={() => setViewMode("agenda")}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${
-                viewMode === "agenda"
-                  ? "bg-white/10 text-white"
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              Agenda
-            </button>
-          </div>
+          {/* Calendar Submode Toggle (Visible only in Calendar view) */}
+          {primaryView === "calendar" && (
+            <div className="flex items-center bg-[#161B22] p-1 rounded-xl border border-[#1E2329] text-xs font-semibold">
+              <button
+                onClick={() => setViewMode("month")}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  viewMode === "month"
+                    ? "bg-white/10 text-white"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                Month
+              </button>
+              <button
+                onClick={() => setViewMode("week")}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  viewMode === "week"
+                    ? "bg-white/10 text-white"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                Week
+              </button>
+              <button
+                onClick={() => setViewMode("agenda")}
+                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  viewMode === "agenda"
+                    ? "bg-white/10 text-white"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                Agenda
+              </button>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2">
@@ -369,37 +430,55 @@ export default function CoachSchedulePage() {
       </div>
 
       {/* Main View Display */}
-      {viewMode === "month" && (
-        <CalendarMonthView
-          currentDate={currentDate}
-          scheduledWorkouts={filteredWorkouts}
-          coachingAppointments={filteredAppointments}
-          onSelectWorkout={(sw) => setSelectedWorkout(sw)}
-          onSelectAppointment={(appt) => setSelectedAppointment(appt)}
-          onSelectDate={handleSelectDate}
-          isCoachView={true}
-        />
-      )}
+      {primaryView === "calendar" ? (
+        <>
+          {viewMode === "month" && (
+            <CalendarMonthView
+              currentDate={currentDate}
+              scheduledWorkouts={filteredWorkouts}
+              coachingAppointments={filteredAppointments}
+              onSelectWorkout={(sw) => setSelectedWorkout(sw)}
+              onSelectAppointment={(appt) => setSelectedAppointment(appt)}
+              onSelectDate={handleSelectDate}
+              isCoachView={true}
+            />
+          )}
 
-      {viewMode === "week" && (
-        <CalendarWeekView
-          currentDate={currentDate}
-          scheduledWorkouts={filteredWorkouts}
-          coachingAppointments={filteredAppointments}
-          onSelectWorkout={(sw) => setSelectedWorkout(sw)}
-          onSelectAppointment={(appt) => setSelectedAppointment(appt)}
-          onSelectDate={handleSelectDate}
-          isCoachView={true}
-        />
-      )}
+          {viewMode === "week" && (
+            <CalendarWeekView
+              currentDate={currentDate}
+              scheduledWorkouts={filteredWorkouts}
+              coachingAppointments={filteredAppointments}
+              onSelectWorkout={(sw) => setSelectedWorkout(sw)}
+              onSelectAppointment={(appt) => setSelectedAppointment(appt)}
+              onSelectDate={handleSelectDate}
+              isCoachView={true}
+            />
+          )}
 
-      {viewMode === "agenda" && (
-        <CalendarAgendaView
+          {viewMode === "agenda" && (
+            <CalendarAgendaView
+              scheduledWorkouts={filteredWorkouts}
+              coachingAppointments={filteredAppointments}
+              onSelectWorkout={(sw) => setSelectedWorkout(sw)}
+              onSelectAppointment={(appt) => setSelectedAppointment(appt)}
+              isCoachView={true}
+            />
+          )}
+        </>
+      ) : (
+        <ScheduledWorkoutsListView
           scheduledWorkouts={filteredWorkouts}
-          coachingAppointments={filteredAppointments}
-          onSelectWorkout={(sw) => setSelectedWorkout(sw)}
-          onSelectAppointment={(appt) => setSelectedAppointment(appt)}
+          isLoading={isLoadingWorkouts}
           isCoachView={true}
+          onSelectWorkout={(sw) => setSelectedWorkout(sw)}
+          onRescheduleWorkout={(sw) => setWorkoutToReschedule(sw)}
+          onNewSchedule={() => {
+            setInitialDateForDialog(undefined);
+            setIsScheduleOpen(true);
+          }}
+          coachingAppointments={filteredAppointments}
+          onSelectAppointment={(appt) => setSelectedAppointment(appt)}
         />
       )}
 
@@ -409,6 +488,7 @@ export default function CoachSchedulePage() {
         isOpen={Boolean(selectedWorkout)}
         onClose={() => setSelectedWorkout(null)}
         isCoachView={true}
+        onReschedule={(sw) => setWorkoutToReschedule(sw)}
       />
 
       <AppointmentDetailModal
@@ -435,6 +515,13 @@ export default function CoachSchedulePage() {
         preselectedMemberId={
           selectedMemberId !== "all" ? selectedMemberId : undefined
         }
+      />
+
+      <RescheduleWorkoutDialog
+        isOpen={Boolean(workoutToReschedule)}
+        onClose={() => setWorkoutToReschedule(null)}
+        scheduledWorkout={workoutToReschedule}
+        isCoach={true}
       />
     </div>
   );

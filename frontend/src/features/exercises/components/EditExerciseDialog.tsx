@@ -48,17 +48,17 @@ const EditExerciseDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-[95vw] max-w-none overflow-y-auto rounded-xl border border-[#1E2329] bg-[#101418] p-6 shadow-2xl sm:max-w-4xl md:max-w-5xl lg:max-w-6xl sm:p-8 text-[#F3F4F6] selection:bg-[#5BE584]/30">
-        <DialogHeader className="border-b border-[#1E2329] pb-4 mb-6">
+      <DialogContent className="max-h-[92dvh] w-[95vw] max-w-none overflow-y-auto overscroll-contain rounded-2xl border border-[#1E2329] bg-[#101418] p-4 sm:p-8 shadow-2xl sm:max-w-4xl md:max-w-5xl lg:max-w-6xl text-[#F3F4F6] selection:bg-[#5BE584]/30">
+        <DialogHeader className="border-b border-[#1E2329] pb-3 sm:pb-4 mb-4 sm:mb-6">
           <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase mb-1">
             <span>Exercises</span>
             <span>/</span>
             <span className="text-[#F3F4F6]">Edit Exercise</span>
           </div>
-          <DialogTitle className="text-xl font-semibold tracking-tight text-white">
+          <DialogTitle className="text-lg sm:text-xl font-semibold tracking-tight text-white">
             Edit Exercise
           </DialogTitle>
-          <DialogDescription className="text-xs text-[#9CA3AF] mt-1">
+          <DialogDescription className="text-xs text-[#9CA3AF] mt-0.5 sm:mt-1">
             Update the details and movement specifications of the selected
             exercise.
           </DialogDescription>

@@ -488,7 +488,7 @@ export class NutritionService {
       throw new AppError("Quantity must be a positive number.", 400);
     }
 
-    const food = await foodCatalogService.getFoodById(payload.foodId);
+    const food = await foodCatalogService.getFoodById(payload.foodId, memberId);
     const calculated = foodCatalogService.calculateNutrients(
       food,
       payload.quantity,

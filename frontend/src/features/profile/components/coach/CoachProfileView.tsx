@@ -11,6 +11,7 @@ import { CoachCharts } from "./CoachCharts";
 import { Achievements } from "./Achievements";
 import { RecentActivity } from "./RecentActivity";
 import { UpcomingTasks } from "./UpcomingTasks";
+import { useAuthStore } from "@/store/auth.store";
 import type { CoachProfileResponse } from "../../types/profile.types";
 
 interface CoachProfileViewProps {
@@ -32,11 +33,19 @@ export const CoachProfileView: React.FC<CoachProfileViewProps> = ({ data }) => {
     upcomingTasks,
   } = data;
 
+  const currentUser = useAuthStore((state) => state.user);
+  const effectiveAvatar =
+    profile.avatarUrl ??
+    (currentUser?.id === profile.id || (currentUser as any)?._id === profile.id
+      ? currentUser?.avatarUrl
+      : null);
+
   return (
     <div className="flex flex-col gap-6 w-full">
       {/* 1. Profile Hero Header */}
       <ProfileHeader
         name={profile.name}
+        image={effectiveAvatar}
         role={profile.professionalTitle || "Senior Head Coach"}
         email={profile.email}
         subtitle={

@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import { MUSCLE_OPTIONS } from "../constants/exercise.constants";
 
 import ExerciseImageUploader from "../components/ExerciseImageUploader";
 import { useCreateExercise } from "../hooks/useCreateExercise";
@@ -100,6 +102,19 @@ export const CreateExercisePage: React.FC = () => {
     }
   };
 
+  const toggleMuscleOption = (muscle: string, type: "primary" | "secondary") => {
+    const field = type === "primary" ? "primaryMuscles" : "secondaryMuscles";
+    setFormData((prev) => ({
+      ...prev,
+      [field]: prev[field].includes(muscle)
+        ? prev[field].filter((m) => m !== muscle)
+        : [...prev[field], muscle],
+    }));
+    if (type === "primary" && errors.primaryMuscles) {
+      setErrors((prev) => ({ ...prev, primaryMuscles: "" }));
+    }
+  };
+
   const removeMuscle = (val: string, type: "primary" | "secondary") => {
     const field = type === "primary" ? "primaryMuscles" : "secondaryMuscles";
     setFormData((prev) => ({
@@ -138,6 +153,8 @@ export const CreateExercisePage: React.FC = () => {
       newErrors.description = "Description is required.";
     if (formData.equipment.length === 0)
       newErrors.equipment = "Select at least one equipment type.";
+    if (formData.primaryMuscles.length === 0)
+      newErrors.primaryMuscles = "Select at least one primary muscle.";
 
     const validInstructions = formData.instructions
       .map((i) => i.trim())
@@ -152,7 +169,10 @@ export const CreateExercisePage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
 
     const payload: CreateExerciseDto = {
       name: formData.name.trim(),
@@ -389,11 +409,41 @@ export const CreateExercisePage: React.FC = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold text-[#9CA3AF]">
-                    Primary Muscles
-                  </label>
-                  <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-[#9CA3AF]">
+                      Primary Muscles <span className="text-red-400/80">*</span>
+                    </label>
+                    <span className="text-[10px] text-[#6B7280]">Tap to toggle or type custom below</span>
+                  </div>
+                  {/* Predefined Pills for Mobile & Quick Selection */}
+                  <div className="flex flex-wrap gap-2">
+                    {MUSCLE_OPTIONS.map((muscle) => {
+                      const isSelected = formData.primaryMuscles.includes(muscle);
+                      return (
+                        <button
+                          key={muscle}
+                          type="button"
+                          onClick={() => toggleMuscleOption(muscle, "primary")}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
+                            isSelected
+                              ? "bg-[#16291D] border-[#23422E] text-[#5BE584]"
+                              : "bg-[#101418] border-[#1E2329] text-[#9CA3AF] hover:border-[#6B7280] hover:text-[#F3F4F6]"
+                          }`}
+                        >
+                          {muscle}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {errors.primaryMuscles && (
+                    <span className="text-[11px] text-red-400 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {errors.primaryMuscles}
+                    </span>
+                  )}
+                  {/* Selected / Custom Tags */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#1E2329]/50">
                     {formData.primaryMuscles.map((muscle) => (
                       <div
                         key={muscle}
@@ -414,17 +464,41 @@ export const CreateExercisePage: React.FC = () => {
                       value={primaryInput}
                       onChange={(e) => setPrimaryInput(e.target.value)}
                       onKeyDown={(e) => handleMuscleKeyDown(e, "primary")}
-                      placeholder="Type & press Enter"
-                      className="w-40 bg-transparent py-1 text-xs text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none"
+                      placeholder="Add custom muscle & Enter"
+                      className="w-48 bg-transparent py-1 text-xs text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="text-xs font-semibold text-[#9CA3AF]">
-                    Secondary Muscles
-                  </label>
-                  <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-[#9CA3AF]">
+                      Secondary Muscles <span className="text-xs text-[#6B7280] font-normal">(Optional)</span>
+                    </label>
+                    <span className="text-[10px] text-[#6B7280]">Tap to toggle or type custom below</span>
+                  </div>
+                  {/* Predefined Pills for Mobile & Quick Selection */}
+                  <div className="flex flex-wrap gap-2">
+                    {MUSCLE_OPTIONS.map((muscle) => {
+                      const isSelected = formData.secondaryMuscles.includes(muscle);
+                      return (
+                        <button
+                          key={muscle}
+                          type="button"
+                          onClick={() => toggleMuscleOption(muscle, "secondary")}
+                          className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
+                            isSelected
+                              ? "bg-[#16291D] border-[#23422E] text-[#5BE584]"
+                              : "bg-[#101418] border-[#1E2329] text-[#9CA3AF] hover:border-[#6B7280] hover:text-[#F3F4F6]"
+                          }`}
+                        >
+                          {muscle}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {/* Selected / Custom Tags */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#1E2329]/50">
                     {formData.secondaryMuscles.map((muscle) => (
                       <div
                         key={muscle}
@@ -445,8 +519,8 @@ export const CreateExercisePage: React.FC = () => {
                       value={secondaryInput}
                       onChange={(e) => setSecondaryInput(e.target.value)}
                       onKeyDown={(e) => handleMuscleKeyDown(e, "secondary")}
-                      placeholder="Type & press Enter"
-                      className="w-40 bg-transparent py-1 text-xs text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none"
+                      placeholder="Add custom muscle & Enter"
+                      className="w-48 bg-transparent py-1 text-xs text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none"
                     />
                   </div>
                 </div>

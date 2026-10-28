@@ -214,10 +214,7 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
-  >({
-    "workout-builder": true,
-    assignments: true,
-  });
+  >({});
 
   const { mutate: logoutUser, isPending } = useLogout();
   const { role, isLoading: isAuthLoading } = useAuth();
@@ -243,7 +240,6 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
       };
     }
   }, [collapsed, onCloseMobile]);
-
 
   // On desktop (lg+), sidebar opens when !collapsed or hovered.
   // On mobile (< lg), when !collapsed it opens as a full-width drawer (isOpen = true).
@@ -289,7 +285,7 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
         <div
           onClick={onCloseMobile}
           aria-hidden="true"
-          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-xs lg:hidden"
+          className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm lg:hidden transition-opacity"
         />
       )}
 

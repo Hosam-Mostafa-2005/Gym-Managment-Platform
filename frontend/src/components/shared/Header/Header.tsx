@@ -235,7 +235,7 @@ const NotificationMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-80 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 flex flex-col overflow-hidden">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-80 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-30 flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[#2A3039] px-4 py-3 shrink-0">
             <h3 className="text-sm font-semibold text-[#F8FAFC] flex items-center gap-2">
@@ -455,12 +455,17 @@ const QuickActionsMenu = () => {
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const { mutate: logoutUser, isPending } = useLogout();
   const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    setAvatarError(false);
+  }, [user?.avatarUrl]);
 
   useOnClickOutside(ref, () => setIsOpen(false));
 
@@ -497,6 +502,7 @@ const ProfileMenu = () => {
   const displayName = isLoading ? "Loading..." : user?.name || "User";
   const roleLabel = getRoleLabel(user?.role);
   const initials = getInitials(user?.name);
+  const showAvatar = Boolean(user?.avatarUrl) && !avatarError;
 
   return (
     <div className="relative" ref={ref}>
@@ -517,12 +523,21 @@ const ProfileMenu = () => {
         </div>
 
         <div className="relative h-8 w-8 overflow-hidden rounded-[10px] border border-[#2A3039] bg-[#13171D] flex items-center justify-center text-[#5BE584]">
-          <span className="text-xs font-bold">{initials}</span>
+          {showAvatar ? (
+            <img
+              src={user!.avatarUrl!}
+              alt={displayName}
+              className="h-full w-full object-cover"
+              onError={() => setAvatarError(true)}
+            />
+          ) : (
+            <span className="text-xs font-bold">{initials}</span>
+          )}
         </div>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-56 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-56 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-30 overflow-hidden">
           <div className="border-b border-[#2A3039] px-4 py-3">
             <p className="truncate text-sm font-semibold text-[#F8FAFC]">
               {displayName}
@@ -565,7 +580,7 @@ const ProfileMenu = () => {
 
 export default function Header({ collapsed, onToggle }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#2A3039] bg-[#090B0F]/95 px-4 sm:px-6 backdrop-blur-md">
+    <header className="sticky top-0 z-20 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#2A3039] bg-[#090B0F]/95 px-4 sm:px-6 backdrop-blur-md">
       <div className="flex items-center gap-3 sm:gap-4 min-w-0">
         <button
           onClick={onToggle}

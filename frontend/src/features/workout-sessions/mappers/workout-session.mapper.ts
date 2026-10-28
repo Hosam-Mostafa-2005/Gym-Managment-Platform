@@ -14,6 +14,15 @@ const mapSet = (set: any): WorkoutSetLog => ({
   restDuration: set.restDuration ?? 0,
   completedAt: set.completedAt,
   completed: set.completed,
+  setType: set.setType ?? "NORMAL",
+  segmentIndex: set.segmentIndex ?? 0,
+  isIntermediateSegment: set.isIntermediateSegment ?? false,
+  isFinalSegment:
+    set.isFinalSegment !== undefined
+      ? set.isFinalSegment
+      : set.isIntermediateSegment
+        ? false
+        : true,
 });
 
 const mapExerciseLog = (log: any): WorkoutExerciseLog => {
@@ -57,6 +66,8 @@ const mapExerciseLog = (log: any): WorkoutExerciseLog => {
     swapReason: log.swapReason ?? null,
     order: log.order,
     completed: log.completed,
+    restSeconds: log.restSeconds ?? 60,
+    setsDetail: log.setsDetail ?? null,
     sets: log.sets?.map(mapSet) ?? [],
   };
 };

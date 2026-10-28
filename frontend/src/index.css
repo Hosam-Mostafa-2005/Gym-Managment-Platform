@@ -116,3 +116,19 @@
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Mobile Toaster & Notifications safe positioning */
+[data-sonner-toaster] {
+  z-index: 99999 !important;
+  pointer-events: none;
+}
+
+[data-sonner-toaster] > * {
+  pointer-events: auto;
+}
+
+[data-sonner-toast] {
+  max-width: min(calc(100vw - 32px), 440px) !important;
+  word-break: break-word !important;
+}

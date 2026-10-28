@@ -3,6 +3,18 @@ import type { RequestHandler } from "express";
 import catchAsync from "../utils/catchAsync.js";
 import workoutSetService from "../services/workout-set.service.js";
 
+export const createWorkoutSet: RequestHandler = catchAsync(async (req, res) => {
+  const result = await workoutSetService.create(req.body, req.user!.id);
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      set: result,
+      setLog: result,
+    },
+  });
+});
+
 export const updateWorkoutSet: RequestHandler = catchAsync(async (req, res) => {
   const result = await workoutSetService.update(
     req.params.id as string,
@@ -14,6 +26,19 @@ export const updateWorkoutSet: RequestHandler = catchAsync(async (req, res) => {
     status: "success",
     data: {
       set: result,
+      setLog: result,
     },
+  });
+});
+
+export const deleteWorkoutSet: RequestHandler = catchAsync(async (req, res) => {
+  const result = await workoutSetService.delete(
+    req.params.id as string,
+    req.user!.id,
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: result,
   });
 });

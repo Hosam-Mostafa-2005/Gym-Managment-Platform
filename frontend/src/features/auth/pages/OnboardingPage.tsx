@@ -118,7 +118,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ initialRole }) =
   const [professionalTitle, setProfessionalTitle] = useState(
     user?.professionalTitle || "Strength & Conditioning Coach",
   );
-  const [yearsOfExperience, setYearsOfExperience] = useState<number>(
+  const [yearsOfExperience, setYearsOfExperience] = useState<number | string>(
     user?.yearsOfExperience || 3,
   );
   const [specialties, setSpecialties] = useState<string[]>(
@@ -452,7 +452,8 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ initialRole }) =
                       min={0}
                       max={60}
                       value={yearsOfExperience}
-                      onChange={(e) => setYearsOfExperience(Number(e.target.value))}
+                      inputMode="numeric"
+                      onChange={(e) => setYearsOfExperience(e.target.value)}
                       className="w-full bg-[#0E1217] border border-[#1E2329] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#5BE584] focus:ring-1 focus:ring-[#5BE584]"
                     />
                   </div>

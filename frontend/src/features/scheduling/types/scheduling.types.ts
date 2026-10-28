@@ -40,6 +40,7 @@ export interface ScheduledWorkout {
     id: string;
     name: string;
     email: string;
+    avatarUrl?: string | null;
   };
   workout?: {
     id: string;
@@ -65,6 +66,7 @@ export interface ScheduledWorkout {
     id: string;
     name: string;
     email: string;
+    avatarUrl?: string | null;
   } | null;
   session?: {
     id: string;

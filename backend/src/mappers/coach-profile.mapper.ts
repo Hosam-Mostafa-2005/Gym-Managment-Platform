@@ -16,6 +16,7 @@ export const mapCoachProfile = (data: {
       id: data.coach.id || data.coach._id?.toString(),
       name: data.coach.name,
       email: data.coach.email,
+      avatarUrl: data.coach.avatarUrl ?? null,
 
       phone: data.coach.phone ?? null,
 

@@ -62,7 +62,7 @@ export const CoachOnboardingPage: React.FC = () => {
   const [professionalTitle, setProfessionalTitle] = useState(
     user?.professionalTitle || "Strength & Conditioning Coach",
   );
-  const [yearsOfExperience, setYearsOfExperience] = useState<number>(
+  const [yearsOfExperience, setYearsOfExperience] = useState<number | string>(
     user?.yearsOfExperience || 3,
   );
   const [phone, setPhone] = useState(user?.phone || "");
@@ -267,7 +267,8 @@ export const CoachOnboardingPage: React.FC = () => {
                     min={0}
                     max={60}
                     value={yearsOfExperience}
-                    onChange={(e) => setYearsOfExperience(Number(e.target.value))}
+                    inputMode="numeric"
+                    onChange={(e) => setYearsOfExperience(e.target.value)}
                     className="w-full rounded-xl bg-[#0D1014] border border-[#1E2329] px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:border-[#5BE584] focus:outline-none transition-colors"
                   />
                 </div>

@@ -49,6 +49,7 @@ import WorkoutsPage from "@/features/workouts/pages/WorkoutsPage";
 import CreateWorkoutPage from "@/features/workouts/pages/CreateWorkoutPage";
 import WorkoutDetailsPage from "@/features/workouts/pages/WorkoutDetailsPage";
 import EditWorkoutPage from "@/features/workouts/pages/EditWorkoutPage";
+import WorkoutSharePreviewPage from "@/features/workouts/pages/WorkoutSharePreviewPage";
 
 // Assignments
 import AssignmentsPage from "@/features/assignments/pages/AssignmentsPage";
@@ -109,6 +110,18 @@ const router = createBrowserRouter([
   {
     path: "/terms",
     element: <Navigate to="/terms-of-service" replace />,
+  },
+  {
+    path: "/share/workout/:shareIdentifier",
+    element: <WorkoutSharePreviewPage />,
+  },
+  {
+    path: "/share/workout",
+    element: <WorkoutSharePreviewPage />,
+  },
+  {
+    path: "/workouts/share/:shareIdentifier",
+    element: <WorkoutSharePreviewPage />,
   },
   {
     element: <AuthLayout />,

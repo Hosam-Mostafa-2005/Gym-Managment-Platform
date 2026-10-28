@@ -6,6 +6,7 @@ export interface User {
   name: string;
   email: string;
   role: Role;
+  avatarUrl?: string | null;
   isEmailVerified?: boolean;
   hasPassword?: boolean;
   googleLinked?: boolean;

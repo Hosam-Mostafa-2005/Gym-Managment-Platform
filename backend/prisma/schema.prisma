@@ -175,6 +175,8 @@ model User {
   professionalTitle   String?
   coachingPhilosophy  String?
   languagesSpoken     String[] @default([])
+  avatarUrl           String?
+  avatarKey           String?
 
   // Relationships
   workoutsCreated        Workout[]         @relation("WorkoutCreator")
@@ -196,6 +198,8 @@ model User {
   nutritionPlansAsMember NutritionPlan[]           @relation("MemberNutritionPlans")
   nutritionPlansAsCoach  NutritionPlan[]           @relation("CoachNutritionPlans")
   foodLogs               FoodLog[]                 @relation("MemberFoodLogs")
+  customFoods            Food[]                    @relation("UserCustomFoods")
+  workoutShares          WorkoutShare[]            @relation("UserWorkoutShares")
   userAchievements       UserAchievement[]
   exerciseAccessAsMember MemberExerciseAccess[] @relation("MemberExerciseAccess")
   exerciseAccessGranted  MemberExerciseAccess[] @relation("GrantedExerciseAccess")
@@ -250,6 +254,8 @@ model Workout {
   category          Category
   difficulty        Difficulty
   estimatedDuration Int
+  defaultRestLarge  Int               @default(90)
+  defaultRestSmall  Int               @default(60)
   tags              String[]          @default([])
   isTemplate        Boolean           @default(false)
   version           Int               @default(1)
@@ -267,6 +273,7 @@ model Workout {
   assignments Assignment[]
   sessions    WorkoutSession[]   @relation("WorkoutSessions")
   scheduledWorkouts ScheduledWorkout[] @relation("WorkoutSchedules")
+  shares            WorkoutShare[]
 
   @@index([createdBy, isActive])
   @@index([category])
@@ -283,8 +290,10 @@ model WorkoutExercise {
   reps        String
   targetWeight Float?
   targetRpe    Float?
-  restSeconds Int
+  restSeconds      Int      @default(60)
+  isRestOverridden Boolean  @default(false)
   notes       String?
+  setsDetail  Json?
   order       Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -382,8 +391,10 @@ model WorkoutExerciseLog {
   targetReps         String
   targetWeight       Float?
   targetRpe          Float?
+  restSeconds        Int              @default(60)
   originalExerciseId String?
   swapReason         String?
+  setsDetail         Json?
   order              Int
   completed    Boolean          @default(false)
   createdAt    DateTime         @default(now())
@@ -407,7 +418,11 @@ model WorkoutSetLog {
   targetReps    String?
   actualReps    Int                @default(0)
   weight        Float              @default(0)
-  restDuration  Int                @default(0)
+  restDuration          Int                @default(0)
+  setType               String             @default("NORMAL")
+  segmentIndex          Int                @default(0)
+  isIntermediateSegment Boolean            @default(false)
+  isFinalSegment        Boolean            @default(true)
   startedAt     DateTime?
   completedAt   DateTime?
   completed     Boolean            @default(false)
@@ -417,7 +432,7 @@ model WorkoutSetLog {
   // Relationships
   exerciseLog   WorkoutExerciseLog @relation(fields: [exerciseLogId], references: [id], onDelete: Cascade)
 
-  @@unique([exerciseLogId, setNumber])
+  @@unique([exerciseLogId, setNumber, segmentIndex])
   @@index([exerciseLogId, completed])
   @@index([exerciseLogId])
   @@index([completedAt(sort: Desc)])
@@ -715,16 +730,21 @@ model Food {
   allergens   String[] @default([])
   isVerified  Boolean  @default(true)
   source      String?  @default("Verified Food Catalog")
+  userId      String?
+  isCustom    Boolean  @default(false)
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   // Relationships
+  user        User?    @relation("UserCustomFoods", fields: [userId], references: [id], onDelete: SetNull)
   mealItems   NutritionMealItem[]
   foodLogs    FoodLog[]
 
   @@index([name])
   @@index([category])
   @@index([isVerified])
+  @@index([userId, isCustom, isActive])
   @@map("foods")
 }
 
@@ -937,4 +957,27 @@ model PasswordResetToken {
   @@index([userId])
   @@index([expiresAt])
   @@map("password_reset_tokens")
+}
+
+
+model WorkoutShare {
+  id             String    @id @default(uuid())
+  workoutId      String
+  userId         String
+  shareCode      String    @unique
+  shareTokenHash String    @unique
+  isActive       Boolean   @default(true)
+  expiresAt      DateTime?
+  viewCount      Int       @default(0)
+  importCount    Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  workout        Workout   @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  user           User      @relation("UserWorkoutShares", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([shareCode, isActive])
+  @@index([shareTokenHash, isActive])
+  @@index([workoutId, isActive])
+  @@map("workout_shares")
 }

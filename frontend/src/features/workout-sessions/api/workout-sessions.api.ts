@@ -117,7 +117,13 @@ export const reviewWorkoutSession = async (
 export const createWorkoutSet = async (payload: CreateWorkoutSetPayload) => {
   const { data } = await api.post("/workout-set-logs", payload);
 
-  return data.data.setLog;
+  return data.data.setLog ?? data.data.set;
+};
+
+export const deleteWorkoutSet = async (id: string) => {
+  const { data } = await api.delete(`/workout-set-logs/${id}`);
+
+  return data;
 };
 
 export const getMyAssignments = async () => {
@@ -133,6 +139,19 @@ export const swapExercise = async (
 ): Promise<WorkoutSessionDetails> => {
   const { data } = await api.patch(
     `/workout-sessions/${sessionId}/exercises/${exerciseLogId}/swap`,
+    payload,
+  );
+
+  const rawSession = data.data.session ?? data.data;
+  return mapWorkoutSessionDetails(rawSession);
+};
+
+export const addExerciseToSession = async (
+  sessionId: string,
+  payload: import("../types/workout-session.types").AddExerciseToSessionPayload,
+): Promise<WorkoutSessionDetails> => {
+  const { data } = await api.post(
+    `/workout-sessions/${sessionId}/exercises`,
     payload,
   );
 

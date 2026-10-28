@@ -39,27 +39,28 @@ const CreateExerciseDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="
-    max-h-[90vh]
-    w-[95vw]
-    max-w-none
-    overflow-y-auto
-    rounded-3xl
-    border
-    border-border
-    p-6
-    shadow-2xl
-    sm:max-w-4xl
-    md:max-w-5xl
-    lg:max-w-6xl
-    sm:p-8
-  "
+          max-h-[92dvh]
+          w-[95vw]
+          max-w-none
+          overflow-y-auto
+          overscroll-contain
+          rounded-2xl
+          border
+          border-border
+          p-4
+          sm:p-8
+          shadow-2xl
+          sm:max-w-4xl
+          md:max-w-5xl
+          lg:max-w-6xl
+        "
       >
-        <DialogHeader>
-          <DialogTitle>
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-lg sm:text-xl font-bold">
             {isMember ? "Create Custom Exercise" : "Create Exercise"}
           </DialogTitle>
 
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             {isMember
               ? "Add a personal custom exercise to your training library."
               : "Add a new exercise to your exercise library."}

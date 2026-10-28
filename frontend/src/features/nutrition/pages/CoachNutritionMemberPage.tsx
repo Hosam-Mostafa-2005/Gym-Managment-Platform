@@ -213,7 +213,7 @@ export const CoachNutritionMemberPage: React.FC = () => {
           order: idx + 1,
           items: m.items.map((it) => ({
             foodId: it.foodId,
-            quantity: it.quantity,
+            quantity: Number(it.quantity) || 0,
             unit: it.unit,
           })),
         })),

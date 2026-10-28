@@ -198,11 +198,39 @@ export const useCancelCoachScheduledWorkout = () => {
     onSuccess: () => {
       toast.success("Athlete workout schedule cancelled.");
       queryClient.invalidateQueries({ queryKey: ["coach-scheduled-workouts"] });
+      queryClient.invalidateQueries({ queryKey: ["member-scheduled-workouts"] });
+      queryClient.invalidateQueries({ queryKey: ["scheduled-workouts"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: (err: any) => {
       const message =
         err?.response?.data?.message || "Failed to cancel athlete workout.";
+      toast.error(message);
+    },
+  });
+};
+
+export const useUpdateCoachScheduledWorkout = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string;
+      payload: { scheduledAt?: string; notes?: string; status?: string };
+    }) => schedulingApi.updateCoachScheduledWorkout(id, payload),
+    onSuccess: () => {
+      toast.success("Athlete workout schedule updated.");
+      queryClient.invalidateQueries({ queryKey: ["coach-scheduled-workouts"] });
+      queryClient.invalidateQueries({ queryKey: ["member-scheduled-workouts"] });
+      queryClient.invalidateQueries({ queryKey: ["scheduled-workouts"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+    onError: (err: any) => {
+      const message =
+        err?.response?.data?.message || "Failed to update athlete workout.";
       toast.error(message);
     },
   });

@@ -176,7 +176,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       </div>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col gap-1 pr-14 sm:pr-20 min-w-0">
+      <div className="flex flex-1 flex-col gap-1 pr-16 sm:pr-20 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <h4
@@ -212,13 +212,13 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
           </span>
         </div>
 
-        <p className="text-xs leading-relaxed text-gray-400 line-clamp-2">
+        <p className="text-xs leading-relaxed text-gray-400 line-clamp-2 break-words">
           {notification.message}
         </p>
       </div>
 
       {/* Quick Action Buttons (visible on hover) */}
-      <div className="absolute right-3 top-3 flex opacity-0 transition-opacity group-hover:opacity-100 items-center gap-1 bg-[#0D1117]/95 backdrop-blur-sm rounded-lg border border-[#1E2329] px-1 py-0.5">
+      <div className="absolute right-2.5 top-2.5 sm:right-3 sm:top-3 flex opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity items-center gap-1 bg-[#0D1117]/95 backdrop-blur-sm rounded-lg border border-[#1E2329] px-1 py-0.5 shadow-sm">
         <button
           onClick={handleToggleRead}
           disabled={isMarkingRead || isMarkingUnread}

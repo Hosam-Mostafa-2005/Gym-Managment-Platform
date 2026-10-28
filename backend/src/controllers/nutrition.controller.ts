@@ -115,6 +115,7 @@ export const searchFoods: RequestHandler = catchAsync(async (req, res) => {
     search: search as string | undefined,
     category: category as string | undefined,
     allergensToExclude: parsedAllergens,
+    userId: req.user?.id,
     page: page ? parseInt(page as string, 10) : 1,
     limit: limit ? parseInt(limit as string, 10) : 20,
   });
@@ -140,11 +141,63 @@ export const getFoodCategories: RequestHandler = catchAsync(async (_req, res) =>
 });
 
 export const getFoodById: RequestHandler = catchAsync(async (req, res) => {
-  const food = await foodCatalogService.getFoodById(req.params.id as string);
+  const food = await foodCatalogService.getFoodById(
+    req.params.id as string,
+    req.user?.id,
+  );
 
   res.status(200).json({
     status: "success",
     data: { food },
+  });
+});
+
+export const createCustomFood: RequestHandler = catchAsync(async (req, res) => {
+  const food = await foodCatalogService.createCustomFood(
+    req.user!.id,
+    req.body,
+  );
+
+  res.status(201).json({
+    status: "success",
+    message: "Custom food created successfully.",
+    data: { food },
+  });
+});
+
+export const getUserCustomFoods: RequestHandler = catchAsync(async (req, res) => {
+  const foods = await foodCatalogService.getUserCustomFoods(req.user!.id);
+
+  res.status(200).json({
+    status: "success",
+    results: foods.length,
+    data: { foods },
+  });
+});
+
+export const updateCustomFood: RequestHandler = catchAsync(async (req, res) => {
+  const food = await foodCatalogService.updateCustomFood(
+    req.user!.id,
+    req.params.id as string,
+    req.body,
+  );
+
+  res.status(200).json({
+    status: "success",
+    message: "Custom food updated successfully.",
+    data: { food },
+  });
+});
+
+export const deleteCustomFood: RequestHandler = catchAsync(async (req, res) => {
+  const result = await foodCatalogService.deleteCustomFood(
+    req.user!.id,
+    req.params.id as string,
+  );
+
+  res.status(200).json({
+    status: "success",
+    ...result,
   });
 });
 

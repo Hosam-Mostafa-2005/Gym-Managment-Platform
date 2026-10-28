@@ -107,7 +107,7 @@ export const NotificationPreferencesModal: React.FC<
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[#1E2329] pb-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1 mr-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-700 bg-gray-800 text-gray-300">
               <Settings2 className="h-5 w-5" />
             </div>
@@ -144,7 +144,7 @@ export const NotificationPreferencesModal: React.FC<
                   key={item.key}
                   className="flex items-center justify-between rounded-xl border border-[#1E2329] bg-[#090B0F] p-3.5"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1 mr-3">
                     <div
                       className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${item.bgColor} ${item.color}`}
                     >

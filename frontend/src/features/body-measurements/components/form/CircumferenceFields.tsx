@@ -31,6 +31,7 @@ export const CircumferenceFields: React.FC<{
             </label>
             <input
               type="number"
+              inputMode="decimal"
               step="0.1"
               min="0"
               name={f.key}

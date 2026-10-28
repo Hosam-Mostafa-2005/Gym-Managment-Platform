@@ -23,6 +23,8 @@ createRoot(document.getElementById("root")!).render(
         position="top-right"
         richColors
         closeButton
+        gap={8}
+        mobileOffset={{ top: 16, right: 16, left: 16, bottom: 16 }}
         toastOptions={{
           style: {
             background: "#13171D",
@@ -30,6 +32,8 @@ createRoot(document.getElementById("root")!).render(
             color: "#F8FAFC",
             borderRadius: "14px",
           },
+          className:
+            "w-[calc(100vw-32px)] sm:w-auto max-w-md break-words whitespace-normal text-xs sm:text-sm font-sans shadow-2xl",
         }}
       />
       <ReactQueryDevtools initialIsOpen={false} />

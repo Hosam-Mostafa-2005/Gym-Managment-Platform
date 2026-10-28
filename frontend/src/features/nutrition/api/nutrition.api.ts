@@ -9,6 +9,8 @@ import type {
   FoodLogItem,
   NutritionHistoryResponse,
   FoodItem,
+  CreateCustomFoodPayload,
+  UpdateCustomFoodPayload,
   CoachEligibleMember,
   CoachMemberNutritionView,
   CreateCoachPlanPayload,
@@ -98,6 +100,36 @@ export const getFoodCategories = async (): Promise<string[]> => {
 export const getFoodById = async (id: string): Promise<FoodItem> => {
   const { data } = await api.get(`/nutrition/foods/${id}`);
   return data.data.food;
+};
+
+export const createCustomFood = async (
+  payload: CreateCustomFoodPayload,
+): Promise<FoodItem> => {
+  const { data } = await api.post("/nutrition/me/custom-foods", payload);
+  return data.data.food;
+};
+
+export const getUserCustomFoods = async (): Promise<FoodItem[]> => {
+  const { data } = await api.get("/nutrition/me/custom-foods");
+  return data.data.foods;
+};
+
+export const updateCustomFood = async (
+  foodId: string,
+  payload: UpdateCustomFoodPayload,
+): Promise<FoodItem> => {
+  const { data } = await api.patch(
+    `/nutrition/me/custom-foods/${foodId}`,
+    payload,
+  );
+  return data.data.food;
+};
+
+export const deleteCustomFood = async (
+  foodId: string,
+): Promise<{ success: boolean; message: string }> => {
+  const { data } = await api.delete(`/nutrition/me/custom-foods/${foodId}`);
+  return data;
 };
 
 // ==========================================

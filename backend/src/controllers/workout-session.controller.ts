@@ -91,6 +91,21 @@ export const swapExercise: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+export const addExercise: RequestHandler = catchAsync(async (req, res) => {
+  const result = await workoutSessionService.addExercise(
+    req.params.id as string,
+    req.user!.id,
+    req.body,
+  );
+
+  res.status(201).json({
+    status: "success",
+    data: {
+      session: result,
+    },
+  });
+});
+
 export const getAll: RequestHandler = catchAsync(async (req, res) => {
   const sessions = await workoutSessionService.getAll(
     req.query,

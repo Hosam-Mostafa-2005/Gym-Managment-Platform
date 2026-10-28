@@ -12,6 +12,7 @@ import {
 
 import { useAllExercises } from "@/features/exercises/hooks/useExercises";
 import type { Exercise } from "@/features/exercises/types/exercise.types";
+import { ALL_MUSCLE_CATEGORIES, doesExerciseMatchMuscle } from "@/features/exercises/constants/exercise.constants";
 import ExerciseImage from "@/features/exercises/components/ExerciseImage";
 import { useSwapExercise } from "../hooks/useSwapExercise";
 import type { WorkoutExerciseLog } from "../types/workout-session.types";
@@ -65,14 +66,7 @@ export const SwapExerciseDialog: React.FC<SwapExerciseDialogProps> = ({
         !searchQuery.trim() ||
         ex.name?.toLowerCase().includes(searchQuery.toLowerCase().trim());
 
-      const matchesMuscle =
-        !selectedMuscle ||
-        ex.primaryMuscles?.some(
-          (m) => m.toLowerCase() === selectedMuscle.toLowerCase(),
-        ) ||
-        ex.secondaryMuscles?.some(
-          (m) => m.toLowerCase() === selectedMuscle.toLowerCase(),
-        );
+      const matchesMuscle = doesExerciseMatchMuscle(ex, selectedMuscle);
 
       return matchesSearch && matchesMuscle;
     });
@@ -187,24 +181,25 @@ export const SwapExerciseDialog: React.FC<SwapExerciseDialogProps> = ({
 
               {/* Muscle Pills */}
               <div className="flex flex-wrap gap-1.5 pt-1">
-                {["chest", "back", "legs", "shoulders", "triceps", "biceps", "core"].map(
-                  (muscle) => (
+                {ALL_MUSCLE_CATEGORIES.map((muscle) => {
+                  const isActive = selectedMuscle?.toLowerCase() === muscle.toLowerCase();
+                  return (
                     <button
                       key={muscle}
                       type="button"
                       onClick={() =>
-                        setSelectedMuscle(selectedMuscle === muscle ? null : muscle)
+                        setSelectedMuscle(isActive ? null : muscle)
                       }
                       className={`capitalize px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
-                        selectedMuscle === muscle
-                          ? "bg-[#5BE584] text-[#090B0F] font-semibold"
+                        isActive
+                          ? "bg-[#5BE584] text-[#090B0F] font-semibold shadow-sm"
                           : "bg-[#101418] border border-[#1E2329] text-[#9CA3AF] hover:text-white hover:border-[#2A313A]"
                       }`}
                     >
                       {muscle}
                     </button>
-                  ),
-                )}
+                  );
+                })}
               </div>
 
               {/* Exercise Selection List */}

@@ -53,3 +53,14 @@ export const swapExerciseLogSchema = z.object({
       .optional(),
   }),
 });
+
+export const addExerciseToSessionSchema = z.object({
+  body: z.object({
+    exerciseId: z.string().min(1, "Exercise ID is required"),
+    targetSets: z.number().int().min(1).max(20).default(3),
+    targetReps: z.number().int().min(1).max(100).default(10),
+    targetWeight: z.number().min(0).max(1000).default(0),
+    restTimeSeconds: z.number().int().min(0).max(600).default(60),
+    notes: z.string().trim().max(500).optional(),
+  }),
+});

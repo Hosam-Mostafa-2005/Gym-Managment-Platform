@@ -8,11 +8,11 @@
     "visualStandard": "Strict male-only athletic demonstrator / neutral male muscular anatomical illustration. Zero female or female-presenting persons.",
     "applicationIntegration": "NONE - Purely asset collection and inventory per task instructions.",
     "generatedAt": "2026-10-24T14:52:42.863Z",
-    "lastDatabaseSyncAt": "2026-10-25T23:40:16.928Z",
+    "lastDatabaseSyncAt": "2026-10-28T13:09:51.447Z",
     "activeStorageProvider": "cloudinary",
-    "totalDatabaseExercises": 49,
+    "totalDatabaseExercises": 60,
     "totalExercisesWithMappedImages": 49,
-    "unmatchedExercisesCount": 0
+    "unmatchedExercisesCount": 11
   },
   "exercises": [
     {

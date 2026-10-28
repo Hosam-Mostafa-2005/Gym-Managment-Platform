@@ -56,3 +56,12 @@ export interface SwapExerciseDto {
   reason: string;
   notes?: string;
 }
+
+export interface AddExerciseToSessionDto {
+  exerciseId: string;
+  targetSets?: number;
+  targetReps?: number;
+  targetWeight?: number;
+  restTimeSeconds?: number;
+  notes?: string;
+}

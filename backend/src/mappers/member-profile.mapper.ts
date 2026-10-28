@@ -47,6 +47,7 @@ export const mapMemberProfile = ({
       name: member.name,
       email: member.email,
       role: member.role,
+      avatarUrl: member.avatarUrl ?? null,
       phone: member.phone ?? null,
       bio: member.bio ?? null,
       fitnessGoal: member.fitnessGoal ?? null,

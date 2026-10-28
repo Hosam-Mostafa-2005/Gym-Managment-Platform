@@ -8,6 +8,8 @@ import {
   logFoodSchema,
   updateFoodLogSchema,
   createCoachPlanSchema,
+  createCustomFoodSchema,
+  updateCustomFoodSchema,
 } from "../validators/nutrition.validator.js";
 
 const router = Router();
@@ -16,11 +18,24 @@ const router = Router();
 router.use(protect);
 
 // ==========================================
-// FOOD CATALOG ROUTES (SHARED)
+// FOOD CATALOG & CUSTOM FOODS (SHARED / MEMBER)
 // ==========================================
 router.get("/foods", nutritionController.searchFoods);
 router.get("/foods/categories", nutritionController.getFoodCategories);
 router.get("/foods/:id", nutritionController.getFoodById);
+
+router.post(
+  "/me/custom-foods",
+  validate(createCustomFoodSchema),
+  nutritionController.createCustomFood,
+);
+router.get("/me/custom-foods", nutritionController.getUserCustomFoods);
+router.patch(
+  "/me/custom-foods/:id",
+  validate(updateCustomFoodSchema),
+  nutritionController.updateCustomFood,
+);
+router.delete("/me/custom-foods/:id", nutritionController.deleteCustomFood);
 
 // ==========================================
 // MEMBER ROUTES

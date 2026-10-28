@@ -114,6 +114,8 @@ describe("STREN Phase 1 — Security & Data Contract Stabilization", () => {
 
         assert.deepEqual(Object.keys(createdPayload).sort(), [
           "email",
+          "emailVerifiedAt",
+          "isEmailVerified",
           "name",
           "onboardingCompleted",
           "onboardingStep",

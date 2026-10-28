@@ -126,6 +126,8 @@ class ScheduledWorkoutService {
         status: "SCHEDULED",
       },
       include: {
+        member: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        trainer: { select: { id: true, name: true, email: true, avatarUrl: true } },
         workout: {
           include: {
             exercises: {
@@ -210,7 +212,8 @@ class ScheduledWorkoutService {
               },
             },
           },
-          member: { select: { id: true, name: true, email: true } },
+          member: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        trainer: { select: { id: true, name: true, email: true, avatarUrl: true } },
         },
       });
 
@@ -267,6 +270,8 @@ class ScheduledWorkoutService {
       where,
       orderBy: { scheduledAt: "asc" },
       include: {
+        member: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        trainer: { select: { id: true, name: true, email: true, avatarUrl: true } },
         workout: {
           include: {
             exercises: {
@@ -275,10 +280,9 @@ class ScheduledWorkoutService {
             },
           },
         },
-        trainer: { select: { id: true, name: true, email: true } },
         assignment: {
           include: {
-            trainer: { select: { id: true, name: true, email: true } },
+            trainer: { select: { id: true, name: true, email: true, avatarUrl: true } },
           },
         },
         session: {
@@ -361,7 +365,8 @@ class ScheduledWorkoutService {
       where,
       orderBy: { scheduledAt: "asc" },
       include: {
-        member: { select: { id: true, name: true, email: true } },
+        member: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        trainer: { select: { id: true, name: true, email: true, avatarUrl: true } },
         workout: {
           include: {
             exercises: {
@@ -404,7 +409,8 @@ class ScheduledWorkoutService {
         isActive: true,
       },
       include: {
-        member: { select: { id: true, name: true, email: true } },
+        member: { select: { id: true, name: true, email: true, avatarUrl: true } },
+        trainer: { select: { id: true, name: true, email: true, avatarUrl: true } },
         workout: {
           include: {
             exercises: {
@@ -413,10 +419,9 @@ class ScheduledWorkoutService {
             },
           },
         },
-        trainer: { select: { id: true, name: true, email: true } },
         assignment: {
           include: {
-            trainer: { select: { id: true, name: true, email: true } },
+            trainer: { select: { id: true, name: true, email: true, avatarUrl: true } },
           },
         },
         session: {
@@ -549,7 +554,7 @@ class ScheduledWorkoutService {
           data: {
             userId: scheduled.memberId,
             title: "Workout Schedule Updated",
-            message: `Coach ${coach?.name || "Your Coach"} rescheduled your workout "${scheduled.workout.title}" to ${newDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}.`,
+            message: `Coach ${coach?.name || "Your Coach"} rescheduled your workout "${scheduled.workout?.title || "Workout"}" to ${newDate.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}.`,
             type: (NOTIFICATION_TYPE as any).WORKOUT_SCHEDULE_UPDATED || "SYSTEM",
             actionUrl: "/calendar",
           },

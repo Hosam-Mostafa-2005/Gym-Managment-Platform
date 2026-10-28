@@ -18,6 +18,7 @@ export const exercisesData: RawExercise[] = [
   // CHEST
   {
     name: "Barbell Bench Press",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213807/exercise-barbell-bench-press-v2.png",
     description:
       "The premier compound pressing movement for building upper body strength and mass.",
     equipment: [Equipment.BARBELL],
@@ -38,6 +39,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Incline Dumbbell Press",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213815/exercise-incline-dumbbell-press-v2.png",
     description:
       "Unilateral pressing variation targeting the clavicular head of the pectorals.",
     equipment: [Equipment.DUMBBELL],
@@ -57,6 +59,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Cable Crossover",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213808/exercise-cable-crossover-v2.png",
     description:
       "Constant-tension isolation movement for pectoral hypertrophy.",
     equipment: [Equipment.CABLE],
@@ -73,6 +76,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Push-Ups",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213846/exercise-push-ups-v2.png",
     description:
       "A foundational bodyweight exercise for pushing strength and core stability.",
     equipment: [Equipment.BODYWEIGHT],
@@ -88,6 +92,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Pec Deck Fly",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213843/exercise-pec-deck-fly-v2.png",
     description:
       "Machine-based isolation exercise that eliminates stability requirements.",
     equipment: [Equipment.MACHINE],
@@ -106,6 +111,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Decline Barbell Press",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-decline-barbell-press-v2.png",
     description:
       "Pressing variation targeting the lower sternal fibers of the pectorals.",
     equipment: [Equipment.BARBELL],
@@ -121,6 +127,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Chest Dips",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-chest-dips-v2.png",
     description:
       "Heavy bodyweight pressing movement emphasizing lower chest and triceps.",
     equipment: [Equipment.BODYWEIGHT],
@@ -140,6 +147,7 @@ export const exercisesData: RawExercise[] = [
   // BACK
   {
     name: "Lat Pulldown",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213817/exercise-lat-pulldown-v2.png",
     description:
       "Vertical pulling machine exercise designed to build back width.",
     equipment: [Equipment.CABLE, Equipment.MACHINE],
@@ -156,6 +164,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Barbell Bent-Over Row",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213807/exercise-barbell-bent-over-row-v2.png",
     description:
       "Heavy horizontal pulling movement for overall back thickness and density.",
     equipment: [Equipment.BARBELL],
@@ -172,6 +181,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Seated Cable Row",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213780/exercise-seated-cable-row-v2.png",
     description:
       "Horizontal pulling movement providing constant tension across the rhomboids and lats.",
     equipment: [Equipment.CABLE, Equipment.MACHINE],
@@ -190,6 +200,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Pull-Ups",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213845/exercise-pull-ups-v2.png",
     description:
       "The ultimate upper-body bodyweight vertical pulling movement.",
     equipment: [Equipment.BODYWEIGHT],
@@ -205,6 +216,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Conventional Deadlift",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-conventional-deadlift-v2.png",
     description:
       "Full-body compound pull developing posterior chain strength and stability.",
     equipment: [Equipment.BARBELL],
@@ -223,6 +235,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Single-Arm Dumbbell Row",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213782/exercise-single-arm-dumbbell-row-v2.png",
     description:
       "Unilateral row allowing for greater range of motion and core anti-rotation.",
     equipment: [Equipment.DUMBBELL],
@@ -241,6 +254,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Face Pulls",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-face-pulls-v2.png",
     description:
       "Crucial postural exercise targeting rear delts, rhomboids, and external rotators.",
     equipment: [Equipment.CABLE],
@@ -259,6 +273,7 @@ export const exercisesData: RawExercise[] = [
   // LEGS
   {
     name: "Barbell Back Squat",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213805/exercise-barbell-back-squat-v2.png",
     description:
       "The foundational lower-body compound exercise for leg hypertrophy and strength.",
     equipment: [Equipment.BARBELL],
@@ -275,6 +290,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Romanian Deadlift",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213779/exercise-romanian-deadlift-v2.png",
     description:
       "Hip-hinge movement that heavily emphasizes hamstring stretch and glute engagement.",
     equipment: [Equipment.BARBELL],
@@ -293,6 +309,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Leg Press",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213818/exercise-leg-press-v2.png",
     description:
       "High-loading machine exercise for lower body volume without spinal compression.",
     equipment: [Equipment.MACHINE],
@@ -308,6 +325,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Walking Lunges",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213785/exercise-walking-lunges-v2.png",
     description:
       "Dynamic unilateral leg movement developing balance, coordination, and glute strength.",
     equipment: [Equipment.DUMBBELL],
@@ -325,6 +343,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Leg Extensions",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213818/exercise-leg-extensions-v2.png",
     description:
       "Open-chain isolation exercise designed to target the quadriceps muscles directly.",
     equipment: [Equipment.MACHINE],
@@ -340,6 +359,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Lying Leg Curls",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213839/exercise-lying-leg-curls-v2.png",
     description:
       "Machine isolation movement emphasizing knee flexion to target the hamstrings.",
     equipment: [Equipment.MACHINE],
@@ -357,6 +377,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Standing Calf Raises",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213783/exercise-standing-calf-raises-v2.png",
     description:
       "Heavy isolation exercise targeting the gastrocnemius muscle of the calf.",
     equipment: [Equipment.MACHINE],
@@ -372,6 +393,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Bulgarian Split Squat",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213808/exercise-bulgarian-split-squat-v2.png",
     description:
       "Intense unilateral leg movement elevating the rear foot to isolate the lead leg.",
     equipment: [Equipment.DUMBBELL],
@@ -390,6 +412,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Goblet Squat",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-goblet-squat-v2.png",
     description:
       "An accessible anterior-loaded squat variation teaching proper mechanics.",
     equipment: [Equipment.DUMBBELL],
@@ -410,6 +433,7 @@ export const exercisesData: RawExercise[] = [
   // SHOULDERS
   {
     name: "Overhead Barbell Press",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213839/exercise-overhead-barbell-press-v2.png",
     description:
       "Strict vertical pressing compound movement building shoulder and core strength.",
     equipment: [Equipment.BARBELL],
@@ -426,6 +450,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Seated Dumbbell Press",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213781/exercise-seated-dumbbell-press-v2.png",
     description:
       "Stable overhead pressing variation allowing independent arm movement.",
     equipment: [Equipment.DUMBBELL],
@@ -441,6 +466,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Lateral Raises",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213816/exercise-lateral-raises-v2.png",
     description:
       "Essential isolation exercise for building shoulder width by targeting the lateral deltoids.",
     equipment: [Equipment.DUMBBELL],
@@ -456,6 +482,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Front Dumbbell Raises",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-front-dumbbell-raises-v2.png",
     description:
       "Isolation movement focused specifically on the anterior deltoid head.",
     equipment: [Equipment.DUMBBELL],
@@ -471,6 +498,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Reverse Pec Deck",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213847/exercise-reverse-pec-deck-v2.png",
     description:
       "Machine isolation movement targeting the rear deltoids and upper back musculature.",
     equipment: [Equipment.MACHINE],
@@ -489,6 +517,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Cable Upright Row",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-cable-upright-row-v2.png",
     description:
       "Compound pulling movement targeting lateral deltoids and upper trapezius.",
     equipment: [Equipment.CABLE],
@@ -507,6 +536,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Arnold Press",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213803/exercise-arnold-press-v2.png",
     description:
       "Rotational dumbbell press engaging all three heads of the deltoids.",
     equipment: [Equipment.DUMBBELL],
@@ -527,12 +557,13 @@ export const exercisesData: RawExercise[] = [
   // BICEPS
   {
     name: "Barbell Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213807/exercise-barbell-curl-v2.png",
     description:
       "The classic mass-building isolation movement for the biceps brachii.",
     equipment: [Equipment.BARBELL],
     difficulty: Difficulty.BEGINNER,
     primaryMuscles: ["Biceps"],
-    secondaryMuscles: ["Forearms"],
+    secondaryMuscles: ["Forearms", "Brachialis"],
     instructions: [
       "Stand upright holding a barbell with a shoulder-width underhand grip.",
       "Keep your upper arms stationary against your sides.",
@@ -544,7 +575,65 @@ export const exercisesData: RawExercise[] = [
     ],
   },
   {
+    name: "EZ-Bar Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213800/Muscular_Man_Curling_an_EZ_Barbell.png",
+    description:
+      "Cambered bar curl reducing wrist and elbow strain while overloading the biceps.",
+    equipment: [Equipment.EZ_BAR],
+    difficulty: Difficulty.BEGINNER,
+    primaryMuscles: ["Biceps"],
+    secondaryMuscles: ["Forearms", "Brachialis"],
+    instructions: [
+      "Grip the cambered EZ-bar on the angled inner grips with an underhand grip.",
+      "Keep elbows tucked by your ribcage and curl the bar up toward shoulder height.",
+      "Squeeze biceps firmly at the top and lower under control.",
+    ],
+    tips: [
+      "The angled grip relieves wrist and forearm strain compared to straight bars.",
+      "Maintain strict upright posture.",
+    ],
+  },
+  {
+    name: "Dumbbell Biceps Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213806/Faceless_Muscular_Dumbbell_Curl_Illustration.png",
+    description:
+      "Bilateral or synchronized free weight curl allowing natural wrist positioning.",
+    equipment: [Equipment.DUMBBELL],
+    difficulty: Difficulty.BEGINNER,
+    primaryMuscles: ["Biceps"],
+    secondaryMuscles: ["Forearms", "Brachialis"],
+    instructions: [
+      "Stand tall with a dumbbell in each hand at your sides, palms facing forward.",
+      "Curl both dumbbells upward simultaneously while keeping upper arms vertical.",
+      "Pause at the peak squeeze, then lower smoothly back to full extension.",
+    ],
+    tips: [
+      "Do not let elbows drift forward excessively.",
+      "Control the lowering phase for 2-3 seconds.",
+    ],
+  },
+  {
+    name: "Alternating Dumbbell Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213807/Faceless_Muscular_Man_Performing_Dumbbell_Curl.png",
+    description:
+      "Classic unilateral curl allowing full focus and wrist supination on each repetition.",
+    equipment: [Equipment.DUMBBELL],
+    difficulty: Difficulty.BEGINNER,
+    primaryMuscles: ["Biceps"],
+    secondaryMuscles: ["Forearms", "Brachialis"],
+    instructions: [
+      "Hold a pair of dumbbells at your sides with neutral grip (palms facing inward).",
+      "Curl one dumbbell upward while supinating your forearm so your palm faces up at the top.",
+      "Lower that dumbbell under control, then repeat with the opposite arm.",
+    ],
+    tips: [
+      "Focus on the forearm supination at mid-curl for maximum biceps recruitment.",
+      "Avoid leaning your torso to the working side.",
+    ],
+  },
+  {
     name: "Incline Dumbbell Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213814/exercise-incline-dumbbell-curl-v2.png",
     description:
       "Places the biceps in a stretched position behind the body for maximum muscle fiber recruitment.",
     equipment: [Equipment.DUMBBELL],
@@ -562,28 +651,48 @@ export const exercisesData: RawExercise[] = [
     ],
   },
   {
-    name: "Hammer Curls",
+    name: "Hammer Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213813/exercise-hammer-curl-v2.png",
     description:
       "Neutral-grip curl emphasizing the brachialis and brachioradialis for arm thickness.",
     equipment: [Equipment.DUMBBELL],
     difficulty: Difficulty.BEGINNER,
     primaryMuscles: ["Biceps", "Forearms"],
-    secondaryMuscles: [],
+    secondaryMuscles: ["Brachialis"],
     instructions: [
       "Stand holding dumbbells at your sides with palms facing each other (neutral grip).",
       "Curl the weights upward while maintaining the neutral hand position.",
       "Squeeze your forearms and biceps at the top before lowering.",
     ],
-    tips: ["You can alternate arms or curl both dumbbells simultaneously."],
+    tips: ["Maintain neutral wrist alignment throughout the rep."],
+  },
+  {
+    name: "Cross-body Hammer Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213792/Faceless_Cross-Body_Curl_Illustration.png",
+    description:
+      "Neutral-grip curl across the chest to heavily recruit the brachialis and outer biceps.",
+    equipment: [Equipment.DUMBBELL],
+    difficulty: Difficulty.BEGINNER,
+    primaryMuscles: ["Biceps", "Forearms"],
+    secondaryMuscles: ["Brachialis"],
+    instructions: [
+      "Hold dumbbells at sides with palms facing inward.",
+      "Curl one dumbbell across your torso toward the opposite pectoral/collarbone.",
+      "Squeeze the brachialis and outer biceps head at peak contraction, then lower and alternate sides.",
+    ],
+    tips: [
+      "Keep the movement strictly in the frontal plane across your chest.",
+    ],
   },
   {
     name: "Preacher Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213844/exercise-preacher-curl-v2.png",
     description:
       "Strict isolation exercise preventing momentum by anchoring the upper arms.",
     equipment: [Equipment.EZ_BAR, Equipment.MACHINE],
     difficulty: Difficulty.INTERMEDIATE,
     primaryMuscles: ["Biceps"],
-    secondaryMuscles: ["Forearms"],
+    secondaryMuscles: ["Forearms", "Brachialis"],
     instructions: [
       "Rest your upper arms and chest flat against the angled preacher pad.",
       "Grip the EZ Bar with an underhand grip.",
@@ -595,7 +704,27 @@ export const exercisesData: RawExercise[] = [
     ],
   },
   {
-    name: "Cable Curl",
+    name: "Spider Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213801/Prone_Incline_Dumbbell_Curls.png",
+    description:
+      "Prone incline curl maximizing short-head activation without torso momentum.",
+    equipment: [Equipment.EZ_BAR, Equipment.DUMBBELL],
+    difficulty: Difficulty.INTERMEDIATE,
+    primaryMuscles: ["Biceps"],
+    secondaryMuscles: ["Brachialis", "Forearms"],
+    instructions: [
+      "Lie prone (chest-down) on a 45-degree incline bench with arms hanging vertically over the front.",
+      "Grasp the barbell or dumbbells with an underhand grip.",
+      "Curl the weight upward toward your face while keeping upper arms perpendicular to the floor.",
+      "Squeeze firmly at the top contraction and lower under full control.",
+    ],
+    tips: [
+      "This position eliminates torso momentum and maximizes short head tension.",
+    ],
+  },
+  {
+    name: "Cable Biceps Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213811/Cable_Machine_Biceps_Curl_Illustration.png",
     description:
       "Provides continuous cable tension throughout the entire contraction cycle.",
     equipment: [Equipment.CABLE],
@@ -611,7 +740,46 @@ export const exercisesData: RawExercise[] = [
     tips: ["Keep your wrists straight and rigid during the curl."],
   },
   {
+    name: "Bayesian Cable Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213806/Black-and-White_Cable_Curl_Illustration.png",
+    description:
+      "Facing-away cable curl creating peak stretch tension on the long head behind the torso.",
+    equipment: [Equipment.CABLE],
+    difficulty: Difficulty.INTERMEDIATE,
+    primaryMuscles: ["Biceps"],
+    secondaryMuscles: ["Forearms", "Brachialis"],
+    instructions: [
+      "Set single D-handle pulleys to wrist height on a dual cable station.",
+      "Face away from the machine and take a step forward so arms are extended behind your torso in a stretch.",
+      "Lean slightly forward and curl the cables forward and upward into full flexion.",
+      "Allow arms to travel back into the lengthened stretch behind your body under control.",
+    ],
+    tips: [
+      "Target the long head in the extreme lengthened position.",
+    ],
+  },
+  {
+    name: "Machine Biceps Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213801/Seated_Preacher_Curl_Machine_Illustration.png",
+    description:
+      "Strict machine-guided curl with consistent resistance profile throughout the range.",
+    equipment: [Equipment.MACHINE],
+    difficulty: Difficulty.BEGINNER,
+    primaryMuscles: ["Biceps"],
+    secondaryMuscles: ["Forearms", "Brachialis"],
+    instructions: [
+      "Adjust the seat so your upper arms rest flush against the angled pad with elbows aligned with the machine pivot point.",
+      "Grasp the handles with an underhand grip.",
+      "Curl the handles toward your shoulders until your biceps are fully contracted.",
+      "Lower slowly under the control of the weight stack without letting the plates crash.",
+    ],
+    tips: [
+      "Align your elbow joint exactly with the axis of machine rotation.",
+    ],
+  },
+  {
     name: "Concentration Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-concentration-curl-v2.png",
     description:
       "Unilateral peak-focus curl performed seated with elbow braced against the thigh.",
     equipment: [Equipment.DUMBBELL],
@@ -628,10 +796,28 @@ export const exercisesData: RawExercise[] = [
       "Focus intensely on squeezing the bicep at the top of the movement.",
     ],
   },
-
+  {
+    name: "Reverse Curl",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213792/Faceless_Bodybuilder_Holding_Barbell.png",
+    description:
+      "Overhand grip curl targeting the brachioradialis, forearms, and brachialis.",
+    equipment: [Equipment.BARBELL, Equipment.EZ_BAR],
+    difficulty: Difficulty.INTERMEDIATE,
+    primaryMuscles: ["Forearms", "Biceps"],
+    secondaryMuscles: ["Brachioradialis", "Brachialis"],
+    instructions: [
+      "Stand upright holding a straight barbell or EZ-bar with an overhand (pronated) grip, palms facing down.",
+      "Keep elbows tight to your sides and curl the bar upward toward chest level.",
+      "Squeeze the brachioradialis and forearm extensors at the top, then lower with control.",
+    ],
+    tips: [
+      "Use lighter weight than a standard curl to maintain strict overhand wrist position.",
+    ],
+  },
   // TRICEPS
   {
     name: "Tricep Rope Pushdown",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213784/exercise-tricep-rope-pushdown-v2.png",
     description:
       "Cable isolation movement targeting the lateral and long heads of the triceps.",
     equipment: [Equipment.CABLE],
@@ -650,6 +836,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Skull Crushers",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213781/exercise-skull-crushers-v2.png",
     description:
       "Lying barbell extension providing heavy loading for overall tricep mass.",
     equipment: [Equipment.EZ_BAR, Equipment.BARBELL],
@@ -668,6 +855,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Overhead Tricep Extension",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213840/exercise-overhead-tricep-extension-v2.png",
     description:
       "Places the long head of the triceps under extreme stretch for maximum hypertrophy.",
     equipment: [Equipment.DUMBBELL],
@@ -683,6 +871,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Close-Grip Bench Press",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-close-grip-bench-press-v2.png",
     description:
       "Heavy compound pressing variation shifting primary emphasis from chest to triceps.",
     equipment: [Equipment.BARBELL],
@@ -700,6 +889,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Bench Dips",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213808/exercise-bench-dips-v2.png",
     description:
       "Accessible bodyweight tricep builder performed using a flat workout bench.",
     equipment: [Equipment.BODYWEIGHT],
@@ -718,6 +908,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Cable Kickbacks",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213808/exercise-cable-kickbacks-v2.png",
     description:
       "Strict unilateral isolation movement maximizing peak tricep contraction at full extension.",
     equipment: [Equipment.CABLE],
@@ -738,6 +929,7 @@ export const exercisesData: RawExercise[] = [
   // CORE
   {
     name: "Hanging Leg Raises",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213814/exercise-hanging-leg-raises-v2.png",
     description:
       "Advanced core exercise targeting the lower rectus abdominis and hip flexors.",
     equipment: [Equipment.BODYWEIGHT],
@@ -755,6 +947,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Plank",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213843/exercise-plank-v2.png",
     description:
       "Isometric core stability movement building endurance across the entire abdominal wall.",
     equipment: [Equipment.BODYWEIGHT],
@@ -772,6 +965,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Cable Woodchoppers",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-cable-woodchoppers-v2.png",
     description:
       "Rotational core exercise developing oblique strength and functional power transfer.",
     equipment: [Equipment.CABLE],
@@ -790,6 +984,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Russian Twists",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213780/exercise-russian-twists-v2.png",
     description:
       "Seated rotational core exercise targeting the internal and external obliques.",
     equipment: [Equipment.BODYWEIGHT],
@@ -808,6 +1003,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Ab Wheel Rollout",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213802/exercise-ab-wheel-rollout-v2.png",
     description:
       "Challenging anti-extension abdominal exercise recruiting the entire anterior core chain.",
     equipment: [Equipment.MACHINE],
@@ -826,6 +1022,7 @@ export const exercisesData: RawExercise[] = [
   },
   {
     name: "Decline Crunches",
+    imageUrl: "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-decline-crunches-v2.png",
     description:
       "Weighted or bodyweight spinal flexion exercise utilizing a decline angle for added resistance.",
     equipment: [Equipment.BODYWEIGHT],

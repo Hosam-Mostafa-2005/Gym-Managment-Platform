@@ -7,6 +7,7 @@ export interface ProfileUser {
   name: string;
   email: string;
   role?: string;
+  avatarUrl?: string | null;
   phone?: string | null;
   bio?: string | null;
   fitnessGoal?: string | null;
@@ -112,6 +113,7 @@ export interface MemberProfileResponse {
 // ─── COACH PROFILE TYPES ───────────────────────────────────────────────────
 
 export interface CoachProfileDetails {
+  avatarUrl?: string | null;
   id: string;
   name: string;
   email: string;

@@ -1,6 +1,24 @@
 import { z } from "zod";
 import { Category, Difficulty } from "../constants/workout.js";
 
+export const prescribedStageSchema = z.object({
+  stageNumber: z.number().int().min(1).optional(),
+  segmentIndex: z.number().int().min(0),
+  stageLabel: z.string().optional(),
+  targetWeight: z.number().min(0).nullable().optional(),
+  targetReps: z.union([z.number(), z.string()]).optional(),
+  isIntermediateSegment: z.boolean().optional(),
+  isFinalSegment: z.boolean().optional(),
+});
+
+export const prescribedSetSchema = z.object({
+  setNumber: z.number().int().min(1),
+  setType: z.enum(["NORMAL", "DROP_SET", "REST_PAUSE", "WARMUP"]).default("NORMAL"),
+  targetWeight: z.number().min(0).nullable().optional(),
+  targetReps: z.union([z.number(), z.string()]).optional(),
+  stages: z.array(prescribedStageSchema).optional(),
+});
+
 export const createWorkoutSchema = z.object({
   body: z.object({
     title: z.string().trim().min(3).max(100),
@@ -12,6 +30,10 @@ export const createWorkoutSchema = z.object({
     difficulty: z.enum(Object.values(Difficulty) as [string, ...string[]]),
 
     estimatedDuration: z.number().min(1),
+
+    defaultRestLarge: z.number().int().min(15).max(600).optional(),
+
+    defaultRestSmall: z.number().int().min(15).max(600).optional(),
 
     isTemplate: z.boolean().optional(),
 
@@ -30,11 +52,15 @@ export const createWorkoutSchema = z.object({
 
           targetRpe: z.number().min(1, "Target RPE must be at least 1").max(10, "Target RPE cannot exceed 10").nullable().optional(),
 
-          restSeconds: z.number().min(0),
+          restSeconds: z.number().min(0).optional(),
+
+          isRestOverridden: z.boolean().optional(),
 
           notes: z.string().optional(),
 
           order: z.number().min(1),
+
+          setsDetail: z.array(prescribedSetSchema).optional(),
         }),
       )
       .min(1),

@@ -8,6 +8,7 @@ import type {
 import ApiFeatures from "../utils/ApiFeatures.js";
 import mapWorkout from "../mappers/workout.mapper.js";
 import { Roles, type Role } from "../constants/roles.js";
+import { getRecommendedRestSeconds } from "../utils/rest-classification.js";
 
 class WorkoutService {
   async create(data: CreateWorkoutDto, trainerId: string, role?: Role) {
@@ -56,6 +57,12 @@ class WorkoutService {
       throw new AppError("One or more exercises do not exist.", 400);
     }
 
+    const defaultRestLarge = data.defaultRestLarge ?? 90;
+    const defaultRestSmall = data.defaultRestSmall ?? 60;
+    const existingExercisesMap = new Map(
+      existingExercises.map((e) => [e.id, e]),
+    );
+
     const workout = await prisma.workout.create({
       data: {
         title: data.title,
@@ -63,20 +70,44 @@ class WorkoutService {
         category: data.category as any,
         difficulty: data.difficulty as any,
         estimatedDuration: data.estimatedDuration,
+        defaultRestLarge,
+        defaultRestSmall,
         tags: data.tags ?? [],
         isTemplate,
         createdBy: trainerId,
         exercises: {
-          create: data.exercises.map((e) => ({
-            exerciseId: e.exercise,
-            sets: e.sets,
-            reps: e.reps,
-            targetWeight: e.targetWeight,
-            targetRpe: e.targetRpe,
-            restSeconds: e.restSeconds,
-            notes: e.notes,
-            order: e.order,
-          })),
+          create: data.exercises.map((e) => {
+            const exEntity = existingExercisesMap.get(e.exercise);
+            const autoRest = getRecommendedRestSeconds(
+              exEntity?.primaryMuscles || [],
+              defaultRestLarge,
+              defaultRestSmall,
+            );
+            const isOverridden = Boolean(e.isRestOverridden);
+            const finalRest = isOverridden
+              ? (e.restSeconds ?? autoRest)
+              : (e.restSeconds !== undefined && e.isRestOverridden === undefined && e.restSeconds !== autoRest
+                  ? e.restSeconds
+                  : autoRest);
+            const finalOverridden =
+              isOverridden ||
+              (e.isRestOverridden === undefined &&
+                e.restSeconds !== undefined &&
+                e.restSeconds !== autoRest);
+
+            return {
+              exerciseId: e.exercise,
+              sets: e.sets,
+              reps: e.reps,
+              targetWeight: e.targetWeight,
+              targetRpe: e.targetRpe,
+              restSeconds: finalRest,
+              isRestOverridden: finalOverridden,
+              notes: e.notes,
+              order: e.order,
+              ...(e.setsDetail ? { setsDetail: e.setsDetail as any } : {}),
+            };
+          }) as any,
         },
       },
       include: {
@@ -371,6 +402,68 @@ class WorkoutService {
 
         // Create the new published template version
         const newVersionNumber = (workout.version ?? 1) + 1;
+        const effectiveDefaultLarge =
+          data.defaultRestLarge ?? workout.defaultRestLarge ?? 90;
+        const effectiveDefaultSmall =
+          data.defaultRestSmall ?? workout.defaultRestSmall ?? 60;
+
+        let createdExercisesData: any[];
+
+        if (data.exercises) {
+          const exerciseEntities = await tx.exercise.findMany({
+            where: { id: { in: data.exercises.map((e) => e.exercise) } },
+          });
+          const exMap = new Map(exerciseEntities.map((e) => [e.id, e]));
+
+          createdExercisesData = data.exercises.map((e) => {
+            const ex = exMap.get(e.exercise);
+            const autoRest = getRecommendedRestSeconds(
+              ex?.primaryMuscles || [],
+              effectiveDefaultLarge,
+              effectiveDefaultSmall,
+            );
+            const isOverridden = Boolean(e.isRestOverridden);
+            const finalRest = isOverridden
+              ? (e.restSeconds ?? autoRest)
+              : (e.restSeconds !== undefined &&
+                 e.isRestOverridden === undefined &&
+                 e.restSeconds !== autoRest
+                  ? e.restSeconds
+                  : autoRest);
+            const finalOverridden =
+              isOverridden ||
+              (e.isRestOverridden === undefined &&
+                e.restSeconds !== undefined &&
+                e.restSeconds !== autoRest);
+
+            return {
+              exerciseId: e.exercise,
+              sets: e.sets,
+              reps: e.reps,
+              targetWeight: e.targetWeight,
+              targetRpe: e.targetRpe,
+              restSeconds: finalRest,
+              isRestOverridden: finalOverridden,
+              notes: e.notes,
+              order: e.order,
+              ...(e.setsDetail ? { setsDetail: e.setsDetail as any } : {}),
+            };
+          });
+        } else {
+          createdExercisesData = existingExercises.map((e) => ({
+            exerciseId: e.exerciseId,
+            sets: e.sets,
+            reps: e.reps,
+            targetWeight: e.targetWeight,
+            targetRpe: e.targetRpe,
+            restSeconds: e.restSeconds,
+            isRestOverridden: e.isRestOverridden,
+            notes: e.notes,
+            order: e.order,
+            ...(e.setsDetail ? { setsDetail: e.setsDetail } : {}),
+          }));
+        }
+
         const newTemplate = await tx.workout.create({
           data: {
             title: data.title ?? workout.title,
@@ -379,33 +472,15 @@ class WorkoutService {
             difficulty: (data.difficulty as any) ?? workout.difficulty,
             estimatedDuration:
               data.estimatedDuration ?? workout.estimatedDuration,
+            defaultRestLarge: effectiveDefaultLarge,
+            defaultRestSmall: effectiveDefaultSmall,
             tags: data.tags ?? workout.tags,
             isTemplate: true,
             version: newVersionNumber,
             parentWorkoutId: workout.parentWorkoutId || workout.id,
             createdBy: creatorId,
             exercises: {
-              create: data.exercises
-                ? data.exercises.map((e) => ({
-                    exerciseId: e.exercise,
-                    sets: e.sets,
-                    reps: e.reps,
-                    targetWeight: e.targetWeight,
-                    targetRpe: e.targetRpe,
-                    restSeconds: e.restSeconds,
-                    notes: e.notes,
-                    order: e.order,
-                  }))
-                : existingExercises.map((e) => ({
-                    exerciseId: e.exerciseId,
-                    sets: e.sets,
-                    reps: e.reps,
-                    targetWeight: e.targetWeight,
-                    targetRpe: e.targetRpe,
-                    restSeconds: e.restSeconds,
-                    notes: e.notes,
-                    order: e.order,
-                  })),
+              create: createdExercisesData,
             },
           },
           include: {
@@ -430,24 +505,78 @@ class WorkoutService {
 
     // In-place update for workouts without active assignments or non-templates
     const updated = await prisma.$transaction(async (tx) => {
+      const nextDefaultLarge =
+        data.defaultRestLarge ?? workout.defaultRestLarge ?? 90;
+      const nextDefaultSmall =
+        data.defaultRestSmall ?? workout.defaultRestSmall ?? 60;
+
       if (data.exercises) {
+        const exerciseEntities = await tx.exercise.findMany({
+          where: { id: { in: data.exercises.map((e) => e.exercise) } },
+        });
+        const exMap = new Map(exerciseEntities.map((e) => [e.id, e]));
+
         await tx.workoutExercise.deleteMany({
           where: { workoutId: id },
         });
 
         await tx.workoutExercise.createMany({
-          data: data.exercises.map((e) => ({
-            workoutId: id,
-            exerciseId: e.exercise,
-            sets: e.sets,
-            reps: e.reps,
-            targetWeight: e.targetWeight,
-            targetRpe: e.targetRpe,
-            restSeconds: e.restSeconds,
-            notes: e.notes,
-            order: e.order,
-          })),
+          data: data.exercises.map((e) => {
+            const ex = exMap.get(e.exercise);
+            const autoRest = getRecommendedRestSeconds(
+              ex?.primaryMuscles || [],
+              nextDefaultLarge,
+              nextDefaultSmall,
+            );
+            const isOverridden = Boolean(e.isRestOverridden);
+            const finalRest = isOverridden
+              ? (e.restSeconds ?? autoRest)
+              : (e.restSeconds !== undefined &&
+                 e.isRestOverridden === undefined &&
+                 e.restSeconds !== autoRest
+                  ? e.restSeconds
+                  : autoRest);
+            const finalOverridden =
+              isOverridden ||
+              (e.isRestOverridden === undefined &&
+                e.restSeconds !== undefined &&
+                e.restSeconds !== autoRest);
+
+            return {
+              workoutId: id,
+              exerciseId: e.exercise,
+              sets: e.sets,
+              reps: e.reps,
+              targetWeight: e.targetWeight,
+              targetRpe: e.targetRpe,
+              restSeconds: finalRest,
+              isRestOverridden: finalOverridden,
+              notes: e.notes,
+              order: e.order,
+              ...(e.setsDetail ? { setsDetail: e.setsDetail as any } : {}),
+            };
+          }),
         });
+      } else if (
+        data.defaultRestLarge !== undefined ||
+        data.defaultRestSmall !== undefined
+      ) {
+        const nonOverridden = await tx.workoutExercise.findMany({
+          where: { workoutId: id, isRestOverridden: false },
+          include: { exercise: true },
+        });
+
+        for (const item of nonOverridden) {
+          const autoRest = getRecommendedRestSeconds(
+            item.exercise.primaryMuscles || [],
+            nextDefaultLarge,
+            nextDefaultSmall,
+          );
+          await tx.workoutExercise.update({
+            where: { id: item.id },
+            data: { restSeconds: autoRest },
+          });
+        }
       }
 
       return tx.workout.update({
@@ -463,6 +592,12 @@ class WorkoutService {
           }),
           ...(data.estimatedDuration !== undefined && {
             estimatedDuration: data.estimatedDuration,
+          }),
+          ...(data.defaultRestLarge !== undefined && {
+            defaultRestLarge: data.defaultRestLarge,
+          }),
+          ...(data.defaultRestSmall !== undefined && {
+            defaultRestSmall: data.defaultRestSmall,
           }),
           ...(data.tags !== undefined && { tags: data.tags }),
           ...(data.isTemplate !== undefined && !isMember && {
@@ -509,6 +644,8 @@ class WorkoutService {
         category: source.category as any,
         difficulty: source.difficulty as any,
         estimatedDuration: source.estimatedDuration,
+        defaultRestLarge: (source as any).defaultRestLarge ?? 90,
+        defaultRestSmall: (source as any).defaultRestSmall ?? 60,
         tags: source.tags || [],
         isTemplate: false,
         createdBy: userId,
@@ -517,9 +654,13 @@ class WorkoutService {
             exerciseId: e.exerciseId || e.exercise?.id,
             sets: e.sets,
             reps: e.reps,
-            restSeconds: e.restSeconds,
+            targetWeight: e.targetWeight,
+            targetRpe: e.targetRpe,
+            restSeconds: e.restSeconds ?? 60,
+            isRestOverridden: Boolean(e.isRestOverridden),
             notes: e.notes,
             order: e.order,
+            ...(e.setsDetail ? { setsDetail: e.setsDetail } : {}),
           })),
         },
       },

@@ -6,6 +6,23 @@ import { workoutSchema } from "../schemas/workout.schema";
 /*                           Workout Exercise Types                           */
 /* -------------------------------------------------------------------------- */
 
+export type PrescribedSetType = "NORMAL" | "DROP_SET" | "REST_PAUSE" | "WARMUP";
+
+export interface PrescribedStage {
+  segmentIndex: number;
+  stageLabel?: string;
+  targetWeight?: number;
+  targetReps?: string | number;
+}
+
+export interface PrescribedSet {
+  setNumber: number;
+  setType: PrescribedSetType;
+  targetWeight?: number;
+  targetReps?: string | number;
+  stages?: PrescribedStage[];
+}
+
 export interface WorkoutExercise {
   exercise: string;
 
@@ -19,9 +36,13 @@ export interface WorkoutExercise {
 
   restSeconds: number;
 
+  isRestOverridden?: boolean;
+
   notes?: string;
 
   order: number;
+
+  setsDetail?: PrescribedSet[];
 }
 
 export interface WorkoutExerciseDetails {
@@ -37,9 +58,13 @@ export interface WorkoutExerciseDetails {
 
   restSeconds: number;
 
+  isRestOverridden?: boolean;
+
   notes?: string;
 
   order: number;
+
+  setsDetail?: PrescribedSet[];
 }
 
 /* -------------------------------------------------------------------------- */
@@ -59,6 +84,10 @@ export interface Workout {
   difficulty: string;
 
   estimatedDuration: number;
+
+  defaultRestLarge?: number;
+
+  defaultRestSmall?: number;
 
   tags: string[];
 

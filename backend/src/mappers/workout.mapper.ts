@@ -12,6 +12,8 @@ const mapWorkout = (workout: any) => {
     category: workout.category,
     difficulty: workout.difficulty,
     estimatedDuration: workout.estimatedDuration,
+    defaultRestLarge: workout.defaultRestLarge ?? 90,
+    defaultRestSmall: workout.defaultRestSmall ?? 60,
     exerciseCount: Array.isArray(workout.exercises)
       ? workout.exercises.length
       : 0,

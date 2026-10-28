@@ -5,6 +5,7 @@ export const mapUser = (user: any) => {
     name: user.name,
     email: user.email,
     role: user.role,
+    avatarUrl: user.avatarUrl ?? null,
     isEmailVerified: Boolean(user.isEmailVerified),
     hasPassword: Boolean(user.password),
     googleLinked: Boolean(user.googleId),

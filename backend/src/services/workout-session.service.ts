@@ -11,6 +11,7 @@ import type {
   FinishWorkoutSessionDto,
   ReviewWorkoutSessionDto,
   SwapExerciseDto,
+  AddExerciseToSessionDto,
 } from "../types/workout-session.types.js";
 import mapWorkoutSession from "../mappers/workout-session.mapper.js";
 import { Roles, type Role } from "../constants/roles.js";
@@ -173,19 +174,92 @@ class WorkoutSessionService {
             targetReps: item.reps,
             targetWeight: item.targetWeight,
             targetRpe: item.targetRpe,
+            restSeconds: item.restSeconds ?? 60,
             order: item.order,
+            setsDetail: (item as any).setsDetail ?? null,
           },
         });
 
-        for (let setIndex = 0; setIndex < item.sets; setIndex++) {
-          await tx.workoutSetLog.create({
-            data: {
-              exerciseLogId: exerciseLog.id,
-              setNumber: setIndex + 1,
-              targetReps: item.reps,
-              weight: item.targetWeight ?? 0,
-            },
-          });
+        const setsDetail = (item as any).setsDetail;
+        const hasSetsDetail = Array.isArray(setsDetail) && setsDetail.length > 0;
+
+        if (hasSetsDetail) {
+          for (let setIdx = 0; setIdx < setsDetail.length; setIdx++) {
+            const setCfg = setsDetail[setIdx];
+            const setNumber = setCfg.setNumber ?? (setIdx + 1);
+            const setType = setCfg.setType ?? "NORMAL";
+            const stages = setCfg.stages;
+
+            if (Array.isArray(stages) && stages.length > 0) {
+              for (let sIdx = 0; sIdx < stages.length; sIdx++) {
+                const stage = stages[sIdx];
+                const isIntermediate = sIdx < stages.length - 1;
+                const isFinal = sIdx === stages.length - 1;
+                const targetReps =
+                  stage.targetReps !== undefined && stage.targetReps !== null
+                    ? String(stage.targetReps)
+                    : (setCfg.targetReps !== undefined && setCfg.targetReps !== null
+                        ? String(setCfg.targetReps)
+                        : item.reps);
+                const weight =
+                  stage.targetWeight !== undefined && stage.targetWeight !== null
+                    ? Number(stage.targetWeight)
+                    : (setCfg.targetWeight !== undefined && setCfg.targetWeight !== null
+                        ? Number(setCfg.targetWeight)
+                        : (item.targetWeight ?? 0));
+
+                await tx.workoutSetLog.create({
+                  data: {
+                    exerciseLogId: exerciseLog.id,
+                    setNumber,
+                    segmentIndex: stage.segmentIndex ?? sIdx,
+                    setType,
+                    isIntermediateSegment: isIntermediate,
+                    isFinalSegment: isFinal,
+                    targetReps,
+                    weight,
+                  },
+                });
+              }
+            } else {
+              const targetReps =
+                setCfg.targetReps !== undefined && setCfg.targetReps !== null
+                  ? String(setCfg.targetReps)
+                  : item.reps;
+              const weight =
+                setCfg.targetWeight !== undefined && setCfg.targetWeight !== null
+                  ? Number(setCfg.targetWeight)
+                  : (item.targetWeight ?? 0);
+
+              await tx.workoutSetLog.create({
+                data: {
+                  exerciseLogId: exerciseLog.id,
+                  setNumber,
+                  segmentIndex: 0,
+                  setType,
+                  isIntermediateSegment: false,
+                  isFinalSegment: true,
+                  targetReps,
+                  weight,
+                },
+              });
+            }
+          }
+        } else {
+          for (let setIndex = 0; setIndex < item.sets; setIndex++) {
+            await tx.workoutSetLog.create({
+              data: {
+                exerciseLogId: exerciseLog.id,
+                setNumber: setIndex + 1,
+                segmentIndex: 0,
+                setType: "NORMAL",
+                isIntermediateSegment: false,
+                isFinalSegment: true,
+                targetReps: item.reps,
+                weight: item.targetWeight ?? 0,
+              },
+            });
+          }
         }
       }
 
@@ -257,7 +331,7 @@ class WorkoutSessionService {
       include: {
         exercise: true,
         sets: {
-          orderBy: { setNumber: "asc" },
+          orderBy: [{ setNumber: "asc" }, { segmentIndex: "asc" }],
         },
       },
       orderBy: { order: "asc" },
@@ -571,11 +645,7 @@ class WorkoutSessionService {
           filter.assignment = { trainerId: userId, isActive: true };
         }
       } else {
-        const managedMemberIds = await coachAccessService.getManagedMemberIds(userId);
-        filter.OR = [
-          { assignment: { trainerId: userId, isActive: true } },
-          { memberId: { in: managedMemberIds } },
-        ];
+        filter.assignment = { trainerId: userId, isActive: true };
       }
     }
 
@@ -699,7 +769,7 @@ class WorkoutSessionService {
       include: {
         exercise: true,
         sets: {
-          orderBy: { setNumber: "asc" },
+          orderBy: [{ setNumber: "asc" }, { segmentIndex: "asc" }],
         },
       },
       orderBy: { order: "asc" },
@@ -830,7 +900,7 @@ class WorkoutSessionService {
       },
       include: {
         sets: {
-          orderBy: { setNumber: "asc" },
+          orderBy: [{ setNumber: "asc" }, { segmentIndex: "asc" }],
         },
       },
     });
@@ -908,6 +978,89 @@ class WorkoutSessionService {
     return this.getCurrent(userId);
   }
 
+    async addExercise(
+    sessionId: string,
+    userId: string,
+    data: AddExerciseToSessionDto,
+  ) {
+    const session = await prisma.workoutSession.findFirst({
+      where: {
+        id: sessionId,
+        memberId: userId,
+        status: WORKOUT_SESSION_STATUS.IN_PROGRESS,
+        isActive: true,
+      },
+    });
+
+    if (!session) {
+      throw new AppError(
+        "Active workout session not found or you are not authorized to modify it.",
+        404,
+      );
+    }
+
+    const exercise = await prisma.exercise.findFirst({
+      where: {
+        id: data.exerciseId,
+        isActive: true,
+      },
+    });
+
+    if (!exercise) {
+      throw new AppError("Exercise not found.", 404);
+    }
+
+    const existingLogsCount = await prisma.workoutExerciseLog.count({
+      where: { sessionId: session.id },
+    });
+    const nextOrder = existingLogsCount + 1;
+
+    const targetSets = data.targetSets ?? 3;
+    const targetRepsNum = typeof data.targetReps === "number" ? data.targetReps : 10;
+    const targetRepsStr = String(data.targetReps ?? 10);
+    const targetWeight = data.targetWeight ?? 0;
+    const restTimeSeconds = data.restTimeSeconds ?? 60;
+
+    await prisma.$transaction(async (tx) => {
+      const createdLog = await tx.workoutExerciseLog.create({
+        data: {
+          sessionId: session.id,
+          exerciseId: exercise.id,
+          exerciseName: exercise.name,
+          order: nextOrder,
+          targetSets,
+          targetReps: targetRepsStr,
+          targetWeight,
+          restTimeSeconds,
+          restSeconds: restTimeSeconds,
+          notes: data.notes ?? null,
+          completed: false,
+          isActive: true,
+        },
+      });
+
+      const setLogs = Array.from({ length: targetSets }).map((_, idx) => ({
+        exerciseLogId: createdLog.id,
+        setNumber: idx + 1,
+        segmentIndex: 0,
+        setType: "NORMAL",
+        isIntermediateSegment: false,
+        isFinalSegment: true,
+        targetReps: targetRepsStr,
+        actualReps: targetRepsNum,
+        weight: targetWeight,
+        completed: false,
+        isActive: true,
+      }));
+
+      await tx.workoutSetLog.createMany({
+        data: setLogs,
+      });
+    });
+
+    return this.getCurrent(userId);
+  }
+
   async getPreviousPerformanceForSession(
     sessionId: string,
     memberId: string,
@@ -974,7 +1127,7 @@ class WorkoutSessionService {
           },
         },
         sets: {
-          orderBy: { setNumber: "asc" },
+          orderBy: [{ setNumber: "asc" }, { segmentIndex: "asc" }],
         },
       },
       orderBy: {

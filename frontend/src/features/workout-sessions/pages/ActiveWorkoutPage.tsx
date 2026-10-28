@@ -1,6 +1,15 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Loader2, AlertCircle, ArrowLeft, Dumbbell, Sparkles } from "lucide-react";
+import {
+  Loader2,
+  AlertCircle,
+  ArrowLeft,
+  Dumbbell,
+  Plus,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import WorkoutHeader from "../components/WorkoutHeader";
 import ExerciseCard from "../components/ExerciseCard";
 import FinishWorkoutDialog from "../components/FinishWorkoutDialog";
@@ -8,6 +17,7 @@ import WorkoutTimer from "../components/WorkoutTimer";
 import RestTimer from "../components/RestTimer";
 import ExerciseProgress from "../components/ExerciseProgress";
 import ExerciseNavigator from "../components/ExerciseNavigator";
+import AddSessionExerciseDialog from "../components/AddSessionExerciseDialog";
 import { useCurrentWorkoutSession } from "../hooks/useCurrentWorkoutSession";
 import { usePreviousPerformance } from "../hooks/usePreviousPerformance";
 import type { WorkoutExerciseLog } from "../types/workout-session.types";
@@ -19,10 +29,34 @@ export default function ActiveWorkoutPage() {
   const [isAllView, setIsAllView] = useState(false);
   const [restSeconds, setRestSeconds] = useState(60);
   const [isRestTimerOpen, setIsRestTimerOpen] = useState(false);
+  const [isAddExerciseOpen, setIsAddExerciseOpen] = useState(false);
+  const [showCompletedSection, setShowCompletedSection] = useState(true);
 
   // Previous performance query
   const sessionId = data?.session?.id;
   const { data: previousPerformance } = usePreviousPerformance(sessionId);
+
+  // Compute live session statistics
+  const session = data?.session;
+  const exerciseLogs = data?.exerciseLogs || [];
+
+  // Helper to determine whether an exercise is completed
+  const isLogCompleted = (log: WorkoutExerciseLog) =>
+    Boolean(
+      log.completed ||
+        (log.sets && log.sets.length > 0 && log.sets.every((s) => s.completed)),
+    );
+
+  // Partition exercises: active/in-progress first, completed at the bottom
+  const inProgressExercises = useMemo(
+    () => exerciseLogs.filter((log) => !isLogCompleted(log)),
+    [exerciseLogs],
+  );
+
+  const completedExercises = useMemo(
+    () => exerciseLogs.filter((log) => isLogCompleted(log)),
+    [exerciseLogs],
+  );
 
   if (isLoading) {
     return (
@@ -38,7 +72,7 @@ export default function ActiveWorkoutPage() {
     );
   }
 
-  if (!data || !data.session) {
+  if (!data || !session) {
     return (
       <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -77,22 +111,30 @@ export default function ActiveWorkoutPage() {
     );
   }
 
-  const session = data.session;
-  const exerciseLogs = data.exerciseLogs || [];
-
-  // Compute live session statistics
   const totalExercises = exerciseLogs.length;
-  const exercisesDone = exerciseLogs.filter((e) => e.completed).length;
+  const exercisesDone = completedExercises.length;
   let totalSets = 0;
   let setsDone = 0;
   let totalVolume = 0;
 
   for (const ex of exerciseLogs) {
-    totalSets += ex.targetSets || ex.sets.length;
+    const setsByNum = new Map<number, boolean[]>();
     for (const s of ex.sets) {
+      if (!setsByNum.has(s.setNumber)) {
+        setsByNum.set(s.setNumber, []);
+      }
+      setsByNum.get(s.setNumber)!.push(s.completed);
       if (s.completed) {
-        setsDone += 1;
         totalVolume += (s.weight || 0) * (s.actualReps || 0);
+      }
+    }
+
+    const uniqueSetCount = setsByNum.size;
+    totalSets += Math.max(uniqueSetCount, ex.targetSets || 0);
+
+    for (const stageStates of setsByNum.values()) {
+      if (stageStates.length > 0 && stageStates.every((c) => c === true)) {
+        setsDone += 1;
       }
     }
   }
@@ -137,6 +179,16 @@ export default function ActiveWorkoutPage() {
           </div>
 
           <div className="flex items-center justify-between w-full sm:w-auto sm:justify-start gap-2 sm:gap-3">
+            {/* Add Exercise CTA in Header */}
+            <button
+              type="button"
+              onClick={() => setIsAddExerciseOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#101418] px-3 py-2 text-xs font-semibold text-[#5BE584] hover:bg-[#16291D] hover:border-[#5BE584]/40 transition-colors"
+            >
+              <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
+              <span>Add Exercise</span>
+            </button>
+
             {/* Live Elapsed Timer */}
             <WorkoutTimer startedAt={session.startedAt} />
 
@@ -172,40 +224,139 @@ export default function ActiveWorkoutPage() {
             onSelectIndex={setCurrentExerciseIndex}
             isAllView={isAllView}
             onToggleAllView={() => setIsAllView(!isAllView)}
+            onAddExercise={() => setIsAddExerciseOpen(true)}
           />
         )}
 
         {/* Movement Cards Container */}
         <section className="space-y-6">
           {isAllView ? (
-            // Show All Mode
-            exerciseLogs.map((exercise: WorkoutExerciseLog, idx: number) => {
-              const prev = previousPerformance?.[exercise.exercise?.id || ""];
-              return (
-                <ExerciseCard
-                  key={exercise.id}
-                  exercise={exercise}
-                  sessionId={sessionId}
-                  previousPerformance={prev}
-                  onSetCompleted={handleSetCompleted}
-                  isFocused={idx === currentExerciseIndex}
-                  showConnector={idx < exerciseLogs.length - 1}
-                />
-              );
-            })
+            // =========================================================================
+            // SHOW ALL VIEW: In-Progress movements first, Completed movements at bottom
+            // =========================================================================
+            <div className="space-y-6">
+              {/* Active / In-Progress Exercises */}
+              <div className="space-y-6">
+                {inProgressExercises.map((exercise: WorkoutExerciseLog) => {
+                  const prev = previousPerformance?.[exercise.exercise?.id || ""];
+                  return (
+                    <ExerciseCard
+                      key={exercise.id}
+                      exercise={exercise}
+                      sessionId={sessionId}
+                      previousPerformance={prev}
+                      onSetCompleted={handleSetCompleted}
+                      isFocused={false}
+                      showConnector={false}
+                    />
+                  );
+                })}
+              </div>
+
+              {/* All Completed Celebration Notice */}
+              {inProgressExercises.length === 0 && completedExercises.length > 0 && (
+                <div className="rounded-2xl border border-[#23422E] bg-[#121B15] p-6 text-center space-y-2">
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#16291D] border border-[#23422E] text-[#5BE584]">
+                    <CheckCircle2 className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-sm font-bold text-white">
+                    All Scheduled Exercises Completed!
+                  </h3>
+                  <p className="text-xs text-[#9CA3AF] max-w-md mx-auto">
+                    Great work! You can add extra exercises if you want additional volume, or finish your workout session.
+                  </p>
+                </div>
+              )}
+
+              {/* Action: Add Exercise Card */}
+              <button
+                type="button"
+                onClick={() => setIsAddExerciseOpen(true)}
+                className="w-full rounded-2xl border-2 border-dashed border-[#1E2329] bg-[#101418]/60 p-5 text-center transition-all hover:border-[#5BE584]/50 hover:bg-[#12171E] group"
+              >
+                <div className="flex items-center justify-center gap-2 text-xs font-semibold text-[#9CA3AF] group-hover:text-[#5BE584]">
+                  <Plus className="h-4 w-4 stroke-[2.5]" />
+                  <span>Add Another Exercise to This Workout</span>
+                </div>
+              </button>
+
+              {/* Completed Exercises Section (Sorted to Bottom) */}
+              {completedExercises.length > 0 && (
+                <div className="space-y-4 pt-4 border-t border-[#1E2329]/80">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#16291D] border border-[#23422E] text-[#5BE584]">
+                        <CheckCircle2 className="h-3.5 w-3.5 stroke-[2.5]" />
+                      </div>
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">
+                        Completed Movements ({completedExercises.length})
+                      </h3>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowCompletedSection(!showCompletedSection)}
+                      className="inline-flex items-center gap-1 text-xs text-[#9CA3AF] hover:text-white transition-colors"
+                    >
+                      <span>{showCompletedSection ? "Hide" : "Show"}</span>
+                      {showCompletedSection ? (
+                        <ChevronUp className="h-3.5 w-3.5" />
+                      ) : (
+                        <ChevronDown className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  </div>
+
+                  {showCompletedSection && (
+                    <div className="space-y-5 opacity-90 transition-opacity">
+                      {completedExercises.map((exercise: WorkoutExerciseLog) => {
+                        const prev = previousPerformance?.[exercise.exercise?.id || ""];
+                        return (
+                          <ExerciseCard
+                            key={exercise.id}
+                            exercise={exercise}
+                            sessionId={sessionId}
+                            previousPerformance={prev}
+                            onSetCompleted={handleSetCompleted}
+                            isFocused={false}
+                            showConnector={false}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           ) : (
-            // Focus Mode (Current Movement)
-            currentLog && (
-              <ExerciseCard
-                exercise={currentLog}
-                sessionId={sessionId}
-                previousPerformance={
-                  previousPerformance?.[currentLog.exercise?.id || ""]
-                }
-                onSetCompleted={handleSetCompleted}
-                isFocused={true}
-              />
-            )
+            // =========================================================================
+            // FOCUS MODE (Single Movement Focused View)
+            // =========================================================================
+            <div className="space-y-6">
+              {currentLog && (
+                <ExerciseCard
+                  exercise={currentLog}
+                  sessionId={sessionId}
+                  previousPerformance={
+                    previousPerformance?.[currentLog.exercise?.id || ""]
+                  }
+                  onSetCompleted={handleSetCompleted}
+                  isFocused={true}
+                />
+              )}
+
+              {/* Add Exercise prompt */}
+              <button
+                type="button"
+                onClick={() => setIsAddExerciseOpen(true)}
+                className="w-full rounded-2xl border border-dashed border-[#1E2329] bg-[#101418]/60 p-4 text-center transition-all hover:border-[#5BE584]/50 hover:bg-[#12171E] group"
+              >
+                <div className="flex items-center justify-center gap-2 text-xs font-semibold text-[#9CA3AF] group-hover:text-[#5BE584]">
+                  <Plus className="h-4 w-4 stroke-[2.5]" />
+                  <span>Add Another Exercise to Workout</span>
+                </div>
+              </button>
+            </div>
           )}
         </section>
       </main>
@@ -215,6 +366,13 @@ export default function ActiveWorkoutPage() {
         initialSeconds={restSeconds}
         isOpen={isRestTimerOpen}
         onClose={() => setIsRestTimerOpen(false)}
+      />
+
+      {/* Add Session Exercise Modal Dialog */}
+      <AddSessionExerciseDialog
+        isOpen={isAddExerciseOpen}
+        onClose={() => setIsAddExerciseOpen(false)}
+        sessionId={session.id}
       />
     </div>
   );

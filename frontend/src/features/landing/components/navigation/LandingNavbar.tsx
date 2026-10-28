@@ -19,7 +19,10 @@ export const LandingNavbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
 
   const userRole = user?.role?.toUpperCase();
-  const dashboardPath = userRole === "TRAINER" || userRole === "ADMIN" ? "/coach-dashboard" : "/dashboard";
+  const dashboardPath =
+    userRole === "TRAINER" || userRole === "ADMIN"
+      ? "/coach-dashboard"
+      : "/dashboard";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,7 +47,10 @@ export const LandingNavbar: React.FC = () => {
     }
   }, [mobileMenuOpen]);
 
-  const scrollToAnchor = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const scrollToAnchor = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
     if (href.startsWith("#")) {
       e.preventDefault();
       const target = document.querySelector(href);
@@ -57,7 +63,7 @@ export const LandingNavbar: React.FC = () => {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-200 ${
+      className={`relative z-10 w-full transition-all duration-200 ${
         scrolled
           ? "border-b border-[#2A3039] bg-[#090B0F]/95 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
           : "border-b border-[#2A3039]/60 bg-[#090B0F]/80 backdrop-blur-sm"
@@ -181,7 +187,9 @@ export const LandingNavbar: React.FC = () => {
                 className="flex h-12 w-full items-center justify-center gap-2 rounded-[14px] bg-[#5BE584] text-sm font-bold text-[#090B0F]"
               >
                 <UserCheck size={16} />
-                <span>Open Workspace ({userRole === "TRAINER" ? "Coach" : "Member"})</span>
+                <span>
+                  Open Workspace ({userRole === "TRAINER" ? "Coach" : "Member"})
+                </span>
               </Link>
             ) : (
               <>

@@ -15,6 +15,7 @@ import {
   Loader2,
   Copy,
   UserPlus,
+  Share2,
 } from "lucide-react";
 
 import { useWorkout } from "@/features/workouts/hooks/useWorkout";
@@ -23,6 +24,7 @@ import { useStartWorkoutSession } from "@/features/workout-sessions/hooks/useSta
 import { useCurrentWorkoutSession } from "@/features/workout-sessions/hooks/useCurrentWorkoutSession";
 import ScheduleWorkoutDialog from "@/features/workout-sessions/components/ScheduleWorkoutDialog";
 import ActiveWorkoutConflictDialog from "@/features/workout-sessions/components/ActiveWorkoutConflictDialog";
+import ShareWorkoutDialog from "../components/ShareWorkoutDialog";
 import { toast } from "sonner";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { ROLES } from "@/constants/roles";
@@ -45,6 +47,7 @@ export default function WorkoutDetailsPage() {
   const { data: currentSessionData } = useCurrentWorkoutSession();
 
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [conflictModal, setConflictModal] = useState<{
     isOpen: boolean;
     activeSessionId: string;
@@ -281,6 +284,15 @@ export default function WorkoutDetailsPage() {
 
             <button
               type="button"
+              onClick={() => setIsShareOpen(true)}
+              className="inline-flex items-center gap-2 rounded-md border border-[#5BE584]/30 bg-[#16291D]/50 px-4 py-2 text-xs font-semibold text-[#5BE584] transition-colors hover:bg-[#5BE584]/20"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              Share
+            </button>
+
+            <button
+              type="button"
               onClick={handleStartSession}
               disabled={isStartingSession}
               className="inline-flex items-center gap-2 rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#49D472] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014] disabled:opacity-50"
@@ -421,6 +433,38 @@ export default function WorkoutDetailsPage() {
                                 Note: {item.notes}
                               </p>
                             )}
+                            {Array.isArray((item as any).setsDetail) &&
+                              (item as any).setsDetail.some(
+                                (s: any) =>
+                                  s.setType === "DROP_SET" ||
+                                  s.setType === "REST_PAUSE",
+                              ) && (
+                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                  {(item as any).setsDetail.map((s: any) => {
+                                    if (s.setType === "DROP_SET") {
+                                      return (
+                                        <span
+                                          key={s.setNumber}
+                                          className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                        >
+                                          Set {s.setNumber}: Drop Set ({s.stages?.length || 2} stages)
+                                        </span>
+                                      );
+                                    }
+                                    if (s.setType === "REST_PAUSE") {
+                                      return (
+                                        <span
+                                          key={s.setNumber}
+                                          className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                                        >
+                                          Set {s.setNumber}: Rest-Pause ({s.stages?.length || 2} efforts)
+                                        </span>
+                                      );
+                                    }
+                                    return null;
+                                  })}
+                                </div>
+                              )}
                           </div>
                         </div>
 
@@ -494,6 +538,16 @@ export default function WorkoutDetailsPage() {
         <ScheduleWorkoutDialog
           isOpen={isScheduleOpen}
           onClose={() => setIsScheduleOpen(false)}
+          workoutId={workout.id}
+          workoutTitle={workout.title}
+        />
+      )}
+
+      {/* Share Workout Dialog */}
+      {isShareOpen && workout && (
+        <ShareWorkoutDialog
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
           workoutId={workout.id}
           workoutTitle={workout.title}
         />

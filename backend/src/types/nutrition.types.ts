@@ -97,8 +97,28 @@ export interface FoodItemDto {
   sodium?: number | null;
   allergens: string[];
   isVerified: boolean;
+  isCustom?: boolean;
+  userId?: string | null;
   source?: string | null;
 }
+
+export interface CreateCustomFoodDto {
+  name: string;
+  nameAr?: string | null;
+  category: string;
+  servingUnit: string;
+  servingSize: number;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber?: number;
+  sugar?: number;
+  sodium?: number;
+  allergens?: string[];
+}
+
+export type UpdateCustomFoodDto = Partial<CreateCustomFoodDto>;
 
 export interface FoodNutrientCalculation {
   foodId: string;

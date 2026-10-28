@@ -486,7 +486,23 @@ describe("STREN — Coach–Member Relationship, Invitations & History Sharing T
     });
 
     (prisma.assignment as any).findFirst = async () => null;
-    (prisma.assignment as any).findMany = async () => [];
+    (prisma.assignment as any).findMany = async ({ where }: any) => {
+      if (where?.status === "ACTIVE" || where?.memberId === memberId) {
+        return [
+          {
+            id: "assign-legacy-1",
+            trainerId: coach1Id,
+            memberId,
+            workoutId: "w-leg-1",
+            status: "ACTIVE",
+            isActive: true,
+            workout: { title: "Legacy Program" },
+            trainer: { name: "Coach Marcus" },
+          },
+        ];
+      }
+      return [];
+    };
     (prisma.user as any).findFirst = async () => memberUser;
 
     (prisma.workoutSession as any).findMany = async ({ where }: any) => {
@@ -635,7 +651,23 @@ describe("STREN — Coach–Member Relationship, Invitations & History Sharing T
     };
 
     (prisma.assignment as any).findFirst = async () => null;
-    (prisma.assignment as any).findMany = async () => [];
+    (prisma.assignment as any).findMany = async ({ where }: any) => {
+      if (where?.status === "ACTIVE" || where?.memberId === memberId) {
+        return [
+          {
+            id: "assign-legacy-1",
+            trainerId: coach1Id,
+            memberId,
+            workoutId: "w-leg-1",
+            status: "ACTIVE",
+            isActive: true,
+            workout: { title: "Legacy Program" },
+            trainer: { name: "Coach Marcus" },
+          },
+        ];
+      }
+      return [];
+    };
     (prisma.user as any).findFirst = async () => memberUser;
     (prisma.workoutSession as any).findMany = async () => [currentSession, preSession];
     (prisma.bodyMeasurement as any).findMany = async () => [currentMeasurement, preMeasurement];
@@ -825,7 +857,23 @@ describe("STREN — Coach–Member Relationship, Invitations & History Sharing T
     });
 
     (prisma.assignment as any).findFirst = async () => null;
-    (prisma.assignment as any).findMany = async () => [];
+    (prisma.assignment as any).findMany = async ({ where }: any) => {
+      if (where?.status === "ACTIVE" || where?.memberId === memberId) {
+        return [
+          {
+            id: "assign-legacy-1",
+            trainerId: coach1Id,
+            memberId,
+            workoutId: "w-leg-1",
+            status: "ACTIVE",
+            isActive: true,
+            workout: { title: "Legacy Program" },
+            trainer: { name: "Coach Marcus" },
+          },
+        ];
+      }
+      return [];
+    };
     (prisma.user as any).findFirst = async () => memberUser;
     (prisma.workoutSession as any).findMany = async () => [
       ...currentCoachSessions,
@@ -883,7 +931,23 @@ describe("STREN — Coach–Member Relationship, Invitations & History Sharing T
     });
 
     (prisma.assignment as any).findFirst = async () => null;
-    (prisma.assignment as any).findMany = async () => [];
+    (prisma.assignment as any).findMany = async ({ where }: any) => {
+      if (where?.status === "ACTIVE" || where?.memberId === memberId) {
+        return [
+          {
+            id: "assign-legacy-1",
+            trainerId: coach1Id,
+            memberId,
+            workoutId: "w-leg-1",
+            status: "ACTIVE",
+            isActive: true,
+            workout: { title: "Legacy Program" },
+            trainer: { name: "Coach Marcus" },
+          },
+        ];
+      }
+      return [];
+    };
     (prisma.user as any).findFirst = async () => memberUser;
 
     (prisma.workoutSession as any).findMany = async ({ where }: any) => {
@@ -973,7 +1037,23 @@ describe("STREN — Coach–Member Relationship, Invitations & History Sharing T
       return null;
     };
 
-    (prisma.assignment as any).findMany = async () => [];
+    (prisma.assignment as any).findMany = async ({ where }: any) => {
+      if (where?.status === "ACTIVE" || where?.memberId === memberId) {
+        return [
+          {
+            id: "assign-legacy-1",
+            trainerId: coach1Id,
+            memberId,
+            workoutId: "w-leg-1",
+            status: "ACTIVE",
+            isActive: true,
+            workout: { title: "Legacy Program" },
+            trainer: { name: "Coach Marcus" },
+          },
+        ];
+      }
+      return [];
+    };
     (prisma.user as any).findFirst = async () => memberUser;
     (prisma.workoutSession as any).findMany = async () => [];
     (prisma.bodyMeasurement as any).findMany = async () => [];

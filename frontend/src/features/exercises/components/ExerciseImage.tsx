@@ -42,7 +42,13 @@ const ICON_SIZES: Record<Exclude<ExerciseImageSize, "custom">, string> = {
 
 function isIllustrationUrl(url: string): boolean {
   const cleanUrl = url.split("?")[0].toLowerCase();
-  return cleanUrl.endsWith(".png") || cleanUrl.endsWith(".svg");
+  return (
+    cleanUrl.endsWith(".png") ||
+    cleanUrl.endsWith(".svg") ||
+    cleanUrl.endsWith(".webp") ||
+    cleanUrl.includes("/illustrations/") ||
+    cleanUrl.includes("exercise-")
+  );
 }
 
 export const ExerciseImage: React.FC<ExerciseImageProps> = ({
@@ -85,11 +91,13 @@ export const ExerciseImage: React.FC<ExerciseImageProps> = ({
   }
 
   const isIllustration =
-    fit === "contain" || (fit === "auto" && isIllustrationUrl(trimmedSrc));
+    fit === "contain" ||
+    fit === "auto" ||
+    isIllustrationUrl(trimmedSrc);
 
   const resolvedFitClass = isIllustration
-    ? "object-contain p-1.5"
-    : "object-cover";
+    ? "object-contain object-center p-1.5"
+    : "object-cover object-center";
 
   const hoverScaleClass = interactive
     ? isIllustration
@@ -99,7 +107,7 @@ export const ExerciseImage: React.FC<ExerciseImageProps> = ({
 
   return (
     <div
-      className={`relative shrink-0 overflow-hidden border border-[#2A313A]/80 bg-white shadow-sm select-none ${sizeClass} ${className}`}
+      className={`relative shrink-0 overflow-hidden border border-[#2A313A]/80 bg-white shadow-sm select-none flex items-center justify-center ${sizeClass} ${className}`}
     >
       <img
         src={trimmedSrc}

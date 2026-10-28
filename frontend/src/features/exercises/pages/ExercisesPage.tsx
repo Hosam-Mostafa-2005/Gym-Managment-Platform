@@ -7,6 +7,7 @@ import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { ROLES } from "@/constants/roles";
 
 import ExercisesHeader from "../components/ExercisesHeader";
+import { doesExerciseMatchMuscle } from "../constants/exercise.constants";
 import ExerciseFilters, {
   type ExerciseSortOption,
 } from "../components/ExerciseFilters";
@@ -121,14 +122,9 @@ const ExercisesPage = () => {
       }
 
       if (selectedMuscle !== "all") {
-        const targetLower = selectedMuscle.toLowerCase();
-        const inPrimary = (exercise.primaryMuscles ?? []).some(
-          (m) => m.toLowerCase() === targetLower,
-        );
-        const inSecondary = (exercise.secondaryMuscles ?? []).some(
-          (m) => m.toLowerCase() === targetLower,
-        );
-        if (!inPrimary && !inSecondary) return false;
+        if (!doesExerciseMatchMuscle(exercise, selectedMuscle)) {
+          return false;
+        }
       }
 
       if (query) {

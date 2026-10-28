@@ -7,7 +7,7 @@ import {
   Clock,
   GripVertical,
 } from "lucide-react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, FormProvider } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -15,7 +15,10 @@ import type { WorkoutFormData } from "../schemas/workout.schema";
 import { workoutSchema } from "../schemas/workout.schema";
 import { useAllExercises } from "@/features/exercises/hooks/useExercises";
 import type { Exercise } from "@/features/exercises/types/exercise.types";
+import { ALL_MUSCLE_CATEGORIES, doesExerciseMatchMuscle } from "@/features/exercises/constants/exercise.constants";
+import { getRecommendedRestSeconds } from "../utils/rest-classification";
 import WorkoutExerciseItem from "./WorkoutExerciseItem";
+import ExerciseImage from "@/features/exercises/components/ExerciseImage";
 
 import {
   FormCheckbox,
@@ -83,6 +86,8 @@ export default function WorkoutForm({
       category: "",
       difficulty: "",
       estimatedDuration: 65,
+      defaultRestLarge: 90,
+      defaultRestSmall: 60,
       tags: [],
       isTemplate: false,
       exercises: [],
@@ -95,6 +100,36 @@ export default function WorkoutForm({
     control,
     name: "exercises",
   });
+
+  const recalculateNonOverriddenExercises = (largeRest: number, smallRest: number) => {
+    const currentList = getValues("exercises") || [];
+    const updated = currentList.map((item) => {
+      if (item.isRestOverridden) return item;
+      const exEntity = exercises.find((e) => (e._id || e.id) === item.exercise);
+      const autoRest = getRecommendedRestSeconds(
+        exEntity?.primaryMuscles || [],
+        largeRest,
+        smallRest,
+      );
+      return {
+        ...item,
+        restSeconds: autoRest,
+      };
+    });
+    setValue("exercises", updated);
+  };
+
+  const handleLargeRestChange = (newVal: number) => {
+    setValue("defaultRestLarge", newVal);
+    const curSmall = getValues("defaultRestSmall") ?? 60;
+    recalculateNonOverriddenExercises(newVal, curSmall);
+  };
+
+  const handleSmallRestChange = (newVal: number) => {
+    setValue("defaultRestSmall", newVal);
+    const curLarge = getValues("defaultRestLarge") ?? 90;
+    recalculateNonOverriddenExercises(curLarge, newVal);
+  };
 
   const handleMoveExercise = (fromIndex: number, toIndex: number) => {
     // 1. Move the item visually in the array
@@ -119,34 +154,28 @@ export default function WorkoutForm({
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase());
 
-      const matchesCategory =
-        !selectedCategory ||
-        // التحقق من العضلات الأساسية والثانوية بغض النظر عن حالة الحروف
-        ex.primaryMuscles?.some(
-          (m) => m.toLowerCase() === selectedCategory.toLowerCase(),
-        ) ||
-        ex.secondaryMuscles?.some(
-          (m) => m.toLowerCase() === selectedCategory.toLowerCase(),
-        ) ||
-        // ميزة إضافية: لو الفلتر "legs" يشمل الـ Quadriceps أو Hamstrings أو Calves
-        (selectedCategory.toLowerCase() === "legs" &&
-          ex.primaryMuscles?.some((m) =>
-            ["quadriceps", "hamstrings", "calves", "glutes"].includes(
-              m.toLowerCase(),
-            ),
-          ));
+      const matchesCategory = doesExerciseMatchMuscle(ex, selectedCategory);
 
       return matchesSearch && matchesCategory;
     });
   }, [exercises, searchQuery, selectedCategory]);
 
-  // Click-to-add from the Library
+  // Click-to-add from the Library with automatic rest duration calculation
   const handleAddExerciseFromLibrary = (exerciseItem?: Exercise) => {
+    const currentLarge = getValues("defaultRestLarge") ?? 90;
+    const currentSmall = getValues("defaultRestSmall") ?? 60;
+    const autoRest = getRecommendedRestSeconds(
+      exerciseItem?.primaryMuscles || [],
+      currentLarge,
+      currentSmall,
+    );
+
     append({
       exercise: exerciseItem?.id || exerciseItem?.name || "",
       sets: 3,
       reps: "8-10",
-      restSeconds: 180,
+      restSeconds: autoRest,
+      isRestOverridden: false,
       notes: "",
       order: fields.length + 1,
       targetWeight: undefined,
@@ -167,10 +196,11 @@ export default function WorkoutForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-8 text-foreground"
-    >
+    <FormProvider {...form}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-8 text-foreground"
+      >
       {/* -------------------------------------------------------------------------- */}
       {/*                              TOP HEADER & ACTIONS                          */}
       {/* -------------------------------------------------------------------------- */}
@@ -232,6 +262,53 @@ export default function WorkoutForm({
               />
             </div>
           </div>
+
+          {/* Preferred Rest-Time Settings (Phase 3.1) */}
+          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border/30">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <Clock className="h-3.5 w-3.5 text-[#5BE584]" />
+              <span>Rest Preferences:</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <label className="text-xs text-muted-foreground whitespace-nowrap">
+                Large Muscles:
+              </label>
+              <select
+                value={watch("defaultRestLarge") ?? 90}
+                onChange={(e) => handleLargeRestChange(Number(e.target.value))}
+                className="h-8 rounded-md border border-border/60 bg-background/60 px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+              >
+                <option value={45}>45s</option>
+                <option value={60}>60s</option>
+                <option value={90}>90s (Default)</option>
+                <option value={120}>120s (2m)</option>
+                <option value={150}>150s</option>
+                <option value={180}>180s (3m)</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <label className="text-xs text-muted-foreground whitespace-nowrap">
+                Small Muscles:
+              </label>
+              <select
+                value={watch("defaultRestSmall") ?? 60}
+                onChange={(e) => handleSmallRestChange(Number(e.target.value))}
+                className="h-8 rounded-md border border-border/60 bg-background/60 px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+              >
+                <option value={30}>30s</option>
+                <option value={45}>45s</option>
+                <option value={60}>60s (Default)</option>
+                <option value={90}>90s</option>
+                <option value={120}>120s (2m)</option>
+              </select>
+            </div>
+
+            <span className="text-[11px] text-muted-foreground/70 hidden sm:inline">
+              (Auto assigned by muscle group)
+            </span>
+          </div>
         </div>
 
         {/* Action Buttons */}
@@ -285,18 +362,21 @@ export default function WorkoutForm({
 
           {/* Filter Chips */}
           <div className="flex flex-wrap gap-1.5 pt-1">
-            {["chest", "triceps", "shoulders", "back", "legs"].map((cat) => (
-              <Badge
-                key={cat}
-                variant={selectedCategory === cat ? "default" : "secondary"}
-                className="cursor-pointer capitalize px-3 py-1 font-normal transition-colors"
-                onClick={() =>
-                  setSelectedCategory(selectedCategory === cat ? null : cat)
-                }
-              >
-                {cat}
-              </Badge>
-            ))}
+            {ALL_MUSCLE_CATEGORIES.map((cat) => {
+              const isSelected = selectedCategory?.toLowerCase() === cat.toLowerCase();
+              return (
+                <Badge
+                  key={cat}
+                  variant={isSelected ? "default" : "secondary"}
+                  className="cursor-pointer capitalize px-2.5 py-1 font-normal transition-colors"
+                  onClick={() =>
+                    setSelectedCategory(isSelected ? null : cat)
+                  }
+                >
+                  {cat}
+                </Badge>
+              );
+            })}
           </div>
 
           {/* Exercise List Cards */}
@@ -314,19 +394,12 @@ export default function WorkoutForm({
                 >
                   <div className="flex items-center gap-3">
                     <GripVertical className="h-4 w-4 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors shrink-0" />
-                    {ex.imageUrl ? (
-                      <div className="h-9 w-9 shrink-0 overflow-hidden rounded-md border border-border/40 bg-secondary/40">
-                        <img
-                          src={ex.imageUrl}
-                          alt={ex.name}
-                          className="h-full w-full object-cover"
-                          onError={(e) => {
-                            const parent = (e.currentTarget as HTMLImageElement).parentElement;
-                            if (parent) parent.style.display = "none";
-                          }}
-                        />
-                      </div>
-                    ) : null}
+                    <ExerciseImage
+                      src={ex.imageUrl}
+                      alt={ex.name}
+                      size="xs"
+                      fit="contain"
+                    />
                     <div>
                       <h4 className="text-sm font-medium leading-none text-foreground group-hover:text-emerald-400 transition-colors">
                         {ex.name || `Exercise #${idx + 1}`}
@@ -431,5 +504,6 @@ export default function WorkoutForm({
         </div>
       </div>
     </form>
+    </FormProvider>
   );
 }

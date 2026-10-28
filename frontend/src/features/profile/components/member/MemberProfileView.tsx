@@ -13,6 +13,7 @@ import { ChangePasswordDialog } from "../shared/ChangePasswordDialog";
 import { CoachingConsentCard } from "../../../coaching-relationships/components/CoachingConsentCard";
 import { PendingInvitationBanner } from "../../../coaching-relationships/components/PendingInvitationBanner";
 import { User, Mail, Shield, Lock, Phone, Target, Dumbbell } from "lucide-react";
+import { useAuthStore } from "@/store/auth.store";
 import type { MemberProfileResponse } from "../../types/profile.types";
 
 const GOAL_LABELS: Record<string, string> = {
@@ -59,6 +60,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     }
   };
 
+  const currentUser = useAuthStore((state) => state.user);
+  const effectiveAvatar =
+    member.avatarUrl ??
+    (currentUser?.id === member.id || (currentUser as any)?._id === member.id
+      ? currentUser?.avatarUrl
+      : null);
+
   return (
     <div className="flex flex-col gap-6 w-full">
       {/* Pending Invitation Banner if any */}
@@ -67,6 +75,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       {/* Header */}
       <ProfileHeader
         name={member.name}
+        image={effectiveAvatar}
         role={member.role || "Member"}
         email={member.email}
         isActive={member.isActive}

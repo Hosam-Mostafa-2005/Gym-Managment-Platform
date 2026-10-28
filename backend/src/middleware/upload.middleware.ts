@@ -70,3 +70,54 @@ export const uploadExerciseImageMiddleware: RequestHandler = (
     }
   });
 };
+
+export const uploadAvatarMiddleware: RequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  // Support "avatar", "file", or "image"
+  const multiFieldUpload = upload.fields([
+    { name: "avatar", maxCount: 1 },
+    { name: "file", maxCount: 1 },
+    { name: "image", maxCount: 1 },
+  ]);
+
+  multiFieldUpload(req, res, (err: unknown) => {
+    if (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return next(
+            new AppError("Image file size exceeds the 5 MB limit.", 400),
+          );
+        }
+        return next(new AppError(err.message || "File upload error.", 400));
+      }
+      if (err instanceof AppError) {
+        return next(err);
+      }
+      return next(new AppError("Invalid file upload request.", 400));
+    }
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+    const uploadedFile =
+      files?.avatar?.[0] || files?.file?.[0] || files?.image?.[0] || req.file;
+
+    if (!uploadedFile) {
+      return next(new AppError("No avatar image file provided.", 400));
+    }
+
+    req.file = uploadedFile;
+
+    try {
+      const validated = validateImageBuffer(
+        uploadedFile.buffer,
+        uploadedFile.mimetype,
+      );
+      req.validatedImageInfo = validated;
+      next();
+    } catch (validationError) {
+      next(validationError);
+    }
+  });
+};

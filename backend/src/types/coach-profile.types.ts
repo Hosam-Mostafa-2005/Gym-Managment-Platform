@@ -17,6 +17,7 @@ export interface CoachProfileResponse {
     id: string;
     name: string;
     email: string;
+    avatarUrl?: string | null;
     phone?: string | null;
     bio?: string | null;
     specialties: string[];

@@ -10,6 +10,7 @@ export const BasicMeasurementsFields: React.FC<{
       <label className="text-xs font-medium text-gray-300">Weight (kg) *</label>
       <input
         type="number"
+        inputMode="decimal"
         step="0.1"
         min="0"
         name="weight"
@@ -23,6 +24,7 @@ export const BasicMeasurementsFields: React.FC<{
       <label className="text-xs font-medium text-gray-300">Height (cm) *</label>
       <input
         type="number"
+        inputMode="decimal"
         step="0.1"
         min="0"
         name="height"
@@ -36,6 +38,7 @@ export const BasicMeasurementsFields: React.FC<{
       <label className="text-xs font-medium text-gray-300">Body Fat (%)</label>
       <input
         type="number"
+        inputMode="decimal"
         step="0.1"
         min="0"
         max="100"

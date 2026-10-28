@@ -6,6 +6,7 @@ import {
   X,
   Search,
   Dumbbell,
+  Plus,
   Play,
   RotateCcw,
   Clock,
@@ -531,31 +532,52 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                   Loading eligible workouts...
                 </div>
               ) : filteredItems.length === 0 ? (
-                <div className="py-16 flex flex-col items-center justify-center text-center px-4">
-                  <div className="p-3 rounded-2xl bg-[#1E2329]/50 text-[#6B7280] mb-3">
-                    <Dumbbell className="h-8 w-8 opacity-60" />
+                <div className="py-12 sm:py-16 flex flex-col items-center justify-center text-center px-4">
+                  <div className="p-3.5 rounded-2xl bg-[#16291D] border border-[#23422E] text-[#5BE584] mb-3.5 shadow-sm">
+                    <Dumbbell className="h-8 w-8" />
                   </div>
-                  <h4 className="text-sm font-semibold text-white">
-                    No workouts found
+                  <h4 className="text-sm sm:text-base font-bold text-white tracking-tight">
+                    {searchQuery ? "No matching workouts found" : "No workouts available"}
                   </h4>
-                  <p className="text-xs text-[#9CA3AF] mt-1 max-w-sm">
+                  <p className="text-xs text-[#9CA3AF] mt-1.5 max-w-md leading-relaxed">
                     {searchQuery
-                      ? `No workouts match "${searchQuery}". Try a different keyword.`
+                      ? `No workouts match "${searchQuery}". Try adjusting your keywords or clearing the active filter.`
                       : activeTab === "assigned"
-                        ? "You do not have any active coach-assigned workouts at this time."
-                        : activeTab === "repeat"
-                          ? "You have not completed any workout sessions yet to repeat."
-                          : "No routines available in this category yet."}
+                        ? "You do not have any coach-assigned workouts at this time. You can build your own custom training routine or ask your coach for a program."
+                        : activeTab === "personal"
+                          ? "You haven't built any personal routines yet. Create your first custom workout to start training independently."
+                          : activeTab === "repeat"
+                            ? "You have not completed any workout sessions yet to replay."
+                            : "No workout routines are currently available in this category."}
                   </p>
-                  {searchQuery && (
+
+                  <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                     <button
                       type="button"
-                      onClick={() => setSearchQuery("")}
-                      className="mt-4 px-3 py-1.5 rounded-lg border border-[#1E2329] bg-[#101418] text-xs text-[#9CA3AF] hover:text-white"
+                      onClick={() => {
+                        onClose();
+                        navigate("/workout-builder");
+                      }}
+                      className="inline-flex items-center gap-2 rounded-xl bg-[#5BE584] px-5 py-2.5 text-xs font-bold text-[#090B0F] shadow-[0_0_20px_rgba(91,229,132,0.22)] hover:bg-[#49D472] transition-all"
                     >
-                      Clear Search
+                      <Plus className="h-4 w-4 stroke-[2.5]" />
+                      <span>Create Workout</span>
                     </button>
-                  )}
+
+                    {(searchQuery || activeTab !== "all") && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery("");
+                          setActiveTab("all");
+                        }}
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-xs font-semibold text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
+                      >
+                        <RotateCcw className="h-3.5 w-3.5" />
+                        <span>Clear Filters</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               ) : (
                 filteredItems.map((item) => {

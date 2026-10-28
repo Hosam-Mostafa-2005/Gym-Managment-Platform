@@ -21,6 +21,10 @@ export interface WorkoutSetLog {
   actualReps: number;
   weight: number;
   restDuration?: number;
+  setType?: "NORMAL" | "DROP_SET" | "REST_PAUSE" | "WARMUP";
+  segmentIndex?: number;
+  isIntermediateSegment?: boolean;
+  isFinalSegment?: boolean;
   completedAt?: string;
   completed: boolean;
 }
@@ -34,12 +38,14 @@ export interface WorkoutExerciseLog {
   targetReps: string;
   targetWeight?: number | null;
   targetRpe?: number | null;
+  restSeconds?: number;
   previousBestSet?: { weight: number; actualReps: number } | null;
   originalExerciseId?: string | null;
   originalExercise?: { id: string; name: string; imageUrl?: string | null } | null;
   swapReason?: string | null;
   order: number;
   completed: boolean;
+  setsDetail?: any;
   sets: WorkoutSetLog[];
 }
 
@@ -119,9 +125,14 @@ export interface ReviewWorkoutSessionPayload {
 export interface CreateWorkoutSetPayload {
   exerciseLog: string;
   setNumber: number;
-  targetReps: string;
-  actualReps: number;
-  weight: number;
+  targetReps?: string | number;
+  actualReps?: number;
+  weight?: number;
+  completed?: boolean;
+  setType?: "NORMAL" | "DROP_SET" | "REST_PAUSE" | "WARMUP";
+  segmentIndex?: number;
+  isIntermediateSegment?: boolean;
+  isFinalSegment?: boolean;
 }
 
 export interface UpdateWorkoutSetPayload {
@@ -129,6 +140,10 @@ export interface UpdateWorkoutSetPayload {
   actualReps?: number;
   completed?: boolean;
   restDuration?: number;
+  setType?: "NORMAL" | "DROP_SET" | "REST_PAUSE" | "WARMUP";
+  segmentIndex?: number;
+  isIntermediateSegment?: boolean;
+  isFinalSegment?: boolean;
 }
 
 export interface SwapExercisePayload {
@@ -143,6 +158,8 @@ export interface PreviousSetPerformance {
   weight: number;
   restDuration?: number;
   completed: boolean;
+  setType?: string;
+  segmentIndex?: number;
 }
 
 export interface PreviousExercisePerformance {
@@ -214,4 +231,13 @@ export interface UpdateScheduledWorkoutPayload {
   scheduledAt?: string;
   notes?: string;
   status?: ScheduledWorkoutStatus;
+}
+
+export interface AddExerciseToSessionPayload {
+  exerciseId: string;
+  targetSets?: number;
+  targetReps?: number;
+  targetWeight?: number;
+  restTimeSeconds?: number;
+  notes?: string;
 }

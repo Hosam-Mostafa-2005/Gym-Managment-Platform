@@ -1,0 +1,1614 @@
+{
+  "metadata": {
+    "title": "STREN Exercise Image Catalog Refresh — Standardized Black-and-White Illustrations",
+    "updatedAt": "2026-10-28T19:07:47.554Z",
+    "specification": {
+      "style": "Black-and-white fitness anatomy line art illustration",
+      "dimensions": "512x512 pixels",
+      "format": "PNG",
+      "background": "#FFFFFF (pure clean white)",
+      "outlines": "Strong clean black line work with anatomically detailed athletic musculature",
+      "colorFills": "None (monochrome line art only)",
+      "watermarksOrDecorations": "None"
+    },
+    "totalCatalogEntries": 61,
+    "totalVerifiedImagesIntegrated": 59,
+    "totalExcludedCustomExercises": 2,
+    "totalPendingStandardExercises": 0,
+    "completionRate": "100%",
+    "outputDirectory": "Docs/assets/exercise-illustrations-refresh/images"
+  },
+  "exercises": [
+    {
+      "exerciseId": "08fd1c13-154f-495c-b42b-3295e029d149",
+      "exerciseName": "Ab Wheel Rollout",
+      "exerciseSlug": "ab-wheel-rollout",
+      "category": "General",
+      "equipment": [
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Core",
+        "Abs"
+      ],
+      "secondaryMuscles": [
+        "Lats",
+        "Shoulders"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926215/stren/exercises/08fd1c13-154f-495c-b42b-3295e029d149.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213802/exercise-ab-wheel-rollout-v2.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-ab-wheel-rollout-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-ab-wheel-rollout-v2",
+      "actualCloudinaryPublicId": "exercise-ab-wheel-rollout-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 37965,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "ac6722f8-ca47-485e-bc1a-5b78e313f125",
+      "exerciseName": "Alternating Dumbbell Curl",
+      "exerciseSlug": "alternating-dumbbell-curl",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms",
+        "Brachialis"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213807/Faceless_Muscular_Man_Performing_Dumbbell_Curl.png",
+      "replacementReason": "Standardized black-and-white anatomical line-art illustration of alternating dumbbell curl with forearm supination on pure white background (#FFFFFF).",
+      "newImageFilename": "Faceless Muscular Man Performing Dumbbell Curl.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-alternating-dumbbell-curl-v2",
+      "actualCloudinaryPublicId": "Faceless_Muscular_Man_Performing_Dumbbell_Curl",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1207321,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "8f0bca80-832c-4696-bbb0-f52c0658b584",
+      "exerciseName": "Arnold Press",
+      "exerciseSlug": "arnold-press",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Shoulders"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Upper Chest"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926220/stren/exercises/8f0bca80-832c-4696-bbb0-f52c0658b584.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213803/exercise-arnold-press-v2.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-arnold-press-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-arnold-press-v2",
+      "actualCloudinaryPublicId": "exercise-arnold-press-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 60403,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "88743d7a-82a4-408f-aab4-33ebe03fb384",
+      "exerciseName": "Barbell Back Squat",
+      "exerciseSlug": "barbell-back-squat",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Quadriceps",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Hamstrings",
+        "Core",
+        "Erector Spinae"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926223/stren/exercises/88743d7a-82a4-408f-aab4-33ebe03fb384.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213805/exercise-barbell-back-squat-v2.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-barbell-back-squat-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-barbell-back-squat-v2",
+      "actualCloudinaryPublicId": "exercise-barbell-back-squat-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 68842,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "ba4dc885-b3ef-433e-9950-ca27750ad1bd",
+      "exerciseName": "Barbell Bench Press",
+      "exerciseSlug": "barbell-bench-press",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Anterior Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926226/stren/exercises/ba4dc885-b3ef-433e-9950-ca27750ad1bd.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213807/exercise-barbell-bench-press-v2.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-barbell-bench-press-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-barbell-bench-press-v2",
+      "actualCloudinaryPublicId": "exercise-barbell-bench-press-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 61266,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "3125e74b-790e-4fcb-86c6-52e11418e46c",
+      "exerciseName": "Barbell Bent-Over Row",
+      "exerciseSlug": "barbell-bent-over-row",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Back"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Rear Deltoids",
+        "Erector Spinae"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926229/stren/exercises/3125e74b-790e-4fcb-86c6-52e11418e46c.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213807/exercise-barbell-bent-over-row-v2.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-barbell-bent-over-row-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-barbell-bent-over-row-v2",
+      "actualCloudinaryPublicId": "exercise-barbell-bent-over-row-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 47762,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "9b0e06d1-4a88-4a6b-91ed-26a4131bb820",
+      "exerciseName": "Barbell Curl",
+      "exerciseSlug": "barbell-curl",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms",
+        "Brachialis"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926235/stren/exercises/9b0e06d1-4a88-4a6b-91ed-26a4131bb820.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213807/exercise-barbell-curl-v2.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-barbell-curl-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-barbell-curl-v2",
+      "actualCloudinaryPublicId": "exercise-barbell-curl-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 40831,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "2076bfba-0018-4e22-8c5e-bc0ef69a87d1",
+      "exerciseName": "Bayesian Cable Curl",
+      "exerciseSlug": "bayesian-cable-curl",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms",
+        "Brachialis"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213806/Black-and-White_Cable_Curl_Illustration.png",
+      "replacementReason": "Standardized black-and-white anatomical line-art illustration of bayesian cable curl facing away from cable stack on pure white background (#FFFFFF).",
+      "newImageFilename": "Black-and-White Cable Curl Illustration.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-bayesian-cable-curl-v2",
+      "actualCloudinaryPublicId": "Black-and-White_Cable_Curl_Illustration",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1327037,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "2edf52ac-92c4-4a4f-97ed-7c404169fb2e",
+      "exerciseName": "Bench Dips",
+      "exerciseSlug": "bench-dips",
+      "category": "General",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [
+        "Chest",
+        "Anterior Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926237/stren/exercises/2edf52ac-92c4-4a4f-97ed-7c404169fb2e.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213808/exercise-bench-dips-v2.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-bench-dips-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-bench-dips-v2",
+      "actualCloudinaryPublicId": "exercise-bench-dips-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 77825,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "a2d06a73-d9f6-44ca-b393-90c9c1df3c24",
+      "exerciseName": "Bulgarian Split Squat",
+      "exerciseSlug": "bulgarian-split-squat",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Quadriceps",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Hamstrings",
+        "Core"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926242/stren/exercises/a2d06a73-d9f6-44ca-b393-90c9c1df3c24.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213808/exercise-bulgarian-split-squat-v2.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-bulgarian-split-squat-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-bulgarian-split-squat-v2",
+      "actualCloudinaryPublicId": "exercise-bulgarian-split-squat-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 55405,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "41ad6f6c-865c-465d-ad3e-db8f101a4c39",
+      "exerciseName": "Cable Biceps Curl",
+      "exerciseSlug": "cable-biceps-curl",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213811/Cable_Machine_Biceps_Curl_Illustration.png",
+      "replacementReason": "Standardized black-and-white anatomical line-art illustration of standing cable machine biceps curl on pure white background (#FFFFFF).",
+      "newImageFilename": "Cable Machine Biceps Curl Illustration.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-cable-biceps-curl-v2",
+      "actualCloudinaryPublicId": "Cable_Machine_Biceps_Curl_Illustration",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1304095,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "75f7b3b6-19fe-4426-b6ca-e0812fb8986b",
+      "exerciseName": "Cable Crossover",
+      "exerciseSlug": "cable-crossover",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Anterior Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926247/stren/exercises/75f7b3b6-19fe-4426-b6ca-e0812fb8986b.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213808/exercise-cable-crossover-v2.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-cable-crossover-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-cable-crossover-v2",
+      "actualCloudinaryPublicId": "exercise-cable-crossover-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 100492,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "a8e2f160-80b9-4845-8a6e-2b353fec28cc",
+      "exerciseName": "Cable Curl",
+      "exerciseSlug": "cable-curl",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926250/stren/exercises/a8e2f160-80b9-4845-8a6e-2b353fec28cc.jpg",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/Cable_Curl_Exercise_Illustration.png",
+      "replacementReason": "Replaced legacy photographic studio image with standardized black-and-white exercise anatomy illustration on pure white background (#FFFFFF).",
+      "newImageFilename": "Cable Curl Exercise Illustration.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-cable-curl-v2",
+      "actualCloudinaryPublicId": "Cable_Curl_Exercise_Illustration",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1264341,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "33892e98-2249-4302-b6b9-06366bb99f2c",
+      "exerciseName": "Cable Kickbacks",
+      "exerciseSlug": "cable-kickbacks",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926251/stren/exercises/33892e98-2249-4302-b6b9-06366bb99f2c.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213808/exercise-cable-kickbacks-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-cable-kickbacks-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-cable-kickbacks-v2",
+      "actualCloudinaryPublicId": "exercise-cable-kickbacks-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 35042,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "be883119-1fe0-413b-8208-0c59c97a5aba",
+      "exerciseName": "Cable Upright Row",
+      "exerciseSlug": "cable-upright-row",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Shoulders",
+        "Lateral Deltoids",
+        "Traps"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926252/stren/exercises/be883119-1fe0-413b-8208-0c59c97a5aba.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-cable-upright-row-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-cable-upright-row-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-cable-upright-row-v2",
+      "actualCloudinaryPublicId": "exercise-cable-upright-row-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 33429,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "fe21656e-528e-4252-9af8-1adb7621d664",
+      "exerciseName": "Cable Woodchoppers",
+      "exerciseSlug": "cable-woodchoppers",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Core",
+        "Obliques"
+      ],
+      "secondaryMuscles": [
+        "Shoulders"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926253/stren/exercises/fe21656e-528e-4252-9af8-1adb7621d664.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-cable-woodchoppers-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-cable-woodchoppers-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-cable-woodchoppers-v2",
+      "actualCloudinaryPublicId": "exercise-cable-woodchoppers-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 57289,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "31586fee-9597-443c-abd1-da549f9f6e41",
+      "exerciseName": "Chest Dips",
+      "exerciseSlug": "chest-dips",
+      "category": "General",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Anterior Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926254/stren/exercises/31586fee-9597-443c-abd1-da549f9f6e41.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-chest-dips-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-chest-dips-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-chest-dips-v2",
+      "actualCloudinaryPublicId": "exercise-chest-dips-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 28936,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "1e28733e-6c94-490f-add8-cdb54867a9ec",
+      "exerciseName": "Close-Grip Bench Press",
+      "exerciseSlug": "close-grip-bench-press",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [
+        "Chest",
+        "Anterior Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926255/stren/exercises/1e28733e-6c94-490f-add8-cdb54867a9ec.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-close-grip-bench-press-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-close-grip-bench-press-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-close-grip-bench-press-v2",
+      "actualCloudinaryPublicId": "exercise-close-grip-bench-press-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 33442,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "c750810a-539c-4fda-acb4-640ab543a0e3",
+      "exerciseName": "Concentration Curl",
+      "exerciseSlug": "concentration-curl",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926255/stren/exercises/c750810a-539c-4fda-acb4-640ab543a0e3.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213809/exercise-concentration-curl-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-concentration-curl-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-concentration-curl-v2",
+      "actualCloudinaryPublicId": "exercise-concentration-curl-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 28761,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "7217a0e0-9939-492b-b1d0-8fada2a2de67",
+      "exerciseName": "Conventional Deadlift",
+      "exerciseSlug": "conventional-deadlift",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Back",
+        "Erector Spinae",
+        "Hamstrings",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Traps",
+        "Forearms",
+        "Core"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926256/stren/exercises/7217a0e0-9939-492b-b1d0-8fada2a2de67.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-conventional-deadlift-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-conventional-deadlift-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-conventional-deadlift-v2",
+      "actualCloudinaryPublicId": "exercise-conventional-deadlift-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 26405,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "46aea128-ae03-4bdd-ac3d-233a3e4d202a",
+      "exerciseName": "Cross-body Hammer Curl",
+      "exerciseSlug": "cross-body-hammer-curl",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "secondaryMuscles": [
+        "Brachialis"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213792/Faceless_Cross-Body_Curl_Illustration.png",
+      "replacementReason": "Standardized black-and-white anatomical line-art illustration of cross-body hammer curl on pure white background (#FFFFFF).",
+      "newImageFilename": "Faceless Cross-Body Curl Illustration.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-cross-body-hammer-curl-v2",
+      "actualCloudinaryPublicId": "Faceless_Cross-Body_Curl_Illustration",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1235114,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "63209117-9a90-482e-8dd7-b751d3a52cd1",
+      "exerciseName": "Deadlift111",
+      "exerciseSlug": "deadlift111",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Back",
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Chest",
+        "Back",
+        "Triceps"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926257/stren/exercises/63209117-9a90-482e-8dd7-b751d3a52cd1.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-deadlift111-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-deadlift111-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-deadlift111-v2",
+      "actualCloudinaryPublicId": "exercise-deadlift111-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 26405,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "36a1b09d-4a90-461a-80db-20b48b1e35f4",
+      "exerciseName": "Decline Barbell Press",
+      "exerciseSlug": "decline-barbell-press",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Anterior Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926258/stren/exercises/36a1b09d-4a90-461a-80db-20b48b1e35f4.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-decline-barbell-press-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-decline-barbell-press-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-decline-barbell-press-v2",
+      "actualCloudinaryPublicId": "exercise-decline-barbell-press-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 32609,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "6b2c7f2d-3ec0-4074-be86-8c142719fb7b",
+      "exerciseName": "Decline Crunches",
+      "exerciseSlug": "decline-crunches",
+      "category": "General",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "primaryMuscles": [
+        "Core",
+        "Abs"
+      ],
+      "secondaryMuscles": [],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926259/stren/exercises/6b2c7f2d-3ec0-4074-be86-8c142719fb7b.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-decline-crunches-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-decline-crunches-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-decline-crunches-v2",
+      "actualCloudinaryPublicId": "exercise-decline-crunches-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 53421,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "316c67e6-426f-4000-81d4-b3d16e1d7a1c",
+      "exerciseName": "Dumbbell Biceps Curl",
+      "exerciseSlug": "dumbbell-biceps-curl",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms",
+        "Brachialis"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213806/Faceless_Muscular_Dumbbell_Curl_Illustration.png",
+      "replacementReason": "Standardized black-and-white anatomical line-art illustration of standing dumbbell biceps curl on pure white background (#FFFFFF).",
+      "newImageFilename": "Faceless Muscular Dumbbell Curl Illustration.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-dumbbell-biceps-curl-v2",
+      "actualCloudinaryPublicId": "Faceless_Muscular_Dumbbell_Curl_Illustration",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1251535,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "326fc69d-317c-49e1-ac83-13e0708d9d87",
+      "exerciseName": "EZ-Bar Curl",
+      "exerciseSlug": "ez-bar-curl",
+      "category": "General",
+      "equipment": [
+        "EZ Bar"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms",
+        "Brachialis"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213800/Muscular_Man_Curling_an_EZ_Barbell.png",
+      "replacementReason": "Standardized black-and-white anatomical line-art illustration of standing EZ-bar curl on pure white background (#FFFFFF).",
+      "newImageFilename": "Muscular Man Curling an EZ Barbell.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-ez-bar-curl-v2",
+      "actualCloudinaryPublicId": "Muscular_Man_Curling_an_EZ_Barbell",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1236923,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "2c9b42b9-e396-4f7d-8d6c-b33e061f7887",
+      "exerciseName": "Face Pulls",
+      "exerciseSlug": "face-pulls",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Back",
+        "Rear Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Traps",
+        "Rotator Cuff"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926259/stren/exercises/2c9b42b9-e396-4f7d-8d6c-b33e061f7887.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-face-pulls-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-face-pulls-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-face-pulls-v2",
+      "actualCloudinaryPublicId": "exercise-face-pulls-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 60488,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "6a623378-779c-40b8-8882-5a494ab3c7c6",
+      "exerciseName": "Front Dumbbell Raises",
+      "exerciseSlug": "front-dumbbell-raises",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Shoulders",
+        "Anterior Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Upper Chest"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926260/stren/exercises/6a623378-779c-40b8-8882-5a494ab3c7c6.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-front-dumbbell-raises-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-front-dumbbell-raises-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-front-dumbbell-raises-v2",
+      "actualCloudinaryPublicId": "exercise-front-dumbbell-raises-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 28656,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "61087e2d-b983-4bc8-8174-2e5b00777057",
+      "exerciseName": "Goblet Squat",
+      "exerciseSlug": "goblet-squat",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Quadriceps",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Core",
+        "Shoulders"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926261/stren/exercises/61087e2d-b983-4bc8-8174-2e5b00777057.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213810/exercise-goblet-squat-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-goblet-squat-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-goblet-squat-v2",
+      "actualCloudinaryPublicId": "exercise-goblet-squat-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 48017,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "57a07635-c748-4d42-b14f-9c626dd0e967",
+      "exerciseName": "HOSAMELDEEN MOSTAFA",
+      "exerciseSlug": "hosameldeen-mostafa",
+      "category": "General",
+      "equipment": [
+        "Smith Machine"
+      ],
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [
+        "Triceps"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": null,
+      "replacementReason": "Explicitly excluded custom user exercise; retains existing behavior and image configuration.",
+      "newImageFilename": null,
+      "intendedCloudinaryPublicId": null,
+      "actualCloudinaryPublicId": null,
+      "status": "EXCLUDED_CUSTOM",
+      "verificationStatus": "EXCLUDED_CUSTOM",
+      "fileSizeBytes": null,
+      "dimensions": null
+    },
+    {
+      "exerciseId": "424236ca-ed9b-4142-8cf7-693038b8d4cb",
+      "exerciseName": "Hammer Curl",
+      "exerciseSlug": "hammer-curl",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "secondaryMuscles": [
+        "Brachialis"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213813/exercise-hammer-curl-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-hammer-curl-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-hammer-curl-v2",
+      "actualCloudinaryPublicId": "exercise-hammer-curl-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 26895,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "df7f2e70-ef4b-49ae-82d4-4adcbb4ff97e",
+      "exerciseName": "Hammer Curls",
+      "exerciseSlug": "hammer-curls",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Biceps",
+        "Forearms"
+      ],
+      "secondaryMuscles": [],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926262/stren/exercises/df7f2e70-ef4b-49ae-82d4-4adcbb4ff97e.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213811/exercise-hammer-curls-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-hammer-curls-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-hammer-curls-v2",
+      "actualCloudinaryPublicId": "exercise-hammer-curls-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 26895,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "d4e1e36a-2b62-4daa-8f2b-4e168ccc79ce",
+      "exerciseName": "Hanging Leg Raises",
+      "exerciseSlug": "hanging-leg-raises",
+      "category": "General",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "primaryMuscles": [
+        "Core",
+        "Abs"
+      ],
+      "secondaryMuscles": [
+        "Hip Flexors",
+        "Forearms"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926262/stren/exercises/d4e1e36a-2b62-4daa-8f2b-4e168ccc79ce.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213814/exercise-hanging-leg-raises-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-hanging-leg-raises-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-hanging-leg-raises-v2",
+      "actualCloudinaryPublicId": "exercise-hanging-leg-raises-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 52645,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "0c2422b1-5713-439d-abf5-7c3969700544",
+      "exerciseName": "Incline Dumbbell Curl",
+      "exerciseSlug": "incline-dumbbell-curl",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926263/stren/exercises/0c2422b1-5713-439d-abf5-7c3969700544.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213814/exercise-incline-dumbbell-curl-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-incline-dumbbell-curl-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-incline-dumbbell-curl-v2",
+      "actualCloudinaryPublicId": "exercise-incline-dumbbell-curl-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 28031,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "605f37d8-7d9d-48f8-98e3-b154b86938f6",
+      "exerciseName": "Incline Dumbbell Press",
+      "exerciseSlug": "incline-dumbbell-press",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Anterior Deltoids",
+        "Triceps"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926264/stren/exercises/605f37d8-7d9d-48f8-98e3-b154b86938f6.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213815/exercise-incline-dumbbell-press-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-incline-dumbbell-press-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-incline-dumbbell-press-v2",
+      "actualCloudinaryPublicId": "exercise-incline-dumbbell-press-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 34653,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "36ef6d4f-54ce-40a9-a740-37fee86d419c",
+      "exerciseName": "Lat Pulldown",
+      "exerciseSlug": "lat-pulldown",
+      "category": "General",
+      "equipment": [
+        "Cable",
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Back",
+        "Lats"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Rear Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926265/stren/exercises/36ef6d4f-54ce-40a9-a740-37fee86d419c.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213817/exercise-lat-pulldown-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-lat-pulldown-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-lat-pulldown-v2",
+      "actualCloudinaryPublicId": "exercise-lat-pulldown-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 30093,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "879dde39-3aa5-4d23-92a7-3544e907d12b",
+      "exerciseName": "Lateral Raises",
+      "exerciseSlug": "lateral-raises",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Shoulders",
+        "Lateral Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Traps"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926266/stren/exercises/879dde39-3aa5-4d23-92a7-3544e907d12b.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213816/exercise-lateral-raises-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-lateral-raises-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-lateral-raises-v2",
+      "actualCloudinaryPublicId": "exercise-lateral-raises-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 26123,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "7f73bd26-287e-455b-8822-296a890c6b40",
+      "exerciseName": "Leg Extensions",
+      "exerciseSlug": "leg-extensions",
+      "category": "General",
+      "equipment": [
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Quadriceps"
+      ],
+      "secondaryMuscles": [],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926266/stren/exercises/7f73bd26-287e-455b-8822-296a890c6b40.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213818/exercise-leg-extensions-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-leg-extensions-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-leg-extensions-v2",
+      "actualCloudinaryPublicId": "exercise-leg-extensions-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 30378,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "c75adb2f-3a2b-414a-a457-84c209c7dfa5",
+      "exerciseName": "Leg Press",
+      "exerciseSlug": "leg-press",
+      "category": "General",
+      "equipment": [
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Quadriceps"
+      ],
+      "secondaryMuscles": [
+        "Glutes",
+        "Hamstrings"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926267/stren/exercises/c75adb2f-3a2b-414a-a457-84c209c7dfa5.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213818/exercise-leg-press-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-leg-press-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-leg-press-v2",
+      "actualCloudinaryPublicId": "exercise-leg-press-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 28046,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "6360d0d3-484d-468c-aec7-f3b2a31fbdf4",
+      "exerciseName": "Lying Leg Curls",
+      "exerciseSlug": "lying-leg-curls",
+      "category": "General",
+      "equipment": [
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Hamstrings"
+      ],
+      "secondaryMuscles": [
+        "Calves"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926268/stren/exercises/6360d0d3-484d-468c-aec7-f3b2a31fbdf4.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213839/exercise-lying-leg-curls-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-lying-leg-curls-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-lying-leg-curls-v2",
+      "actualCloudinaryPublicId": "exercise-lying-leg-curls-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 26581,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "6b5f1cb8-3c6f-46ee-8e29-3740a6f1eb89",
+      "exerciseName": "Machine Biceps Curl",
+      "exerciseSlug": "machine-biceps-curl",
+      "category": "General",
+      "equipment": [
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms",
+        "Brachialis"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213801/Seated_Preacher_Curl_Machine_Illustration.png",
+      "replacementReason": "Standardized black-and-white anatomical line-art illustration of seated preacher curl machine on pure white background (#FFFFFF).",
+      "newImageFilename": "Seated Preacher Curl Machine Illustration.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-machine-biceps-curl-v2",
+      "actualCloudinaryPublicId": "Seated_Preacher_Curl_Machine_Illustration",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1431356,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "4436ef49-4034-425e-8155-26f43413b983",
+      "exerciseName": "Overhead Barbell Press",
+      "exerciseSlug": "overhead-barbell-press",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Shoulders",
+        "Anterior Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Upper Traps",
+        "Core"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926269/stren/exercises/4436ef49-4034-425e-8155-26f43413b983.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213839/exercise-overhead-barbell-press-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-overhead-barbell-press-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-overhead-barbell-press-v2",
+      "actualCloudinaryPublicId": "exercise-overhead-barbell-press-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 48325,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "85fefece-24bd-40a5-99d4-72af0639cf05",
+      "exerciseName": "Overhead Tricep Extension",
+      "exerciseSlug": "overhead-tricep-extension",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926270/stren/exercises/85fefece-24bd-40a5-99d4-72af0639cf05.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213840/exercise-overhead-tricep-extension-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-overhead-tricep-extension-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-overhead-tricep-extension-v2",
+      "actualCloudinaryPublicId": "exercise-overhead-tricep-extension-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 23473,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "3e08e734-73ed-4a04-ac72-eafc94ad2415",
+      "exerciseName": "Pec Deck Fly",
+      "exerciseSlug": "pec-deck-fly",
+      "category": "General",
+      "equipment": [
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Anterior Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926271/stren/exercises/3e08e734-73ed-4a04-ac72-eafc94ad2415.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213843/exercise-pec-deck-fly-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-pec-deck-fly-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-pec-deck-fly-v2",
+      "actualCloudinaryPublicId": "exercise-pec-deck-fly-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 69005,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "484752a8-fe3a-4031-806d-018840b97f77",
+      "exerciseName": "Plank",
+      "exerciseSlug": "plank",
+      "category": "General",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "primaryMuscles": [
+        "Core",
+        "Abs"
+      ],
+      "secondaryMuscles": [
+        "Shoulders",
+        "Glutes"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926272/stren/exercises/484752a8-fe3a-4031-806d-018840b97f77.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213843/exercise-plank-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-plank-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-plank-v2",
+      "actualCloudinaryPublicId": "exercise-plank-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 33837,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "2b0c0ed5-18ed-4761-945e-24cb3984ae1f",
+      "exerciseName": "Preacher Curl",
+      "exerciseSlug": "preacher-curl",
+      "category": "General",
+      "equipment": [
+        "EZ Bar"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms",
+        "Brachialis"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926273/stren/exercises/2b0c0ed5-18ed-4761-945e-24cb3984ae1f.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213844/exercise-preacher-curl-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-preacher-curl-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-preacher-curl-v2",
+      "actualCloudinaryPublicId": "exercise-preacher-curl-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 35158,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "f72aa8e2-3cf4-4b6e-9491-aa0e3da4371d",
+      "exerciseName": "Pull-Ups",
+      "exerciseSlug": "pull-ups",
+      "category": "General",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "primaryMuscles": [
+        "Back",
+        "Lats"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Core"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926274/stren/exercises/f72aa8e2-3cf4-4b6e-9491-aa0e3da4371d.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213845/exercise-pull-ups-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-pull-ups-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-pull-ups-v2",
+      "actualCloudinaryPublicId": "exercise-pull-ups-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 25440,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "ae9795a3-af6b-4fd1-9732-bde0af9486f3",
+      "exerciseName": "Push-Ups",
+      "exerciseSlug": "push-ups",
+      "category": "General",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Anterior Deltoids",
+        "Core"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926275/stren/exercises/ae9795a3-af6b-4fd1-9732-bde0af9486f3.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213846/exercise-push-ups-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-push-ups-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-push-ups-v2",
+      "actualCloudinaryPublicId": "exercise-push-ups-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 20358,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "995ca0d3-72a8-4224-850c-039a4620d3f2",
+      "exerciseName": "Reverse Curl",
+      "exerciseSlug": "reverse-curl",
+      "category": "General",
+      "equipment": [
+        "Barbell",
+        "EZ Bar"
+      ],
+      "primaryMuscles": [
+        "Forearms",
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Brachioradialis",
+        "Brachialis"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213792/Faceless_Bodybuilder_Holding_Barbell.png",
+      "replacementReason": "Standardized black-and-white anatomical line-art illustration of standing pronated reverse curl on pure white background (#FFFFFF).",
+      "newImageFilename": "Faceless Bodybuilder Holding Barbell.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-reverse-curl-v2",
+      "actualCloudinaryPublicId": "Faceless_Bodybuilder_Holding_Barbell",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1250520,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "b5ee3387-5d25-45c3-908b-d7598ea96f1c",
+      "exerciseName": "Reverse Pec Deck",
+      "exerciseSlug": "reverse-pec-deck",
+      "category": "General",
+      "equipment": [
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Shoulders",
+        "Rear Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Rhomboids",
+        "Traps"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926277/stren/exercises/b5ee3387-5d25-45c3-908b-d7598ea96f1c.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213847/exercise-reverse-pec-deck-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-reverse-pec-deck-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-reverse-pec-deck-v2",
+      "actualCloudinaryPublicId": "exercise-reverse-pec-deck-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 64894,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "3d250964-18bb-4260-b5e6-8a0cfa07311b",
+      "exerciseName": "Romanian Deadlift",
+      "exerciseSlug": "romanian-deadlift",
+      "category": "General",
+      "equipment": [
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Hamstrings",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Erector Spinae",
+        "Forearms"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926277/stren/exercises/3d250964-18bb-4260-b5e6-8a0cfa07311b.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213779/exercise-romanian-deadlift-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-romanian-deadlift-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-romanian-deadlift-v2",
+      "actualCloudinaryPublicId": "exercise-romanian-deadlift-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 26832,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "095f04c9-6f6d-463a-bc0d-9378dbd880e3",
+      "exerciseName": "Russian Twists",
+      "exerciseSlug": "russian-twists",
+      "category": "General",
+      "equipment": [
+        "Bodyweight"
+      ],
+      "primaryMuscles": [
+        "Core",
+        "Obliques"
+      ],
+      "secondaryMuscles": [
+        "Hip Flexors"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926278/stren/exercises/095f04c9-6f6d-463a-bc0d-9378dbd880e3.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213780/exercise-russian-twists-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-russian-twists-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-russian-twists-v2",
+      "actualCloudinaryPublicId": "exercise-russian-twists-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 47511,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "ba884704-564f-4d10-a748-6195d69f55e0",
+      "exerciseName": "Seated Cable Row",
+      "exerciseSlug": "seated-cable-row",
+      "category": "General",
+      "equipment": [
+        "Cable",
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Back"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Rear Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926279/stren/exercises/ba884704-564f-4d10-a748-6195d69f55e0.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213780/exercise-seated-cable-row-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-seated-cable-row-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-seated-cable-row-v2",
+      "actualCloudinaryPublicId": "exercise-seated-cable-row-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 24963,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "3709fdfa-be25-4397-b19a-14a5bff8f253",
+      "exerciseName": "Seated Dumbbell Press",
+      "exerciseSlug": "seated-dumbbell-press",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Shoulders",
+        "Anterior Deltoids"
+      ],
+      "secondaryMuscles": [
+        "Triceps",
+        "Lateral Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926280/stren/exercises/3709fdfa-be25-4397-b19a-14a5bff8f253.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213781/exercise-seated-dumbbell-press-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-seated-dumbbell-press-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-seated-dumbbell-press-v2",
+      "actualCloudinaryPublicId": "exercise-seated-dumbbell-press-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 59040,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "e410340d-86d9-4427-9260-737a4eeb1727",
+      "exerciseName": "Single-Arm Dumbbell Row",
+      "exerciseSlug": "single-arm-dumbbell-row",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Back",
+        "Lats"
+      ],
+      "secondaryMuscles": [
+        "Biceps",
+        "Rear Deltoids"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926280/stren/exercises/e410340d-86d9-4427-9260-737a4eeb1727.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213782/exercise-single-arm-dumbbell-row-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-single-arm-dumbbell-row-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-single-arm-dumbbell-row-v2",
+      "actualCloudinaryPublicId": "exercise-single-arm-dumbbell-row-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 58703,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "fcb5290c-d1a1-444e-adc8-597582edd107",
+      "exerciseName": "Skull Crushers",
+      "exerciseSlug": "skull-crushers",
+      "category": "General",
+      "equipment": [
+        "EZ Bar",
+        "Barbell"
+      ],
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [
+        "Forearms"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926281/stren/exercises/fcb5290c-d1a1-444e-adc8-597582edd107.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213781/exercise-skull-crushers-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-skull-crushers-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-skull-crushers-v2",
+      "actualCloudinaryPublicId": "exercise-skull-crushers-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 33488,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "88335544-bc8e-461c-ac83-ddc2581479ad",
+      "exerciseName": "Spider Curl",
+      "exerciseSlug": "spider-curl",
+      "category": "General",
+      "equipment": [
+        "EZ Bar",
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Biceps"
+      ],
+      "secondaryMuscles": [
+        "Brachialis",
+        "Forearms"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213801/Prone_Incline_Dumbbell_Curls.png",
+      "replacementReason": "Standardized black-and-white anatomical line-art illustration of prone chest-supported spider curl on pure white background (#FFFFFF).",
+      "newImageFilename": "Prone Incline Dumbbell Curls.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-spider-curl-v2",
+      "actualCloudinaryPublicId": "Prone_Incline_Dumbbell_Curls",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 1423481,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "80eb65d2-c5cc-4c20-8d9a-a0bd0c9ec880",
+      "exerciseName": "Standing Calf Raises",
+      "exerciseSlug": "standing-calf-raises",
+      "category": "General",
+      "equipment": [
+        "Machine"
+      ],
+      "primaryMuscles": [
+        "Calves"
+      ],
+      "secondaryMuscles": [],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926282/stren/exercises/80eb65d2-c5cc-4c20-8d9a-a0bd0c9ec880.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213783/exercise-standing-calf-raises-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-standing-calf-raises-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-standing-calf-raises-v2",
+      "actualCloudinaryPublicId": "exercise-standing-calf-raises-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 32127,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "aee1a097-1bb5-4cc7-94a2-7da58d25ff68",
+      "exerciseName": "Tricep Rope Pushdown",
+      "exerciseSlug": "tricep-rope-pushdown",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Triceps"
+      ],
+      "secondaryMuscles": [],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926283/stren/exercises/aee1a097-1bb5-4cc7-94a2-7da58d25ff68.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213784/exercise-tricep-rope-pushdown-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-tricep-rope-pushdown-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-tricep-rope-pushdown-v2",
+      "actualCloudinaryPublicId": "exercise-tricep-rope-pushdown-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 28648,
+      "dimensions": "512x512"
+    },
+    {
+      "exerciseId": "ca2fb298-c86b-4058-b9b0-7bf45cdff306",
+      "exerciseName": "Up to Low",
+      "exerciseSlug": "up-to-low",
+      "category": "General",
+      "equipment": [
+        "Cable"
+      ],
+      "primaryMuscles": [
+        "Chest"
+      ],
+      "secondaryMuscles": [
+        "Shoulders"
+      ],
+      "existingImageUrl": null,
+      "deliveryUrl": null,
+      "replacementReason": "Explicitly excluded custom user exercise; retains existing behavior and image configuration.",
+      "newImageFilename": null,
+      "intendedCloudinaryPublicId": null,
+      "actualCloudinaryPublicId": null,
+      "status": "EXCLUDED_CUSTOM",
+      "verificationStatus": "EXCLUDED_CUSTOM",
+      "fileSizeBytes": null,
+      "dimensions": null
+    },
+    {
+      "exerciseId": "30101432-7aba-4c76-a20f-f55c6ba02dde",
+      "exerciseName": "Walking Lunges",
+      "exerciseSlug": "walking-lunges",
+      "category": "General",
+      "equipment": [
+        "Dumbbell"
+      ],
+      "primaryMuscles": [
+        "Quadriceps",
+        "Glutes"
+      ],
+      "secondaryMuscles": [
+        "Hamstrings",
+        "Calves",
+        "Core"
+      ],
+      "existingImageUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1792926284/stren/exercises/30101432-7aba-4c76-a20f-f55c6ba02dde.png",
+      "deliveryUrl": "https://res.cloudinary.com/c3ygdcb9/image/upload/v1793213785/exercise-walking-lunges-v2.png",
+      "replacementReason": "Standardized existing high-contrast illustration to unified 512x512 black-and-white anatomy catalog specification with pure white background (#FFFFFF).",
+      "newImageFilename": "exercise-walking-lunges-v2.png",
+      "intendedCloudinaryPublicId": "stren/exercises/illustrations/exercise-walking-lunges-v2",
+      "actualCloudinaryPublicId": "exercise-walking-lunges-v2",
+      "status": "MAPPED",
+      "verificationStatus": "VERIFIED",
+      "fileSizeBytes": 30364,
+      "dimensions": "512x512"
+    }
+  ]
+}
