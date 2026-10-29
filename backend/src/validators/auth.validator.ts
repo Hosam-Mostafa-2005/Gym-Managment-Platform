@@ -51,10 +51,16 @@ export const verifyResetCodeSchema = z.object({
 });
 
 export const resetPasswordSchema = z.object({
-  body: z.object({
-    resetToken: z.string().min(1, "Reset token is required"),
-    newPassword: z.string().min(8).max(100),
-  }),
+  body: z
+    .object({
+      resetToken: z.string().min(1).optional(),
+      token: z.string().min(1).optional(),
+      newPassword: z.string().min(8).max(100),
+    })
+    .refine((data) => Boolean(data.resetToken || data.token), {
+      message: "Reset token is required",
+      path: ["resetToken"],
+    }),
 });
 
 export const updatePasswordSchema = z.object({
@@ -109,5 +115,13 @@ export const onboardingSchema = z.object({
     yearsOfExperience: z.number().int().min(0).max(70).optional(),
     step: z.number().int().min(0).max(5).optional(),
     skipOptional: z.boolean().optional(),
+  }),
+});
+
+export const assignRoleSchema = z.object({
+  body: z.object({
+    role: z.enum([Roles.MEMBER, Roles.TRAINER, Roles.ADMIN], {
+      message: "Role must be one of: member, trainer, admin.",
+    }),
   }),
 });

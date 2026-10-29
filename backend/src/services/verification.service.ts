@@ -32,6 +32,7 @@ export class VerificationService {
     email: string;
     name: string;
     purpose: VerificationPurpose;
+    resetUrl?: string;
   }): Promise<{ cooldownSeconds: number; delivery: EmailDeliveryResult }> {
     const normalizedEmail = params.email.trim().toLowerCase();
 
@@ -115,6 +116,7 @@ export class VerificationService {
         normalizedEmail,
         params.name,
         rawOtp,
+        params.resetUrl,
       );
     } else if (params.purpose === VerificationPurpose.PASSWORD_CHANGE) {
       delivery = await emailService.sendPasswordChangeVerificationEmail(
@@ -302,11 +304,21 @@ export class VerificationService {
       );
     }
 
-    // Invalidate the reset token
-    await prisma.passwordResetToken.update({
-      where: { id: record.id },
+    // Atomically invalidate the reset token to prevent race conditions
+    const updated = await prisma.passwordResetToken.updateMany({
+      where: {
+        id: record.id,
+        usedAt: null,
+      },
       data: { usedAt: new Date() },
     });
+
+    if (updated.count === 0) {
+      throw new AppError(
+        "Invalid or already used password reset authorization.",
+        400,
+      );
+    }
 
     return { userId: record.userId };
   }

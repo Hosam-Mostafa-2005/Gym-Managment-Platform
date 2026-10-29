@@ -89,17 +89,15 @@ const COMMON_LANGUAGES = [
   "Russian",
 ];
 
-export const OnboardingPage: React.FC<OnboardingPageProps> = ({ initialRole }) => {
+export const OnboardingPage: React.FC<OnboardingPageProps> = () => {
   const { user } = useAuth();
   const { mutate: submitOnboarding, isPending } = useOnboarding();
 
-  // Selected role: strictly "member" or "trainer" (no admin option)
-  const [selectedRole, setSelectedRole] = useState<"member" | "trainer">(() => {
-    if (initialRole) return initialRole;
-    const current = user?.role?.toLowerCase();
-    if (current === "trainer" || current === "coach") return "trainer";
-    return "member";
-  });
+  // Role is strictly determined by the authenticated user's account role
+  const selectedRole: "member" | "trainer" =
+    user?.role?.toLowerCase() === "trainer" || user?.role?.toLowerCase() === "coach"
+      ? "trainer"
+      : "member";
 
   // General fields
   const [name, setName] = useState(user?.name || "");
@@ -118,7 +116,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ initialRole }) =
   const [professionalTitle, setProfessionalTitle] = useState(
     user?.professionalTitle || "Strength & Conditioning Coach",
   );
-  const [yearsOfExperience, setYearsOfExperience] = useState<number | string>(
+  const [yearsOfExperience, setYearsOfExperience] = useState<number>(
     user?.yearsOfExperience || 3,
   );
   const [specialties, setSpecialties] = useState<string[]>(
@@ -209,7 +207,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ initialRole }) =
   return (
     <div className="min-h-screen w-full bg-[#090B0F] text-[#F3F4F6] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative selection:bg-[#5BE584]/30">
       {/* Background radial atmosphere */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-[radial-gradient(circle_at_center,_rgba(91,229,132,0.04)_0%,_rgba(9,11,15,0)_70%)] blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(rgba(30,35,41,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(30,35,41,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
       </div>
@@ -229,65 +227,31 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ initialRole }) =
           </p>
         </div>
 
-        {/* Role Confirmation Selector */}
-        <div className="mb-8">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-[#9CA3AF] mb-3 text-center sm:text-left">
-            I am joining STREN as:
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button
-              type="button"
-              onClick={() => setSelectedRole("member")}
-              className={`p-4 rounded-2xl border text-left transition-all relative ${
-                selectedRole === "member"
-                  ? "bg-[#101418] border-[#5BE584] shadow-lg shadow-[#5BE584]/10 ring-1 ring-[#5BE584]"
-                  : "bg-[#101418]/60 border-[#1E2329] hover:border-[#2E353F]"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2.5">
-                  <div className={`p-2 rounded-xl ${selectedRole === "member" ? "bg-[#5BE584]/10 text-[#5BE584]" : "bg-[#1E2329] text-[#9CA3AF]"}`}>
-                    <Dumbbell className="w-5 h-5" />
-                  </div>
-                  <span className="font-bold text-sm text-white">Athlete / Member</span>
-                </div>
-                {selectedRole === "member" && (
-                  <div className="w-5 h-5 rounded-full bg-[#5BE584] flex items-center justify-center text-[#090B0F]">
-                    <Check className="w-3.5 h-3.5 stroke-[3]" />
-                  </div>
-                )}
+        {/* Account Role Indicator */}
+        <div className="mb-8 p-4 rounded-2xl border border-[#1E2329] bg-[#101418] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-[#5BE584]/10 text-[#5BE584]">
+              {selectedRole === "trainer" ? (
+                <Briefcase className="w-5 h-5" />
+              ) : (
+                <Dumbbell className="w-5 h-5" />
+              )}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-sm text-white">
+                  {selectedRole === "trainer" ? "Coach Account Setup" : "Athlete Account Setup"}
+                </span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#5BE584]/10 text-[#5BE584] border border-[#5BE584]/20">
+                  {selectedRole === "trainer" ? "Coach" : "Member"}
+                </span>
               </div>
-              <p className="text-xs text-[#9CA3AF] leading-relaxed">
-                Log workouts, follow coaching assignments, track nutrition, and monitor personal records.
+              <p className="text-xs text-[#9CA3AF] mt-0.5">
+                {selectedRole === "trainer"
+                  ? "Configure your coaching philosophy, certifications, and specialties."
+                  : "Set your fitness goals, training experience, and personal profile."}
               </p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setSelectedRole("trainer")}
-              className={`p-4 rounded-2xl border text-left transition-all relative ${
-                selectedRole === "trainer"
-                  ? "bg-[#101418] border-[#5BE584] shadow-lg shadow-[#5BE584]/10 ring-1 ring-[#5BE584]"
-                  : "bg-[#101418]/60 border-[#1E2329] hover:border-[#2E353F]"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2.5">
-                  <div className={`p-2 rounded-xl ${selectedRole === "trainer" ? "bg-[#5BE584]/10 text-[#5BE584]" : "bg-[#1E2329] text-[#9CA3AF]"}`}>
-                    <Briefcase className="w-5 h-5" />
-                  </div>
-                  <span className="font-bold text-sm text-white">Coach / Trainer</span>
-                </div>
-                {selectedRole === "trainer" && (
-                  <div className="w-5 h-5 rounded-full bg-[#5BE584] flex items-center justify-center text-[#090B0F]">
-                    <Check className="w-3.5 h-3.5 stroke-[3]" />
-                  </div>
-                )}
-              </div>
-              <p className="text-xs text-[#9CA3AF] leading-relaxed">
-                Manage athletes, assign workout and nutrition programs, track adherence, and schedule sessions.
-              </p>
-            </button>
+            </div>
           </div>
         </div>
 
@@ -452,8 +416,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({ initialRole }) =
                       min={0}
                       max={60}
                       value={yearsOfExperience}
-                      inputMode="numeric"
-                      onChange={(e) => setYearsOfExperience(e.target.value)}
+                      onChange={(e) => setYearsOfExperience(Number(e.target.value))}
                       className="w-full bg-[#0E1217] border border-[#1E2329] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#5BE584] focus:ring-1 focus:ring-[#5BE584]"
                     />
                   </div>

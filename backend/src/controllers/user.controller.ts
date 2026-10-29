@@ -45,3 +45,16 @@ export const getAllUsers: RequestHandler = catchAsync(async (req, res) => {
     data: users,
   });
 });
+
+export const assignUserRole: RequestHandler = catchAsync(async (req, res) => {
+  const targetUserId = req.params.id as string;
+  const { role } = req.body;
+
+  const user = await userService.assignRole(targetUserId, role, req.user!.id);
+
+  res.status(200).json({
+    status: "success",
+    message: `User role successfully updated to ${role}.`,
+    data: { user },
+  });
+});

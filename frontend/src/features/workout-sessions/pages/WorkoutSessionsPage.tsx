@@ -1,15 +1,27 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Search, Calendar, Clock, Activity, Dumbbell, Play } from "lucide-react";
+import {
+  Search,
+  Calendar,
+  Clock,
+  Activity,
+  Dumbbell,
+  Play,
+  RotateCcw,
+} from "lucide-react";
 
 import { useWorkoutSessions } from "../hooks/useWorkoutSessions";
 import { useStartWorkoutSession } from "../hooks/useStartWorkoutSession";
 import { useMyAssignments } from "../hooks/useMyAssignments";
+import { useCurrentWorkoutSession } from "../hooks/useCurrentWorkoutSession";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import StartWorkoutDialog from "../components/StartWorkoutDialog";
+import ActiveWorkoutConflictDialog from "../components/ActiveWorkoutConflictDialog";
 
 export default function WorkoutSessionsPage() {
   const navigate = useNavigate();
+  const { data: user } = useCurrentUser();
 
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -18,7 +30,22 @@ export default function WorkoutSessionsPage() {
   const [sortBy, setSortBy] = useState("newest");
   const [isStartWorkoutModalOpen, setIsStartWorkoutModalOpen] = useState(false);
 
+  // Active workout conflict dialog state
+  const [conflictModal, setConflictModal] = useState<{
+    isOpen: boolean;
+    activeSessionId: string;
+    activeWorkoutTitle: string;
+    requestedWorkoutId?: string;
+    requestedWorkoutTitle?: string;
+    requestedAssignmentId?: string;
+  }>({
+    isOpen: false,
+    activeSessionId: "",
+    activeWorkoutTitle: "",
+  });
+
   const { data: assignments = [] } = useMyAssignments();
+  const { data: currentSessionData } = useCurrentWorkoutSession();
   const { mutate: startWorkout, isPending: isStarting } =
     useStartWorkoutSession();
   const { data, isLoading, isError, refetch } = useWorkoutSessions(page, limit);
@@ -26,7 +53,14 @@ export default function WorkoutSessionsPage() {
   const sessions = data?.sessions ?? [];
   const totalItems = data?.results ?? 0;
 
-  const activeAssignment = assignments.find((a: any) => a.status === "ACTIVE");
+  const activeSession = currentSessionData?.session;
+  const hasActiveSession = Boolean(
+    activeSession && activeSession.status === "IN_PROGRESS",
+  );
+  const activeWorkoutTitle =
+    activeSession?.workout?.title ||
+    activeSession?.assignment?.workout?.title ||
+    "Active Workout";
 
   const stats = useMemo(() => {
     const completed = sessions.filter(
@@ -119,7 +153,50 @@ export default function WorkoutSessionsPage() {
     setIsStartWorkoutModalOpen(true);
   };
 
-  const hasActiveSession = stats.inProgress > 0;
+  const handleRepeatSession = (session: any) => {
+    const wId =
+      session.workoutId ||
+      session.workout?.id ||
+      session.assignment?.workoutId ||
+      session.assignment?.workout?.id;
+    if (!wId) {
+      toast.error("Could not find the workout details for this session.");
+      return;
+    }
+    const title =
+      session.workout?.title ||
+      session.assignment?.workout?.title ||
+      "Workout Routine";
+
+    if (hasActiveSession && activeSession) {
+      setConflictModal({
+        isOpen: true,
+        activeSessionId: activeSession.id,
+        activeWorkoutTitle: activeWorkoutTitle,
+        requestedWorkoutId: wId,
+        requestedWorkoutTitle: title,
+        requestedAssignmentId: session.assignmentId,
+      });
+      return;
+    }
+
+    startWorkout(
+      session.assignmentId
+        ? { assignment: session.assignmentId }
+        : { workout: wId },
+      {
+        onSuccess: () => {
+          toast.success(`Started new session: ${title}`);
+          navigate("/sessions/active");
+        },
+        onError: (err: any) => {
+          toast.error(
+            err?.response?.data?.message || "Failed to start workout session",
+          );
+        },
+      },
+    );
+  };
 
   return (
     <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
@@ -369,7 +446,8 @@ export default function WorkoutSessionsPage() {
                         <th className="px-5 py-4">Coach</th>
                         <th className="px-5 py-4">Time</th>
                         <th className="px-5 py-4">Progress</th>
-                        <th className="px-5 py-4 text-right">Status</th>
+                        <th className="px-5 py-4">Status</th>
+                        <th className="px-5 py-4 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#1E2329] text-sm">
@@ -414,7 +492,7 @@ export default function WorkoutSessionsPage() {
                             <div className="flex items-center gap-3">
                               <div className="w-24 bg-[#1E2329] h-1.5 rounded-full overflow-hidden">
                                 <div
-                                  className={`h-full rounded-full transition-all duration-500 ${
+                                   className={`h-full rounded-full transition-all duration-500 ${
                                     session.status === "COMPLETED"
                                       ? "bg-[#6B7280]"
                                       : session.status === "IN_PROGRESS"
@@ -429,7 +507,7 @@ export default function WorkoutSessionsPage() {
                               </span>
                             </div>
                           </td>
-                          <td className="px-5 py-3.5 text-right">
+                          <td className="px-5 py-3.5">
                             <span
                               className={`inline-flex items-center justify-center px-2.5 py-1 rounded text-[11px] font-medium border ${
                                 session.status === "IN_PROGRESS"
@@ -446,6 +524,52 @@ export default function WorkoutSessionsPage() {
                                 ? "In Progress"
                                 : session.status}
                             </span>
+                          </td>
+                          <td
+                            className="px-5 py-3.5 text-right whitespace-nowrap"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {session.status === "IN_PROGRESS" ? (
+                              <button
+                                type="button"
+                                onClick={() => navigate("/sessions/active")}
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-[#5BE584] px-3 py-1.5 text-xs font-bold text-[#090B0F] hover:bg-[#4ade80] transition-colors shadow-sm"
+                              >
+                                <Play className="w-3 h-3 fill-current" />
+                                Resume
+                              </button>
+                            ) : session.status === "COMPLETED" ? (
+                              <div className="inline-flex items-center justify-end gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => handleRepeatSession(session)}
+                                  title="Repeat this workout in a new session without altering history"
+                                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#23422E] bg-[#16291D] px-2.5 py-1.5 text-xs font-medium text-[#5BE584] hover:bg-[#1E3A28] transition-colors"
+                                >
+                                  <RotateCcw className="w-3 h-3" />
+                                  Start Again
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    navigate(`/sessions/${session.id}/summary`)
+                                  }
+                                  className="inline-flex items-center gap-1 rounded-lg border border-[#1E2329] bg-[#101418] px-2.5 py-1.5 text-xs font-medium text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
+                                >
+                                  Summary
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  navigate(`/sessions/${session.id}`)
+                                }
+                                className="inline-flex items-center gap-1 rounded-lg border border-[#1E2329] bg-[#101418] px-2.5 py-1.5 text-xs font-medium text-[#9CA3AF] hover:text-white transition-colors"
+                              >
+                                Details
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -488,6 +612,19 @@ export default function WorkoutSessionsPage() {
       <StartWorkoutDialog
         isOpen={isStartWorkoutModalOpen}
         onClose={() => setIsStartWorkoutModalOpen(false)}
+      />
+
+      {/* Active Workout Conflict Modal */}
+      <ActiveWorkoutConflictDialog
+        isOpen={conflictModal.isOpen}
+        onClose={() =>
+          setConflictModal((prev) => ({ ...prev, isOpen: false }))
+        }
+        activeSessionId={conflictModal.activeSessionId}
+        activeWorkoutTitle={conflictModal.activeWorkoutTitle}
+        requestedWorkoutId={conflictModal.requestedWorkoutId}
+        requestedWorkoutTitle={conflictModal.requestedWorkoutTitle}
+        requestedAssignmentId={conflictModal.requestedAssignmentId}
       />
     </div>
   );

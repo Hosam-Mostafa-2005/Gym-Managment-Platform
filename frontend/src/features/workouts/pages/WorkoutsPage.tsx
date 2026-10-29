@@ -16,6 +16,7 @@ import {
   User,
   Calendar,
   UserPlus,
+  Link as LinkIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -27,6 +28,7 @@ import { useStartWorkoutSession } from "@/features/workout-sessions/hooks/useSta
 import { useCurrentWorkoutSession } from "@/features/workout-sessions/hooks/useCurrentWorkoutSession";
 import ScheduleWorkoutDialog from "@/features/workout-sessions/components/ScheduleWorkoutDialog";
 import ActiveWorkoutConflictDialog from "@/features/workout-sessions/components/ActiveWorkoutConflictDialog";
+import AddWorkoutDialog from "../components/AddWorkoutDialog";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { ROLES } from "@/constants/roles";
 
@@ -59,6 +61,7 @@ export default function WorkoutsPage() {
   const [activeTab, setActiveTab] = useState<"all" | "my" | "templates">("all");
 
   // Delete Confirmation Modal State
+  const [isAddByIdModalOpen, setIsAddByIdModalOpen] = useState(false);
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
     id: string;
@@ -227,6 +230,14 @@ export default function WorkoutsPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsAddByIdModalOpen(true)}
+              className="group flex items-center justify-center gap-2 rounded-[14px] border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-sm font-semibold text-[#F3F4F6] transition-all hover:bg-[#1A2027] hover:border-[#2A313A] focus:outline-none focus:ring-2 focus:ring-[#5BE584]"
+            >
+              <LinkIcon className="h-4 w-4 text-[#5BE584] transition-transform group-hover:scale-110" />
+              <span>Add by ID / Link</span>
+            </button>
             {canManageRoles && (
               <button
                 onClick={() => navigate("/assignments/new")}
@@ -643,6 +654,7 @@ export default function WorkoutsPage() {
           requestedWorkoutTitle={conflictModal.requestedWorkoutTitle}
         />
       )}
+      <AddWorkoutDialog isOpen={isAddByIdModalOpen} onClose={() => setIsAddByIdModalOpen(false)} />
     </div>
   );
 }

@@ -93,3 +93,17 @@ export const remove: RequestHandler = catchAsync(async (req, res) => {
     data: null,
   });
 });
+
+export const resolveWorkout: RequestHandler = catchAsync(async (req, res) => {
+  const { identifier } = req.body;
+  const result = await workoutService.resolveWorkout(
+    identifier,
+    req.user!.id,
+    req.user!.role as Role,
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: result,
+  });
+});

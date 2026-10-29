@@ -1019,7 +1019,7 @@ class WorkoutSessionService {
     const targetRepsNum = typeof data.targetReps === "number" ? data.targetReps : 10;
     const targetRepsStr = String(data.targetReps ?? 10);
     const targetWeight = data.targetWeight ?? 0;
-    const restTimeSeconds = data.restTimeSeconds ?? 60;
+    const restSeconds = (data as any).restSeconds ?? data.restTimeSeconds ?? 60;
 
     await prisma.$transaction(async (tx) => {
       const createdLog = await tx.workoutExerciseLog.create({
@@ -1031,11 +1031,8 @@ class WorkoutSessionService {
           targetSets,
           targetReps: targetRepsStr,
           targetWeight,
-          restTimeSeconds,
-          restSeconds: restTimeSeconds,
-          notes: data.notes ?? null,
+          restSeconds,
           completed: false,
-          isActive: true,
         },
       });
 
@@ -1049,8 +1046,8 @@ class WorkoutSessionService {
         targetReps: targetRepsStr,
         actualReps: targetRepsNum,
         weight: targetWeight,
+        restDuration: restSeconds,
         completed: false,
-        isActive: true,
       }));
 
       await tx.workoutSetLog.createMany({

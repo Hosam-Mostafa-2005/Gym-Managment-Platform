@@ -456,44 +456,63 @@ export default function AssignmentsPage() {
                           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#16291D] text-[#5BE584] border border-[#23422E] mb-4">
                             <ClipboardList className="h-5 w-5" />
                           </div>
-                          <h2 className="text-sm font-semibold text-white">
-                            No assignments found
+                          <h2 className="text-base font-semibold text-white">
+                            {isMember
+                              ? "No Coach Assignments Yet"
+                              : "No assignments found"}
                           </h2>
-                          <p className="mt-1.5 text-xs text-[#9CA3AF] max-w-xs">
+                          <p className="mt-2 text-xs text-[#9CA3AF] max-w-sm leading-relaxed">
                             {searchQuery ||
                             selectedStatus ||
                             selectedTrainer !== "ALL"
                               ? "We couldn't find any assignments matching your current filters."
-                              : "You haven't assigned any workouts to members yet."}
+                              : isMember
+                                ? "Workout assignments are personalized routines prescribed directly by your Coach. In the meantime, you can build and start your own personal workout routines anytime."
+                                : "You haven't assigned any workouts to members yet. Create an assignment to prescribe a routine to a member."}
                           </p>
-                          {(searchQuery ||
+
+                          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                            {searchQuery ||
                             selectedStatus ||
-                            selectedTrainer !== "ALL" ||
-                            canManage) && (
-                            <button
-                              className="mt-5 rounded-md border border-[#1E2329] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
-                              onClick={() => {
-                                if (
-                                  searchQuery ||
-                                  selectedStatus ||
-                                  selectedTrainer !== "ALL"
-                                ) {
+                            selectedTrainer !== "ALL" ? (
+                              <button
+                                className="rounded-lg border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
+                                onClick={() => {
                                   setSearchQuery("");
                                   setSelectedStatus(null);
                                   setSelectedTrainer("ALL");
                                   setPage(1);
-                                } else if (canManage) {
-                                  navigate("/assignments/new");
-                                }
-                              }}
-                            >
-                              {searchQuery ||
-                              selectedStatus ||
-                              selectedTrainer !== "ALL"
-                                ? "Clear Filters"
-                                : "Create First Assignment"}
-                            </button>
-                          )}
+                                }}
+                              >
+                                Clear Filters
+                              </button>
+                            ) : isMember ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => navigate("/sessions")}
+                                  className="rounded-lg bg-[#5BE584] px-4 py-2 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80]"
+                                >
+                                  Start a Personal Workout
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => navigate("/calendar")}
+                                  className="rounded-lg border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] hover:text-white hover:border-[#2A313A]"
+                                >
+                                  View Training Calendar
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => navigate("/assignments/new")}
+                                className="rounded-lg bg-[#5BE584] px-4 py-2 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80]"
+                              >
+                                Create First Assignment
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </td>
                     </tr>

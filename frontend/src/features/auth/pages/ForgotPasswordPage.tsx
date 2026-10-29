@@ -21,17 +21,9 @@ export const ForgotPasswordPage: React.FC = () => {
     try {
       const res = await forgotPassword({ email: email.trim() });
       toast.success(res.message);
-      if (res.resetToken) {
-        navigate(
-          `/reset-password?resetToken=${encodeURIComponent(res.resetToken)}&email=${encodeURIComponent(
-            res.email || email.trim(),
-          )}`,
-        );
-      } else {
-        navigate(`/verify-reset-code?email=${encodeURIComponent(email.trim())}`, {
-          state: { delivery: res.delivery },
-        });
-      }
+      navigate(`/verify-reset-code?email=${encodeURIComponent(email.trim())}`, {
+        state: { delivery: res.delivery },
+      });
     } catch (err: any) {
       const msg = err.response?.data?.message || "Failed to process request.";
       toast.error(msg);
@@ -58,7 +50,7 @@ export const ForgotPasswordPage: React.FC = () => {
           Reset Your Password
         </h2>
         <p className="mt-2 text-sm text-[#91A0B5] leading-relaxed">
-          Enter the email address associated with your STREN account to proceed directly to resetting your password.
+          Enter the email address associated with your STREN account to receive password reset instructions.
         </p>
       </div>
 
@@ -97,7 +89,7 @@ export const ForgotPasswordPage: React.FC = () => {
           ) : (
             <>
               <Send className="h-4 w-4" />
-              Continue to Reset Password
+              Send Recovery Code
             </>
           )}
         </button>

@@ -9,6 +9,7 @@ import ApiFeatures from "../utils/ApiFeatures.js";
 import mapWorkout from "../mappers/workout.mapper.js";
 import { Roles, type Role } from "../constants/roles.js";
 import { getRecommendedRestSeconds } from "../utils/rest-classification.js";
+import workoutShareService from "./workout-share.service.js";
 
 class WorkoutService {
   async create(data: CreateWorkoutDto, trainerId: string, role?: Role) {
@@ -712,6 +713,171 @@ class WorkoutService {
       where: { id },
       data: { isActive: false },
     });
+  }
+
+  /**
+   * Resolves a workout by ID, Share Code, or full STREN URL with authorization checks.
+   */
+  async resolveWorkout(input: string, userId: string, role: Role) {
+    const raw = (input || "").trim();
+    if (!raw) {
+      throw new AppError("Please provide a workout ID, share code, or URL.", 400);
+    }
+
+    // 1. Check if input is a URL and extract the core identifier
+    let identifier = raw;
+    try {
+      if (raw.startsWith("http://") || raw.startsWith("https://") || raw.includes("/")) {
+        const urlObj = raw.startsWith("http")
+          ? new URL(raw)
+          : new URL(`https://stren.app/${raw.replace(/^\/+/, "")}`);
+        const pathname = urlObj.pathname;
+        const searchParams = urlObj.searchParams;
+
+        if (searchParams.get("code")) {
+          identifier = searchParams.get("code")!;
+        } else if (searchParams.get("token")) {
+          identifier = searchParams.get("token")!;
+        } else {
+          const parts = pathname.split("/").filter(Boolean);
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          const foundUuid = parts.find((p) => uuidRegex.test(p));
+          if (foundUuid) {
+            identifier = foundUuid;
+          } else {
+            const shareIndex = parts.findIndex(
+              (p) => p.toLowerCase() === "workout" || p.toLowerCase() === "share",
+            );
+            if (shareIndex !== -1 && parts[shareIndex + 1]) {
+              identifier = parts[shareIndex + 1];
+            } else {
+              identifier = parts[parts.length - 1];
+            }
+          }
+        }
+      }
+    } catch {
+      identifier = raw;
+    }
+
+    identifier = identifier.trim();
+
+    // 2. If it's a share code or share token, resolve via WorkoutShare
+    if (identifier.toUpperCase().startsWith("STR-") || identifier.length === 64) {
+      const preview = await workoutShareService.getSharePreview(identifier);
+      const isAlreadySaved = preview.workout.id
+        ? (await prisma.workout.count({
+            where: {
+              id: preview.workout.id,
+              createdBy: userId,
+              isActive: true,
+            },
+          })) > 0
+        : false;
+
+      return {
+        sourceType: "share",
+        shareCode: preview.shareCode,
+        workout: preview.workout,
+        isAlreadySaved,
+      };
+    }
+
+    // 3. Otherwise, treat as Workout ID (UUID)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(identifier)) {
+      throw new AppError(
+        "Invalid workout ID or unsupported link format. Please provide a valid UUID or STREN share link.",
+        400,
+      );
+    }
+
+    const workout = await prisma.workout.findFirst({
+      where: {
+        id: identifier,
+        isActive: true,
+      },
+      include: {
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+        exercises: {
+          include: {
+            exercise: true,
+          },
+          orderBy: {
+            order: "asc",
+          },
+        },
+      },
+    });
+
+    if (!workout) {
+      throw new AppError("Workout not found. Please verify the ID or link.", 404);
+    }
+
+    const creatorId = workout.createdBy ?? (workout as any).createdById;
+    const isOwner = creatorId === userId;
+    const isTemplate = workout.isTemplate === true;
+    let isAssigned = false;
+
+    if (role === Roles.MEMBER && !isOwner && !isTemplate) {
+      const assignment = await prisma.assignment.findFirst({
+        where: {
+          workoutId: workout.id,
+          memberId: userId,
+          isActive: true,
+        },
+      });
+      isAssigned = Boolean(assignment);
+
+      const activeShare = await prisma.workoutShare.findFirst({
+        where: {
+          workoutId: workout.id,
+          isActive: true,
+        },
+      });
+
+      if (!isAssigned && !activeShare) {
+        throw new AppError(
+          "You do not have permission to view or add this private workout.",
+          403,
+        );
+      }
+    }
+
+    return {
+      sourceType: isOwner
+        ? "personal"
+        : isTemplate
+          ? "template"
+          : isAssigned
+            ? "assigned"
+            : "shared",
+      workout: {
+        id: workout.id,
+        title: workout.title,
+        description: workout.description,
+        category: workout.category,
+        difficulty: workout.difficulty,
+        estimatedDuration: workout.estimatedDuration,
+        defaultRestLarge: workout.defaultRestLarge,
+        defaultRestSmall: workout.defaultRestSmall,
+        tags: workout.tags,
+        isTemplate: workout.isTemplate,
+        creatorName: workout.creator?.name || "STREN User",
+        exercises: workout.exercises.map((item) => ({
+          ...item,
+          exercise: item.exercise,
+        })),
+      },
+      isAlreadySaved: isOwner,
+    };
   }
 }
 

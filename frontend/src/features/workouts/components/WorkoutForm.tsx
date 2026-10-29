@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Plus,
   Search,
@@ -80,21 +80,35 @@ export default function WorkoutForm({
 
   const form = useForm<WorkoutFormData>({
     resolver: zodResolver(workoutSchema) as Resolver<WorkoutFormData>,
-    defaultValues: defaultValues ?? {
-      title: "",
-      description: "",
-      category: "",
-      difficulty: "",
-      estimatedDuration: 65,
-      defaultRestLarge: 90,
-      defaultRestSmall: 60,
-      tags: [],
-      isTemplate: false,
-      exercises: [],
-    },
+    defaultValues: defaultValues
+      ? {
+          ...defaultValues,
+          isTemplate: isMember ? false : Boolean(defaultValues.isTemplate),
+        }
+      : {
+          title: "",
+          description: "",
+          category: "",
+          difficulty: "",
+          estimatedDuration: 65,
+          defaultRestLarge: 90,
+          defaultRestSmall: 60,
+          tags: [],
+          isTemplate: false,
+          exercises: [],
+        },
   });
 
   const { control, handleSubmit, watch, setValue, getValues, reset } = form;
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset({
+        ...defaultValues,
+        isTemplate: isMember ? false : Boolean(defaultValues.isTemplate),
+      });
+    }
+  }, [defaultValues, reset, isMember]);
 
   const { fields, append, move } = useFieldArray({
     control,
@@ -198,7 +212,12 @@ export default function WorkoutForm({
   return (
     <FormProvider {...form}>
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit((data) => {
+          onSubmit({
+            ...data,
+            isTemplate: isMember ? false : Boolean(data.isTemplate),
+          });
+        })}
         className="space-y-8 text-foreground"
       >
       {/* -------------------------------------------------------------------------- */}
@@ -253,14 +272,26 @@ export default function WorkoutForm({
               />
             </div>
 
-            <div className="pt-1">
-              <FormCheckbox
-                control={control}
-                name="isTemplate"
-                label={isMember ? "Personal Routine" : "Save as Template"}
-                disabled={isMember}
-              />
-            </div>
+            {isMember ? (
+              <div
+                className="flex items-center gap-2 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-400"
+                title="Your workout will be saved privately in your personal routines collection"
+              >
+                <span className="h-2 w-2 rounded-full bg-[#5BE584] animate-pulse" />
+                <span className="font-semibold text-foreground">Personal Routine</span>
+                <span className="text-[11px] text-muted-foreground">
+                  (Private to you)
+                </span>
+              </div>
+            ) : (
+              <div className="pt-1">
+                <FormCheckbox
+                  control={control}
+                  name="isTemplate"
+                  label="Publish as Library Template"
+                />
+              </div>
+            )}
           </div>
 
           {/* Preferred Rest-Time Settings (Phase 3.1) */}

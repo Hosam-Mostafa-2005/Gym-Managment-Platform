@@ -4,6 +4,7 @@ import validate from "../middleware/validate.middleware.js";
 
 import {
   register,
+  registerCoach,
   verifyEmail,
   resendVerificationCode,
   login,
@@ -39,11 +40,17 @@ import {
 
 import { protect, restrictTo } from "../middleware/auth.middleware.js";
 import { Roles } from "../constants/roles.js";
+import {
+  forgotPasswordLimiter,
+  verifyResetCodeLimiter,
+  resetPasswordLimiter,
+} from "../middleware/rateLimit.middleware.js";
 
 const router = Router();
 
 // ================= Public Routes =================
 router.post("/register", validate(registerSchema), register);
+router.post("/register-coach", validate(registerSchema), registerCoach);
 router.post("/verify-email", validate(verifyEmailSchema), verifyEmail);
 router.post(
   "/resend-verification",
@@ -52,13 +59,24 @@ router.post(
 );
 router.post("/login", validate(loginSchema), login);
 router.post("/google", validate(googleAuthSchema), googleAuth);
-router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
+router.post(
+  "/forgot-password",
+  forgotPasswordLimiter,
+  validate(forgotPasswordSchema),
+  forgotPassword,
+);
 router.post(
   "/verify-reset-code",
+  verifyResetCodeLimiter,
   validate(verifyResetCodeSchema),
   verifyResetCode,
 );
-router.post("/reset-password", validate(resetPasswordSchema), resetPassword);
+router.post(
+  "/reset-password",
+  resetPasswordLimiter,
+  validate(resetPasswordSchema),
+  resetPassword,
+);
 router.post("/logout", logout);
 
 // ================= Protected Routes =================

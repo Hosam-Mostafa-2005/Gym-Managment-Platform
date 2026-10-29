@@ -9,6 +9,7 @@ import {
   HISTORY_SHARING_CONSENT,
 } from "../constants/coaching-relationship.js";
 import { mapMemberProfile } from "../mappers/member-profile.mapper.js";
+import mapUser from "../mappers/user.mapper.js";
 import type { TimelineEvent } from "../types/member-profile.types.js";
 
 class MemberProfileService {
@@ -362,6 +363,97 @@ class MemberProfileService {
       weightComparison,
       canAccessHistory,
     });
+  }
+
+  /**
+   * Update member profile fields with strict authorization and mass assignment protection.
+   * Authorization Policy:
+   * - Target user MUST exist and have role MEMBER.
+   * - Members can ONLY update their own profile.
+   * - Trainers can ONLY update an assigned member with an active coaching relationship or assignment.
+   * - Trainers can NEVER update another trainer's or an admin's profile through this endpoint.
+   * - Admins are authorized to manage member profiles.
+   * - Explicit allowlist prevents mass-assignment of sensitive or privileged fields.
+   */
+  async updateProfile(
+    memberId: string,
+    callerId: string,
+    callerRole: Role,
+    payload: {
+      name?: string;
+      phone?: string | null;
+      bio?: string | null;
+      fitnessGoal?: string | null;
+      experienceLevel?: string | null;
+      [key: string]: any;
+    },
+  ) {
+    // 1. Target user existence and active status
+    const targetUser = await prisma.user.findFirst({
+      where: { id: memberId, isActive: true },
+    });
+
+    if (!targetUser) {
+      throw new AppError("Member not found.", 404);
+    }
+
+    // 2. Target MUST be a member (prevents trainer-to-trainer or trainer-to-admin tampering)
+    if (targetUser.role !== Roles.MEMBER) {
+      throw new AppError("Selected user is not a member.", 403);
+    }
+
+    // 3. Explicit authorization policy
+    if (callerRole === Roles.MEMBER) {
+      if (callerId !== memberId) {
+        throw new AppError("You can only update your own profile.", 403);
+      }
+    } else if (callerRole === Roles.TRAINER) {
+      // Must have active relationship or assignment with this member
+      await this.checkTrainerAccess(callerId, memberId);
+    } else if (callerRole === Roles.ADMIN) {
+      // Authorized
+    } else {
+      throw new AppError(
+        "You do not have permission to update this profile.",
+        403,
+      );
+    }
+
+    // 4. Strict allowlist for editable profile fields (mass assignment prevention)
+    const safeData: {
+      name?: string;
+      phone?: string | null;
+      bio?: string | null;
+      fitnessGoal?: string | null;
+      experienceLevel?: string | null;
+    } = {};
+
+    if (payload.name !== undefined) {
+      safeData.name = payload.name.trim();
+    }
+    if (payload.phone !== undefined) {
+      safeData.phone = payload.phone ? payload.phone.trim() : null;
+    }
+    if (payload.bio !== undefined) {
+      safeData.bio = payload.bio ? payload.bio.trim() : null;
+    }
+    if (payload.fitnessGoal !== undefined) {
+      safeData.fitnessGoal = payload.fitnessGoal
+        ? payload.fitnessGoal.trim()
+        : null;
+    }
+    if (payload.experienceLevel !== undefined) {
+      safeData.experienceLevel = payload.experienceLevel
+        ? payload.experienceLevel.trim()
+        : null;
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: memberId },
+      data: safeData,
+    });
+
+    return mapUser(updatedUser);
   }
 }
 

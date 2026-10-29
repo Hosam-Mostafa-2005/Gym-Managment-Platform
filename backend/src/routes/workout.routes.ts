@@ -54,6 +54,12 @@ router.get(
   workoutController.getAll,
 );
 
+router.post(
+  "/resolve",
+  restrictTo(Roles.ADMIN, Roles.TRAINER, Roles.MEMBER),
+  workoutController.resolveWorkout,
+);
+
 router.get("/:id", workoutController.getById);
 
 /*

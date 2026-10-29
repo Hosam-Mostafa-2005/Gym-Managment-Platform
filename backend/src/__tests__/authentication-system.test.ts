@@ -605,16 +605,26 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
   });
 
   describe("3. Forgot Password & Single-Use Reset Authorization", () => {
-    it("A. Returns generic response and generates reset authorization for eligible user", async () => {
+    it("A. Returns generic response without leaking reset token or user presence", async () => {
       const res = await authService.forgotPassword({ email: testEmail });
       assert.ok(res.message.includes("If an account exists"));
-      assert.ok(res.resetToken);
-      assert.equal(res.email, testEmail);
+      assert.equal((res as any).resetToken, undefined);
+      assert.equal((res as any).email, undefined);
+
+      // Verify that requesting for non-existent email returns the exact same message
+      const fakeRes = await authService.forgotPassword({ email: `nonexistent.${testRunId}@stren.app` });
+      assert.equal(fakeRes.message, res.message);
+      assert.equal((fakeRes as any).resetToken, undefined);
     });
 
     it("B. Consumes single-use reset token and updates password", async () => {
+      emailService.clearSentEmails();
+      // Clear recent codes so the resend cooldown doesn't prevent email dispatch in fast test run
+      await prisma.verificationCode.deleteMany({
+        where: { userId: registeredUserId },
+      });
       const forgotRes = await authService.forgotPassword({ email: testEmail });
-      assert.ok(forgotRes.resetToken);
+      assert.equal((forgotRes as any).resetToken, undefined);
 
       // Verify reset token exists in DB as a hash
       const dbResetToken = await prisma.passwordResetToken.findFirst({
@@ -626,10 +636,18 @@ describe("STREN — Comprehensive Authentication System Test Suite", () => {
       assert.ok(dbResetToken);
       assert.equal(dbResetToken?.usedAt, null);
 
+      // Extract raw token from dispatched email link
+      const sent = emailService.getSentEmails();
+      assert.ok(sent.length > 0);
+      const emailContent = sent[sent.length - 1].html;
+      const tokenMatch = emailContent.match(/token=([a-f0-9]{64})/);
+      assert.ok(tokenMatch, "Reset token link should be present in dispatched email");
+      const rawResetToken = tokenMatch[1];
+
       // Completes reset with new password
       const newPassword = "NewSecretPassword456!";
       const resetRes = await authService.resetPassword({
-        resetToken: forgotRes.resetToken!,
+        resetToken: rawResetToken,
         newPassword,
       });
 

@@ -36,7 +36,8 @@ export interface VerifyResetCodeDto {
 }
 
 export interface ResetPasswordDto {
-  resetToken: string;
+  resetToken?: string;
+  token?: string;
   newPassword: string;
 }
 

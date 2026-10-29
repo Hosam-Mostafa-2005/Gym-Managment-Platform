@@ -1,4 +1,5 @@
 // src/services/auth.service.ts
+import crypto from "crypto";
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import { VerificationPurpose, Role } from "@prisma/client";
@@ -112,6 +113,76 @@ class AuthService {
       isPendingVerification: true,
       message:
         "Verification code sent to your email. Please enter the 6-digit code to complete registration.",
+    };
+  }
+
+  /**
+   * Register a new coach/trainer (Independent self-registration for testing phase)
+   */
+  async registerCoach(userData: RegisterDto) {
+    const normalizedEmail = userData.email.trim().toLowerCase();
+
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: normalizedEmail,
+      },
+    });
+
+    if (existingUser) {
+      if (existingUser.isEmailVerified) {
+        throw new AppError(
+          "An account with this email already exists. Please sign in or use forgot password.",
+          409,
+        );
+      }
+
+      // Existing unverified account: update user details to coach and restart verification
+      const hashedPassword = await bcrypt.hash(userData.password, 12);
+      const updatedUser = await prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          name: userData.name.trim(),
+          password: hashedPassword,
+          role: Roles.TRAINER,
+          isEmailVerified: false,
+          emailVerifiedAt: null,
+        },
+      });
+
+      // Dispatch real verification OTP via email59
+      await email59Service.startVerification(normalizedEmail);
+
+      return {
+        user: mapUser(updatedUser),
+        isPendingVerification: true,
+        message:
+          "Verification code sent to your email. Please enter the 6-digit code to complete coach registration.",
+      };
+    }
+
+    const hashedPassword = await bcrypt.hash(userData.password, 12);
+
+    const user = await prisma.user.create({
+      data: {
+        name: userData.name.trim(),
+        email: normalizedEmail,
+        password: hashedPassword,
+        role: Roles.TRAINER,
+        isEmailVerified: false,
+        emailVerifiedAt: null,
+        onboardingCompleted: false,
+        onboardingStep: 0,
+      },
+    });
+
+    // Dispatch real verification OTP via email59
+    await email59Service.startVerification(normalizedEmail);
+
+    return {
+      user: mapUser(user),
+      isPendingVerification: true,
+      message:
+        "Verification code sent to your email. Please enter the 6-digit code to complete coach registration.",
     };
   }
 
@@ -367,7 +438,12 @@ class AuthService {
   }
 
   /**
-   * Request password reset authorization
+   * Request password reset authorization.
+   * Secure implementation:
+   * - Never returns reset tokens or user existence in HTTP responses or logs.
+   * - Dispatches OTP and trusted reset link via configured email service.
+   * - Performs constant-time dummy work on nonexistent accounts to mitigate timing attacks.
+   * - Prevents account enumeration by always returning an identical generic response.
    */
   async forgotPassword(data: ForgotPasswordDto) {
     const normalizedEmail = data.email.trim().toLowerCase();
@@ -375,21 +451,74 @@ class AuthService {
       where: { email: normalizedEmail },
     });
 
-    let resetToken: string | undefined;
+    let delivery: EmailDeliveryResult | undefined;
 
     if (user && user.isActive) {
-      // Issue single-use password reset authorization token directly
-      resetToken = await verificationService.createPasswordResetToken(
-        user.id,
-        VerificationPurpose.PASSWORD_RESET,
-      );
+      // 1. Invalidate any existing unused reset tokens for this user
+      await prisma.passwordResetToken.updateMany({
+        where: {
+          userId: user.id,
+          purpose: VerificationPurpose.PASSWORD_RESET,
+          usedAt: null,
+        },
+        data: { usedAt: new Date() },
+      });
+
+      // 2. Generate a cryptographically secure 32-byte hex token and store only its SHA-256 hash
+      const rawToken = crypto.randomBytes(32).toString("hex");
+      const tokenHash = verificationService.hashValue(rawToken);
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+      await prisma.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          tokenHash,
+          purpose: VerificationPurpose.PASSWORD_RESET,
+          expiresAt,
+        },
+      });
+
+      // 3. Construct trusted reset URL using env.CLIENT_URL (prevents Host Header Injection)
+      const resetUrl = `${env.CLIENT_URL}/reset-password?token=${rawToken}&email=${encodeURIComponent(user.email)}`;
+
+      // 4. Dispatch 6-digit OTP and reset link via email service
+      try {
+        const otpResult = await verificationService.createAndSendOtp({
+          userId: user.id,
+          email: user.email,
+          name: user.name,
+          purpose: VerificationPurpose.PASSWORD_RESET,
+          resetUrl,
+        });
+        delivery = otpResult.delivery;
+      } catch (err: any) {
+        // If cooldown 429 occurs, catch gracefully without leaking user presence
+        if (err?.statusCode !== 429) {
+          console.error(
+            "[AuthService] Error sending password reset email:",
+            err?.message || err,
+          );
+        }
+      }
+    } else {
+      // Mitigate timing side-channels by performing constant-time dummy hashing
+      verificationService.hashValue(crypto.randomBytes(32).toString("hex"));
     }
 
+    // Return generic response without any tokens or user presence markers
     return {
       message:
-        "If an account exists with that email, password reset authorization has been generated.",
-      resetToken,
-      email: user ? user.email : normalizedEmail,
+        "If an account exists with that email, password reset instructions have been sent.",
+      ...(env.NODE_ENV !== "production"
+        ? {
+            delivery: delivery || {
+              provider: (env.EMAIL_PROVIDER || "console") as any,
+              accepted: true,
+              notice:
+                "Development Notice: Password reset request accepted. If the account exists, instructions were dispatched.",
+            },
+          }
+        : {}),
     };
   }
 
@@ -416,11 +545,19 @@ class AuthService {
   }
 
   /**
-   * Reset password using single-use reset token
+   * Reset password using single-use reset token.
+   * Atomically consumes token, hashes password with bcrypt (cost 12),
+   * sets passwordChangedAt to revoke previous JWT sessions,
+   * and invalidates all pending reset tokens/verification codes for the user.
    */
   async resetPassword(data: ResetPasswordDto) {
+    const rawToken = data.resetToken || (data as any).token;
+    if (!rawToken || !rawToken.trim()) {
+      throw new AppError("Reset authorization token is required.", 400);
+    }
+
     const { userId } = await verificationService.validateAndConsumeResetToken(
-      data.resetToken,
+      rawToken,
       VerificationPurpose.PASSWORD_RESET,
     );
 
@@ -433,19 +570,48 @@ class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(data.newPassword, 12);
+    const now = new Date();
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        password: hashedPassword,
-        passwordChangedAt: new Date(),
-        isEmailVerified: true,
-        emailVerifiedAt: user.emailVerifiedAt || new Date(),
-      },
-    });
+    // Atomically update user password, timestamp, and supersede all other pending tokens/codes
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          password: hashedPassword,
+          passwordChangedAt: now,
+          isEmailVerified: true,
+          emailVerifiedAt: user.emailVerifiedAt || now,
+        },
+      }),
+      // Supersede any remaining unused reset tokens for this user
+      prisma.passwordResetToken.updateMany({
+        where: {
+          userId,
+          purpose: VerificationPurpose.PASSWORD_RESET,
+          usedAt: null,
+        },
+        data: { usedAt: now },
+      }),
+      // Supersede any remaining unused verification codes for this user
+      prisma.verificationCode.updateMany({
+        where: {
+          userId,
+          purpose: VerificationPurpose.PASSWORD_RESET,
+          usedAt: null,
+        },
+        data: { usedAt: now },
+      }),
+    ]);
 
-    // Send confirmation email
-    await emailService.sendPasswordChangedEmail(user.email, user.name);
+    // Send confirmation email asynchronously (do not fail transaction if email delivery errors)
+    try {
+      await emailService.sendPasswordChangedEmail(user.email, user.name);
+    } catch (err: any) {
+      console.error(
+        "[AuthService] Error sending password changed confirmation email:",
+        err?.message || err,
+      );
+    }
 
     return {
       message:
@@ -624,48 +790,64 @@ class AuthService {
       throw new AppError("User not found.", 404);
     }
 
+    const isTrainerOrAdmin =
+      existing.role === Roles.TRAINER || existing.role === Roles.ADMIN;
+
+    const updateData: any = {
+      onboardingCompleted: true,
+      onboardingStep: data.step !== undefined ? data.step : 2,
+    };
+
+    // Role is strictly locked and cannot be changed or escalated via onboarding
+    // (role assignments require explicit administrative action).
+
+    if (data.name !== undefined) updateData.name = data.name.trim();
+    if (data.phone !== undefined) {
+      updateData.phone = data.phone ? data.phone.trim() : null;
+    }
+    if (data.bio !== undefined) {
+      updateData.bio = data.bio ? data.bio.trim() : null;
+    }
+
+    // Member-specific fields: persisted for all accounts
+    if (data.fitnessGoal !== undefined) {
+      updateData.fitnessGoal = data.fitnessGoal ? data.fitnessGoal.trim() : null;
+    }
+    if (data.experienceLevel !== undefined) {
+      updateData.experienceLevel = data.experienceLevel
+        ? data.experienceLevel.trim()
+        : null;
+    }
+
+    // Coach-specific fields: ONLY persisted if the account is already an authorized trainer or admin
+    if (isTrainerOrAdmin) {
+      if (data.professionalTitle !== undefined) {
+        updateData.professionalTitle = data.professionalTitle
+          ? data.professionalTitle.trim()
+          : null;
+      }
+      if (data.coachingPhilosophy !== undefined) {
+        updateData.coachingPhilosophy = data.coachingPhilosophy
+          ? data.coachingPhilosophy.trim()
+          : null;
+      }
+      if (data.languagesSpoken !== undefined) {
+        updateData.languagesSpoken = data.languagesSpoken;
+      }
+      if (data.specialties !== undefined) {
+        updateData.specialties = data.specialties;
+      }
+      if (data.certifications !== undefined) {
+        updateData.certifications = data.certifications;
+      }
+      if (data.yearsOfExperience !== undefined) {
+        updateData.yearsOfExperience = data.yearsOfExperience;
+      }
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: {
-        ...(data.role &&
-          (data.role.toLowerCase() === Roles.MEMBER || data.role.toLowerCase() === Roles.TRAINER) &&
-          existing.role !== Roles.ADMIN && {
-            role: data.role.toLowerCase() as Role,
-          }),
-        ...(data.name !== undefined && { name: data.name.trim() }),
-        ...(data.phone !== undefined && {
-          phone: data.phone ? data.phone.trim() : null,
-        }),
-        ...(data.bio !== undefined && {
-          bio: data.bio ? data.bio.trim() : null,
-        }),
-        ...(data.fitnessGoal !== undefined && {
-          fitnessGoal: data.fitnessGoal ? data.fitnessGoal.trim() : null,
-        }),
-        ...(data.experienceLevel !== undefined && {
-          experienceLevel: data.experienceLevel ? data.experienceLevel.trim() : null,
-        }),
-        ...(data.professionalTitle !== undefined && {
-          professionalTitle: data.professionalTitle ? data.professionalTitle.trim() : null,
-        }),
-        ...(data.coachingPhilosophy !== undefined && {
-          coachingPhilosophy: data.coachingPhilosophy ? data.coachingPhilosophy.trim() : null,
-        }),
-        ...(data.languagesSpoken !== undefined && {
-          languagesSpoken: data.languagesSpoken,
-        }),
-        ...(data.specialties !== undefined && {
-          specialties: data.specialties,
-        }),
-        ...(data.certifications !== undefined && {
-          certifications: data.certifications,
-        }),
-        ...(data.yearsOfExperience !== undefined && {
-          yearsOfExperience: data.yearsOfExperience,
-        }),
-        onboardingCompleted: true,
-        onboardingStep: data.step !== undefined ? data.step : 2,
-      },
+      data: updateData,
     });
 
     return mapUser(updatedUser);

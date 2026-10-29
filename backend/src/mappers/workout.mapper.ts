@@ -22,6 +22,9 @@ const mapWorkout = (workout: any) => {
     isTemplate: workout.isTemplate ?? false,
     version: workout.version ?? 1,
     createdBy: workout.createdBy,
+    isActive: workout.isActive ?? true,
+    createdAt: workout.createdAt,
+    updatedAt: workout.updatedAt,
   };
 };
 

@@ -7,8 +7,15 @@ import type {
   WorkoutDetails,
 } from "../types/workout.types";
 
-export const getWorkouts = async (): Promise<Workout[]> => {
-  const response = await api.get("/workouts");
+export const getWorkouts = async (
+  params?: Record<string, any>,
+): Promise<Workout[]> => {
+  const response = await api.get("/workouts", {
+    params: {
+      limit: 100,
+      ...params,
+    },
+  });
 
   return response.data.data.workouts;
 };
@@ -47,4 +54,21 @@ export const duplicateWorkout = async (
 
 export const deleteWorkout = async (id: string): Promise<void> => {
   await api.delete(`/workouts/${id}`);
+};
+
+export interface ResolvedWorkoutResult {
+  sourceType: "personal" | "template" | "assigned" | "shared" | "share";
+  shareCode?: string;
+  workout: WorkoutDetails & {
+    creatorName?: string;
+    exerciseCount?: number;
+  };
+  isAlreadySaved: boolean;
+}
+
+export const resolveWorkout = async (
+  identifier: string,
+): Promise<ResolvedWorkoutResult> => {
+  const response = await api.post("/workouts/resolve", { identifier });
+  return response.data.data;
 };

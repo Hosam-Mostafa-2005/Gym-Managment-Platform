@@ -22,6 +22,7 @@ import {
   Flame,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { useWorkouts } from "@/features/workouts/hooks/useWorkouts";
 import { useMyAssignments } from "../hooks/useMyAssignments";
 import { useWorkoutSessions } from "../hooks/useWorkoutSessions";
@@ -60,7 +61,10 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
   onClose,
 }) => {
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
+  const { data: userFromQuery } = useCurrentUser();
+  const userFromStore = useAuthStore((state) => state.user);
+  const user = userFromQuery || userFromStore;
+  const currentUserId = user?.id || (user as any)?._id;
 
   const [activeTab, setActiveTab] = useState<TabType>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -102,7 +106,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
   // Build eligible workout lists
   const eligibleItems = useMemo<EligibleWorkoutItem[]>(() => {
     const items: EligibleWorkoutItem[] = [];
-    const seenWorkoutIds = new Set<string>();
+    const assignedWorkoutIds = new Set<string>();
 
     // 1. Coach Assigned Workouts (highest priority for members)
     const activeAssignments = (assignments || []).filter(
@@ -110,7 +114,8 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
     );
     for (const a of activeAssignments) {
       const wId = a.workout.id || a.workout._id;
-      seenWorkoutIds.add(wId);
+      if (!wId) continue;
+      assignedWorkoutIds.add(wId);
       items.push({
         id: `assignment-${a.id}`,
         workoutId: wId,
@@ -135,31 +140,29 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
     }
 
     // 2. Personal Workouts & Platform Templates
-    for (const w of workouts || []) {
-      if (!w.isActive) continue;
+    const rawWorkouts = Array.isArray(workouts)
+      ? workouts
+      : (workouts as any)?.workouts || [];
+
+    for (const w of rawWorkouts) {
+      if (w.isActive === false) continue;
       const wId = w.id || w._id;
       if (!wId) continue;
-      const isOwner =
-        user?.id &&
-        ((typeof w.createdBy === "object" && w.createdBy?.id === user.id) ||
-          w.createdById === user.id ||
-          w.createdBy === user.id);
 
-      if (isOwner) {
-        items.push({
-          id: `personal-${wId}`,
-          workoutId: wId,
-          title: w.title,
-          description: w.description,
-          category: w.category || "Strength",
-          difficulty: w.difficulty || "Intermediate",
-          estimatedDuration: w.estimatedDuration || 45,
-          exerciseCount: w.exerciseCount || 0,
-          imageUrl: w.imageUrl || null,
-          sourceType: "personal",
-          sourceLabel: "Personal Routine",
-        });
-      } else if (w.isTemplate) {
+      const creatorId =
+        typeof w.createdBy === "object" && w.createdBy !== null
+          ? w.createdBy.id || w.createdBy._id
+          : typeof w.creator === "object" && w.creator !== null
+            ? w.creator.id || w.creator._id
+            : w.createdById || w.createdBy || (w as any).userId;
+
+      const isOwner = Boolean(
+        currentUserId &&
+          creatorId &&
+          String(creatorId).toLowerCase() === String(currentUserId).toLowerCase(),
+      );
+
+      if (w.isTemplate) {
         items.push({
           id: `template-${wId}`,
           workoutId: wId,
@@ -168,11 +171,29 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
           category: w.category || "General",
           difficulty: w.difficulty || "All Levels",
           estimatedDuration: w.estimatedDuration || 45,
-          exerciseCount: w.exerciseCount || 0,
+          exerciseCount: w.exerciseCount || w.exercises?.length || 0,
           imageUrl: w.imageUrl || null,
           sourceType: "template",
           sourceLabel: "Platform Template",
         });
+      } else {
+        // It's a personal routine: either current user is owner, or it's a personal routine returned for this member that's not a coach assignment
+        const isPersonal = isOwner || !assignedWorkoutIds.has(wId);
+        if (isPersonal) {
+          items.push({
+            id: `personal-${wId}`,
+            workoutId: wId,
+            title: w.title,
+            description: w.description,
+            category: w.category || "Strength",
+            difficulty: w.difficulty || "Intermediate",
+            estimatedDuration: w.estimatedDuration || 45,
+            exerciseCount: w.exerciseCount || w.exercises?.length || 0,
+            imageUrl: w.imageUrl || null,
+            sourceType: "personal",
+            sourceLabel: "Personal Routine",
+          });
+        }
       }
     }
 
@@ -212,6 +233,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
       items.push({
         id: `repeat-${s.id}-${wId}`,
         workoutId: wId,
+        assignmentId: s.assignment?.id || (s as any).assignmentId || undefined,
         title,
         description,
         category,
@@ -228,19 +250,30 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
     }
 
     return items;
-  }, [assignments, workouts, sessionHistoryData, user]);
+  }, [assignments, workouts, sessionHistoryData, currentUserId]);
 
   // Filtered items based on activeTab and searchQuery
   const filteredItems = useMemo(() => {
     return eligibleItems.filter((item) => {
       // Tab filter
-      if (activeTab === "personal" && item.sourceType !== "personal")
-        return false;
-      if (activeTab === "assigned" && item.sourceType !== "assigned")
-        return false;
-      if (activeTab === "templates" && item.sourceType !== "template")
-        return false;
-      if (activeTab === "repeat" && item.sourceType !== "repeat") return false;
+      if (activeTab === "personal") return item.sourceType === "personal";
+      if (activeTab === "assigned") return item.sourceType === "assigned";
+      if (activeTab === "templates") return item.sourceType === "template";
+      if (activeTab === "repeat") return item.sourceType === "repeat";
+
+      // If activeTab === "all", show assigned, personal, template, and any standalone repeat
+      if (activeTab === "all") {
+        if (item.sourceType === "repeat") {
+          const alreadyInAll = eligibleItems.some(
+            (other) =>
+              other.workoutId === item.workoutId &&
+              (other.sourceType === "assigned" ||
+                other.sourceType === "personal" ||
+                other.sourceType === "template"),
+          );
+          if (alreadyInAll) return false;
+        }
+      }
 
       // Search filter
       if (searchQuery.trim()) {
@@ -265,12 +298,39 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
 
   // Counts for tab badges
   const counts = useMemo(() => {
+    const personalCount = eligibleItems.filter(
+      (i) => i.sourceType === "personal",
+    ).length;
+    const assignedCount = eligibleItems.filter(
+      (i) => i.sourceType === "assigned",
+    ).length;
+    const templatesCount = eligibleItems.filter(
+      (i) => i.sourceType === "template",
+    ).length;
+    const repeatCount = eligibleItems.filter(
+      (i) => i.sourceType === "repeat",
+    ).length;
+
+    const allCount = eligibleItems.filter((item) => {
+      if (item.sourceType === "repeat") {
+        const alreadyInAll = eligibleItems.some(
+          (other) =>
+            other.workoutId === item.workoutId &&
+            (other.sourceType === "assigned" ||
+              other.sourceType === "personal" ||
+              other.sourceType === "template"),
+        );
+        return !alreadyInAll;
+      }
+      return true;
+    }).length;
+
     return {
-      all: eligibleItems.length,
-      personal: eligibleItems.filter((i) => i.sourceType === "personal").length,
-      assigned: eligibleItems.filter((i) => i.sourceType === "assigned").length,
-      templates: eligibleItems.filter((i) => i.sourceType === "template").length,
-      repeat: eligibleItems.filter((i) => i.sourceType === "repeat").length,
+      all: allCount,
+      personal: personalCount,
+      assigned: assignedCount,
+      templates: templatesCount,
+      repeat: repeatCount,
     };
   }, [eligibleItems]);
 

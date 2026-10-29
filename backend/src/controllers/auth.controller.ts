@@ -33,6 +33,34 @@ export const register: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
+export const registerCoach: RequestHandler = catchAsync(async (req, res) => {
+  const result = await authService.registerCoach(req.body);
+
+  if (result.isPendingVerification) {
+    res.status(201).json({
+      status: "success",
+      isPendingVerification: true,
+      message: result.message,
+      data: {
+        user: result.user,
+      },
+    });
+    return;
+  }
+
+  sendToken({
+    token: (result as any).token,
+    user: {
+      ...result.user,
+      isPendingRegistration: (result as any).isPendingRegistration || false,
+    },
+    statusCode: (result as any).isPendingRegistration ? 200 : 201,
+    res,
+    message: result.message,
+    ...("delivery" in result ? { delivery: (result as any).delivery } : {}),
+  });
+});
+
 export const verifyEmail: RequestHandler = catchAsync(async (req, res) => {
   const { user, token, message } = await authService.verifyEmail(req.body);
 
@@ -87,9 +115,9 @@ export const forgotPassword: RequestHandler = catchAsync(async (req, res) => {
   res.status(200).json({
     status: "success",
     message: result.message,
-    ...(result.resetToken && { resetToken: result.resetToken }),
-    ...(result.email && { email: result.email }),
-    ...("delivery" in result ? { delivery: (result as any).delivery } : {}),
+    ...("delivery" in result && (result as any).delivery
+      ? { delivery: (result as any).delivery }
+      : {}),
   });
 });
 

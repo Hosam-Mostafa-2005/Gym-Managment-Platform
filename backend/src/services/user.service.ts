@@ -107,6 +107,44 @@ class UserService {
 
     return users.map(mapUser);
   }
+
+  /**
+   * Explicit administrative action to assign or change a user's role.
+   * Can only be invoked by authorized administrators.
+   */
+  async assignRole(targetUserId: string, newRole: Role, adminUserId: string) {
+    if (!Object.values(Roles).includes(newRole)) {
+      throw new AppError("Invalid role specified.", 400);
+    }
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: targetUserId },
+    });
+
+    if (!targetUser) {
+      throw new AppError("User not found.", 404);
+    }
+
+    // Guard: Prevent demoting the only remaining active administrator
+    if (targetUser.role === Roles.ADMIN && newRole !== Roles.ADMIN) {
+      const activeAdminCount = await prisma.user.count({
+        where: { role: Roles.ADMIN, isActive: true },
+      });
+      if (activeAdminCount <= 1) {
+        throw new AppError(
+          "Cannot demote the only remaining active administrator.",
+          400,
+        );
+      }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: targetUserId },
+      data: { role: newRole },
+    });
+
+    return mapUser(updatedUser);
+  }
 }
 
 export default new UserService();

@@ -2,6 +2,8 @@ import { Router } from "express";
 import * as userController from "../controllers/user.controller.js";
 import { protect, restrictTo } from "../middleware/auth.middleware.js";
 import { uploadAvatarMiddleware } from "../middleware/upload.middleware.js";
+import validate from "../middleware/validate.middleware.js";
+import { assignRoleSchema } from "../validators/auth.validator.js";
 import { Roles } from "../constants/roles.js";
 
 const router = Router();
@@ -29,5 +31,13 @@ router.use(protect, restrictTo(Roles.ADMIN, Roles.TRAINER));
  *       - bearerAuth: []
  */
 router.route("/").get(userController.getAllUsers);
+
+// Administrator role assignment route
+router.patch(
+  "/:id/role",
+  restrictTo(Roles.ADMIN),
+  validate(assignRoleSchema),
+  userController.assignUserRole,
+);
 
 export default router;

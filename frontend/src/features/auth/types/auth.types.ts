@@ -105,7 +105,8 @@ export interface VerifyResetCodeRequest {
 }
 
 export interface ResetPasswordRequest {
-  resetToken: string;
+  resetToken?: string;
+  token?: string;
   newPassword: string;
 }
 

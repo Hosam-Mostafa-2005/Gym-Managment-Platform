@@ -29,6 +29,13 @@ export const register = async (data: RegisterRequest): Promise<RegisterResponse>
   return response.data;
 };
 
+export const registerCoach = async (
+  data: RegisterRequest,
+): Promise<RegisterResponse> => {
+  const response = await api.post<RegisterResponse>("/auth/register-coach", data);
+  return response.data;
+};
+
 export const verifyEmail = async (
   data: VerifyEmailRequest,
 ): Promise<LoginResponse> => {
@@ -57,14 +64,10 @@ export const forgotPassword = async (
   data: ForgotPasswordRequest,
 ): Promise<{
   message: string;
-  resetToken?: string;
-  email?: string;
   delivery?: EmailDeliveryInfo;
 }> => {
   const response = await api.post<{
     message: string;
-    resetToken?: string;
-    email?: string;
     delivery?: EmailDeliveryInfo;
   }>("/auth/forgot-password", data);
   return response.data;

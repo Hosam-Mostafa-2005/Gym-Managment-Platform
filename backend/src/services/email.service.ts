@@ -464,25 +464,44 @@ class EmailService {
   }
 
   /**
-   * Send password reset OTP
+   * Send password reset OTP and optional direct reset link
    */
   async sendPasswordResetEmail(
     to: string,
     name: string,
     otp: string,
+    resetUrl?: string,
   ): Promise<EmailDeliveryResult> {
     const subject = `${otp} is your STREN password reset code`;
-    const text = `Hi ${name || "there"},\n\nYour STREN password reset code is: ${otp}\n\nThis code will expire in 10 minutes. If you did not request a password reset, please ignore this email.`;
+    let text = `Hi ${name || "there"},\n\nYour STREN password reset code is: ${otp}\n\nThis code will expire in 10 minutes. If you did not request a password reset, please ignore this email.`;
+    if (resetUrl) {
+      text += `\n\nAlternatively, you can reset your password directly using the following link:\n${resetUrl}\n\nThis link will expire in 15 minutes.`;
+    }
+
+    let linkHtml = "";
+    if (resetUrl) {
+      linkHtml = `
+        <div style="text-align: center; margin: 24px 0 16px 0;">
+          <a href="${resetUrl}" style="display: inline-block; background-color: #5BE584; color: #0B0D10; font-weight: 700; font-size: 14px; padding: 12px 24px; border-radius: 8px; text-decoration: none;">Reset Password Directly</a>
+        </div>
+        <p style="font-size: 12px; color: #64748B; text-align: center; margin-bottom: 20px;">
+          Or copy and paste this link into your browser:<br>
+          <a href="${resetUrl}" style="color: #5BE584; word-break: break-all;">${resetUrl}</a>
+        </p>
+      `;
+    }
+
     const contentHtml = `
       <h2 style="font-size: 20px; font-weight: 700; color: #FFFFFF; margin-top: 0;">Password Reset Request</h2>
       <p style="font-size: 14px; color: #91A0B5; line-height: 1.6;">
-        We received a request to reset the password for your STREN account. Use the code below to complete the reset:
+        We received a request to reset the password for your STREN account. Use the 6-digit recovery code below or click the direct reset link:
       </p>
       <div class="code-box">
         <span class="code">${otp}</span>
       </div>
+      ${linkHtml}
       <p style="font-size: 13px; color: #91A0B5;">
-        This code expires in <strong>10 minutes</strong>. If you did not request this, your account remains secure and no action is required.
+        The code expires in <strong>10 minutes</strong> and the link expires in <strong>15 minutes</strong>. If you did not request this, your account remains secure and no action is required.
       </p>
     `;
 

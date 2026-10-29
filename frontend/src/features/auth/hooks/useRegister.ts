@@ -4,17 +4,18 @@ import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 
-import { register } from "../api/auth.api";
+import { register, registerCoach } from "../api/auth.api";
 import { tokenService } from "@/services/token.service";
 import { useAuthStore } from "@/store/auth.store";
 
-export const useRegister = () => {
+export const useRegister = (options?: { isCoach?: boolean }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const setUser = useAuthStore((state) => state.setUser);
+  const registerFn = options?.isCoach ? registerCoach : register;
 
   return useMutation({
-    mutationFn: register,
+    mutationFn: registerFn,
 
     onSuccess: (response, variables) => {
       // If verification is pending, navigate to Verify Email page without issuing session

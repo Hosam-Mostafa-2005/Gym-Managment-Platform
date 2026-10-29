@@ -1,9 +1,9 @@
 // src/features/auth/pages/RegisterPage.tsx
 import { useState } from "react";
-import { Mail, Lock, User, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Loader2, Dumbbell, ShieldCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { useRegister } from "../hooks/useRegister";
 import { registerSchema } from "../schemas/register.schema";
@@ -12,6 +12,11 @@ import { GoogleAuthButton } from "../components/GoogleAuthButton";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialRoleParam = searchParams.get("role")?.toLowerCase();
+  const [isCoach, setIsCoach] = useState(
+    initialRoleParam === "coach" || initialRoleParam === "trainer",
+  );
 
   const {
     register,
@@ -27,7 +32,16 @@ const RegisterPage = () => {
     },
   });
 
-  const registerMutation = useRegister();
+  const registerMutation = useRegister({ isCoach });
+
+  const handleRoleToggle = (coachSelected: boolean) => {
+    setIsCoach(coachSelected);
+    if (coachSelected) {
+      setSearchParams({ role: "coach" });
+    } else {
+      setSearchParams({});
+    }
+  };
 
   const onSubmit = ({ name, email, password }: RegisterFormData) => {
     registerMutation.mutate({
@@ -40,14 +54,43 @@ const RegisterPage = () => {
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="mb-7">
+      <div className="mb-6">
         <h2 className="text-3xl sm:text-[34px] font-bold tracking-tight text-[#F5F6F8]">
-          Create Account
+          {isCoach ? "Create Coach Account" : "Create Account"}
         </h2>
         <p className="mt-2 text-sm text-[#91A0B5] leading-relaxed">
-          Join the platform built for performance and start managing your
-          training with confidence.
+          {isCoach
+            ? "Join STREN as an independent coach to program workouts, manage athletes, and track progress."
+            : "Join the platform built for performance and start managing your training with confidence."}
         </p>
+      </div>
+
+      {/* Account Type Selector (Testing Phase Independent Coach Self-Registration) */}
+      <div className="mb-6 p-1 bg-[#12161D] border border-[#252B33] rounded-xl flex items-center gap-1">
+        <button
+          type="button"
+          onClick={() => handleRoleToggle(false)}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+            !isCoach
+              ? "bg-[#1E252E] text-[#4FE080] shadow-sm border border-[#4FE080]/20"
+              : "text-[#91A0B5] hover:text-[#F5F6F8] hover:bg-white/[0.02]"
+          }`}
+        >
+          <Dumbbell className="h-4 w-4" />
+          <span>Athlete</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => handleRoleToggle(true)}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+            isCoach
+              ? "bg-[#1E252E] text-[#4FE080] shadow-sm border border-[#4FE080]/20"
+              : "text-[#91A0B5] hover:text-[#F5F6F8] hover:bg-white/[0.02]"
+          }`}
+        >
+          <ShieldCheck className="h-4 w-4" />
+          <span>Coach</span>
+        </button>
       </div>
 
       {/* Form */}
@@ -69,7 +112,7 @@ const RegisterPage = () => {
               type="text"
               autoComplete="name"
               {...register("name")}
-              placeholder="Hosam Mohamed"
+              placeholder={isCoach ? "Coach Hosam Mohamed" : "Hosam Mohamed"}
               className={`w-full h-11 pl-10 pr-4 rounded-xl border bg-[#171B20] text-sm text-[#F5F6F8] placeholder-[#91A0B5]/50 transition-colors focus:outline-none focus:ring-1 ${
                 errors.name
                   ? "border-[#EF4444] focus:border-[#EF4444] focus:ring-[#EF4444]"
@@ -99,7 +142,7 @@ const RegisterPage = () => {
               type="email"
               autoComplete="email"
               {...register("email")}
-              placeholder="athlete@example.com"
+              placeholder={isCoach ? "coach@example.com" : "athlete@example.com"}
               className={`w-full h-11 pl-10 pr-4 rounded-xl border bg-[#171B20] text-sm text-[#F5F6F8] placeholder-[#91A0B5]/50 transition-colors focus:outline-none focus:ring-1 ${
                 errors.email
                   ? "border-[#EF4444] focus:border-[#EF4444] focus:ring-[#EF4444]"
@@ -195,10 +238,10 @@ const RegisterPage = () => {
           {registerMutation.isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin text-[#0B0D10]" />
-              CREATING ACCOUNT...
+              CREATING {isCoach ? "COACH" : "ATHLETE"} ACCOUNT...
             </>
           ) : (
-            "CREATE ACCOUNT"
+            `CREATE ${isCoach ? "COACH" : "ATHLETE"} ACCOUNT`
           )}
         </button>
       </form>

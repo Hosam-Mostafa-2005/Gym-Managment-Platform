@@ -13,6 +13,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useMembersManagement } from "@/features/members-management/hooks/use-members-management";
+import { SearchableMemberSelect } from "@/features/users/components/SearchableMemberSelect";
 import type { AppointmentType } from "../types/scheduling.types";
 import { useCreateCoachAppointment } from "../hooks/useScheduling";
 
@@ -92,6 +93,13 @@ export default function BookAppointmentDialog({
   const { data: membersData, isLoading: isLoadingMembers } =
     useMembersManagement();
   const members = (membersData as any)?.members || [];
+
+  const preselectedMember = preselectedMemberId
+    ? members.find(
+        (m: any) =>
+          (m.member?.id || m.id) === preselectedMemberId,
+      )
+    : undefined;
 
   const { mutate: bookAppointment, isPending } = useCreateCoachAppointment();
 
@@ -197,26 +205,16 @@ export default function BookAppointmentDialog({
             )}
 
             {/* Athlete Selector */}
-            <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center gap-1.5">
-                <User size={13} className="text-purple-400" />
-                Select Athlete *
-              </label>
-              <select
-                required
-                value={memberId}
-                onChange={(e) => setMemberId(e.target.value)}
-                className="w-full bg-[#12161D] border border-[#1E2329] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-purple-500"
-                disabled={isLoadingMembers}
-              >
-                <option value="">Choose athlete...</option>
-                {members.map((m: any) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name} ({m.email})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SearchableMemberSelect
+              value={memberId}
+              onChange={setMemberId}
+              members={members}
+              preselectedMember={preselectedMember}
+              disabled={isLoadingMembers}
+              locked={Boolean(preselectedMemberId)}
+              label="Select Athlete *"
+              placeholder="Choose athlete..."
+            />
 
             {/* Title */}
             <div>

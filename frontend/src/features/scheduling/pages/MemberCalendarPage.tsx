@@ -13,6 +13,7 @@ import {
   Dumbbell,
   Filter,
   List,
+  Sparkles,
 } from "lucide-react";
 import {
   useMemberScheduledWorkouts,
@@ -27,6 +28,7 @@ import ScheduledWorkoutDetailModal from "../components/ScheduledWorkoutDetailMod
 import AppointmentDetailModal from "../components/AppointmentDetailModal";
 import ScheduleWorkoutDialog from "../components/ScheduleWorkoutDialog";
 import RescheduleWorkoutDialog from "../components/RescheduleWorkoutDialog";
+import BuildMonthlyProgramDialog from "../components/BuildMonthlyProgramDialog";
 import type {
   ScheduledWorkout,
   CoachingAppointment,
@@ -52,6 +54,7 @@ export default function MemberCalendarPage() {
 
   // Dialog states
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [isProgramDialogOpen, setIsProgramDialogOpen] = useState(false);
   const [scheduleInitialDate, setScheduleInitialDate] = useState<string>();
 
   // Fetch data
@@ -346,6 +349,15 @@ export default function MemberCalendarPage() {
             </div>
           )}
 
+          {/* "Build 4-Week Program" */}
+          <button
+            onClick={() => setIsProgramDialogOpen(true)}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#16291D] border border-[#23422E] hover:bg-[#1E3A28] text-[#5BE584] transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <Sparkles size={14} />
+            Build 4-Week Program
+          </button>
+
           {/* "+ Schedule Workout" */}
           <button
             onClick={() => {
@@ -429,6 +441,11 @@ export default function MemberCalendarPage() {
         isOpen={isScheduleOpen}
         onClose={() => setIsScheduleOpen(false)}
         initialDate={scheduleInitialDate}
+      />
+
+      <BuildMonthlyProgramDialog
+        isOpen={isProgramDialogOpen}
+        onClose={() => setIsProgramDialogOpen(false)}
       />
 
       <RescheduleWorkoutDialog
