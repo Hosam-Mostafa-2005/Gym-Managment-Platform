@@ -1,0 +1,24 @@
+{
+  "app": {
+    "name": "سترين",
+    "workspace": "مساحة عمل سترين"
+  },
+  "language": {
+    "en": "English",
+    "ar": "العربية",
+    "switcherLabel": "اللغة",
+    "switchToEnglish": "التحويل إلى الإنجليزية",
+    "switchToArabic": "التحويل إلى العربية"
+  },
+  "actions": {
+    "startWorkout": "ابدأ التمرين",
+    "myWorkouts": "تماريني",
+    "workoutHistory": "سجل التمارين",
+    "assignments": "التكليفات التدريبية",
+    "trainingProgram": "البرنامج التدريبي",
+    "saveChanges": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "loading": "جارٍ التحميل...",
+    "tryAgain": "حاول مرة أخرى"
+  }
+}

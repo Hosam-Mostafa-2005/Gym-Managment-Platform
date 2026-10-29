@@ -32,6 +32,7 @@ import { useMarkNotificationRead } from "@/features/notifications/hooks/use-mark
 import { useMarkAllNotificationsRead } from "@/features/notifications/hooks/use-mark-all-notifications-read";
 import type { Notification } from "@/features/notifications/types/notifications.types";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher/LanguageSwitcher";
 
 export interface HeaderProps {
   collapsed: boolean;
@@ -151,7 +152,11 @@ const getNotificationStyles = (type: string, category?: string) => {
     return { icon: Calendar, color: "text-blue-400", bg: "bg-blue-500/15" };
   }
   if (normCat === "NUTRITION") {
-    return { icon: Utensils, color: "text-emerald-400", bg: "bg-emerald-500/15" };
+    return {
+      icon: Utensils,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/15",
+    };
   }
   if (
     normCat === "WORKOUT" ||
@@ -355,8 +360,6 @@ const QuickActionsMenu = () => {
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user, isCoachOrAdmin } = useAuth();
-
-
 
   useOnClickOutside(ref, () => setIsOpen(false));
 
@@ -610,6 +613,7 @@ export default function Header({ collapsed, onToggle }: HeaderProps) {
 
         <div className="mx-1 h-5 w-px bg-[#2A3039] hidden sm:block" />
 
+        {/* <LanguageSwitcher /> */}
         <ProfileMenu />
       </div>
     </header>

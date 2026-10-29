@@ -451,10 +451,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         {/* =====================================================================
             SETS LOGGING LIST
            ===================================================================== */}
-        <div className="p-4 sm:p-6 space-y-3">
+        <div className="p-3 sm:p-6 space-y-2.5 sm:space-y-3">
           {children ? (
             <div>
-              <div className="grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 pb-3 border-b border-white/5 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
+              <div className="hidden sm:grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 pb-3 border-b border-white/5 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
                 <div className="col-span-2">Set</div>
                 <div className="col-span-2">Target</div>
                 <div className="col-span-3 text-center">kg</div>
@@ -464,7 +464,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 pb-2 border-b border-[#1E2329] text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
+              <div className="hidden sm:grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 pb-2 border-b border-[#1E2329] text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
                 <div className="col-span-2 sm:col-span-2">Set & Stage</div>
                 <div className="col-span-2 sm:col-span-2">Target</div>
                 <div className="col-span-2 sm:col-span-3">Previous</div>
@@ -525,7 +525,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
                       {/* If Break Sets exist, render indented children directly underneath */}
                       {hasBreakSets ? (
-                        <div className="ml-3 sm:ml-6 pl-3 sm:pl-4 border-l-2 border-amber-500/35 space-y-2 py-1 bg-amber-500/[0.02] rounded-r-xl">
+                        <div className="ml-1.5 sm:ml-6 pl-2 sm:pl-4 border-l-2 border-amber-500/35 space-y-2 py-1 bg-amber-500/[0.02] rounded-r-xl">
                           {childStages.map((child, cIdx) => {
                             const breakIndex =
                               child.segmentIndex ?? (cIdx + 1);

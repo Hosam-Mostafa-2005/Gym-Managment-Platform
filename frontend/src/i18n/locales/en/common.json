@@ -1,0 +1,24 @@
+{
+  "app": {
+    "name": "STREN",
+    "workspace": "STREN Workspace"
+  },
+  "language": {
+    "en": "English",
+    "ar": "العربية",
+    "switcherLabel": "Language",
+    "switchToEnglish": "Switch to English",
+    "switchToArabic": "Switch to Arabic"
+  },
+  "actions": {
+    "startWorkout": "Start Workout",
+    "myWorkouts": "My Workouts",
+    "workoutHistory": "Workout History",
+    "assignments": "Assignments",
+    "trainingProgram": "Training Program",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "tryAgain": "Try Again"
+  }
+}
