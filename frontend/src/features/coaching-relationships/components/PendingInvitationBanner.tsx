@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { UserCheck, Check, X, Loader2, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 import { useMemberInvitations } from "../hooks/useMemberInvitations";
 import { useRespondInvitation } from "../hooks/useRespondInvitation";
 import { HistorySharingConsentDialog } from "./HistorySharingConsentDialog";
+import { ActiveCoachConflictDialog } from "./ActiveCoachConflictDialog";
 import type { CoachingRelationship } from "../types/coaching-relationships.types";
 
 export const PendingInvitationBanner: React.FC = () => {
@@ -11,6 +13,16 @@ export const PendingInvitationBanner: React.FC = () => {
 
   const [activeConsentRelationship, setActiveConsentRelationship] =
     useState<CoachingRelationship | null>(null);
+
+  const [conflictState, setConflictState] = useState<{
+    isOpen: boolean;
+    currentCoachName: string;
+    incomingInvitation: CoachingRelationship | null;
+  }>({
+    isOpen: false,
+    currentCoachName: "",
+    incomingInvitation: null,
+  });
 
   if (isLoading) return null;
 
@@ -30,6 +42,24 @@ export const PendingInvitationBanner: React.FC = () => {
         onSuccess: (updatedRelationship) => {
           // Open history consent modal immediately after acceptance
           setActiveConsentRelationship(updatedRelationship);
+        },
+        onError: (err: any) => {
+          const errorData = err?.response?.data;
+          if (
+            err?.response?.status === 409 ||
+            errorData?.data?.code === "ACTIVE_COACH_EXISTS"
+          ) {
+            const currentCoach = errorData?.data?.currentCoach;
+            setConflictState({
+              isOpen: true,
+              currentCoachName: currentCoach?.name || "Current Coach",
+              incomingInvitation: inv,
+            });
+          } else {
+            toast.error(
+              errorData?.message || "Failed to respond to invitation",
+            );
+          }
         },
       },
     );
@@ -127,6 +157,19 @@ export const PendingInvitationBanner: React.FC = () => {
           initialConsent={activeConsentRelationship.historySharingConsent}
         />
       )}
+
+      {/* Active Coach Conflict Modal */}
+      <ActiveCoachConflictDialog
+        isOpen={conflictState.isOpen}
+        onClose={() =>
+          setConflictState((prev) => ({ ...prev, isOpen: false }))
+        }
+        currentCoachName={conflictState.currentCoachName}
+        incomingInvitation={conflictState.incomingInvitation}
+        onSwitchedSuccessfully={(newRel) => {
+          setActiveConsentRelationship(newRel);
+        }}
+      />
     </>
   );
 };

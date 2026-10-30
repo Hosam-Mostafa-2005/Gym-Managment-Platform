@@ -700,6 +700,7 @@ class DashboardService {
           status: "ACTIVE",
           isActive: true,
         },
+        orderBy: { startedAt: "desc" },
         include: {
           trainer: {
             select: {

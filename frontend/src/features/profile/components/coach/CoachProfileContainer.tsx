@@ -1,12 +1,15 @@
 // src/features/profile/components/coach/CoachProfileContainer.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useCoachProfile } from "../../hooks/use-coach-profile";
 import { ProfileLoading } from "../states/ProfileLoading";
 import { ProfileError } from "../states/ProfileError";
 import { CoachProfileView } from "./CoachProfileView";
 
 export const CoachProfileContainer: React.FC = () => {
+  const { t } = useTranslation(["profile"]);
   const { data, isLoading, isError, error, refetch } = useCoachProfile();
+
   if (isLoading) {
     return <ProfileLoading />;
   }
@@ -17,7 +20,7 @@ export const CoachProfileContainer: React.FC = () => {
         message={
           error instanceof Error
             ? error.message
-            : "Unable to retrieve coach profile telemetry."
+            : t("states.coachErrorDefault")
         }
         onRetry={() => refetch()}
       />

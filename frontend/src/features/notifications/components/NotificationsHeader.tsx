@@ -2,6 +2,7 @@
 
 import React from "react";
 import { CheckCheck, Settings2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useMarkAllNotificationsRead } from "../hooks/use-mark-all-notifications-read";
 import type { NotificationCategory } from "../types/notifications.types";
 
@@ -16,10 +17,22 @@ export const NotificationsHeader: React.FC<NotificationsHeaderProps> = ({
   activeCategory,
   onOpenPreferences,
 }) => {
+  const { t } = useTranslation("notifications");
   const { mutate: markAllRead, isPending } = useMarkAllNotificationsRead();
 
   const handleMarkAll = () => {
     markAllRead(activeCategory === "ALL" ? undefined : activeCategory);
+  };
+
+  const getMarkAllButtonText = () => {
+    if (activeCategory !== "ALL") {
+      const categoryName = t(
+        `filters.categories.${activeCategory}` as any,
+        { defaultValue: activeCategory }
+      );
+      return t("header.markCategoryRead", { category: categoryName });
+    }
+    return t("header.markAllRead");
   };
 
   return (
@@ -27,16 +40,16 @@ export const NotificationsHeader: React.FC<NotificationsHeaderProps> = ({
       <div className="flex flex-col gap-1 min-w-0">
         <div className="flex items-center gap-3">
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-100">
-            Notifications
+            {t("header.title")}
           </h1>
           {unreadCount > 0 && (
             <span className="inline-flex items-center justify-center rounded-full bg-green-500/10 border border-green-500/20 px-2.5 py-0.5 text-[11px] font-bold text-[#5BE584]">
-              {unreadCount} Unread
+              {t("header.unreadBadge", { count: unreadCount })}
             </span>
           )}
         </div>
         <p className="text-xs text-gray-400">
-          Stay up to date with activity, milestones, and updates across your gym.
+          {t("header.subtitle")}
         </p>
       </div>
 
@@ -47,7 +60,7 @@ export const NotificationsHeader: React.FC<NotificationsHeaderProps> = ({
           className="inline-flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-xl border border-[#1E2329] bg-[#101418] px-3.5 py-2 text-xs font-semibold text-gray-300 transition-colors hover:bg-[#1E2329] hover:text-white"
         >
           <Settings2 className="h-4 w-4" />
-          <span>Preferences</span>
+          <span>{t("header.preferences")}</span>
         </button>
 
         <button
@@ -57,11 +70,7 @@ export const NotificationsHeader: React.FC<NotificationsHeaderProps> = ({
           className="inline-flex flex-1 sm:flex-initial items-center justify-center gap-2 rounded-xl border border-[#1E2329] bg-[#151A20] px-4 py-2 text-xs font-semibold text-gray-300 transition-colors hover:bg-[#1E2329] hover:text-[#5BE584] disabled:opacity-50 disabled:pointer-events-none"
         >
           <CheckCheck className="h-4 w-4" />
-          <span>
-            {activeCategory !== "ALL"
-              ? `Mark ${activeCategory.toLowerCase()} read`
-              : "Mark all read"}
-          </span>
+          <span>{getMarkAllButtonText()}</span>
         </button>
       </div>
     </div>

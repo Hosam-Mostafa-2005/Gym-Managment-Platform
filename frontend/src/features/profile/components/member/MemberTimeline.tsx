@@ -7,6 +7,7 @@ import {
   Ruler,
   ClipboardList,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ProfileSection } from "../shared/ProfileSection";
 import type { TimelineEvent } from "../../types/profile.types";
 
@@ -17,18 +18,21 @@ interface MemberTimelineProps {
 export const MemberTimeline: React.FC<MemberTimelineProps> = ({
   timeline = [],
 }) => {
+  const { t, i18n } = useTranslation(["profile"]);
+
   const getEventIcon = (type: string) => {
-    const t = type?.toLowerCase() || "";
-    if (t.includes("workout") || t.includes("session")) return Dumbbell;
-    if (t.includes("measurement") || t.includes("biometric")) return Ruler;
-    if (t.includes("assignment")) return ClipboardList;
+    const tLower = type?.toLowerCase() || "";
+    if (tLower.includes("workout") || tLower.includes("session")) return Dumbbell;
+    if (tLower.includes("measurement") || tLower.includes("biometric")) return Ruler;
+    if (tLower.includes("assignment")) return ClipboardList;
     return CheckCircle2;
   };
 
   const formatDate = (dateStr?: string | null) => {
-    if (!dateStr) return "N/A";
+    if (!dateStr) return "—";
     try {
-      return new Intl.DateTimeFormat("en-US", {
+      const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -42,17 +46,17 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
 
   return (
     <ProfileSection
-      title="Account & Training Timeline"
-      subtitle="Chronological milestones and activities"
+      title={t("member.timeline.title")}
+      subtitle={t("member.timeline.subtitle")}
       icon={History}
     >
       {timeline?.length > 0 ? (
-        <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-px before:bg-[#1e2329]">
+        <div className="relative pl-6 rtl:pl-0 rtl:pr-6 space-y-6 before:absolute before:left-2.5 rtl:before:left-auto rtl:before:right-2.5 before:top-2 before:bottom-2 before:w-px before:bg-[#1e2329]">
           {timeline.map((event, idx) => {
             const Icon = getEventIcon(event.type);
             return (
               <div key={idx} className="relative flex flex-col gap-1">
-                <div className="absolute -left-6 mt-0.5 h-5 w-5 rounded-full bg-[#16291d] border border-[#23422e] flex items-center justify-center text-[#5BE584]">
+                <div className="absolute -left-6 rtl:-left-auto rtl:-right-6 mt-0.5 h-5 w-5 rounded-full bg-[#16291d] border border-[#23422e] flex items-center justify-center text-[#5BE584]">
                   <Icon className="h-3 w-3" />
                 </div>
                 <div className="flex items-center justify-between">
@@ -72,9 +76,11 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
         </div>
       ) : (
         <div className="py-8 text-center text-xs text-gray-500">
-          No timeline events recorded yet.
+          {t("member.timeline.empty")}
         </div>
       )}
     </ProfileSection>
   );
 };
+
+export default MemberTimeline;

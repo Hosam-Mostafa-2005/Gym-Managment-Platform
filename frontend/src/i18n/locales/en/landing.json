@@ -1,0 +1,637 @@
+{
+  "navbar": {
+    "brandSubtitle": "Coaching Platform",
+    "anchors": {
+      "platform": "Platform",
+      "coaches": "For Coaches",
+      "members": "For Members",
+      "howItWorks": "How It Works",
+      "features": "Features",
+      "preview": "Live Preview"
+    },
+    "actions": {
+      "openWorkspace": "Open Workspace",
+      "openWorkspaceRole": "Open Workspace ({{role}})",
+      "roles": {
+        "coach": "Coach",
+        "member": "Member"
+      },
+      "workspace": "Workspace",
+      "signIn": "Sign In",
+      "signInToAccount": "Sign In to Account",
+      "getStarted": "Get Started",
+      "getStartedWithStren": "Get Started with STREN"
+    },
+    "mobile": {
+      "platformNavigation": "Platform Navigation",
+      "toggleMenu": "Toggle navigation menu"
+    }
+  },
+  "hero": {
+    "badge": "TRAIN WITH INTENTION. COACH WITH CLARITY.",
+    "signedInAs": "Signed in as",
+    "headlinePart1": "Every session.",
+    "headlinePart2": "A stronger system.",
+    "description": "STREN connects coaches and members through structured workout prescriptions, guided live training sessions, previous performance benchmarks, and real-time coaching telemetry.",
+    "actions": {
+      "openCoachDashboard": "Open Coach Dashboard",
+      "openMemberDashboard": "Open Member Dashboard",
+      "startCoachingOrTraining": "Start Coaching or Training",
+      "exploreWorkflows": "Explore Workflows"
+    },
+    "highlights": {
+      "targetPrescription": "Target Weight & RPE Prescription",
+      "exerciseSwapping": "In-Session Exercise Swapping",
+      "liveTelemetry": "Live Bidirectional Telemetry"
+    }
+  },
+  "heroPreview": {
+    "liveTraining": "STREN Live Training",
+    "activeLog": "ACTIVE LOG",
+    "coachAthlete": "Coach: {{coach}} • Athlete: {{athlete}}",
+    "tabs": {
+      "athleteSession": "Athlete Session",
+      "coachPrescription": "Coach Prescription"
+    },
+    "banner": {
+      "assignedRoutine": "Assigned Routine · Block 2",
+      "routineTitle": "Hypertrophy Lower: Squat Focus",
+      "movementsDone": "3 / 4 Movements Done"
+    },
+    "movement": {
+      "name": "Barbell Back Squat",
+      "prescribed": "Prescribed: 4 sets × 6 reps · Rest 120s",
+      "target": "Target: 100 kg · RPE 8.5"
+    },
+    "sets": {
+      "setLabel": "SET {{num}}",
+      "targetReps": "Target {{reps}}",
+      "prevBenchmark": "Prev {{weight}} × {{reps}}",
+      "activeLog": "{{weight}} kg · {{reps}} reps"
+    },
+    "restTimer": {
+      "ticking": "Rest interval ticking",
+      "timeLeft": "{{time}} left"
+    },
+    "coach": {
+      "prescriptionTitle": "Workout Builder Prescription",
+      "athleteParameters": "Athlete Target Parameters",
+      "assignee": "Assignee: {{name}}",
+      "targetLoad": "Target Load",
+      "targetLoadUnit": "kg",
+      "targetLoadNote": "Calibrated from Week 3 benchmark",
+      "targetExertion": "Target Exertion",
+      "targetExertionValue": "RPE 8.5",
+      "targetExertionNote": "Leave 1–2 reps in reserve",
+      "directInstructions": "Coach Direct Instructions",
+      "instructionText": "\"Keep chest high and brace into the belt at the bottom of set 3. If bar speed slows noticeably on set 4, hold load at 100 kg instead of increasing.\""
+    },
+    "footer": {
+      "bidirectionalSync": "Real-time bidirectional synchronization",
+      "sessionVolume": "Session Volume:"
+    }
+  },
+  "platform": {
+    "badge": "The Closed Coaching Loop",
+    "headline": "How STREN unites coaching intention and athlete execution.",
+    "description": "Traditional coaching relies on detached PDFs, scattered chats, and forgotten notebooks. STREN creates a continuous, two-way pipeline where every workout prescription flows seamlessly into a live guided workout and returns verified performance telemetry to the coach.",
+    "coachBlock": {
+      "roleTag": "Role 1 · Prescription",
+      "title": "The Coach Command Center",
+      "badge": "Programming",
+      "description": "Coaches design structured workout templates with target weights, target RPE, and rest timers, then assign them directly to athlete rosters.",
+      "previewTitle": "Hypertrophy Upper A",
+      "previewAssigned": "Assigned to 4 Athletes",
+      "exercise1Name": "Barbell Bench Press",
+      "exercise1Details": "4 sets · Target 80 kg · RPE 8",
+      "exercise2Name": "Incline Dumbbell Row",
+      "exercise2Details": "3 sets · Target 32 kg · 90s Rest"
+    },
+    "liveSync": "Live Sync",
+    "memberBlock": {
+      "roleTag": "Role 2 · Execution",
+      "title": "The Member Active Session",
+      "badge": "In Session",
+      "description": "Members launch today's scheduled workout, view previous lift benchmarks, check off completed sets, swap occupied equipment, and submit perceived exertion.",
+      "previewTitle": "Bench Press · Set 2 of 4",
+      "previewPrev": "Prev: 80 kg × 8",
+      "weightLabel": "Weight",
+      "repsLabel": "Reps",
+      "statusLabel": "Status",
+      "loggedStatus": "Logged ✓"
+    },
+    "feedbackBanner": {
+      "highlight": "Automated Feedback Loop:",
+      "text": "Session tonnage (kg), completion rate, and logged RPE automatically sync back to the Coach Dashboard upon completion.",
+      "link": "Explore Exercise Taxonomy"
+    },
+    "pillars": {
+      "targets": {
+        "title": "Prescription Targets & RPE",
+        "description": "Coaches do not just name movements—they specify exact target weights and target RPE thresholds. Athletes know the exact intensity intended for every single set."
+      },
+      "memory": {
+        "title": "Previous Performance Memory",
+        "description": "During active training, STREN surfaces the member's last verified weight and reps directly in the input row. Progressive overload is structured, not remembered."
+      },
+      "telemetry": {
+        "title": "Instant Tonnage & Telemetry",
+        "description": "No manual spreadsheets or check-in text messages. Completed sessions instantly calculate total volume, log session duration, and update adherence stats for coach review."
+      }
+    }
+  },
+  "coaches": {
+    "badge": "For Coaches & Trainers",
+    "headline": "Precision programming and active roster oversight.",
+    "description": "STREN gives coaches full control over training prescription, program distribution, and athlete performance monitoring in one unified hub.",
+    "features": {
+      "roster": {
+        "title": "Active Member Roster",
+        "tag": "Roster Management",
+        "routeLabel": "View Members",
+        "description": "Maintain direct coach-member connections. Inspect athlete adherence rates, active training programs, and recent session logs.",
+        "highlights": {
+          "item1": "Track adherence rates & last session dates",
+          "item2": "Direct link to athlete body measurements & history",
+          "item3": "Role-scoped member isolation"
+        }
+      },
+      "builder": {
+        "title": "Workout Builder & Target Prescription",
+        "tag": "Programming Engine",
+        "routeLabel": "Open Workout Builder",
+        "description": "Build modular training routines with exercise sequencing, prescribed target loads, target RPE ratings, and strict rest timers.",
+        "highlights": {
+          "item1": "Prescribe exact target kg and target RPE per exercise",
+          "item2": "Configure rest timers from 30s to 300s",
+          "item3": "Organize exercises into reusable split templates"
+        }
+      },
+      "taxonomy": {
+        "title": "Exercise Library & Taxonomy",
+        "tag": "Movement Database",
+        "routeLabel": "Browse Exercise Library",
+        "description": "Access an extensive movement library categorized by primary muscles (Chest, Back, Quads, Deltoids) and equipment types.",
+        "highlights": {
+          "item1": "Filter by muscle group, category & equipment",
+          "item2": "Detailed execution instructions & setup tips",
+          "item3": "Create custom gym-specific exercises"
+        }
+      },
+      "assignments": {
+        "title": "Assignment Distribution",
+        "tag": "Plan Delivery",
+        "routeLabel": "Manage Assignments",
+        "description": "Assign custom workout routines directly to specific athletes with assigned start dates and active status monitoring.",
+        "highlights": {
+          "item1": "Targeted coach-to-member assignment modal",
+          "item2": "Immediate delivery notification via Socket.IO",
+          "item3": "Status tracking (Pending, In Progress, Completed)"
+        }
+      },
+      "telemetry": {
+        "title": "Athlete Telemetry & Review",
+        "tag": "Session Oversight",
+        "routeLabel": "Inspect Sessions",
+        "description": "Review completed workout sessions with verified set entries, total tonnage lifted, member-submitted RPE, and equipment swap notes.",
+        "highlights": {
+          "item1": "Verified set-by-set weight and repetition telemetry",
+          "item2": "Audited in-session exercise swaps with reason logs",
+          "item3": "Member RPE exertion score & post-workout reflections"
+        }
+      }
+    },
+    "mockup": {
+      "windowTitle": "STREN Coach Hub",
+      "roleBadge": "TRAINER ROLE",
+      "selectedModule": "Selected Module",
+      "engineeredCapabilities": "Engineered Capabilities",
+      "snippetHeader": "Workout Builder Prescription Preview",
+      "snippetStatus": "Target Targets Active",
+      "exerciseName": "Barbell Back Squat",
+      "exerciseDetails": "4 sets · Legs / Quads",
+      "targetLabel": "Target:",
+      "targetValue": "140 kg",
+      "targetRpeLabel": "Target RPE:",
+      "targetRpeValue": "8.5",
+      "restLabel": "Rest:",
+      "restValue": "180s"
+    }
+  },
+  "members": {
+    "badge": "For Athletes & Members",
+    "headline": "A guided workout partner that remembers every rep.",
+    "description": "STREN turns prescribed workouts into an interactive live session tracker with previous lift benchmarks, in-session exercise swapping, and instant volume calculation.",
+    "steps": {
+      "step1": {
+        "title": "Assigned Workout Access",
+        "tag": "Prescription View",
+        "description": "Open your active assignments anytime. View prescribed exercise order, target reps, target weights, and coach instructions."
+      },
+      "step2": {
+        "title": "Guided Live Session Launch",
+        "tag": "Workout Execution",
+        "description": "Launch today's workout in distraction-free session mode. Navigate exercise blocks with real-time rest timers and target guidance."
+      },
+      "step3": {
+        "title": "Previous Performance Memory",
+        "tag": "Progressive Overload",
+        "description": "Never guess what you lifted last week. STREN automatically surfaces previous weight and rep benchmarks directly in your set row."
+      },
+      "step4": {
+        "title": "In-Session Exercise Swapping",
+        "tag": "Live Flexibility",
+        "description": "Gym equipment taken or feeling joint pain? Swap to a compatible movement on the fly with a reason logged for your coach."
+      },
+      "step5": {
+        "title": "RPE Exertion & Summary",
+        "tag": "Session Completion",
+        "description": "Finish your workout, log your subjective session RPE (1–10), and view total volume tonnage automatically saved to your profile."
+      }
+    },
+    "workbench": {
+      "headerTitle": "Active Member Session · Push Hypertrophy A",
+      "headerSubtitle": "Prescribed by Coach Marcus · 4 Movements · 16 Total Sets",
+      "activeStatus": "38:45 Active",
+      "goToSessions": "Go to Sessions",
+      "movementTag": "Movement 1 of 4",
+      "movementMuscle": "Chest / Triceps",
+      "exerciseName": "Barbell Bench Press",
+      "coachTarget": "Coach Target: 4 sets × 8–10 reps · Target RPE 8.0 · 120s Rest",
+      "swapTitle": "In-Session Exercise Swapping",
+      "swapSubtitle": "Bench occupied? Swap to Incline DB Press with reason log",
+      "table": {
+        "set": "SET",
+        "prevPerformance": "PREVIOUS PERFORMANCE",
+        "target": "TARGET",
+        "weight": "WEIGHT (KG)",
+        "reps": "REPS",
+        "action": "ACTION",
+        "lastWeek": "(Last Week)",
+        "logged": "Logged",
+        "completeSet": "Complete Set",
+        "pending": "Pending"
+      },
+      "metrics": {
+        "sessionTonnage": "Session Tonnage",
+        "targetRpe": "Target RPE Rating",
+        "restTimer": "Rest Interval Timer",
+        "restLeft": "01:42 Left"
+      }
+    }
+  },
+  "howItWorks": {
+    "badge": "End-To-End Training Lifecycle",
+    "headline": "From prescription to reflection in six clear stages.",
+    "description": "See how STREN coordinates programming, delivery, live execution, and telemetry between coaches and athletes with zero manual data transfer.",
+    "stagePrefix": "Stage 0{{num}}",
+    "stageFocus": "Stage 0{{num}} Focus",
+    "openStage": "Open {{label}}",
+    "stages": {
+      "stage1": {
+        "actor": "Coach",
+        "actorBadge": "Coach Action",
+        "title": "Prescription & Template Creation",
+        "description": "Coach selects compound movements, establishes exercise sequencing, and prescribes target weights, target RPE ratings, and rest intervals in the Workout Builder.",
+        "routeLabel": "Workout Builder"
+      },
+      "stage2": {
+        "actor": "Coach",
+        "actorBadge": "Coach Action",
+        "title": "Athlete Assignment",
+        "description": "Coach assigns the structured workout routine to an active member or group with scheduled training dates, making the routine immediately available.",
+        "routeLabel": "Assignments"
+      },
+      "stage3": {
+        "actor": "System",
+        "actorBadge": "Socket.IO Sync",
+        "title": "Instant Notification Alert",
+        "description": "Real-time Socket.IO notification delivers instant alert to the athlete's workspace, prompting them with today's scheduled training program.",
+        "routeLabel": "Notifications"
+      },
+      "stage4": {
+        "actor": "Member",
+        "actorBadge": "Member Action",
+        "title": "Live Guided Execution",
+        "description": "Member starts the workout. STREN displays previous session performance benchmarks, runs rest countdown timers, and allows on-the-fly exercise swaps.",
+        "routeLabel": "Active Sessions"
+      },
+      "stage5": {
+        "actor": "Member",
+        "actorBadge": "Member Action",
+        "title": "RPE Exertion & Session Finish",
+        "description": "Upon finishing all working sets, the member logs subjective session RPE (1–10) and notes, completing the workout and compiling total volume tonnage.",
+        "routeLabel": "Member Dashboard"
+      },
+      "stage6": {
+        "actor": "Coach & Member",
+        "actorBadge": "Shared Telemetry",
+        "title": "Performance Review & Feedback",
+        "description": "Completed session stats, volume logs, and RPE ratings instantly update on the Coach Dashboard for progress verification and program progression.",
+        "routeLabel": "Coach Dashboard"
+      }
+    }
+  },
+  "features": {
+    "badge": "Core Platform Capabilities",
+    "headline": "Engineered for serious strength training.",
+    "description": "Every module in STREN was built to solve authentic coaching and athletic execution challenges—with concrete target prescriptions, previous performance memory, and live telemetry.",
+    "bento1": {
+      "badge": "Coach Prescription",
+      "source": "Workout Builder Engine",
+      "title": "Target Weight & RPE Prescription",
+      "description": "Coaches do not merely list exercises—they define exact prescribed loads (kg), target RPE intensity ratings (1–10), and strict rest periods for every exercise in the template.",
+      "previewHeader": "Barbell Back Squat · Working Sets",
+      "previewStatus": "Target Targets Active",
+      "targetLoadLabel": "Prescribed Target Load",
+      "targetLoadValue": "140 kg",
+      "targetLoadNote": "+5 kg from last mesocycle",
+      "targetRpeLabel": "Prescribed Target RPE",
+      "targetRpeValue": "8.5 / 10",
+      "targetRpeNote": "~1-2 Reps in Reserve",
+      "restIntervalLabel": "Rest Interval",
+      "restIntervalValue": "180 Seconds",
+      "restIntervalNote": "Automated timer sync",
+      "footer": "Available in Workout Builder & Assignments",
+      "link": "Open Workout Builder"
+    },
+    "bento2": {
+      "badge": "Live Flexibility",
+      "title": "In-Session Exercise Swapping",
+      "description": "Equipment taken or experiencing joint pain? Members can swap to an alternative exercise on the fly, with reason logging preserved for the coach.",
+      "eventTitle": "Active Swap Event",
+      "originalName": "Flat Barbell Bench",
+      "originalStatus": "Replaced · Equipment in use",
+      "newName": "Incline DB Press",
+      "newStatus": "New Active Target",
+      "coachNote": "Logged to Coach: \"Bench press was occupied by 3 lifters; swapped to dumbbells.\"",
+      "footer": "Preserves exercise history & volume totals"
+    },
+    "bento3": {
+      "badge": "Overload Memory",
+      "title": "Previous Performance Memory",
+      "description": "During active training, STREN surfaces what you performed in the previous session so you never wonder what weights to rack.",
+      "header": "Bench Press · Set 3 Memory",
+      "prevLabel": "Previous Session:",
+      "prevValue": "100 kg × 6 reps",
+      "targetLabel": "Today's Target:",
+      "targetValue": "102.5 kg × 6 reps",
+      "footer": "Automated progressive overload tracking"
+    },
+    "bento4": {
+      "badge": "Body Composition",
+      "title": "Body Measurements & Physical Progress",
+      "description": "Log body weight, estimated body fat percentage, and anatomical circumferences (chest, waist, hips, arms, thighs). Correlate physical adaptations with training volume.",
+      "weightLabel": "Body Weight",
+      "weightValue": "78.4 kg",
+      "weightDelta": "-1.8 kg",
+      "fatLabel": "Body Fat %",
+      "fatValue": "14.2%",
+      "fatDelta": "-1.1%",
+      "chestLabel": "Chest Circumference",
+      "chestValue": "104 cm",
+      "chestDelta": "+2.5 cm",
+      "waistLabel": "Waist Circumference",
+      "waistValue": "79 cm",
+      "waistDelta": "-3.0 cm",
+      "footer": "Full historical log with delta tracking",
+      "link": "View Body Measurements"
+    },
+    "supporting": {
+      "card1": {
+        "title": "Categorized Exercise Taxonomy",
+        "description": "Filter hundreds of compound and isolation movements by target muscles and equipment in our exercise database.",
+        "link": "Browse Exercises"
+      },
+      "card2": {
+        "title": "Real-Time Socket.IO Alerts",
+        "description": "Instant alerts notify athletes of new assignments and alert coaches when a member completes a training session.",
+        "link": "Notification Feed"
+      },
+      "card3": {
+        "title": "Total Volume & Tonnage Logs",
+        "description": "Every verified repetition compiles automatically into total lifted kg, surfacing true training density and progressive overload.",
+        "link": "Session History"
+      }
+    }
+  },
+  "dualPerspective": {
+    "badge": "Two Roles · One Ecosystem",
+    "headline": "Designed for both sides of the barbell.",
+    "description": "Coaches need deep programming controls and roster oversight. Athletes need a clean, low-friction session tracker that works on gym floor mobile. STREN provides tailored interfaces backed by a unified training graph.",
+    "coachSide": {
+      "tag": "Coaching Side",
+      "title": "The Coach Workspace",
+      "route": "/coach-dashboard",
+      "description": "Empowers coaches to build reusable programs, specify exact target intensities, and monitor member training compliance without manual follow-up.",
+      "points": {
+        "builder": {
+          "title": "Workout Builder with Prescription Targets",
+          "desc": "Define exact target kg loads and target RPE for every movement."
+        },
+        "roster": {
+          "title": "Member Roster Management",
+          "desc": "Track client adherence rates and manage assigned training splits."
+        },
+        "assignments": {
+          "title": "Program Assignment Distribution",
+          "desc": "Push structured workout blocks to individual athletes with scheduled dates."
+        },
+        "review": {
+          "title": "Session Review & Feedback Telemetry",
+          "desc": "Inspect verified set tonnage, completed sets, and member RPE submissions."
+        }
+      },
+      "link": "Explore Coach Workspace"
+    },
+    "liveConnector": {
+      "live": "Live",
+      "socket": "Socket.IO"
+    },
+    "memberSide": {
+      "tag": "Athlete Side",
+      "title": "The Member Workspace",
+      "route": "/dashboard",
+      "description": "Empowers athletes with zero-friction live logging, previous performance benchmarks, and on-the-fly exercise swapping when gym equipment is busy.",
+      "points": {
+        "assignments": {
+          "title": "Assigned Workout Access",
+          "desc": "Open scheduled routines with clear coach notes and prescribed set targets."
+        },
+        "logging": {
+          "title": "Live Set & Rep Logging",
+          "desc": "Quick one-tap completion with automated rest countdown timer."
+        },
+        "memory": {
+          "title": "Previous Performance Memory",
+          "desc": "Surfaces last week's verified weight and reps right beside current inputs."
+        },
+        "swapping": {
+          "title": "In-Session Exercise Swapping",
+          "desc": "Swap occupied equipment during active training with automatic reason logging."
+        }
+      },
+      "link": "Explore Member Workspace"
+    }
+  },
+  "showcase": {
+    "badge": "Interactive Workspace Preview",
+    "headline": "Inspect the authentic STREN interfaces.",
+    "description": "Switch between core STREN views to see how coaches and members interact with prescriptions, live set logging, rest countdowns, and physical body metrics.",
+    "tabs": {
+      "coachDashboard": "Coach Command Center",
+      "workoutBuilder": "Workout Builder",
+      "activeSession": "Active Member Session",
+      "bodyMeasurements": "Body Metrics"
+    },
+    "preview": {
+      "windowTitle": "STREN Workspace Explorer",
+      "liveBadge": "LIVE INTERACTION PREVIEW",
+      "stats": {
+        "activeRoster": "Active Roster",
+        "rosterValue": "18 Athletes",
+        "rosterNote": "100% active this mesocycle",
+        "activePlans": "Active Plans",
+        "plansValue": "24 Routines",
+        "plansNote": "Assigned across splits",
+        "tonnage": "Tonnage Lifted",
+        "tonnageValue": "142.8 Tonnes",
+        "tonnageNote": "+8.4% vs last week",
+        "adherence": "Roster Adherence",
+        "adherenceValue": "94.2%",
+        "adherenceNote": "Completed on schedule"
+      },
+      "feed": {
+        "title": "Live Athlete Session Telemetry",
+        "subtitle": "Verified sets & RPE submitted today",
+        "omarAthlete": "Omar Hassan",
+        "omarWorkout": "Upper Push Hypertrophy A",
+        "omarTonnage": "4,820 kg",
+        "omarSets": "16 sets completed",
+        "omarRpe": "8.5 RPE",
+        "omarTime": "18m ago",
+        "saraAthlete": "Sara Al-Mansoor",
+        "saraWorkout": "Lower Body Squat Focus",
+        "saraTonnage": "6,240 kg",
+        "saraSets": "18 sets completed",
+        "saraRpe": "9.0 RPE",
+        "saraTime": "1h ago",
+        "karimAthlete": "Karim Nabil",
+        "karimWorkout": "Posterior Chain & Back",
+        "karimTonnage": "5,110 kg",
+        "karimSets": "15 sets completed",
+        "karimRpe": "8.0 RPE",
+        "karimTime": "3h ago",
+        "verified": "Verified"
+      },
+      "builder": {
+        "templateBadge": "Template Builder",
+        "blocksCount": "4 Exercise Blocks",
+        "title": "Full Body Power & Posterior Chain (Block 2)",
+        "difficulty": "Difficulty: Intermediate",
+        "assignButton": "Assign Template",
+        "exerciseTypes": {
+          "primaryCompound": "Primary Compound",
+          "upperHypertrophy": "Upper Hypertrophy",
+          "upperPull": "Upper Pull",
+          "isolationFinisher": "Isolation Finisher"
+        },
+        "targetLabel": "Target:",
+        "rpeLabel": "RPE:",
+        "restLabel": "Rest:"
+      },
+      "session": {
+        "title": "Live Session: Push Hypertrophy A",
+        "subtitle": "Movement 1 of 4 · Barbell Bench Press · Rest: 120s",
+        "restLeft": "01:34 Rest Left",
+        "tonnage": "Tonnage: 3,420 kg",
+        "swappedAlert": "Exercise Swapped:",
+        "swappedDetails": "Replaced Flat Barbell Bench with Incline DB Press (Reason: Equipment Occupied).",
+        "loggedToCoach": "Logged to Coach",
+        "table": {
+          "set": "SET",
+          "prevPerformance": "PREVIOUS PERFORMANCE",
+          "targetCoach": "TARGET (COACH)",
+          "loggedKg": "LOGGED KG",
+          "reps": "REPS",
+          "status": "STATUS",
+          "completed": "Completed ✓",
+          "activeLogging": "Active Logging",
+          "upcoming": "Upcoming"
+        }
+      },
+      "measurements": {
+        "weightLabel": "Body Weight",
+        "weightValue": "78.4 kg",
+        "weightNote": "-1.8 kg vs baseline",
+        "fatLabel": "Body Fat %",
+        "fatValue": "14.2%",
+        "fatNote": "-1.1% over 6 wks",
+        "chestLabel": "Chest Circumference",
+        "chestValue": "104 cm",
+        "chestNote": "+2.5 cm hypertrophy",
+        "waistLabel": "Waist Circumference",
+        "waistValue": "79 cm",
+        "waistNote": "-3.0 cm taper",
+        "historyTitle": "Historical Measurement Telemetry",
+        "historySubtitle": "Recorded by athlete every Monday morning before nutrition check-in.",
+        "lastLogged": "Last logged: 2 days ago"
+      }
+    }
+  },
+  "cta": {
+    "badge": "The Unified Coaching Platform",
+    "headlinePart1": "Make every session count.",
+    "headlinePart2": "Bring clarity to coaching.",
+    "description": "Connect workout prescription, guided live session tracking, previous performance memory, and coach telemetry in one structured platform.",
+    "actions": {
+      "openCoachDashboard": "Open Coach Dashboard",
+      "openMemberDashboard": "Open Member Dashboard",
+      "browseExerciseLibrary": "Browse Exercise Library",
+      "startTrainingOrCoaching": "Start Training or Coaching Free",
+      "signInToWorkspace": "Sign In to Workspace"
+    },
+    "trust": {
+      "freeSetup": "Free account setup",
+      "dedicatedInterfaces": "Dedicated Coach & Member interfaces",
+      "socketSync": "Real-time Socket.IO synchronization"
+    }
+  },
+  "footer": {
+    "brandDescription": "A high-performance strength coaching platform connecting exercise prescriptions, live session tracking, previous lift benchmarks, and coach oversight in one unified system.",
+    "status": "STREN Platform · All services operational",
+    "columns": {
+      "platform": "Platform",
+      "workspaces": "Workspaces",
+      "access": "Access & Database"
+    },
+    "links": {
+      "overview": "Overview & Loop",
+      "forCoaches": "For Coaches",
+      "forMembers": "For Members",
+      "howItWorks": "How It Works",
+      "capabilities": "Capabilities",
+      "livePreview": "Live Preview",
+      "coachDashboard": "Coach Dashboard",
+      "workoutBuilder": "Workout Builder",
+      "assignments": "Assignments",
+      "memberRoster": "Member Roster",
+      "memberDashboard": "Member Dashboard",
+      "activeSessions": "Active Sessions",
+      "bodyMeasurements": "Body Measurements",
+      "exerciseTaxonomy": "Exercise Taxonomy",
+      "publicWorkouts": "Public Workouts",
+      "liveNotifications": "Live Notifications",
+      "signIn": "Sign In",
+      "createAccount": "Create Account",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
+    },
+    "bottom": {
+      "copyright": "© {{year}} STREN. All rights reserved.",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "builtFor": "Built for Coaches and Athletes"
+    }
+  }
+}

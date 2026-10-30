@@ -1,5 +1,6 @@
 // src/features/coach-dashboard/components/performance/CompletionRateChart.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   ResponsiveContainer,
   LineChart,
@@ -19,6 +20,7 @@ interface CompletionRateChartProps {
 export const CompletionRateChart: React.FC<CompletionRateChartProps> = ({
   data = [],
 }) => {
+  const { t } = useTranslation(["coachDashboard"]);
   const hasData = data && data.length > 0;
 
   return (
@@ -27,19 +29,19 @@ export const CompletionRateChart: React.FC<CompletionRateChartProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-gray-100">
-              Completion Rate Trend
+              {t("analyticsView.completionRateTrend")}
             </h3>
             <InfoTooltip
-              title="Daily Adherence & Completion Rate"
-              description="Daily ratio of completed sessions to started sessions across all assigned members."
-              calculation="(Completed Sessions / Total Started Sessions) × 100 on each calendar date"
-              unit="%"
-              dateRange="Past 30 rolling days"
-              limitations="On days with zero started sessions, adherence is reported as 0% or neutral."
+              title={t("analyticsView.tooltips.completionTitle")}
+              description={t("analyticsView.tooltips.completionDesc")}
+              calculation={t("analyticsView.tooltips.completionCalc")}
+              unit={t("analyticsView.tooltips.completionUnit")}
+              dateRange={t("analyticsView.tooltips.completionRange")}
+              limitations={t("analyticsView.tooltips.completionLimit")}
             />
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
-            Last 30 Days Efficiency
+            {t("analyticsView.completionRateSub")}
           </p>
         </div>
       </div>
@@ -88,7 +90,10 @@ export const CompletionRateChart: React.FC<CompletionRateChartProps> = ({
                   color: "#f3f4f6",
                 }}
                 itemStyle={{ color: "#5BE584" }}
-                formatter={(value: any) => [`${value}%`, "Completion Rate"]}
+                formatter={(value: any) => [
+                  `${value}%`,
+                  t("analyticsView.completionRateTrend"),
+                ]}
                 labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
               />
               <Line
@@ -103,7 +108,7 @@ export const CompletionRateChart: React.FC<CompletionRateChartProps> = ({
           </ResponsiveContainer>
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-gray-500">
-            No completion rate data available.
+            {t("analyticsView.noSessionTelemetry")}
           </div>
         )}
       </div>

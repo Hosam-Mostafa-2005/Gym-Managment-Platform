@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { Exercise } from "../types/exercise.types";
 import { ROLES } from "@/constants/roles";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const ExerciseCard = ({ exercise, onDelete }: Props) => {
+  const { t } = useTranslation(["exercises"]);
   const { data: user } = useCurrentUser();
   const exerciseId = exercise.id || exercise._id || "";
 
@@ -26,18 +28,31 @@ const ExerciseCard = ({ exercise, onDelete }: Props) => {
         <div className="flex flex-wrap items-center gap-2">
           <h3 className="text-base font-bold text-white">{exercise.name}</h3>
           <span className="rounded-md border border-[#5BE584]/30 bg-[#5BE584]/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-[#5BE584]">
-            {exercise.difficulty}
+            {t(
+              `difficulties.${exercise.difficulty?.toLowerCase()}`,
+              exercise.difficulty,
+            )}
           </span>
         </div>
 
         <p className="text-xs text-[#9CA3AF]">
-          <strong className="text-white">Muscles:</strong>{" "}
-          {exercise.primaryMuscles?.join(", ") || "—"}
+          <strong className="text-white">
+            {t("card.musclesLabel", "Muscles:")}
+          </strong>{" "}
+          {exercise.primaryMuscles && exercise.primaryMuscles.length > 0
+            ? exercise.primaryMuscles
+                .map((m) => t(`muscles.${m}`, m))
+                .join(", ")
+            : "—"}
         </p>
 
         <p className="text-xs text-[#9CA3AF]">
-          <strong className="text-white">Equipment:</strong>{" "}
-          {exercise.equipment?.join(", ") || "Bodyweight"}
+          <strong className="text-white">
+            {t("card.equipmentLabel", "Equipment:")}
+          </strong>{" "}
+          {exercise.equipment && exercise.equipment.length > 0
+            ? exercise.equipment.map((eq) => t(`equipment.${eq}`, eq)).join(", ")
+            : t("card.bodyweight", "Bodyweight")}
         </p>
 
         <div className="flex items-center gap-2 pt-2">
@@ -45,7 +60,7 @@ const ExerciseCard = ({ exercise, onDelete }: Props) => {
             to={`/workout-library/exercises/${exerciseId}`}
             className="rounded-xl border border-[#262D36] bg-[#141920] px-3 py-1.5 text-xs font-semibold text-white hover:border-[#5BE584]/50 hover:text-[#5BE584] transition-colors"
           >
-            View
+            {t("card.view", "View")}
           </Link>
 
           {canModify && (
@@ -54,7 +69,7 @@ const ExerciseCard = ({ exercise, onDelete }: Props) => {
                 to={`/workout-library/exercises/${exerciseId}/edit`}
                 className="rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] hover:text-white transition-colors"
               >
-                Edit
+                {t("card.edit", "Edit")}
               </Link>
 
               <button
@@ -62,7 +77,7 @@ const ExerciseCard = ({ exercise, onDelete }: Props) => {
                 onClick={() => onDelete(exerciseId)}
                 className="rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-red-400 hover:border-red-500/40 hover:bg-red-500/10 transition-colors"
               >
-                Delete
+                {t("card.delete", "Delete")}
               </button>
             </>
           )}

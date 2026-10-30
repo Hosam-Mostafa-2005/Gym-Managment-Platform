@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Plus, X, Loader2, Sparkles, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Plus, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
   onClose,
   onFoodCreated,
 }) => {
+  const { t } = useTranslation(["nutrition"]);
   const [name, setName] = useState("");
   const [nameAr, setNameAr] = useState("");
   const [category, setCategory] = useState("Protein");
@@ -68,15 +70,15 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      setErrorMsg("Please enter a food name.");
+      setErrorMsg(t("customFood.errName"));
       return;
     }
     if (servingSize <= 0) {
-      setErrorMsg("Serving size must be greater than zero.");
+      setErrorMsg(t("customFood.errServingSize"));
       return;
     }
     if (calories < 0 || protein < 0 || carbs < 0 || fat < 0 || fiber < 0) {
-      setErrorMsg("Nutritional values cannot be negative numbers.");
+      setErrorMsg(t("customFood.errNegative"));
       return;
     }
 
@@ -103,7 +105,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
       await queryClient.invalidateQueries({ queryKey: ["foods"] });
       await queryClient.invalidateQueries({ queryKey: ["custom-foods"] });
 
-      toast.success(`"${created.name}" created and saved to your personal foods!`);
+      toast.success(t("customFood.toastSuccess", { name: created.name }));
       resetForm();
       if (onFoodCreated) {
         onFoodCreated(created);
@@ -111,7 +113,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
       onClose();
     } catch (err: any) {
       setErrorMsg(
-        err?.response?.data?.message || "Failed to create custom food item.",
+        err?.response?.data?.message || t("customFood.errFailed"),
       );
     } finally {
       setIsSubmitting(false);
@@ -125,11 +127,11 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
           <div className="flex items-center gap-2 text-[#5BE584]">
             <Sparkles className="h-5 w-5" />
             <DialogTitle className="text-lg font-bold text-white">
-              Create Personal Food
+              {t("customFood.title")}
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-[#9CA3AF]">
-            Add a custom recipe, home-cooked meal, or supplement to your personal diary library.
+            {t("customFood.subtitle")}
           </DialogDescription>
         </DialogHeader>
 
@@ -143,20 +145,20 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           {/* Food Name */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-white">Food / Recipe Name *</label>
+            <label className="text-xs font-semibold text-white">{t("customFood.nameLabel")}</label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Homemade Overnight Protein Oats"
+              placeholder={t("customFood.namePlaceholder")}
               className="w-full rounded-lg border border-[#2A3039] bg-[#141920] px-3 py-2 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none"
             />
           </div>
 
           {/* Category */}
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-white">Category</label>
+            <label className="text-xs font-semibold text-white">{t("customFood.categoryLabel")}</label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -164,7 +166,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
             >
               {CATEGORY_OPTIONS.map((cat) => (
                 <option key={cat} value={cat}>
-                  {cat}
+                  {t(`customFood.categories.${cat}` as any)}
                 </option>
               ))}
             </select>
@@ -173,7 +175,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
           {/* Serving Size & Serving Unit */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-white">Serving Size *</label>
+              <label className="text-xs font-semibold text-white">{t("customFood.servingSizeLabel")}</label>
               <input
                 type="number"
                 min={1}
@@ -184,13 +186,13 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-white">Serving Unit *</label>
+              <label className="text-xs font-semibold text-white">{t("customFood.servingUnitLabel")}</label>
               <input
                 type="text"
                 required
                 value={servingUnit}
                 onChange={(e) => setServingUnit(e.target.value)}
-                placeholder="e.g. g, ml, scoop, bowl"
+                placeholder={t("customFood.servingUnitPlaceholder")}
                 className="w-full rounded-lg border border-[#2A3039] bg-[#141920] px-3 py-2 text-xs text-white focus:border-[#5BE584] focus:outline-none"
               />
             </div>
@@ -199,12 +201,12 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
           {/* Core Macros Grid */}
           <div className="rounded-xl border border-white/5 bg-[#101418] p-3 space-y-3">
             <span className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF]">
-              Per Serving Nutrition
+              {t("customFood.perServingHeading")}
             </span>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div className="space-y-1">
-                <label className="text-[11px] text-zinc-400">Calories (kcal)</label>
+                <label className="text-[11px] text-zinc-400">{t("customFood.caloriesLabel")}</label>
                 <input
                   type="number"
                   min={0}
@@ -215,7 +217,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] text-[#5BE584]">Protein (g)</label>
+                <label className="text-[11px] text-[#5BE584]">{t("customFood.proteinLabel")}</label>
                 <input
                   type="number"
                   min={0}
@@ -227,7 +229,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] text-sky-400">Carbs (g)</label>
+                <label className="text-[11px] text-sky-400">{t("customFood.carbsLabel")}</label>
                 <input
                   type="number"
                   min={0}
@@ -239,7 +241,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] text-amber-400">Fat (g)</label>
+                <label className="text-[11px] text-amber-400">{t("customFood.fatLabel")}</label>
                 <input
                   type="number"
                   min={0}
@@ -252,7 +254,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] text-zinc-400">Dietary Fiber (g)</label>
+              <label className="text-[11px] text-zinc-400">{t("customFood.fiberLabel")}</label>
               <input
                 type="number"
                 min={0}
@@ -272,7 +274,7 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
               onClick={onClose}
               className="text-xs text-[#9CA3AF] hover:text-white"
             >
-              Cancel
+              {t("customFood.cancel")}
             </Button>
             <Button
               type="submit"
@@ -282,12 +284,12 @@ export const CreateCustomFoodDialog: React.FC<CreateCustomFoodDialogProps> = ({
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
-                  Saving Food...
+                  {t("customFood.saving")}
                 </>
               ) : (
                 <>
                   <Plus className="h-3.5 w-3.5 mr-1.5" />
-                  Save Custom Food
+                  {t("customFood.save")}
                 </>
               )}
             </Button>

@@ -1,11 +1,13 @@
 // src/features/dashboard/member/components/header/DashboardHeader.tsx
 import React, { useState } from "react";
-import { Activity, Dumbbell, Play } from "lucide-react";
+import { Activity, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useCurrentWorkoutSession } from "@/features/workout-sessions/hooks/useCurrentWorkoutSession";
 import StartWorkoutDialog from "@/features/workout-sessions/components/StartWorkoutDialog";
 
 export const DashboardHeader: React.FC = () => {
+  const { t } = useTranslation(["dashboard"]);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: currentSessionData } = useCurrentWorkoutSession();
@@ -22,11 +24,11 @@ export const DashboardHeader: React.FC = () => {
           <div className="flex items-center gap-2">
             <Activity className="h-6 w-6 text-[#5BE584]" />
             <h1 className="text-2xl font-bold text-white tracking-tight">
-              Dashboard
+              {t("member.header.title")}
             </h1>
           </div>
           <p className="text-sm text-gray-400">
-            Track your training, progress, and performance telemetry.
+            {t("member.header.subtitle")}
           </p>
         </div>
 
@@ -38,7 +40,7 @@ export const DashboardHeader: React.FC = () => {
               className="inline-flex items-center gap-2 rounded-xl bg-[#5BE584] px-4 py-2 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80] shadow-md shadow-[#5BE584]/10"
             >
               <Activity className="h-3.5 w-3.5 animate-pulse" />
-              <span>Resume Active Workout</span>
+              <span>{t("member.header.resumeActiveWorkout")}</span>
             </button>
           ) : (
             <button
@@ -47,7 +49,7 @@ export const DashboardHeader: React.FC = () => {
               className="inline-flex items-center gap-2 rounded-xl bg-[#5BE584] px-4 py-2 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80] shadow-md shadow-[#5BE584]/10"
             >
               <Play className="h-3.5 w-3.5 fill-current" />
-              <span>Start Workout</span>
+              <span>{t("member.header.startWorkout")}</span>
             </button>
           )}
         </div>

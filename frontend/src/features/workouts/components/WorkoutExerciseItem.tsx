@@ -33,6 +33,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 interface WorkoutExerciseItemProps {
   index: number;
@@ -51,6 +52,7 @@ export default function WorkoutExerciseItem({
   move,
   total = 0,
 }: WorkoutExerciseItemProps) {
+  const { t } = useTranslation(["workouts", "common"]);
   const { setValue } = useFormContext<CreateWorkoutPayload>();
 
   const selectedExerciseId = useWatch({
@@ -315,14 +317,14 @@ export default function WorkoutExerciseItem({
           </span>
 
           <h3 className="text-sm font-semibold text-foreground tracking-tight">
-            {selectedExercise ? selectedExercise.name : "Exercise Sequence"}
+            {selectedExercise ? selectedExercise.name : t("form.exerciseMovement", "Exercise Sequence")}
           </h3>
         </div>
 
         {/* Action Controls: Move Up, Move Down, Delete */}
         <div className="flex items-center gap-1">
           {move && (
-            <div className="flex items-center rounded-lg border border-border/40 bg-background/40 p-0.5 mr-1">
+            <div className="flex items-center rounded-lg border border-border/40 bg-background/40 p-0.5 mr-1 rtl:mr-0 rtl:ml-1">
               <Button
                 type="button"
                 variant="ghost"
@@ -330,10 +332,10 @@ export default function WorkoutExerciseItem({
                 className="h-7 w-7 text-muted-foreground hover:bg-accent/60 hover:text-foreground disabled:opacity-30"
                 disabled={index === 0}
                 onClick={() => move(index, index - 1)}
-                title="Move Up"
+                title={t("actions.moveUp", "Move Up")}
               >
                 <ChevronUp className="h-4 w-4" />
-                <span className="sr-only">Move Up</span>
+                <span className="sr-only">{t("actions.moveUp", "Move Up")}</span>
               </Button>
 
               <Button
@@ -343,10 +345,10 @@ export default function WorkoutExerciseItem({
                 className="h-7 w-7 text-muted-foreground hover:bg-accent/60 hover:text-foreground disabled:opacity-30"
                 disabled={index >= total - 1}
                 onClick={() => move(index, index + 1)}
-                title="Move Down"
+                title={t("actions.moveDown", "Move Down")}
               >
                 <ChevronDown className="h-4 w-4" />
-                <span className="sr-only">Move Down</span>
+                <span className="sr-only">{t("actions.moveDown", "Move Down")}</span>
               </Button>
             </div>
           )}
@@ -357,10 +359,10 @@ export default function WorkoutExerciseItem({
             size="icon"
             className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
             onClick={() => remove(index)}
-            title="Remove Exercise"
+            title={t("actions.removeExercise", "Remove Exercise")}
           >
             <Trash2 className="h-4 w-4" />
-            <span className="sr-only">Remove Exercise</span>
+            <span className="sr-only">{t("actions.removeExercise", "Remove Exercise")}</span>
           </Button>
         </div>
       </CardHeader>
@@ -374,13 +376,13 @@ export default function WorkoutExerciseItem({
             <FormCombobox
               control={control}
               name={`exercises.${index}.exercise`}
-              label="Exercise Movement"
+              label={t("form.exerciseMovement", "Exercise Movement")}
               items={exercises}
               getValue={(exercise) => exercise._id || exercise.id || ""}
               getLabel={(exercise) => exercise.name}
-              placeholder="Select exercise..."
-              searchPlaceholder="Search training library..."
-              emptyMessage="No exercises found."
+              placeholder={t("form.selectExercisePlaceholder", "Select exercise...")}
+              searchPlaceholder={t("form.searchTrainingLibrary", "Search training library...")}
+              emptyMessage={t("form.noExercisesFound", "No exercises found.")}
             />
 
             {selectedExercise && (
@@ -422,29 +424,32 @@ export default function WorkoutExerciseItem({
           <FormNumberInput
             control={control}
             name={`exercises.${index}.sets`}
-            label="Target Sets"
+            label={t("form.targetSets", "Target Sets")}
             min={1}
           />
 
           <FormInput
             control={control}
             name={`exercises.${index}.reps`}
-            label="Default Target Reps"
-            placeholder="e.g. 8-10 or Failure"
+            label={t("form.defaultTargetReps", "Default Target Reps")}
+            placeholder={t("form.repsPlaceholder", "e.g. 8-10 or Failure")}
           />
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-foreground">
-                Rest Interval (sec)
+                {t("form.restInterval", "Rest Interval (sec)")}
               </span>
               {isRestOverridden ? (
                 <span className="text-[10px] text-amber-400 font-semibold bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/20">
-                  Custom
+                  {t("badges.custom", "Custom")}
                 </span>
               ) : (
                 <span className="text-[10px] text-[#5BE584] font-semibold bg-[#5BE584]/10 px-1.5 py-0.5 rounded border border-[#5BE584]/20">
-                  Auto ({isLargeMuscle ? "Large" : "Small"})
+                  {t("badges.auto", {
+                    type: isLargeMuscle ? t("badges.large", "Large") : t("badges.small", "Small"),
+                    defaultValue: `Auto (${isLargeMuscle ? "Large" : "Small"})`,
+                  })}
                 </span>
               )}
             </div>
@@ -461,10 +466,10 @@ export default function WorkoutExerciseItem({
         <div className="rounded-lg border border-border/40 bg-background/20 p-3.5 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Prescription Targets (Optional)
+              {t("form.prescriptionTargets", "Prescription Targets (Optional)")}
             </span>
             <span className="text-[11px] text-muted-foreground/80">
-              Default baseline targets for this exercise
+              {t("form.prescriptionTargetsHint", "Default baseline targets for this exercise")}
             </span>
           </div>
 
@@ -472,8 +477,8 @@ export default function WorkoutExerciseItem({
             <FormNumberInput
               control={control}
               name={`exercises.${index}.targetWeight`}
-              label="Baseline Load (kg)"
-              placeholder="e.g. 80 or 82.5"
+              label={t("form.baselineLoad", "Baseline Load (kg)")}
+              placeholder={t("form.baselineLoadPlaceholder", "e.g. 80 or 82.5")}
               min={0}
               step={0.5}
             />
@@ -481,8 +486,8 @@ export default function WorkoutExerciseItem({
             <FormNumberInput
               control={control}
               name={`exercises.${index}.targetRpe`}
-              label="Target Exertion (RPE 1–10)"
-              placeholder="e.g. 8"
+              label={t("form.targetExertion", "Target Exertion (RPE 1–10)")}
+              placeholder={t("form.targetExertionPlaceholder", "e.g. 8")}
               min={1}
               max={10}
               step={0.5}
@@ -497,16 +502,16 @@ export default function WorkoutExerciseItem({
           <button
             type="button"
             onClick={() => setIsAdvancedExpanded((prev) => !prev)}
-            className="w-full flex items-center justify-between p-3.5 sm:px-4 text-left hover:bg-background/40 transition-colors"
+            className="w-full flex items-center justify-between p-3.5 sm:px-4 text-start hover:bg-background/40 transition-colors"
           >
             <div className="flex items-center gap-2">
               <Layers className="h-4 w-4 text-[#5BE584]" />
               <div>
                 <span className="text-xs font-semibold text-white block">
-                  Set Types & Advanced Techniques
+                  {t("form.setTypesAndTechniques", "Set Types & Advanced Techniques")}
                 </span>
                 <span className="text-[10px] text-muted-foreground">
-                  Configure Normal, Drop Sets, Rest-Pause, or Warmup sets individually
+                  {t("form.setTypesHint", "Configure Normal, Drop Sets, Rest-Pause, or Warmup sets individually")}
                 </span>
               </div>
             </div>
@@ -515,11 +520,11 @@ export default function WorkoutExerciseItem({
               {hasAdvancedTechniques ? (
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#5BE584]/10 text-[#5BE584] border border-[#5BE584]/20">
                   <Flame className="h-3 w-3" />
-                  Advanced Sets Configured
+                  {t("badges.advancedConfigured", "Advanced Sets Configured")}
                 </span>
               ) : (
                 <span className="text-[11px] text-muted-foreground">
-                  {targetSets || 1} Standard Sets
+                  {t("badges.standardSets", { count: targetSets || 1, defaultValue: `${targetSets || 1} Standard Sets` })}
                 </span>
               )}
 
@@ -555,33 +560,33 @@ export default function WorkoutExerciseItem({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-border/30">
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs font-bold text-white px-2 py-0.5 rounded bg-background/70 border border-border/40">
-                          Set #{setCfg.setNumber}.0
+                          {t("form.setNumber", { number: setCfg.setNumber, defaultValue: `Set #${setCfg.setNumber}.0` })}
                         </span>
 
                         {isDropSet && (
                           <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1">
                             <Flame className="h-3 w-3" />
-                            Drop / Break Sets ({setCfg.stages?.length || 2} Stages)
+                            {t("form.dropBreakSetsBadge", { count: setCfg.stages?.length || 2, defaultValue: `Drop / Break Sets (${setCfg.stages?.length || 2} Stages)` })}
                           </span>
                         )}
 
                         {isRestPause && (
                           <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-purple-500/15 text-purple-400 border border-purple-500/30 flex items-center gap-1">
                             <Clock className="h-3 w-3" />
-                            Rest-Pause ({setCfg.stages?.length || 2} Efforts)
+                            {t("form.restPauseBadge", { count: setCfg.stages?.length || 2, defaultValue: `Rest-Pause (${setCfg.stages?.length || 2} Efforts)` })}
                           </span>
                         )}
 
                         {isWarmup && (
                           <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
-                            Warm-up
+                            {t("form.warmupBadge", "Warm-up")}
                           </span>
                         )}
                       </div>
 
                       {/* Type Dropdown */}
                       <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-muted-foreground font-medium">Type:</span>
+                        <span className="text-[11px] text-muted-foreground font-medium">{t("form.typeLabel", "Type:")}</span>
                         <select
                           value={setCfg.setType}
                           onChange={(e) =>
@@ -592,10 +597,10 @@ export default function WorkoutExerciseItem({
                           }
                           className="text-xs font-medium rounded-md border border-border/60 bg-[#101418] text-white px-2.5 py-1 focus:outline-none focus:border-[#5BE584]"
                         >
-                          <option value="NORMAL">Standard Set</option>
-                          <option value="DROP_SET">Drop Set (Multi-Stage)</option>
-                          <option value="REST_PAUSE">Rest-Pause Set</option>
-                          <option value="WARMUP">Warmup Set</option>
+                          <option value="NORMAL">{t("form.standardSetOption", "Standard Set")}</option>
+                          <option value="DROP_SET">{t("form.dropSetOption", "Drop Set (Multi-Stage)")}</option>
+                          <option value="REST_PAUSE">{t("form.restPauseOption", "Rest-Pause Set")}</option>
+                          <option value="WARMUP">{t("form.warmupOption", "Warmup Set")}</option>
                         </select>
                       </div>
                     </div>
@@ -605,7 +610,7 @@ export default function WorkoutExerciseItem({
                       {isDropSet && (
                         <div className="space-y-2">
                           <p className="text-[11px] text-amber-400/90 font-medium">
-                            Strip load immediately without rest between stages:
+                            {t("form.dropSetHint", "Strip load immediately without rest between stages:")}
                           </p>
 
                           <div className="space-y-1.5">
@@ -636,10 +641,10 @@ export default function WorkoutExerciseItem({
                                           e.target.value,
                                         )
                                       }
-                                      placeholder="Load"
+                                      placeholder={t("form.loadPlaceholder", "Load")}
                                       className="w-full text-xs font-mono font-semibold bg-[#101418] border border-border/60 rounded px-2 py-1 text-white focus:outline-none focus:border-amber-400"
                                     />
-                                    <span className="text-[10px] text-muted-foreground font-mono">kg</span>
+                                    <span className="text-[10px] text-muted-foreground font-mono">{t("form.kgUnit", "kg")}</span>
                                   </div>
 
                                   <div className="flex items-center gap-1">
@@ -654,10 +659,10 @@ export default function WorkoutExerciseItem({
                                           e.target.value,
                                         )
                                       }
-                                      placeholder="Reps"
+                                      placeholder={t("form.repsPlaceholderShort", "Reps")}
                                       className="w-full text-xs font-mono font-semibold bg-[#101418] border border-border/60 rounded px-2 py-1 text-white focus:outline-none focus:border-amber-400"
                                     />
-                                    <span className="text-[10px] text-muted-foreground font-mono">reps</span>
+                                    <span className="text-[10px] text-muted-foreground font-mono">{t("form.repsUnit", "reps")}</span>
                                   </div>
                                 </div>
 
@@ -682,7 +687,7 @@ export default function WorkoutExerciseItem({
                               className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 hover:text-amber-300 transition-colors"
                             >
                               <Plus className="h-3.5 w-3.5" />
-                              Add Break Set
+                              {t("actions.addBreakSet", "Add Break Set")}
                             </button>
                           </div>
                         </div>
@@ -691,7 +696,7 @@ export default function WorkoutExerciseItem({
                       {isRestPause && (
                         <div className="space-y-2">
                           <p className="text-[11px] text-purple-400/90 font-medium">
-                            Initial effort to near-failure, followed by brief 10–15s pauses:
+                            {t("form.restPauseHint", "Initial effort to near-failure, followed by brief 10–15s pauses:")}
                           </p>
 
                           <div className="space-y-1.5">
@@ -719,10 +724,10 @@ export default function WorkoutExerciseItem({
                                           e.target.value,
                                         )
                                       }
-                                      placeholder="Load"
+                                      placeholder={t("form.loadPlaceholder", "Load")}
                                       className="w-full text-xs font-mono font-semibold bg-[#101418] border border-border/60 rounded px-2 py-1 text-white focus:outline-none focus:border-purple-400"
                                     />
-                                    <span className="text-[10px] text-muted-foreground font-mono">kg</span>
+                                    <span className="text-[10px] text-muted-foreground font-mono">{t("form.kgUnit", "kg")}</span>
                                   </div>
 
                                   <div className="flex items-center gap-1">
@@ -737,10 +742,10 @@ export default function WorkoutExerciseItem({
                                           e.target.value,
                                         )
                                       }
-                                      placeholder="Reps"
+                                      placeholder={t("form.repsPlaceholderShort", "Reps")}
                                       className="w-full text-xs font-mono font-semibold bg-[#101418] border border-border/60 rounded px-2 py-1 text-white focus:outline-none focus:border-purple-400"
                                     />
-                                    <span className="text-[10px] text-muted-foreground font-mono">reps</span>
+                                    <span className="text-[10px] text-muted-foreground font-mono">{t("form.repsUnit", "reps")}</span>
                                   </div>
                                 </div>
 
@@ -749,7 +754,7 @@ export default function WorkoutExerciseItem({
                                     type="button"
                                     onClick={() => handleRemoveStage(setCfg.setNumber, sIdx)}
                                     className="p-1 text-muted-foreground hover:text-destructive transition-colors shrink-0"
-                                    title="Remove Effort"
+                                    title={t("actions.removeEffort", "Remove Effort")}
                                   >
                                     <Trash2 className="h-3.5 w-3.5" />
                                   </button>
@@ -765,7 +770,7 @@ export default function WorkoutExerciseItem({
                               className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors"
                             >
                               <Plus className="h-3.5 w-3.5" />
-                              Add Rest-Pause Effort
+                              {t("actions.addRestPauseEffort", "Add Rest-Pause Effort")}
                             </button>
                           </div>
                         </div>
@@ -775,7 +780,7 @@ export default function WorkoutExerciseItem({
                         <div className="space-y-2">
                           <div className="grid grid-cols-2 gap-3">
                             <div className="flex items-center gap-2">
-                              <span className="text-[11px] text-muted-foreground font-mono">Load:</span>
+                              <span className="text-[11px] text-muted-foreground font-mono">{t("form.loadPlaceholder", "Load")}:</span>
                               <input
                                 type="number"
                                 step={0.5}
@@ -791,11 +796,11 @@ export default function WorkoutExerciseItem({
                                 placeholder={targetWeight != null ? String(targetWeight) : "Auto"}
                                 className="w-full text-xs font-mono font-semibold bg-[#101418] border border-border/60 rounded px-2 py-1 text-white focus:outline-none focus:border-[#5BE584]"
                               />
-                              <span className="text-[10px] text-muted-foreground font-mono">kg</span>
+                              <span className="text-[10px] text-muted-foreground font-mono">{t("form.kgUnit", "kg")}</span>
                             </div>
 
                             <div className="flex items-center gap-2">
-                              <span className="text-[11px] text-muted-foreground font-mono">Reps:</span>
+                              <span className="text-[11px] text-muted-foreground font-mono">{t("form.repsPlaceholderShort", "Reps")}:</span>
                               <input
                                 type="text"
                                 value={setCfg.targetReps ?? ""}
@@ -820,7 +825,7 @@ export default function WorkoutExerciseItem({
                               title={`Add a break set under Set ${setCfg.setNumber}.0`}
                             >
                               <Plus className="h-3 w-3" />
-                              <span>Add Break Set</span>
+                              <span>{t("actions.addBreakSet", "Add Break Set")}</span>
                             </button>
                           </div>
                         </div>
@@ -836,8 +841,8 @@ export default function WorkoutExerciseItem({
         <FormTextarea
           control={control}
           name={`exercises.${index}.notes`}
-          label="Coaching Notes"
-          placeholder="Add tempo, RPE targets, or execution cues..."
+          label={t("form.coachingNotes", "Coaching Notes")}
+          placeholder={t("form.coachingNotesPlaceholder", "Add tempo, RPE targets, or execution cues...")}
           rows={2}
           className="resize-none"
         />

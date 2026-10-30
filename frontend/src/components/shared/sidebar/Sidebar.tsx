@@ -24,6 +24,7 @@ import {
   Trophy,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 
@@ -33,24 +34,27 @@ export interface SidebarProps {
 }
 
 interface NavChild {
-  name: string;
+  nameKey: string;
+  defaultName: string;
   path: string;
   roles?: string[];
 }
 
 interface NavItem {
   id: string;
-  name: string;
+  nameKey: string;
+  defaultName: string;
   icon: LucideIcon;
   path?: string;
-  badge?: string;
+  badgeKey?: string;
   roles?: string[];
   children?: NavChild[];
 }
 
 interface NavGroup {
   id: string;
-  label?: string;
+  labelKey?: string;
+  defaultLabel?: string;
   roles?: string[];
   items: NavItem[];
 }
@@ -62,53 +66,54 @@ const navGroups: NavGroup[] = [
     items: [
       {
         id: "home",
-        name: "Home",
+        nameKey: "nav.home",
+        defaultName: "Home",
         icon: House,
         path: "/home",
       },
       {
         id: "coach-dashboard",
-        name: "Coach Dashboard",
+        nameKey: "nav.coachDashboard",
+        defaultName: "Coach Dashboard",
         icon: LayoutDashboard,
         path: "/coach-dashboard",
         roles: ["TRAINER", "ADMIN"],
       },
       {
         id: "dashboard",
-        name: "Dashboard",
+        nameKey: "nav.dashboard",
+        defaultName: "Dashboard",
         icon: LayoutGrid,
         path: "/dashboard",
         roles: ["MEMBER"],
-        badge: "LIVE",
+        badgeKey: "nav.liveBadge",
       },
     ],
   },
   {
     id: "members-group",
-    label: "ROSTER",
+    labelKey: "nav.rosterGroup",
+    defaultLabel: "ROSTER",
     roles: ["TRAINER", "ADMIN"],
     items: [
-      // {
-      //   id: "home",
-      //   name: "Home",
-      //   icon: House,
-      //   path: "/home",
-      // },
       {
         id: "members-management",
-        name: "Members Management",
+        nameKey: "nav.membersManagement",
+        defaultName: "Members Management",
         icon: Users,
         path: "/members",
       },
       {
         id: "coach-nutrition",
-        name: "Athlete Nutrition",
+        nameKey: "nav.athleteNutrition",
+        defaultName: "Athlete Nutrition",
         icon: Utensils,
         path: "/coach/nutrition",
       },
       {
         id: "coach-schedule",
-        name: "Schedule & Appointments",
+        nameKey: "nav.scheduleAppointments",
+        defaultName: "Schedule & Appointments",
         icon: Calendar,
         path: "/coach/schedule",
       },
@@ -116,40 +121,59 @@ const navGroups: NavGroup[] = [
   },
   {
     id: "workouts-group",
-    label: "TRAINING",
+    labelKey: "nav.trainingGroup",
+    defaultLabel: "TRAINING",
     items: [
       {
         id: "workout-builder",
-        name: "Workouts",
+        nameKey: "nav.workouts",
+        defaultName: "Workouts",
         icon: DumbbellIcon,
         children: [
-          { name: "All Workouts", path: "/workout-builder/all" },
           {
-            name: "Create Workout",
+            nameKey: "nav.allWorkouts",
+            defaultName: "All Workouts",
+            path: "/workout-builder/all",
+          },
+          {
+            nameKey: "nav.createWorkout",
+            defaultName: "Create Workout",
             path: "/workout-builder/new",
           },
         ],
       },
       {
         id: "workout-library",
-        name: "Exercise Library",
+        nameKey: "nav.exerciseLibrary",
+        defaultName: "Exercise Library",
         icon: BookOpen,
         children: [
-          { name: "All Exercises", path: "/workout-library/exercises" },
           {
-            name: "Create Exercise",
+            nameKey: "nav.allExercises",
+            defaultName: "All Exercises",
+            path: "/workout-library/exercises",
+          },
+          {
+            nameKey: "nav.createExercise",
+            defaultName: "Create Exercise",
             path: "/workout-library/exercises/new",
           },
         ],
       },
       {
         id: "assignments",
-        name: "Assignments",
+        nameKey: "nav.assignments",
+        defaultName: "Assignments",
         icon: ClipboardList,
         children: [
-          { name: "All Assignments", path: "/assignments/all" },
           {
-            name: "Create Assignment",
+            nameKey: "nav.allAssignments",
+            defaultName: "All Assignments",
+            path: "/assignments/all",
+          },
+          {
+            nameKey: "nav.createAssignment",
+            defaultName: "Create Assignment",
             path: "/assignments/new",
             roles: ["TRAINER", "ADMIN"],
           },
@@ -157,33 +181,38 @@ const navGroups: NavGroup[] = [
       },
       {
         id: "sessions",
-        name: "Workout Sessions",
+        nameKey: "nav.workoutSessions",
+        defaultName: "Workout Sessions",
         icon: Flame,
         path: "/sessions",
       },
       {
         id: "scheduled-workouts",
-        name: "Training Calendar",
+        nameKey: "nav.trainingCalendar",
+        defaultName: "Training Calendar",
         icon: Calendar,
         path: "/calendar",
       },
       {
         id: "measurements",
-        name: "Body Measurements",
+        nameKey: "nav.bodyMeasurements",
+        defaultName: "Body Measurements",
         icon: Scale,
         path: "/measurements",
         roles: ["MEMBER"],
       },
       {
         id: "nutrition",
-        name: "Nutrition & Diet",
+        nameKey: "nav.nutritionDiet",
+        defaultName: "Nutrition & Diet",
         icon: Utensils,
         path: "/nutrition",
         roles: ["MEMBER"],
       },
       {
         id: "gamification",
-        name: "Achievements & Streaks",
+        nameKey: "nav.achievementsStreaks",
+        defaultName: "Achievements & Streaks",
         icon: Trophy,
         path: "/gamification",
         roles: ["MEMBER"],
@@ -192,17 +221,20 @@ const navGroups: NavGroup[] = [
   },
   {
     id: "account-group",
-    label: "ACCOUNT",
+    labelKey: "nav.accountGroup",
+    defaultLabel: "ACCOUNT",
     items: [
       {
         id: "profile",
-        name: "Profile",
+        nameKey: "nav.profile",
+        defaultName: "Profile",
         icon: UserCircle,
         path: "/profile",
       },
       {
         id: "notifications",
-        name: "Notifications",
+        nameKey: "nav.notifications",
+        defaultName: "Notifications",
         icon: Bell,
         path: "/notifications",
       },
@@ -211,6 +243,7 @@ const navGroups: NavGroup[] = [
 ];
 
 export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
+  const { t } = useTranslation(["common"]);
   const [isHovered, setIsHovered] = useState(false);
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
@@ -293,13 +326,13 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
-          fixed inset-y-0 left-0 z-50 flex h-[100dvh] flex-col border-r border-[#2A3039] bg-[#13171D]
+          fixed inset-y-0 start-0 z-50 flex h-[100dvh] flex-col border-e border-[#2A3039] bg-[#13171D]
           transition-all duration-200 ease-in-out shrink-0 select-none
           lg:static lg:z-30
-          ${collapsed ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}
+          ${collapsed ? "max-lg:-translate-x-full max-lg:rtl:translate-x-full lg:translate-x-0" : "translate-x-0"}
           ${isOpen ? "w-[264px] max-w-[85vw]" : "lg:w-20"}
         `}
-        aria-label="Main Navigation"
+        aria-label={t("nav.mainNavigation", "Main Navigation")}
       >
         {/* Brand Header */}
         <div className="flex h-16 items-center justify-between border-b border-[#2A3039] px-5 shrink-0">
@@ -318,10 +351,10 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
               </span>
               <span className="text-[10px] font-semibold text-[#5BE584] uppercase tracking-widest">
                 {userRole === "TRAINER"
-                  ? "Coach Perspective"
+                  ? t("perspectives.coach", "Coach Perspective")
                   : userRole === "ADMIN"
-                    ? "Admin Perspective"
-                    : "Member Perspective"}
+                    ? t("perspectives.admin", "Admin Perspective")
+                    : t("perspectives.member", "Member Perspective")}
               </span>
             </div>
           </div>
@@ -330,7 +363,7 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
           <button
             type="button"
             onClick={onCloseMobile}
-            aria-label="Close navigation"
+            aria-label={t("nav.closeNavigation", "Close navigation")}
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[#94A3B8] hover:bg-[#1B2028] hover:text-[#F8FAFC] lg:hidden"
           >
             <X size={18} />
@@ -351,9 +384,11 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
           ) : (
             filteredNavGroups.map((group) => (
               <div key={group.id} className="space-y-1">
-                {group.label && isOpen && (
+                {group.labelKey && isOpen && (
                   <div className="px-3 pb-1 pt-2 text-[10px] font-semibold tracking-wider text-[#94A3B8]/60 uppercase">
-                    {group.label}
+                    {t(group.labelKey as any, {
+                      defaultValue: group.defaultLabel || "",
+                    })}
                   </div>
                 )}
 
@@ -386,18 +421,20 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
                                 <span
                                   className={`transition-all duration-200 whitespace-nowrap overflow-hidden ${
                                     isOpen
-                                      ? "max-w-[150px] opacity-100 ml-3"
-                                      : "max-w-0 opacity-0 ml-0"
+                                      ? "max-w-[150px] opacity-100 ms-3"
+                                      : "max-w-0 opacity-0 ms-0"
                                   }`}
                                 >
-                                  {item.name}
+                                  {t(item.nameKey as any, {
+                                    defaultValue: item.defaultName,
+                                  })}
                                 </span>
                               </div>
                               {isOpen && (
                                 <ChevronRight
                                   size={14}
                                   className={`transition-transform duration-200 text-[#94A3B8] ${
-                                    isExpanded ? "rotate-90" : ""
+                                    isExpanded ? "rotate-90" : "rtl:rotate-180"
                                   }`}
                                 />
                               )}
@@ -405,7 +442,7 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
 
                             {/* Dropdown Children */}
                             {isExpanded && isOpen && (
-                              <div className="ml-5 space-y-1 border-l border-[#2A3039] pl-3 py-1">
+                              <div className="ms-5 space-y-1 border-s border-[#2A3039] ps-3 py-1">
                                 {item.children!.map((child) => (
                                   <NavLink
                                     key={child.path}
@@ -420,7 +457,9 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
                                       }
                                     `}
                                   >
-                                    {child.name}
+                                    {t(child.nameKey as any, {
+                                      defaultValue: child.defaultName,
+                                    })}
                                   </NavLink>
                                 ))}
                               </div>
@@ -456,12 +495,14 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
                                   <span
                                     className={`transition-all duration-200 whitespace-nowrap overflow-hidden ${
                                       isActive ? "font-semibold" : "font-medium"
-                                    } ${isOpen ? "max-w-[150px] opacity-100 ml-3" : "max-w-0 opacity-0 ml-0"}`}
+                                    } ${isOpen ? "max-w-[150px] opacity-100 ms-3" : "max-w-0 opacity-0 ms-0"}`}
                                   >
-                                    {item.name}
+                                    {t(item.nameKey as any, {
+                                      defaultValue: item.defaultName,
+                                    })}
                                   </span>
                                 </div>
-                                {item.badge && (
+                                {item.badgeKey && (
                                   <span
                                     className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md border shrink-0 transition-all duration-200
                                     ${
@@ -469,9 +510,11 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
                                         ? "bg-[#5BE584]/15 text-[#5BE584] border-[#5BE584]/30"
                                         : "bg-[#090B0F] text-[#94A3B8] border-[#2A3039]"
                                     }
-                                    ${isOpen ? "max-w-[44px] opacity-100" : "max-w-0 opacity-0 ml-0 px-0 border-0"}`}
+                                    ${isOpen ? "max-w-[44px] opacity-100" : "max-w-0 opacity-0 ms-0 px-0 border-0"}`}
                                   >
-                                    {item.badge}
+                                    {t(item.badgeKey as any, {
+                                      defaultValue: "LIVE",
+                                    })}
                                   </span>
                                 )}
                               </>
@@ -506,11 +549,13 @@ export default function Sidebar({ collapsed, onCloseMobile }: SidebarProps) {
             <span
               className={`font-medium transition-all duration-200 whitespace-nowrap overflow-hidden ${
                 isOpen
-                  ? "max-w-[150px] opacity-100 ml-3"
-                  : "max-w-0 opacity-0 ml-0"
+                  ? "max-w-[150px] opacity-100 ms-3"
+                  : "max-w-0 opacity-0 ms-0"
               }`}
             >
-              Sign Out
+              {isPending
+                ? t("nav.signingOut", "Signing out...")
+                : t("nav.signOut", "Sign Out")}
             </span>
           </button>
         </div>

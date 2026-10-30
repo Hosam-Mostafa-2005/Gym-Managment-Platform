@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
   Play,
@@ -33,6 +34,7 @@ export default function ActiveWorkoutConflictDialog({
   requestedWorkoutTitle,
   requestedAssignmentId,
 }: ActiveWorkoutConflictDialogProps) {
+  const { t } = useTranslation(["workoutSessions", "common"]);
   const navigate = useNavigate();
   const [isAbandonConfirming, setIsAbandonConfirming] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
@@ -46,7 +48,12 @@ export default function ActiveWorkoutConflictDialog({
 
   const handleResume = () => {
     onClose();
-    toast.success("Resuming your active workout session.");
+    toast.success(
+      t(
+        "conflictDialog.resumeSuccess",
+        "Resuming your active workout session.",
+      ),
+    );
     navigate("/sessions/active");
   };
 
@@ -54,7 +61,10 @@ export default function ActiveWorkoutConflictDialog({
     cancelActiveSession(
       {
         id: activeSessionId,
-        reason: `Replaced by ${requestedWorkoutTitle || "new workout"}`,
+        reason: t("conflictDialog.replacedBy", {
+          title: requestedWorkoutTitle || "new workout",
+          defaultValue: `Replaced by ${requestedWorkoutTitle || "new workout"}`,
+        }),
       },
       {
         onSuccess: () => {
@@ -103,10 +113,13 @@ export default function ActiveWorkoutConflictDialog({
                   </div>
                   <div>
                     <h3 className="text-base font-bold text-white">
-                      Active Workout in Progress
+                      {t("conflictDialog.title", "Active Workout in Progress")}
                     </h3>
                     <p className="text-xs text-[#9CA3AF]">
-                      Another session is currently running
+                      {t(
+                        "conflictDialog.subtitle",
+                        "Another session is currently running",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -123,13 +136,20 @@ export default function ActiveWorkoutConflictDialog({
               <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
                 <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-4 space-y-2">
                   <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">
-                    Currently In Progress
+                    {t(
+                      "conflictDialog.currentlyInProgress",
+                      "Currently In Progress",
+                    )}
                   </span>
                   <h4 className="text-sm font-bold text-white">
-                    {activeWorkoutTitle || "Workout Session"}
+                    {activeWorkoutTitle ||
+                      t("overview.workoutSessionDefault", "Workout Session")}
                   </h4>
                   <p className="text-xs text-[#9CA3AF] leading-relaxed">
-                    You already have an active session running. To ensure accurate telemetry and prevent data loss, STREN keeps your session progress intact until you choose an action.
+                    {t(
+                      "conflictDialog.safetyNotice",
+                      "You already have an active session running. To ensure accurate telemetry and prevent data loss, STREN keeps your session progress intact until you choose an action.",
+                    )}
                   </p>
                 </div>
 
@@ -137,10 +157,18 @@ export default function ActiveWorkoutConflictDialog({
                   <div className="p-4 rounded-xl border border-red-900/50 bg-red-950/20 space-y-3">
                     <div className="flex items-center gap-2 text-xs font-semibold text-red-300">
                       <Trash2 size={15} className="text-red-400" />
-                      <span>Are you sure you want to abandon the active session?</span>
+                      <span>
+                        {t(
+                          "conflictDialog.confirmAbandonTitle",
+                          "Are you sure you want to abandon the active session?",
+                        )}
+                      </span>
                     </div>
                     <p className="text-[11px] text-[#9CA3AF] leading-relaxed">
-                      Your current session will be marked cancelled and telemetry will stop. The new workout will begin immediately.
+                      {t(
+                        "conflictDialog.confirmAbandonDesc",
+                        "Your current session will be marked cancelled and telemetry will stop. The new workout will begin immediately.",
+                      )}
                     </p>
                     <div className="flex items-center justify-end gap-2 pt-2">
                       <button
@@ -149,7 +177,7 @@ export default function ActiveWorkoutConflictDialog({
                         disabled={isCancelling || isStarting}
                         className="px-3 py-1.5 text-xs font-medium rounded-lg border border-[#1E2329] text-[#9CA3AF] hover:text-white transition-colors"
                       >
-                        Keep Active
+                        {t("conflictDialog.keepActive", "Keep Active")}
                       </button>
                       <button
                         type="button"
@@ -157,7 +185,12 @@ export default function ActiveWorkoutConflictDialog({
                         disabled={isCancelling || isStarting}
                         className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-600 hover:bg-red-500 text-white transition-all disabled:opacity-50"
                       >
-                        {isCancelling || isStarting ? "Switching..." : "Confirm Abandon & Start"}
+                        {isCancelling || isStarting
+                          ? t("conflictDialog.switching", "Switching...")
+                          : t(
+                              "conflictDialog.confirmAbandonButton",
+                              "Confirm Abandon & Start",
+                            )}
                       </button>
                     </div>
                   </div>
@@ -170,16 +203,24 @@ export default function ActiveWorkoutConflictDialog({
                       className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 gap-2 sm:gap-3 rounded-xl bg-[#5BE584] hover:bg-[#49D472] text-[#090B0F] font-semibold text-xs transition-all shadow-[0_0_15px_rgba(91,229,132,0.15)] group"
                     >
                       <div className="flex items-center gap-3">
-                        <Play size={16} className="fill-current" />
-                        <div className="text-left">
-                          <p className="font-bold">Resume Active Session</p>
+                        <Play size={16} className="fill-current rtl:rotate-180" />
+                        <div className="text-start">
+                          <p className="font-bold">
+                            {t(
+                              "conflictDialog.resumeTitle",
+                              "Resume Active Session",
+                            )}
+                          </p>
                           <p className="text-[11px] opacity-80 font-normal">
-                            Jump back into "{activeWorkoutTitle}"
+                            {t("conflictDialog.resumeDesc", {
+                              title: activeWorkoutTitle,
+                              defaultValue: `Jump back into "${activeWorkoutTitle}"`,
+                            })}
                           </p>
                         </div>
                       </div>
-                      <span className="text-[11px] bg-black/15 px-2 py-1 rounded-md font-mono">
-                        Recommended
+                      <span className="text-[11px] bg-black/15 px-2 py-1 rounded-md font-mono shrink-0">
+                        {t("conflictDialog.recommended", "Recommended")}
                       </span>
                     </button>
 
@@ -192,12 +233,18 @@ export default function ActiveWorkoutConflictDialog({
                       >
                         <div className="flex items-center gap-3">
                           <Calendar size={16} className="text-[#5BE584]" />
-                          <div className="text-left">
+                          <div className="text-start">
                             <p className="font-semibold text-white">
-                              Schedule "{requestedWorkoutTitle || "New Workout"}" for Later
+                              {t("conflictDialog.scheduleTitle", {
+                                title: requestedWorkoutTitle || "New Workout",
+                                defaultValue: `Schedule "${requestedWorkoutTitle || "New Workout"}" for Later`,
+                              })}
                             </p>
                             <p className="text-[11px] text-[#9CA3AF]">
-                              Keep active session running and book this for another time
+                              {t(
+                                "conflictDialog.scheduleDesc",
+                                "Keep active session running and book this for another time",
+                              )}
                             </p>
                           </div>
                         </div>
@@ -212,12 +259,18 @@ export default function ActiveWorkoutConflictDialog({
                     >
                       <div className="flex items-center gap-3">
                         <RotateCcw size={16} className="text-red-400" />
-                        <div className="text-left">
+                        <div className="text-start">
                           <p className="font-semibold text-red-300">
-                            Abandon Active Session & Start New
+                            {t(
+                              "conflictDialog.abandonTitle",
+                              "Abandon Active Session & Start New",
+                            )}
                           </p>
                           <p className="text-[11px] text-[#9CA3AF]">
-                            End current workout and begin the requested workout immediately
+                            {t(
+                              "conflictDialog.abandonDesc",
+                              "End current workout and begin the requested workout immediately",
+                            )}
                           </p>
                         </div>
                       </div>
@@ -233,7 +286,7 @@ export default function ActiveWorkoutConflictDialog({
                   onClick={onClose}
                   className="px-4 py-2 text-xs font-medium rounded-xl border border-[#1E2329] text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
                 >
-                  Close & Stay on Page
+                  {t("conflictDialog.closeAndStay", "Close & Stay on Page")}
                 </button>
               </div>
             </div>

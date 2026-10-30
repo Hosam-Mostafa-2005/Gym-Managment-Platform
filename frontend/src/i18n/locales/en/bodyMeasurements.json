@@ -1,0 +1,121 @@
+{
+  "header": {
+    "backToMember": "Back to Member",
+    "title": "Body Measurements",
+    "description": "Track and manage body measurements over time.",
+    "addMeasurement": "Add Measurement"
+  },
+  "overview": {
+    "title": "Latest Measurement",
+    "noMeasurementsTitle": "No measurements recorded yet.",
+    "noMeasurementsDescription": "Add a measurement to start tracking this member's progress.",
+    "weight": "Weight",
+    "height": "Height",
+    "bodyFat": "Body Fat",
+    "bmi": "BMI",
+    "measuredAt": "Measured At",
+    "circumferencesTitle": "Body Circumferences ({{unit}})",
+    "notesTitle": "Notes",
+    "unitKg": "kg",
+    "unitCm": "cm",
+    "unitPercent": "%",
+    "statusActive": "Active",
+    "statusInactive": "Inactive"
+  },
+  "circumferences": {
+    "chest": "Chest",
+    "shoulders": "Shoulders",
+    "neck": "Neck",
+    "leftArm": "Left Arm",
+    "rightArm": "Right Arm",
+    "arms": "Arms",
+    "forearms": "Forearms",
+    "waist": "Waist",
+    "hips": "Hips",
+    "leftThigh": "Left Thigh",
+    "rightThigh": "Right Thigh",
+    "thighs": "Thighs",
+    "leftCalf": "Left Calf",
+    "rightCalf": "Right Calf",
+    "calves": "Calves"
+  },
+  "history": {
+    "title": "Measurement History",
+    "colDate": "Date",
+    "colWeight": "Weight (kg)",
+    "colHeight": "Height (cm)",
+    "colBodyFat": "Body Fat (%)",
+    "colChest": "Chest (cm)",
+    "colWaist": "Waist (cm)",
+    "colNotes": "Notes",
+    "colActions": "Actions",
+    "editAria": "Edit Measurement",
+    "deleteAria": "Delete Measurement",
+    "viewDetails": "View Details",
+    "emptyTitle": "No measurements yet",
+    "emptyDescription": "This member does not have any recorded body measurements."
+  },
+  "dialogs": {
+    "create": {
+      "title": "Add Body Measurement",
+      "description": "Record a new body measurement."
+    },
+    "edit": {
+      "title": "Edit Body Measurement",
+      "description": "Update the details for this historical measurement."
+    },
+    "delete": {
+      "title": "Delete measurement?",
+      "description": "This measurement will be removed from the active measurement history.",
+      "confirm": "Delete Measurement",
+      "deleting": "Deleting...",
+      "cancel": "Cancel"
+    }
+  },
+  "form": {
+    "weightLabel": "Weight (kg) *",
+    "heightLabel": "Height (cm) *",
+    "bodyFatLabel": "Body Fat (%)",
+    "measuredAtLabel": "Measured At",
+    "circumferencesSection": "Circumferences (cm)",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Add any additional observations...",
+    "cancel": "Cancel",
+    "save": "Save Measurement",
+    "saving": "Saving...",
+    "update": "Update Measurement",
+    "updating": "Updating..."
+  },
+  "notifications": {
+    "createSuccess": "Measurement added successfully.",
+    "createError": "Failed to add measurement.",
+    "updateSuccess": "Measurement updated successfully.",
+    "updateError": "Failed to update measurement.",
+    "deleteSuccess": "Measurement deleted successfully.",
+    "deleteError": "Failed to delete measurement."
+  },
+  "states": {
+    "loading": "Loading measurements...",
+    "errorTitle": "Unable to load body measurements",
+    "errorDefault": "An unexpected error occurred.",
+    "tryAgain": "Try Again"
+  },
+  "statsAndProgress": {
+    "currentMeasurement": "Current measurement",
+    "previousMeasurement": "Previous measurement",
+    "startingMeasurement": "Starting measurement",
+    "latestMeasurement": "Latest measurement",
+    "change": "Change",
+    "difference": "Difference",
+    "progress": "Progress",
+    "progressIndicators": "Progress indicators",
+    "percentageChange": "Percentage change",
+    "measurementTrends": "Measurement trends",
+    "chartTitles": "Progress Charts",
+    "periodAll": "All time",
+    "period1Month": "Last 1 month",
+    "period3Months": "Last 3 months",
+    "period6Months": "Last 6 months",
+    "period1Year": "Last 1 year"
+  }
+}

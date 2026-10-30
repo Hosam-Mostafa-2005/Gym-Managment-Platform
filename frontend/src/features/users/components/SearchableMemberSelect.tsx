@@ -1,6 +1,7 @@
 // src/features/users/components/SearchableMemberSelect.tsx
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { User, Search, Check, ChevronDown, Lock, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { formatMemberDisplay, type MemberDisplayInfo } from "../utils/user-display";
 
 interface SearchableMemberSelectProps {
@@ -22,13 +23,18 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
   preselectedMember,
   disabled = false,
   locked = false,
-  placeholder = "Choose an athlete...",
+  placeholder,
   error,
-  label = "Select Member",
+  label,
 }) => {
+  const { t } = useTranslation(["assignments", "common"]);
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const effectiveLabel = label || t("form.memberLabel", "Select Member");
+  const effectivePlaceholder =
+    placeholder || t("form.memberPlaceholder", "Choose an athlete...");
 
   // Format and memoize all members, ensuring preselected athlete is preserved
   const formattedMembers: MemberDisplayInfo[] = useMemo(() => {
@@ -87,10 +93,10 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
       <div className="space-y-1.5">
         <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5 uppercase tracking-wider">
           <User className="w-3.5 h-3.5 text-[#5BE584]" />
-          <span>{label}</span>
-          <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-[#5BE584] font-medium bg-[#5BE584]/10 border border-[#5BE584]/20 px-2 py-0.5 rounded-full lowercase">
+          <span>{effectiveLabel}</span>
+          <span className="ms-auto inline-flex items-center gap-1 text-[10px] text-[#5BE584] font-medium bg-[#5BE584]/10 border border-[#5BE584]/20 px-2 py-0.5 rounded-full lowercase">
             <Lock className="w-2.5 h-2.5" />
-            preselected from profile
+            {t("form.memberPreselected", "preselected from profile")}
           </span>
         </label>
         <div className="flex items-center justify-between p-3 rounded-xl bg-[#12161D] border border-[#23422E] shadow-sm">
@@ -118,7 +124,7 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
     <div className="space-y-1.5" ref={dropdownRef}>
       <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5 uppercase tracking-wider">
         <User className="w-3.5 h-3.5 text-[#5BE584]" />
-        <span>{label} *</span>
+        <span>{effectiveLabel} *</span>
       </label>
 
       <div className="relative">
@@ -127,13 +133,13 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
           type="button"
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
-          className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-[#12161D] border text-left text-xs transition-all ${
+          className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-[#12161D] border text-start text-xs transition-all ${
             error
               ? "border-rose-500/50 focus:border-rose-500"
               : isOpen
                 ? "border-[#5BE584] ring-1 ring-[#5BE584]"
                 : "border-[#1E2329] hover:border-[#2A313C]"
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
+          } disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer`}
         >
           {selectedMember ? (
             <div className="flex items-center gap-2.5 min-w-0">
@@ -150,7 +156,7 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
               ) : null}
             </div>
           ) : (
-            <span className="text-gray-500">{placeholder}</span>
+            <span className="text-gray-500">{effectivePlaceholder}</span>
           )}
 
           <ChevronDown
@@ -162,23 +168,26 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
 
         {/* Dropdown Menu */}
         {isOpen && (
-          <div className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-xl bg-[#0D1014] border border-[#1E2329] shadow-2xl overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
+          <div className="absolute inset-x-0 top-full mt-1.5 z-50 rounded-xl bg-[#0D1014] border border-[#1E2329] shadow-2xl overflow-hidden animate-in fade-in-50 zoom-in-95 duration-150">
             {/* Search Input */}
             <div className="p-2 border-b border-[#1E2329] bg-[#12161D]/60 flex items-center gap-2">
-              <Search className="w-3.5 h-3.5 text-gray-400 shrink-0 ml-1" />
+              <Search className="w-3.5 h-3.5 text-gray-400 shrink-0 ms-1" />
               <input
                 type="text"
                 autoFocus
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name or email..."
+                placeholder={t(
+                  "form.memberSearchPlaceholder",
+                  "Search by name or email...",
+                )}
                 className="w-full bg-transparent text-xs text-white placeholder-gray-500 focus:outline-none"
               />
               {search && (
                 <button
                   type="button"
                   onClick={() => setSearch("")}
-                  className="text-gray-500 hover:text-white p-1"
+                  className="text-gray-500 hover:text-white p-1 cursor-pointer"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -190,8 +199,15 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
               {filteredMembers.length === 0 ? (
                 <div className="py-6 text-center text-xs text-gray-500">
                   {search
-                    ? `No athletes found matching "${search}"`
-                    : "No assigned members available."}
+                    ? t(
+                        "form.noAthletesFound",
+                        "No athletes found matching \"{{query}}\"",
+                        { query: search },
+                      )
+                    : t(
+                        "form.noMembersAvailable",
+                        "No assigned members available.",
+                      )}
                 </div>
               ) : (
                 filteredMembers.map((m) => {
@@ -205,7 +221,7 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
                         setIsOpen(false);
                         setSearch("");
                       }}
-                      className={`w-full flex items-center justify-between p-2.5 rounded-lg text-left transition-colors ${
+                      className={`w-full flex items-center justify-between p-2.5 rounded-lg text-start transition-colors cursor-pointer ${
                         isSelected
                           ? "bg-[#16291D] text-[#5BE584]"
                           : "hover:bg-[#161B22] text-gray-200"
@@ -234,7 +250,7 @@ export const SearchableMemberSelect: React.FC<SearchableMemberSelectProps> = ({
                       </div>
 
                       {isSelected && (
-                        <Check className="w-4 h-4 text-[#5BE584] shrink-0 ml-2" />
+                        <Check className="w-4 h-4 text-[#5BE584] shrink-0 ms-2" />
                       )}
                     </button>
                   );

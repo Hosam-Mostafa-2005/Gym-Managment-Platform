@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Dumbbell, UserRound, CalendarDays, Layers } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { MemberAssignment } from "../../types/member-profile.types";
 
 interface CurrentAssignmentProps {
@@ -13,6 +14,9 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
   assignment,
   activeAssignments = [],
 }) => {
+  const { t, i18n } = useTranslation("profile");
+  const currentLang = i18n.language.startsWith("ar") ? "ar" : "en";
+
   const assignmentsList =
     activeAssignments.length > 0
       ? activeAssignments
@@ -27,10 +31,10 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
       <div className="flex h-full min-h-[220px] flex-col items-center justify-center rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 text-center">
         <Dumbbell className="mb-3 h-8 w-8 text-gray-500" />
         <h3 className="mb-1 text-sm font-medium text-gray-300">
-          No active assignment
+          {t("rosterMemberView.currentAssignment.noActive")}
         </h3>
         <p className="text-xs text-gray-500">
-          This member currently has no active workout assignment.
+          {t("rosterMemberView.currentAssignment.noActiveDesc")}
         </p>
       </div>
     );
@@ -54,11 +58,18 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
   };
 
   const formatDate = (dateStr: string) => {
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }).format(new Date(dateStr));
+    try {
+      return new Intl.DateTimeFormat(
+        currentLang === "ar" ? "ar-EG" : "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }
+      ).format(new Date(dateStr));
+    } catch {
+      return dateStr;
+    }
   };
 
   return (
@@ -67,13 +78,15 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-medium uppercase tracking-wider text-gray-400">
             {assignmentsList.length > 1
-              ? "Active Split Assignments"
-              : "Current Assignment"}
+              ? t("rosterMemberView.currentAssignment.activeSplitAssignments")
+              : t("rosterMemberView.currentAssignment.currentAssignment")}
           </h3>
           {assignmentsList.length > 1 && (
             <span className="inline-flex items-center gap-1 rounded-full bg-[#16291D] border border-[#23422E] px-2 py-0.5 text-[10px] font-semibold text-[#5BE584]">
               <Layers className="h-3 w-3" />
-              {assignmentsList.length} Routines
+              {t("rosterMemberView.currentAssignment.routinesCount", {
+                count: assignmentsList.length,
+              })}
             </span>
           )}
         </div>
@@ -83,7 +96,8 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
             currentAssignment.status,
           )}`}
         >
-          {currentAssignment.status || "UNKNOWN"}
+          {currentAssignment.status ||
+            t("rosterMemberView.currentAssignment.unknown")}
         </span>
       </div>
 
@@ -103,7 +117,10 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
                     : "bg-[#161B22] border border-[#1E2329] text-[#9CA3AF] hover:text-white"
                 }`}
               >
-                {item.workout?.title || `Routine ${idx + 1}`}
+                {item.workout?.title ||
+                  t("rosterMemberView.currentAssignment.routineN", {
+                    number: idx + 1,
+                  })}
               </button>
             );
           })}
@@ -114,9 +131,12 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
         <div className="flex items-start gap-3">
           <Dumbbell className="mt-1 h-5 w-5 shrink-0 text-[#5BE584]" />
           <div>
-            <p className="text-xs text-gray-500">Workout Plan</p>
+            <p className="text-xs text-gray-500">
+              {t("rosterMemberView.currentAssignment.workoutPlan")}
+            </p>
             <p className="text-base font-semibold text-gray-100">
-              {currentAssignment.workout?.title ?? "—"}
+              {currentAssignment.workout?.title ??
+                t("rosterMemberView.currentAssignment.unspecified")}
             </p>
           </div>
         </div>
@@ -124,9 +144,12 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
         <div className="flex items-start gap-3">
           <UserRound className="mt-1 h-5 w-5 shrink-0 text-gray-400" />
           <div>
-            <p className="text-xs text-gray-500">Trainer</p>
+            <p className="text-xs text-gray-500">
+              {t("rosterMemberView.currentAssignment.trainer")}
+            </p>
             <p className="text-sm font-medium text-gray-100">
-              {currentAssignment.trainer?.name ?? "—"}
+              {currentAssignment.trainer?.name ??
+                t("rosterMemberView.currentAssignment.unspecified")}
             </p>
           </div>
         </div>
@@ -134,7 +157,9 @@ export const CurrentAssignment: React.FC<CurrentAssignmentProps> = ({
         <div className="flex items-start gap-3">
           <CalendarDays className="mt-1 h-5 w-5 shrink-0 text-gray-400" />
           <div>
-            <p className="text-xs text-gray-500">Timeline</p>
+            <p className="text-xs text-gray-500">
+              {t("rosterMemberView.currentAssignment.timeline")}
+            </p>
             <p className="text-sm font-medium text-gray-100">
               {formatDate(currentAssignment.startDate)} –{" "}
               {formatDate(currentAssignment.endDate)}

@@ -1,6 +1,7 @@
 // src/features/landing/components/members/MemberExperienceSection.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Activity,
   ArrowRight,
@@ -14,52 +15,48 @@ import {
 } from "lucide-react";
 
 export const MemberExperienceSection: React.FC = () => {
+  const { t } = useTranslation(["landing"]);
   const [activeStep, setActiveStep] = useState(2);
 
   const memberSteps = [
     {
       num: "01",
-      title: "Assigned Workout Access",
-      tag: "Prescription View",
+      title: t("members.steps.step1.title"),
+      tag: t("members.steps.step1.tag"),
       route: "/assignments/all",
-      description:
-        "Open your active assignments anytime. View prescribed exercise order, target reps, target weights, and coach instructions.",
+      description: t("members.steps.step1.description"),
       icon: Dumbbell,
     },
     {
       num: "02",
-      title: "Guided Live Session Launch",
-      tag: "Workout Execution",
+      title: t("members.steps.step2.title"),
+      tag: t("members.steps.step2.tag"),
       route: "/sessions",
-      description:
-        "Launch today's workout in distraction-free session mode. Navigate exercise blocks with real-time rest timers and target guidance.",
+      description: t("members.steps.step2.description"),
       icon: Activity,
     },
     {
       num: "03",
-      title: "Previous Performance Memory",
-      tag: "Progressive Overload",
+      title: t("members.steps.step3.title"),
+      tag: t("members.steps.step3.tag"),
       route: "/sessions",
-      description:
-        "Never guess what you lifted last week. STREN automatically surfaces previous weight and rep benchmarks directly in your set row.",
+      description: t("members.steps.step3.description"),
       icon: History,
     },
     {
       num: "04",
-      title: "In-Session Exercise Swapping",
-      tag: "Live Flexibility",
+      title: t("members.steps.step4.title"),
+      tag: t("members.steps.step4.tag"),
       route: "/sessions",
-      description:
-        "Gym equipment taken or feeling joint pain? Swap to a compatible movement on the fly with a reason logged for your coach.",
+      description: t("members.steps.step4.description"),
       icon: RefreshCw,
     },
     {
       num: "05",
-      title: "RPE Exertion & Summary",
-      tag: "Session Completion",
+      title: t("members.steps.step5.title"),
+      tag: t("members.steps.step5.tag"),
       route: "/dashboard",
-      description:
-        "Finish your workout, log your subjective session RPE (1–10), and view total volume tonnage automatically saved to your profile.",
+      description: t("members.steps.step5.description"),
       icon: Trophy,
     },
   ];
@@ -81,15 +78,14 @@ export const MemberExperienceSection: React.FC = () => {
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[#5BE584]/30 bg-[#5BE584]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#5BE584] mb-3">
               <Sparkles className="h-3.5 w-3.5" />
-              For Athletes & Members
+              {t("members.badge")}
             </span>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-[#F8FAFC] leading-[1.12]">
-              A guided workout partner that remembers every rep.
+              {t("members.headline")}
             </h2>
           </div>
           <p className="max-w-md text-sm sm:text-base text-[#A7B0BC] leading-relaxed">
-            STREN turns prescribed workouts into an interactive live session tracker with previous
-            lift benchmarks, in-session exercise swapping, and instant volume calculation.
+            {t("members.description")}
           </p>
         </div>
 
@@ -103,7 +99,7 @@ export const MemberExperienceSection: React.FC = () => {
                 key={step.num}
                 type="button"
                 onClick={() => setActiveStep(idx)}
-                className={`relative flex flex-col justify-between rounded-[18px] border p-4 sm:p-5 text-left transition-all duration-200 ${
+                className={`relative flex flex-col justify-between rounded-[18px] border p-4 sm:p-5 text-left rtl:text-right transition-all duration-200 ${
                   isSelected
                     ? "border-[#5BE584] bg-[#141A22] shadow-[0_10px_28px_rgba(0,0,0,0.5),0_0_24px_rgba(91,229,132,0.1)] -translate-y-1"
                     : "border-[#2A3039] bg-[#0F131A] hover:border-[#38414D] hover:bg-[#13171D]"
@@ -159,22 +155,23 @@ export const MemberExperienceSection: React.FC = () => {
               <span className="flex h-3 w-3 rounded-full bg-[#22C55E] animate-pulse" />
               <div>
                 <h3 className="text-sm font-bold text-[#F8FAFC]">
-                  Active Member Session · Push Hypertrophy A
+                  {t("members.workbench.headerTitle")}
                 </h3>
                 <p className="text-[11px] text-[#94A3B8]">
-                  Prescribed by Coach Marcus · 4 Movements · 16 Total Sets
+                  {t("members.workbench.headerSubtitle")}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5 rounded-full border border-[#5BE584]/30 bg-[#5BE584]/10 px-3 py-1 text-xs font-mono font-semibold text-[#5BE584]">
-                <Clock className="h-3.5 w-3.5" /> 38:45 Active
+                <Clock className="h-3.5 w-3.5" /> {t("members.workbench.activeStatus")}
               </div>
               <Link
                 to="/sessions"
                 className="inline-flex items-center gap-1 rounded-[10px] bg-[#5BE584] px-3 py-1.5 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#49D472]"
               >
-                Go to Sessions <ArrowRight className="h-3.5 w-3.5" />
+                <span>{t("members.workbench.goToSessions")}</span>
+                <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
               </Link>
             </div>
           </div>
@@ -187,15 +184,17 @@ export const MemberExperienceSection: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="rounded-[8px] bg-[#5BE584]/15 border border-[#5BE584]/30 px-2 py-0.5 text-[10px] font-bold text-[#5BE584] uppercase">
-                      Movement 1 of 4
+                      {t("members.workbench.movementTag")}
                     </span>
-                    <span className="text-xs text-[#94A3B8]">Chest / Triceps</span>
+                    <span className="text-xs text-[#94A3B8]">
+                      {t("members.workbench.movementMuscle")}
+                    </span>
                   </div>
                   <h4 className="text-lg font-bold text-[#F8FAFC] mt-1">
-                    Barbell Bench Press
+                    {t("members.workbench.exerciseName")}
                   </h4>
                   <p className="text-xs text-[#94A3B8]">
-                    Coach Target: 4 sets × 8–10 reps · Target RPE 8.0 · 120s Rest
+                    {t("members.workbench.coachTarget")}
                   </p>
                 </div>
 
@@ -204,10 +203,10 @@ export const MemberExperienceSection: React.FC = () => {
                   <RefreshCw className="h-4 w-4 text-[#5BE584]" />
                   <div>
                     <span className="block font-semibold text-[#F8FAFC]">
-                      In-Session Exercise Swapping
+                      {t("members.workbench.swapTitle")}
                     </span>
                     <span className="text-[11px] text-[#94A3B8]">
-                      Bench occupied? Swap to Incline DB Press with reason log
+                      {t("members.workbench.swapSubtitle")}
                     </span>
                   </div>
                 </div>
@@ -215,15 +214,27 @@ export const MemberExperienceSection: React.FC = () => {
 
               {/* Set Logging Table with Previous Performance Memory */}
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left rtl:text-right text-xs">
                   <thead>
                     <tr className="border-b border-[#2A3039] text-[#94A3B8]">
-                      <th className="pb-2.5 font-semibold">SET</th>
-                      <th className="pb-2.5 font-semibold">PREVIOUS PERFORMANCE</th>
-                      <th className="pb-2.5 font-semibold">TARGET</th>
-                      <th className="pb-2.5 font-semibold">WEIGHT (KG)</th>
-                      <th className="pb-2.5 font-semibold">REPS</th>
-                      <th className="pb-2.5 font-semibold text-right">ACTION</th>
+                      <th className="pb-2.5 font-semibold">
+                        {t("members.workbench.table.set")}
+                      </th>
+                      <th className="pb-2.5 font-semibold">
+                        {t("members.workbench.table.prevPerformance")}
+                      </th>
+                      <th className="pb-2.5 font-semibold">
+                        {t("members.workbench.table.target")}
+                      </th>
+                      <th className="pb-2.5 font-semibold">
+                        {t("members.workbench.table.weight")}
+                      </th>
+                      <th className="pb-2.5 font-semibold">
+                        {t("members.workbench.table.reps")}
+                      </th>
+                      <th className="pb-2.5 font-semibold text-right rtl:text-left">
+                        {t("members.workbench.table.action")}
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#1E252F]">
@@ -234,9 +245,10 @@ export const MemberExperienceSection: React.FC = () => {
                       <td className="py-3 text-[#94A3B8]">82.5 kg × 10</td>
                       <td className="py-3 font-mono font-bold text-[#F8FAFC]">82.5 kg</td>
                       <td className="py-3 font-mono font-bold text-[#F8FAFC]">10 reps</td>
-                      <td className="py-3 text-right">
+                      <td className="py-3 text-right rtl:text-left">
                         <span className="inline-flex items-center gap-1 rounded-[8px] bg-[#22C55E]/15 border border-[#22C55E]/30 px-2.5 py-1 text-[11px] font-semibold text-[#22C55E]">
-                          <CheckCircle2 className="h-3 w-3" /> Logged
+                          <CheckCircle2 className="h-3 w-3" />{" "}
+                          {t("members.workbench.table.logged")}
                         </span>
                       </td>
                     </tr>
@@ -245,7 +257,10 @@ export const MemberExperienceSection: React.FC = () => {
                     <tr className="bg-[#141A22]/70 text-[#F8FAFC]">
                       <td className="py-3 font-bold text-[#5BE584]">2</td>
                       <td className="py-3 font-mono text-[#22C55E]">
-                        82.5 kg × 8 <span className="text-[10px] text-[#94A3B8]">(Last Week)</span>
+                        82.5 kg × 8{" "}
+                        <span className="text-[10px] text-[#94A3B8]">
+                          {t("members.workbench.table.lastWeek")}
+                        </span>
                       </td>
                       <td className="py-3 text-[#5BE584]">85 kg × 8</td>
                       <td className="py-3">
@@ -258,12 +273,12 @@ export const MemberExperienceSection: React.FC = () => {
                           8
                         </div>
                       </td>
-                      <td className="py-3 text-right">
+                      <td className="py-3 text-right rtl:text-left">
                         <button
                           type="button"
                           className="rounded-[8px] bg-[#5BE584] px-3 py-1 text-[11px] font-bold text-[#090B0F] shadow-[0_0_12px_rgba(91,229,132,0.3)] transition-all hover:bg-[#49D472]"
                         >
-                          Complete Set
+                          {t("members.workbench.table.completeSet")}
                         </button>
                       </td>
                     </tr>
@@ -275,7 +290,9 @@ export const MemberExperienceSection: React.FC = () => {
                       <td className="py-3 text-[#94A3B8]">85 kg × 8</td>
                       <td className="py-3 font-mono text-[#94A3B8]">--</td>
                       <td className="py-3 font-mono text-[#94A3B8]">--</td>
-                      <td className="py-3 text-right text-[11px] text-[#94A3B8]">Pending</td>
+                      <td className="py-3 text-right rtl:text-left text-[11px] text-[#94A3B8]">
+                        {t("members.workbench.table.pending")}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -287,7 +304,7 @@ export const MemberExperienceSection: React.FC = () => {
               <div className="rounded-[14px] border border-[#2A3039] bg-[#090B0F] p-4 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">
-                    Session Tonnage
+                    {t("members.workbench.metrics.sessionTonnage")}
                   </span>
                   <p className="text-xl font-extrabold text-[#F8FAFC] mt-0.5">3,420 kg</p>
                 </div>
@@ -299,7 +316,7 @@ export const MemberExperienceSection: React.FC = () => {
               <div className="rounded-[14px] border border-[#2A3039] bg-[#090B0F] p-4 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">
-                    Target RPE Rating
+                    {t("members.workbench.metrics.targetRpe")}
                   </span>
                   <p className="text-xl font-extrabold text-[#5BE584] mt-0.5">8.5 / 10</p>
                 </div>
@@ -311,9 +328,11 @@ export const MemberExperienceSection: React.FC = () => {
               <div className="rounded-[14px] border border-[#2A3039] bg-[#090B0F] p-4 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">
-                    Rest Interval Timer
+                    {t("members.workbench.metrics.restTimer")}
                   </span>
-                  <p className="text-xl font-extrabold text-[#22C55E] mt-0.5">01:42 Left</p>
+                  <p className="text-xl font-extrabold text-[#22C55E] mt-0.5">
+                    {t("members.workbench.metrics.restLeft")}
+                  </p>
                 </div>
                 <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/30">
                   <Clock className="h-4 w-4" />
@@ -326,3 +345,5 @@ export const MemberExperienceSection: React.FC = () => {
     </section>
   );
 };
+
+export default MemberExperienceSection;

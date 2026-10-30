@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ClipboardList, Calendar } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ProfileSection } from "../shared/ProfileSection";
 import type { CoachTask } from "../../types/profile.types";
 
@@ -12,9 +13,24 @@ interface UpcomingTasksProps {
 export const UpcomingTasks: React.FC<UpcomingTasksProps> = ({
   upcomingTasks = [],
 }) => {
+  const { t, i18n } = useTranslation(["profile"]);
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(new Date(dateStr));
+    } catch {
+      return dateStr;
+    }
+  };
+
   return (
     <ProfileSection
-      title="Upcoming Tasks & Roster Actions"
+      title={t("coach.upcomingTasks.title")}
       icon={ClipboardList}
     >
       {upcomingTasks?.length > 0 ? (
@@ -30,12 +46,12 @@ export const UpcomingTasks: React.FC<UpcomingTasksProps> = ({
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <span className="inline-flex rounded border border-[#5BE584]/20 bg-[#5BE584]/10 px-2 py-0.5 text-[9px] font-bold text-[#5BE584] uppercase tracking-wider">
-                      {task.priority} Priority
+                      {t("coach.upcomingTasks.priority", { priority: task.priority })}
                     </span>
                     {task.dueDate && (
                       <span className="flex items-center gap-1 text-[10px] text-gray-500 font-mono">
                         <Calendar className="h-3 w-3" />
-                        {new Date(task.dueDate).toLocaleDateString()}
+                        {formatDate(task.dueDate)}
                       </span>
                     )}
                   </div>
@@ -52,13 +68,15 @@ export const UpcomingTasks: React.FC<UpcomingTasksProps> = ({
                       to={`/members/${memberId}`}
                       className="text-gray-300 hover:text-[#5BE584] font-medium truncate"
                     >
-                      Athlete: {memberName}
+                      {t("coach.upcomingTasks.athlete", { name: memberName })}
                     </Link>
                   ) : (
-                    <span className="text-gray-500">General Task</span>
+                    <span className="text-gray-500">
+                      {t("coach.upcomingTasks.generalTask")}
+                    </span>
                   )}
                   <span className="text-[10px] text-[#5BE584] uppercase tracking-wider font-semibold">
-                    Review
+                    {t("coach.upcomingTasks.review")}
                   </span>
                 </div>
               </div>
@@ -67,9 +85,11 @@ export const UpcomingTasks: React.FC<UpcomingTasksProps> = ({
         </div>
       ) : (
         <div className="py-8 text-center text-xs text-gray-500">
-          No pending coach tasks or upcoming actions.
+          {t("coach.upcomingTasks.empty")}
         </div>
       )}
     </ProfileSection>
   );
 };
+
+export default UpcomingTasks;

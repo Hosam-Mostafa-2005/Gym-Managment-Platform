@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import { useWorkouts } from "@/features/workouts/hooks/useWorkouts";
 import { useDeleteWorkout } from "@/features/workouts/hooks/useDeleteWorkout";
@@ -51,6 +52,7 @@ import {
 } from "@/components/ui/dialog";
 
 export default function WorkoutsPage() {
+  const { t } = useTranslation(["workouts", "common"]);
   const navigate = useNavigate();
   const { data: user } = useCurrentUser();
   const canManageRoles =
@@ -215,17 +217,17 @@ export default function WorkoutsPage() {
         <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase">
-              <span className="text-[#F3F4F6]">Workouts</span>
+              <span className="text-[#F3F4F6]">{t("page.breadcrumbWorkouts", "Workouts")}</span>
               <span>/</span>
               <span className="hover:text-[#9CA3AF] cursor-pointer">
-                Library
+                {t("page.breadcrumbLibrary", "Library")}
               </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mt-1">
-              Workouts
+              {t("page.title", "Workouts")}
             </h1>
             <p className="text-sm text-[#9CA3AF]">
-              Browse structured routines, build personal training programs, and launch workout sessions.
+              {t("page.subtitle", "Browse structured routines, build personal training programs, and launch workout sessions.")}
             </p>
           </div>
 
@@ -236,7 +238,7 @@ export default function WorkoutsPage() {
               className="group flex items-center justify-center gap-2 rounded-[14px] border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-sm font-semibold text-[#F3F4F6] transition-all hover:bg-[#1A2027] hover:border-[#2A313A] focus:outline-none focus:ring-2 focus:ring-[#5BE584]"
             >
               <LinkIcon className="h-4 w-4 text-[#5BE584] transition-transform group-hover:scale-110" />
-              <span>Add by ID / Link</span>
+              <span>{t("actions.addById", "Add by ID / Link")}</span>
             </button>
             {canManageRoles && (
               <button
@@ -244,7 +246,7 @@ export default function WorkoutsPage() {
                 className="group flex items-center justify-center gap-2 rounded-[14px] border border-[#23422E] bg-[#16291D] px-4 py-2.5 text-sm font-semibold text-[#5BE584] transition-all hover:bg-[#1F3A29] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
               >
                 <UserPlus className="h-4 w-4 transition-transform group-hover:scale-110" />
-                Assign Workout
+                {t("actions.assignWorkout", "Assign Workout")}
               </button>
             )}
 
@@ -253,7 +255,7 @@ export default function WorkoutsPage() {
               className="group flex items-center justify-center gap-2 rounded-[14px] bg-[#5BE584] px-5 py-2.5 text-sm font-semibold text-[#090B0F] transition-all hover:bg-[#49D472] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
             >
               <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
-              New Workout
+              {t("actions.newWorkout", "New Workout")}
             </button>
           </div>
         </div>
@@ -274,7 +276,7 @@ export default function WorkoutsPage() {
                     : "text-[#9CA3AF] hover:text-white"
                 }`}
               >
-                All Workouts
+                {t("tabs.all", "All Workouts")}
               </button>
               <button
                 onClick={() => setActiveTab("my")}
@@ -284,7 +286,7 @@ export default function WorkoutsPage() {
                     : "text-[#9CA3AF] hover:text-white"
                 }`}
               >
-                My Personal Workouts
+                {t("tabs.my", "My Personal Workouts")}
               </button>
               <button
                 onClick={() => setActiveTab("templates")}
@@ -294,7 +296,7 @@ export default function WorkoutsPage() {
                     : "text-[#9CA3AF] hover:text-white"
                 }`}
               >
-                Platform Templates
+                {t("tabs.templates", "Platform Templates")}
               </button>
             </div>
           </div>
@@ -320,7 +322,7 @@ export default function WorkoutsPage() {
                         : "bg-[#101418] border-[#1E2329] text-[#9CA3AF] hover:border-[#6B7280] hover:text-[#F3F4F6]"
                     }`}
                   >
-                    {cat}
+                    {t(`categories.${cat}`, cat)}
                   </button>
                 );
               })}
@@ -328,18 +330,18 @@ export default function WorkoutsPage() {
 
             {/* Search Bar */}
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+              <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
               <input
                 type="text"
-                placeholder="Search workouts..."
+                placeholder={t("form.searchWorkouts", "Search workouts...")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-9 pl-9 pr-4 rounded-md border border-[#1E2329] bg-[#101418] text-xs text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+                className="w-full h-9 ps-9 pe-9 rounded-md border border-[#1E2329] bg-[#101418] text-xs text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#9CA3AF]"
+                  className="absolute end-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#9CA3AF]"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -355,10 +357,10 @@ export default function WorkoutsPage() {
           <div className="mb-4">
             <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
               {activeTab === "my"
-                ? "My Routines"
+                ? t("headers.myRoutines", "My Routines")
                 : activeTab === "templates"
-                  ? "Standard Templates"
-                  : "Available Routines"}
+                  ? t("headers.standardTemplates", "Standard Templates")
+                  : t("headers.availableRoutines", "Available Routines")}
             </h2>
           </div>
 
@@ -377,12 +379,12 @@ export default function WorkoutsPage() {
                 <Dumbbell className="h-5 w-5" />
               </div>
               <h2 className="text-sm font-semibold text-white">
-                No workouts found
+                {t("emptyStates.noWorkoutsTitle", "No workouts found")}
               </h2>
               <p className="mt-1.5 text-xs text-[#9CA3AF] max-w-sm">
                 {searchQuery || selectedCategory || activeTab !== "all"
-                  ? "We couldn't find any workouts matching your current filters. Try resetting them."
-                  : "Get started by creating your first personal workout routine."}
+                  ? t("emptyStates.noWorkoutsFiltered", "We couldn't find any workouts matching your current filters. Try resetting them.")
+                  : t("emptyStates.noWorkoutsInitial", "Get started by creating your first personal workout routine.")}
               </p>
               <button
                 className="mt-5 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
@@ -397,8 +399,8 @@ export default function WorkoutsPage() {
                 }}
               >
                 {searchQuery || selectedCategory || activeTab !== "all"
-                  ? "Clear Filters"
-                  : "Create First Workout"}
+                  ? t("actions.clearFilters", "Clear Filters")
+                  : t("actions.createFirst", "Create First Workout")}
               </button>
             </div>
           ) : (
@@ -433,7 +435,7 @@ export default function WorkoutsPage() {
                             {workout.title}
                           </h3>
                           <p className="text-xs text-[#9CA3AF] line-clamp-2 leading-relaxed">
-                            {workout.description || "No description provided."}
+                            {workout.description || t("card.noDescription", "No description provided.")}
                           </p>
                         </div>
 
@@ -455,7 +457,7 @@ export default function WorkoutsPage() {
                               className="cursor-pointer text-xs font-medium text-[#5BE584] hover:bg-[#16291D] focus:bg-[#16291D] focus:text-[#5BE584]"
                             >
                               <Play className="mr-2 h-3.5 w-3.5 fill-current" />
-                              Start Session
+                              {t("actions.startSession", "Start Session")}
                             </DropdownMenuItem>
 
                             {canAssign && (
@@ -471,7 +473,7 @@ export default function WorkoutsPage() {
                                 className="cursor-pointer text-xs font-medium text-[#5BE584] hover:bg-[#16291D] focus:bg-[#16291D] focus:text-[#5BE584]"
                               >
                                 <UserPlus className="mr-2 h-3.5 w-3.5" />
-                                Assign Workout
+                                {t("actions.assignWorkout", "Assign Workout")}
                               </DropdownMenuItem>
                             )}
 
@@ -482,7 +484,7 @@ export default function WorkoutsPage() {
                               className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
                             >
                               <Eye className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
-                              View Details
+                              {t("actions.viewDetails", "View Details")}
                             </DropdownMenuItem>
 
                             <DropdownMenuItem
@@ -490,7 +492,7 @@ export default function WorkoutsPage() {
                               className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
                             >
                               <Copy className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
-                              Duplicate into My Library
+                              {t("actions.duplicate", "Duplicate into My Library")}
                             </DropdownMenuItem>
 
                             {canModify && (
@@ -505,7 +507,7 @@ export default function WorkoutsPage() {
                                   className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
                                 >
                                   <Pencil className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
-                                  Edit Workout
+                                  {t("actions.edit", "Edit Workout")}
                                 </DropdownMenuItem>
 
                                 <DropdownMenuItem
@@ -515,7 +517,7 @@ export default function WorkoutsPage() {
                                   className="cursor-pointer text-xs font-medium text-red-400 focus:bg-red-950/30 focus:text-red-400"
                                 >
                                   <Trash2 className="mr-2 h-3.5 w-3.5 text-red-400" />
-                                  Delete Routine
+                                  {t("actions.delete", "Delete Routine")}
                                 </DropdownMenuItem>
                               </>
                             )}
@@ -526,19 +528,19 @@ export default function WorkoutsPage() {
                       {/* Tags & Difficulty */}
                       <div className="flex flex-wrap gap-1.5 mt-4">
                         <span className="inline-flex items-center rounded bg-[#16291D] border border-[#23422E] px-2.5 py-0.5 text-[11px] font-medium text-[#5BE584] capitalize">
-                          {workout.category}
+                          {t(`categories.${workout.category.toLowerCase()}`, workout.category)}
                         </span>
                         <span className="inline-flex items-center rounded bg-[#1E2329] px-2.5 py-0.5 text-[11px] font-medium text-[#D1D5DB] capitalize">
-                          {workout.difficulty}
+                          {t(`difficulties.${workout.difficulty.toLowerCase()}`, workout.difficulty)}
                         </span>
                         {workout.isTemplate && (
                           <span className="inline-flex items-center gap-1 rounded bg-[#1E2329] border border-[#1E2329] px-2.5 py-0.5 text-[11px] font-medium text-[#9CA3AF]">
-                            <Layers className="h-3 w-3 text-[#5BE584]" /> Template
+                            <Layers className="h-3 w-3 text-[#5BE584]" /> {t("badges.template", "Template")}
                           </span>
                         )}
                         {isOwner && (
                           <span className="inline-flex items-center gap-1 rounded bg-[#5BE584]/10 border border-[#5BE584]/20 px-2 py-0.5 text-[10px] font-semibold text-[#5BE584]">
-                            <User className="h-2.5 w-2.5" /> Personal
+                            <User className="h-2.5 w-2.5" /> {t("badges.personal", "Personal")}
                           </span>
                         )}
                       </div>
@@ -547,18 +549,18 @@ export default function WorkoutsPage() {
                     {/* Footer metrics & Quick Action */}
                     <div className="flex items-center justify-between border-t border-[#1E2329] mt-6 pt-4 text-xs text-[#6B7280]">
                       <span className="flex items-center gap-1.5 font-mono text-[#9CA3AF]">
-                        <Clock className="h-3.5 w-3.5 text-[#5BE584]" /> ~
-                        {workout.estimatedDuration} mins
+                        <Clock className="h-3.5 w-3.5 text-[#5BE584]" />
+                        {t("card.estDuration", { count: workout.estimatedDuration, defaultValue: `~${workout.estimatedDuration} mins` })}
                       </span>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
                           onClick={() => handleScheduleClick(workout.id, workout.title)}
                           className="inline-flex items-center gap-1 rounded-md border border-[#1E2329] bg-[#101418] hover:border-[#2A313A] px-2.5 py-1 text-xs font-medium text-[#9CA3AF] hover:text-white transition-colors"
-                          title="Schedule for later"
+                          title={t("actions.scheduleForLater", "Schedule for later")}
                         >
                           <Calendar className="h-3 w-3 text-[#5BE584]" />
-                          Schedule
+                          {t("actions.schedule", "Schedule")}
                         </button>
                         <button
                           onClick={() => handleStartSession(workout.id, workout.title)}
@@ -566,7 +568,7 @@ export default function WorkoutsPage() {
                           className="inline-flex items-center gap-1.5 rounded-md bg-[#16291D] hover:bg-[#23422E] border border-[#23422E] px-3 py-1 text-xs font-semibold text-[#5BE584] transition-colors"
                         >
                           <Play className="h-3 w-3 fill-current" />
-                          Train
+                          {t("actions.train", "Train")}
                         </button>
                       </div>
                     </div>
@@ -586,19 +588,18 @@ export default function WorkoutsPage() {
         }
       >
         <DialogContent className="sm:max-w-[425px] border-[#1E2329] bg-[#101418] shadow-2xl p-6 text-[#F3F4F6]">
-          <DialogHeader className="gap-2 text-left">
+          <DialogHeader className="gap-2 text-start">
             <div className="flex h-10 w-10 items-center justify-center rounded bg-red-950/30 border border-red-900/50 text-red-400 mb-2">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <DialogTitle className="text-xl font-semibold tracking-tight text-white">
-              Delete Routine?
+              {t("dialogs.deleteTitle", "Delete Routine?")}
             </DialogTitle>
             <DialogDescription className="text-sm text-[#9CA3AF]">
-              You are about to permanently delete the workout routine{" "}
-              <span className="font-semibold text-white">
-                "{deleteModal.title}"
-              </span>
-              . This action cannot be undone.
+              {t("dialogs.deleteDesc", {
+                title: deleteModal.title,
+                defaultValue: `You are about to permanently delete the workout routine "${deleteModal.title}". This action cannot be undone.`,
+              })}
             </DialogDescription>
           </DialogHeader>
 
@@ -611,7 +612,7 @@ export default function WorkoutsPage() {
               }
               className="rounded-md px-4 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:bg-[#1E2329] hover:text-white disabled:opacity-50"
             >
-              Cancel
+              {t("actions.cancel", "Cancel")}
             </button>
             <button
               type="button"
@@ -619,7 +620,7 @@ export default function WorkoutsPage() {
               onClick={confirmDelete}
               className="inline-flex items-center justify-center rounded-md bg-red-500/90 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-[#101418] disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isDeleting ? "Deleting..." : "Delete Routine"}
+              {isDeleting ? t("dialogs.deleting", "Deleting...") : t("actions.delete", "Delete Routine")}
             </button>
           </DialogFooter>
         </DialogContent>

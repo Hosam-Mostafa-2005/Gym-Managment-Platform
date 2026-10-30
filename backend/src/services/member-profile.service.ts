@@ -172,6 +172,7 @@ class MemberProfileService {
           status: RELATIONSHIP_STATUS.ACTIVE,
           isActive: true,
         },
+        orderBy: { startedAt: "desc" },
         include: {
           trainer: { select: { id: true, name: true, email: true } },
         },

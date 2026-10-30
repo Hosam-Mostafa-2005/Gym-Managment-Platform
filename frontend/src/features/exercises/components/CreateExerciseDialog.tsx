@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 import ExerciseForm from "./ExerciseForm";
 
@@ -23,6 +24,7 @@ const CreateExerciseDialog = ({
   open,
   onOpenChange,
 }: CreateExerciseDialogProps) => {
+  const { t } = useTranslation(["exercises"]);
   const { data: user } = useCurrentUser();
   const isMember = user?.role === ROLES.MEMBER;
   const { mutate, isPending } = useCreateExercise();
@@ -57,13 +59,21 @@ const CreateExerciseDialog = ({
       >
         <DialogHeader className="pb-2">
           <DialogTitle className="text-lg sm:text-xl font-bold">
-            {isMember ? "Create Custom Exercise" : "Create Exercise"}
+            {isMember
+              ? t("create.createCustomTitle", "Create Custom Exercise")
+              : t("create.title", "Create Exercise")}
           </DialogTitle>
 
           <DialogDescription className="text-xs sm:text-sm">
             {isMember
-              ? "Add a personal custom exercise to your training library."
-              : "Add a new exercise to your exercise library."}
+              ? t(
+                  "create.customSubtitle",
+                  "Add a personal custom exercise to your training library.",
+                )
+              : t(
+                  "create.subtitle",
+                  "Add a new exercise to your exercise library.",
+                )}
           </DialogDescription>
         </DialogHeader>
 

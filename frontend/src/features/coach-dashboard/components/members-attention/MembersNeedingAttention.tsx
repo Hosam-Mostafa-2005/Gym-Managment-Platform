@@ -1,6 +1,7 @@
 // src/features/coach-dashboard/components/members-attention/MembersNeedingAttention.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Users, AlertTriangle, ArrowRight, Calendar } from "lucide-react";
 import type { MemberAttention } from "@/features/coach-dashboard/types/coach-dashboard.types";
 
@@ -11,17 +12,19 @@ interface MembersNeedingAttentionProps {
 export const MembersNeedingAttention: React.FC<
   MembersNeedingAttentionProps
 > = ({ members = [] }) => {
+  const { t, i18n } = useTranslation(["coachDashboard"]);
   const hasMembers = members && members.length > 0;
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   const formatDate = (dateValue: Date | string | null) => {
-    if (!dateValue) return "No record";
+    if (!dateValue) return t("measurements.noRecord");
     try {
-      return new Intl.DateTimeFormat("en-US", {
+      return new Intl.DateTimeFormat(currentLang, {
         month: "short",
         day: "numeric",
       }).format(new Date(dateValue));
     } catch {
-      return "Invalid date";
+      return t("measurements.noRecord");
     }
   };
 
@@ -32,12 +35,12 @@ export const MembersNeedingAttention: React.FC<
         <div className="flex items-center gap-2.5">
           <Users className="h-4 w-4 text-gray-400" />
           <h2 className="text-sm font-semibold text-gray-100">
-            Members Needing Attention
+            {t("membersAttention.title")}
           </h2>
         </div>
         {hasMembers && (
           <span className="inline-flex rounded-full bg-yellow-500/10 px-2 py-0.5 text-[10px] font-bold text-yellow-400 uppercase tracking-wider border border-yellow-500/20">
-            {members.length} Flagged
+            {t("membersAttention.flagged", { count: members.length })}
           </span>
         )}
       </div>
@@ -45,30 +48,30 @@ export const MembersNeedingAttention: React.FC<
       {/* Table Content */}
       {hasMembers ? (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[560px] text-left text-xs text-gray-300">
+          <table className="w-full min-w-[560px] text-left rtl:text-right text-xs text-gray-300">
             <thead className="border-b border-[#1e2329] bg-[#13171d]/50 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
               <tr>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Athlete
+                  {t("membersAttention.thAthlete")}
                 </th>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Attention Flag
+                  {t("membersAttention.thAttentionFlag")}
                 </th>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Compliance
+                  {t("membersAttention.thCompliance")}
                 </th>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Last Session
+                  {t("membersAttention.thLastSession")}
                 </th>
-                <th scope="col" className="px-5 py-3 font-medium text-right">
-                  Intervention
+                <th scope="col" className="px-5 py-3 font-medium text-right rtl:text-left">
+                  {t("membersAttention.thIntervention")}
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1e2329]">
               {members.map((item, index) => {
                 const memberId = item.member?.id || item.member?._id;
-                const memberName = item.member?.name || "Unknown Athlete";
+                const memberName = item.member?.name || t("membersAttention.unknownAthlete");
                 const memberEmail = item.member?.email;
 
                 return (
@@ -105,7 +108,7 @@ export const MembersNeedingAttention: React.FC<
                           ))
                         ) : (
                           <span className="text-gray-500">
-                            Routine check needed
+                            {t("membersAttention.routineCheck")}
                           </span>
                         )}
                       </div>
@@ -136,25 +139,27 @@ export const MembersNeedingAttention: React.FC<
                         {item.daysSinceWorkout !== undefined &&
                           item.daysSinceWorkout !== null && (
                             <span className="text-[10px] text-gray-600">
-                              ({item.daysSinceWorkout}d ago)
+                              {t("membersAttention.daysAgo", {
+                                days: item.daysSinceWorkout,
+                              })}
                             </span>
                           )}
                       </div>
                     </td>
 
                     {/* Action / Intervention */}
-                    <td className="px-5 py-3.5 text-right whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-right rtl:text-left whitespace-nowrap">
                       {memberId ? (
                         <Link
                           to={`/members/${memberId}`}
                           className="inline-flex items-center gap-1 rounded bg-[#13171d] border border-[#1e2329] px-2.5 py-1.5 text-[11px] font-medium text-gray-300 transition-colors hover:bg-white/[0.03] hover:text-white"
                         >
-                          Open Profile
-                          <ArrowRight className="h-3 w-3" />
+                          <span>{t("membersAttention.openProfile")}</span>
+                          <ArrowRight className="h-3 w-3 rtl:rotate-180" />
                         </Link>
                       ) : (
                         <span className="text-gray-600 text-[11px]">
-                          Unavailable
+                          {t("membersAttention.unavailable")}
                         </span>
                       )}
                     </td>
@@ -171,10 +176,10 @@ export const MembersNeedingAttention: React.FC<
             <Users className="h-5 w-5 text-[#5BE584]" />
           </div>
           <p className="text-sm font-semibold text-gray-200">
-            No members currently need attention.
+            {t("membersAttention.emptyTitle")}
           </p>
           <p className="text-xs text-gray-500 mt-0.5">
-            All athletes are tracking within acceptable compliance metrics.
+            {t("membersAttention.emptyDesc")}
           </p>
         </div>
       )}

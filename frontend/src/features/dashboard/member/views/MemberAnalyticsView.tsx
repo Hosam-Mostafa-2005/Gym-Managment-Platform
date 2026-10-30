@@ -1,7 +1,8 @@
 // src/features/dashboard/member/views/MemberAnalyticsView.tsx
 import React from "react";
 import { Link, useOutletContext } from "react-router-dom";
-import { ArrowLeft, BarChart3, Scale, History, Calendar } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { ArrowLeft, BarChart3, Scale, History } from "lucide-react";
 import { useMemberDashboard } from "../../hooks/use-dashboard";
 import { WorkoutActivity } from "../components/activity/WorkoutActivity";
 import { SessionDuration } from "../components/analytics/SessionDuration";
@@ -12,6 +13,7 @@ import { PerformanceTelemetry } from "../components/analytics/PerformanceTelemet
 import type { MemberDashboardData } from "../../types/dashboard.types";
 
 export const MemberAnalyticsView: React.FC = () => {
+  const { t } = useTranslation(["dashboard"]);
   const contextData = useOutletContext<MemberDashboardData | undefined>();
   const { data: queryData } = useMemberDashboard();
 
@@ -30,10 +32,10 @@ export const MemberAnalyticsView: React.FC = () => {
           </div>
           <div>
             <h1 className="text-base font-bold text-white">
-              Personal Training Analytics & Telemetry
+              {t("member.analyticsView.title")}
             </h1>
             <p className="text-xs text-gray-400">
-              In-depth progression curves, training volume, and consistency breakdown
+              {t("member.analyticsView.subtitle")}
             </p>
           </div>
         </div>
@@ -43,8 +45,8 @@ export const MemberAnalyticsView: React.FC = () => {
             to="/dashboard"
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#161B22] px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:border-[#5BE584]/40 transition"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Return to Overview</span>
+            <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
+            <span>{t("member.analyticsView.returnToOverview")}</span>
           </Link>
         </div>
       </div>
@@ -78,21 +80,21 @@ export const MemberAnalyticsView: React.FC = () => {
 
       {/* Bottom Navigation Links */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#1E2329] bg-[#0D1014] p-4 text-xs text-gray-400">
-        <span>Looking for individual workout set records or physique progress?</span>
+        <span>{t("member.analyticsView.bottomPrompt")}</span>
         <div className="flex items-center gap-2">
           <Link
             to="/sessions"
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#101418] px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white transition"
           >
             <History className="h-3.5 w-3.5 text-blue-400" />
-            <span>Full Workout History</span>
+            <span>{t("member.analyticsView.fullWorkoutHistory")}</span>
           </Link>
           <Link
             to="/measurements"
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#101418] px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white transition"
           >
             <Scale className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Body Measurements</span>
+            <span>{t("member.analyticsView.bodyMeasurements")}</span>
           </Link>
         </div>
       </div>

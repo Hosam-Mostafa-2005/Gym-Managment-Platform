@@ -1,5 +1,6 @@
 // src/features/dashboard/member/components/analytics/WorkoutFrequency.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   BarChart,
   Bar,
@@ -20,19 +21,23 @@ export const WorkoutFrequency: React.FC<WorkoutFrequencyProps> = ({
   byWeekday = [],
   byHour = [],
 }) => {
+  const { t } = useTranslation(["dashboard"]);
+
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 transition-colors hover:border-[#2A313A]">
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-400" />
-          <h2 className="text-sm font-semibold text-white">Sessions by Day</h2>
+          <h2 className="text-sm font-semibold text-white">
+            {t("member.analyticsView.sessionsByDay")}
+          </h2>
           <InfoTooltip
-            title="Day of Week Distribution"
-            description="Frequency distribution of workout sessions started across each day of the week (Sun–Sat)."
-            calculation="COUNT(sessions) grouped by day of week"
-            unit="sessions / day"
-            dateRange="All time"
-            limitations="Helps identify your preferred workout days vs recovery days."
+            title={t("member.analyticsView.sessionsByDayTooltipTitle")}
+            description={t("member.analyticsView.sessionsByDayTooltipDesc")}
+            calculation={t("member.analyticsView.sessionsByDayTooltipCalc")}
+            unit={t("member.analyticsView.sessionsByDayTooltipUnit")}
+            dateRange={t("member.analyticsView.sessionsByDayTooltipRange")}
+            limitations={t("member.analyticsView.sessionsByDayTooltipLimit")}
           />
         </div>
         <div className="h-[180px] w-full">
@@ -61,14 +66,17 @@ export const WorkoutFrequency: React.FC<WorkoutFrequencyProps> = ({
                     borderRadius: "8px",
                     color: "#fff",
                   }}
-                  formatter={(val: any) => [val, "Sessions"]}
+                  formatter={(val: any) => [
+                    val,
+                    t("member.analyticsView.sessions"),
+                  ]}
                 />
                 <Bar dataKey="sessions" fill="#3B82F6" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-xs text-gray-500">
-              No weekday data available.
+              {t("member.analyticsView.noWeekdayData")}
             </div>
           )}
         </div>
@@ -77,14 +85,16 @@ export const WorkoutFrequency: React.FC<WorkoutFrequencyProps> = ({
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-400" />
-          <h2 className="text-sm font-semibold text-white">Sessions by Time</h2>
+          <h2 className="text-sm font-semibold text-white">
+            {t("member.analyticsView.sessionsByTime")}
+          </h2>
           <InfoTooltip
-            title="Time of Day Distribution"
-            description="Frequency distribution of workout sessions started across different hours of the day."
-            calculation="COUNT(sessions) grouped by hour (0–23)"
-            unit="sessions / hour"
-            dateRange="All time"
-            limitations="Assumes sessions logged in the gym's local timezone."
+            title={t("member.analyticsView.sessionsByTimeTooltipTitle")}
+            description={t("member.analyticsView.sessionsByTimeTooltipDesc")}
+            calculation={t("member.analyticsView.sessionsByTimeTooltipCalc")}
+            unit={t("member.analyticsView.sessionsByTimeTooltipUnit")}
+            dateRange={t("member.analyticsView.sessionsByTimeTooltipRange")}
+            limitations={t("member.analyticsView.sessionsByTimeTooltipLimit")}
           />
         </div>
         <div className="h-[180px] w-full">
@@ -113,14 +123,17 @@ export const WorkoutFrequency: React.FC<WorkoutFrequencyProps> = ({
                     borderRadius: "8px",
                     color: "#fff",
                   }}
-                  formatter={(val: any) => [val, "Sessions"]}
+                  formatter={(val: any) => [
+                    val,
+                    t("member.analyticsView.sessions"),
+                  ]}
                 />
-                <Bar dataKey="sessions" fill="#8B5CF6" radius={[2, 2, 0, 0]} />
+                <Bar dataKey="sessions" fill="#10B981" radius={[2, 2, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-xs text-gray-500">
-              No time-of-day data available.
+              {t("member.analyticsView.noHourData")}
             </div>
           )}
         </div>

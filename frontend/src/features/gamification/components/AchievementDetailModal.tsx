@@ -1,6 +1,7 @@
 // src/features/gamification/components/AchievementDetailModal.tsx
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   X,
   Trophy,
@@ -51,10 +52,11 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
   achievement,
   onClose,
 }) => {
+  const { t, i18n } = useTranslation(["achievements"]);
+
   if (!achievement) return null;
 
   const {
-    description,
     tier,
     points,
     category,
@@ -63,7 +65,13 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
     earnedAt,
   } = achievement;
 
-  const displayName = achievement.name || achievement.title || "Achievement";
+  const displayName = t(`items.${achievement.code}.title` as any, {
+    defaultValue: achievement.name || achievement.title || "Achievement",
+  });
+  const displayDescription = t(`items.${achievement.code}.description` as any, {
+    defaultValue: achievement.description,
+  });
+
   const { current, target, percent } = calculateAchievementProgress(achievement);
 
   return (
@@ -75,8 +83,8 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          aria-label="Close"
-          className="absolute right-4 top-4 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-[#1E2329] hover:text-white"
+          aria-label={t("detailModal.close")}
+          className="absolute right-4 rtl:right-auto rtl:left-4 top-4 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-[#1E2329] hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
@@ -93,15 +101,15 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
             {getBadgeIcon(badgeIcon)}
           </div>
 
-          <div className="mt-4 flex items-center gap-2">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
             <span className="rounded-full border border-gray-700 bg-gray-800/80 px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase text-gray-300">
-              {tier} TIER
+              {t("detailModal.tierTier", { tier: t(`badge.tiers.${tier}` as any, { defaultValue: tier }) })}
             </span>
             <span className="rounded-full border border-green-500/30 bg-green-500/15 px-2.5 py-0.5 text-[10px] font-bold text-[#5BE584]">
-              +{points} XP
+              {t("badge.xp", { count: points })}
             </span>
             <span className="rounded-full border border-gray-700 bg-gray-800/80 px-2.5 py-0.5 text-[10px] font-bold text-gray-400">
-              {category}
+              {t(`categories.${category}` as any, { defaultValue: category })}
             </span>
           </div>
 
@@ -111,7 +119,7 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
           </h3>
 
           <p className="mt-2 text-sm text-gray-300 leading-relaxed max-w-sm">
-            {description}
+            {displayDescription}
           </p>
         </div>
 
@@ -120,17 +128,17 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
           {isEarned ? (
             <div className="flex items-center justify-between text-xs">
               <span className="text-gray-400 flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-[#5BE584]" /> Status
+                <CheckCircle className="h-4 w-4 text-[#5BE584]" /> {t("detailModal.status")}
               </span>
               <span className="font-semibold text-[#5BE584]">
-                Unlocked & Completed
+                {t("detailModal.unlockedAndCompleted")}
               </span>
             </div>
           ) : (
             <div>
               <div className="flex items-center justify-between text-xs mb-2">
                 <span className="text-gray-400 flex items-center gap-1.5">
-                  <Lock className="h-4 w-4 text-gray-500" /> Goal Requirement
+                  <Lock className="h-4 w-4 text-gray-500" /> {t("detailModal.goalRequirement")}
                 </span>
                 <span className="font-semibold text-gray-200">
                   {current} / {target} ({percent}%)
@@ -148,10 +156,10 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
           {earnedAt && (
             <div className="mt-3 pt-3 border-t border-[#1E2329] flex items-center justify-between text-xs">
               <span className="text-gray-400 flex items-center gap-1.5">
-                <Calendar className="h-4 w-4 text-gray-400" /> Unlocked Date
+                <Calendar className="h-4 w-4 text-gray-400" /> {t("detailModal.unlockedDate")}
               </span>
               <span className="font-medium text-gray-200">
-                {new Date(earnedAt).toLocaleDateString(undefined, {
+                {new Date(earnedAt).toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -167,10 +175,12 @@ export const AchievementDetailModal: React.FC<AchievementDetailModalProps> = ({
             onClick={onClose}
             className="w-full rounded-xl bg-[#1E2329] py-2.5 text-xs font-semibold text-gray-200 transition-colors hover:bg-[#2A313A] hover:text-white"
           >
-            Close
+            {t("detailModal.close")}
           </button>
         </div>
       </div>
     </div>
   );
 };
+
+export default AchievementDetailModal;

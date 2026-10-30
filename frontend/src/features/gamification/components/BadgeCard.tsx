@@ -1,6 +1,7 @@
 // src/features/gamification/components/BadgeCard.tsx
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Trophy,
   Flame,
@@ -93,8 +94,8 @@ const getBadgeIcon = (iconName: string, className = "h-6 w-6") => {
 };
 
 export const BadgeCard: React.FC<BadgeCardProps> = ({ achievement, onClick }) => {
+  const { t, i18n } = useTranslation(["achievements"]);
   const {
-    description,
     tier,
     points,
     isEarned,
@@ -102,7 +103,13 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({ achievement, onClick }) =>
     badgeIcon,
   } = achievement;
 
-  const displayName = achievement.name || achievement.title || "Achievement";
+  const displayName = t(`items.${achievement.code}.title` as any, {
+    defaultValue: achievement.name || achievement.title || "Achievement",
+  });
+  const displayDescription = t(`items.${achievement.code}.description` as any, {
+    defaultValue: achievement.description,
+  });
+
   const { current, target, percent } = calculateAchievementProgress(achievement);
   const styles = getTierStyles(tier);
 
@@ -137,19 +144,19 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({ achievement, onClick }) =>
             ) : (
               <div className="relative">
                 {getBadgeIcon(badgeIcon, "h-6 w-6 opacity-40")}
-                <Lock className="absolute -bottom-1 -right-1 h-3.5 w-3.5 text-gray-500" />
+                <Lock className="absolute -bottom-1 -right-1 rtl:-right-auto rtl:-left-1 h-3.5 w-3.5 text-gray-500" />
               </div>
             )}
           </div>
 
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex flex-col items-end rtl:items-start gap-1">
             <span
               className={`rounded-full border px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase ${styles.pillBg}`}
             >
-              {tier}
+              {t(`badge.tiers.${tier}` as any, { defaultValue: tier })}
             </span>
             <span className="text-[11px] font-semibold text-[#5BE584]">
-              +{points} pts
+              {t("badge.pts", { count: points })}
             </span>
           </div>
         </div>
@@ -165,7 +172,7 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({ achievement, onClick }) =>
             )}
           </div>
           <p className="mt-1 text-xs text-gray-400 line-clamp-2 leading-relaxed">
-            {description}
+            {displayDescription}
           </p>
         </div>
       </div>
@@ -174,21 +181,21 @@ export const BadgeCard: React.FC<BadgeCardProps> = ({ achievement, onClick }) =>
       <div className="mt-4 pt-3 border-t border-[#1E2329]/80">
         {isEarned ? (
           <div className="flex items-center justify-between text-[11px] text-gray-400">
-            <span className="font-medium text-[#5BE584]">Unlocked</span>
+            <span className="font-medium text-[#5BE584]">{t("badge.unlocked")}</span>
             <span>
               {earnedAt
-                ? new Date(earnedAt).toLocaleDateString(undefined, {
+                ? new Date(earnedAt).toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
                   })
-                : "Earned"}
+                : t("badge.earned")}
             </span>
           </div>
         ) : (
           <div>
             <div className="flex items-center justify-between text-[11px] text-gray-400 mb-1.5">
-              <span>Progress</span>
+              <span>{t("badge.progress")}</span>
               <span className="font-semibold text-gray-300">
                 {current} / {target} ({percent}%)
               </span>

@@ -2,9 +2,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { markAllNotificationsAsRead } from "../api/notifications.api";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const useMarkAllNotificationsRead = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation("notifications");
 
   return useMutation({
     mutationFn: (category?: string | void) =>
@@ -14,7 +16,7 @@ export const useMarkAllNotificationsRead = () => {
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
     onError: () => {
-      toast.error("Failed to mark all as read");
+      toast.error(t("toasts.markAllFailed"));
     },
   });
 };

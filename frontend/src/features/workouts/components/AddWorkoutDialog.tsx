@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   Link as LinkIcon,
   Search,
@@ -38,6 +39,7 @@ export default function AddWorkoutDialog({
   onClose,
   onWorkoutAdded,
 }: AddWorkoutDialogProps) {
+  const { t } = useTranslation(["workouts", "common"]);
   const navigate = useNavigate();
   const [inputVal, setInputVal] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +70,7 @@ export default function AddWorkoutDialog({
     if (e) e.preventDefault();
     const trimmed = inputVal.trim();
     if (!trimmed) {
-      setError("Please enter a workout ID, share code, or STREN workout link.");
+      setError(t("dialogs.emptyInputError", "Please enter a workout ID, share code, or STREN workout link."));
       return;
     }
 
@@ -79,12 +81,12 @@ export default function AddWorkoutDialog({
     try {
       const result = await resolveWorkout(trimmed);
       setResolvedResult(result);
-      toast.success("Workout verified and resolved successfully!");
+      toast.success(t("dialogs.resolveSuccess", "Workout verified and resolved successfully!"));
       if (onWorkoutAdded) onWorkoutAdded();
     } catch (err: any) {
       const msg =
         err?.response?.data?.message ||
-        "Could not resolve workout. Please check the ID or link and try again.";
+        t("dialogs.resolveFailedError", "Could not resolve workout. Please check the ID or link and try again.");
       setError(msg);
     } finally {
       setIsLoading(false);
@@ -146,7 +148,7 @@ export default function AddWorkoutDialog({
       { id: workoutId },
       {
         onSuccess: () => {
-          toast.success("Personal copy saved to your My Workouts list!");
+          toast.success(t("dialogs.copySavedToast", "Personal copy saved to your My Workouts list!"));
           onClose();
           navigate("/workout-builder/all");
         },
@@ -175,11 +177,11 @@ export default function AddWorkoutDialog({
                   <LinkIcon className="h-4 w-4" />
                 </div>
                 <h3 className="text-lg font-bold text-white tracking-tight">
-                  Add Workout by ID or Link
+                  {t("dialogs.addByIdTitle", "Add Workout by ID or Link")}
                 </h3>
               </div>
               <p className="text-xs text-[#9CA3AF]">
-                Paste a STREN workout UUID, share code, or URL to inspect and access the routine.
+                {t("dialogs.addByIdDesc", "Paste a STREN workout UUID, share code, or URL to inspect and access the routine.")}
               </p>
             </div>
 
@@ -195,11 +197,11 @@ export default function AddWorkoutDialog({
           {/* Form */}
           <form onSubmit={handleResolve} className="space-y-3">
             <label className="block text-xs font-semibold text-[#D1D5DB]">
-              Workout ID or Share Link
+              {t("dialogs.idOrLinkInputLabel", "Workout ID or Share Link")}
             </label>
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+                <Search className="absolute start-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                 <input
                   type="text"
                   value={inputVal}
@@ -207,8 +209,8 @@ export default function AddWorkoutDialog({
                     setInputVal(e.target.value);
                     if (error) setError(null);
                   }}
-                  placeholder="e.g. 550e8400... or https://.../workouts/..."
-                  className="w-full h-10 pl-10 pr-4 rounded-xl border border-[#1E2329] bg-[#090B0F] text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584] transition-colors"
+                  placeholder={t("dialogs.idOrLinkPlaceholder", "e.g. 550e8400... or https://.../workouts/...")}
+                  className="w-full h-10 ps-10 pe-4 rounded-xl border border-[#1E2329] bg-[#090B0F] text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584] transition-colors"
                 />
               </div>
               <button
@@ -219,10 +221,10 @@ export default function AddWorkoutDialog({
                 {isLoading ? (
                   <>
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>Resolving...</span>
+                    <span>{t("dialogs.resolving", "Resolving...")}</span>
                   </>
                 ) : (
-                  <span>Verify & Add</span>
+                  <span>{t("dialogs.verifyAndAdd", "Verify & Add")}</span>
                 )}
               </button>
             </div>
@@ -243,17 +245,17 @@ export default function AddWorkoutDialog({
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#5BE584]/15 text-[#5BE584] border border-[#5BE584]/30">
                       {resolvedResult?.sourceType === "template"
-                        ? "Public Template"
+                        ? t("badges.publicTemplate", "Public Template")
                         : resolvedResult?.sourceType === "assigned"
-                          ? "Coach Assigned"
+                          ? t("badges.coachAssigned", "Coach Assigned")
                           : resolvedResult?.sourceType === "personal"
-                            ? "Personal Routine"
-                            : "Shared Workout"}
+                            ? t("badges.personalRoutine", "Personal Routine")
+                            : t("badges.sharedWorkout", "Shared Workout")}
                     </span>
                     {resolvedResult?.isAlreadySaved && (
                       <span className="flex items-center gap-1 text-[10px] font-medium text-emerald-400">
                         <CheckCircle2 className="h-3 w-3" />
-                        In Your Library
+                        {t("badges.inYourLibrary", "In Your Library")}
                       </span>
                     )}
                   </div>
@@ -272,15 +274,15 @@ export default function AddWorkoutDialog({
               <div className="grid grid-cols-3 gap-2 py-2 border-y border-[#2A3039]/60 text-xs text-[#9CA3AF]">
                 <div className="flex items-center gap-1.5">
                   <Dumbbell className="h-3.5 w-3.5 text-[#5BE584]" />
-                  <span>{workout.category}</span>
+                  <span>{t(`categories.${workout.category.toLowerCase()}`, workout.category)}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-3.5 w-3.5 text-[#5BE584]" />
-                  <span>~{workout.estimatedDuration}m</span>
+                  <span>{t("card.estDuration", { count: workout.estimatedDuration, defaultValue: `~${workout.estimatedDuration}m` })}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Layers className="h-3.5 w-3.5 text-[#5BE584]" />
-                  <span>{workout.exercises?.length || 0} Movements</span>
+                  <span>{t("dialogs.movementsCount", { count: workout.exercises?.length || 0, defaultValue: `${workout.exercises?.length || 0} Movements` })}</span>
                 </div>
               </div>
 
@@ -293,7 +295,7 @@ export default function AddWorkoutDialog({
                   className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#5BE584] px-4 py-2.5 text-xs font-bold text-[#090B0F] hover:bg-[#4ade80] transition-all shadow-md shadow-[#5BE584]/10 disabled:opacity-50"
                 >
                   <Play className="h-3.5 w-3.5 fill-current" />
-                  <span>{isStarting ? "Starting..." : "Start Workout"}</span>
+                  <span>{isStarting ? t("actions.starting", "Starting...") : t("actions.startWorkout", "Start Workout")}</span>
                 </button>
 
                 <button
@@ -305,7 +307,7 @@ export default function AddWorkoutDialog({
                   className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#101418] px-3.5 py-2.5 text-xs font-semibold text-white hover:border-[#2A313A] transition-colors"
                 >
                   <ExternalLink className="h-3.5 w-3.5 text-[#9CA3AF]" />
-                  <span>Details</span>
+                  <span>{t("actions.details", "Details")}</span>
                 </button>
 
                 {!resolvedResult?.isAlreadySaved && (
@@ -316,7 +318,7 @@ export default function AddWorkoutDialog({
                     className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#101418] px-3.5 py-2.5 text-xs font-semibold text-[#5BE584] hover:bg-[#16291D] hover:border-[#23422E] transition-colors disabled:opacity-50"
                   >
                     <Copy className="h-3.5 w-3.5" />
-                    <span>{isDuplicating ? "Saving..." : "Save Copy"}</span>
+                    <span>{isDuplicating ? t("actions.saving", "Saving...") : t("actions.saveCopy", "Save Copy")}</span>
                   </button>
                 )}
               </div>
@@ -325,13 +327,13 @@ export default function AddWorkoutDialog({
 
           {/* Footer note */}
           <div className="flex items-center justify-between pt-2 border-t border-[#1E2329] text-[11px] text-[#6B7280]">
-            <span>Supported: UUIDs, share codes, and STREN workout links</span>
+            <span>{t("dialogs.supportedFormats", "Supported: UUIDs, share codes, and STREN workout links")}</span>
             <button
               type="button"
               onClick={onClose}
               className="hover:text-white transition-colors"
             >
-              Cancel
+              {t("actions.cancel", "Cancel")}
             </button>
           </div>
         </div>

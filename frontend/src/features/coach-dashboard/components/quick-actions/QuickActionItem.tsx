@@ -42,8 +42,8 @@ export const QuickActionItem: React.FC<QuickActionItemProps> = ({
           </span>
         </div>
       </div>
-      <div className="shrink-0 pl-3 text-gray-600 transition-transform group-hover:translate-x-1 group-hover:text-gray-300">
-        <ArrowRight className="h-4 w-4" />
+      <div className="shrink-0 pl-3 rtl:pl-0 rtl:pr-3 text-gray-600 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 group-hover:text-gray-300">
+        <ArrowRight className="h-4 w-4 rtl:rotate-180" />
       </div>
     </Link>
   );

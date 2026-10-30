@@ -1,11 +1,14 @@
 // src/features/profile/components/states/ProfileLoading.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export const ProfileLoading: React.FC = () => {
+  const { t } = useTranslation(["profile"]);
+
   return (
     <div
       className="min-h-full w-full p-4 md:p-6 lg:p-8 flex flex-col gap-6 animate-pulse"
-      aria-label="Loading Profile"
+      aria-label={t("states.loadingAria")}
     >
       {/* Header Skeleton */}
       <div className="flex flex-col gap-6 rounded-lg border border-[#1e2329] bg-[#0d1014] p-6">

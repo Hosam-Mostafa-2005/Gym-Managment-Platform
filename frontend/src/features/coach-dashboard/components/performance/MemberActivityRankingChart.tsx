@@ -1,5 +1,6 @@
 // src/features/coach-dashboard/components/performance/MemberActivityRankingChart.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   ResponsiveContainer,
   BarChart,
@@ -20,6 +21,7 @@ interface MemberActivityRankingChartProps {
 export const MemberActivityRankingChart: React.FC<
   MemberActivityRankingChartProps
 > = ({ data = [] }) => {
+  const { t } = useTranslation(["coachDashboard"]);
   const hasData = data && data.length > 0;
 
   return (
@@ -28,18 +30,20 @@ export const MemberActivityRankingChart: React.FC<
         <div className="flex items-center gap-2">
           <Trophy className="h-4 w-4 text-[#5BE584]" />
           <h3 className="text-sm font-semibold text-gray-100">
-            Top Active Members
+            {t("analyticsView.topActiveMembers")}
           </h3>
           <InfoTooltip
-            title="Member Training Engagement Ranking"
-            description="Leaderboard of your assigned members ranked horizontally by total completed workout sessions."
-            calculation="COUNT(sessions WHERE memberId = user.id AND status = 'COMPLETED') DESC"
-            unit="completed sessions"
-            dateRange="All time"
-            limitations="Limited to members in your active training roster."
+            title={t("analyticsView.tooltips.rankingTitle")}
+            description={t("analyticsView.tooltips.rankingDesc")}
+            calculation={t("analyticsView.tooltips.rankingCalc")}
+            unit={t("analyticsView.tooltips.rankingUnit")}
+            dateRange={t("analyticsView.tooltips.rankingRange")}
+            limitations={t("analyticsView.tooltips.rankingLimit")}
           />
         </div>
-        <span className="text-xs text-gray-500">By Completed Sessions</span>
+        <span className="text-xs text-gray-500">
+          {t("analyticsView.byCompletedSessions")}
+        </span>
       </div>
 
       <div className="h-48 w-full">
@@ -82,7 +86,10 @@ export const MemberActivityRankingChart: React.FC<
                   fontSize: "12px",
                   color: "#f3f4f6",
                 }}
-                formatter={(val: any) => [`${val} sessions`, "Completed"]}
+                formatter={(val: any) => [
+                  t("analyticsView.sessionsTooltip", { count: val }),
+                  t("analyticsView.completed"),
+                ]}
               />
               <Bar
                 dataKey="completedSessions"
@@ -94,9 +101,9 @@ export const MemberActivityRankingChart: React.FC<
           </ResponsiveContainer>
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-1 text-xs text-gray-500">
-            <span>No member activity recorded yet.</span>
+            <span>{t("analyticsView.noMemberActivityRecorded")}</span>
             <span className="text-[11px] text-gray-600">
-              Assigned members who complete sessions will appear here.
+              {t("analyticsView.assignedMembersPrompt")}
             </span>
           </div>
         )}

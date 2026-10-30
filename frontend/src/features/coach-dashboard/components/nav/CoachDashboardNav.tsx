@@ -1,6 +1,7 @@
 // src/features/coach-dashboard/components/nav/CoachDashboardNav.tsx
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   BarChart3,
@@ -10,6 +11,8 @@ import {
 } from "lucide-react";
 
 export const CoachDashboardNav: React.FC = () => {
+  const { t } = useTranslation(["coachDashboard"]);
+
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-[#1E2329] pb-3">
       {/* Primary Subview Navigation Tabs */}
@@ -26,7 +29,7 @@ export const CoachDashboardNav: React.FC = () => {
           }
         >
           <LayoutDashboard className="h-4 w-4" />
-          <span>Coaching Overview</span>
+          <span>{t("nav.coachingOverview")}</span>
         </NavLink>
 
         <NavLink
@@ -40,7 +43,7 @@ export const CoachDashboardNav: React.FC = () => {
           }
         >
           <BarChart3 className="h-4 w-4" />
-          <span>Roster Analytics & Telemetry</span>
+          <span>{t("nav.rosterAnalytics")}</span>
         </NavLink>
 
         <NavLink
@@ -54,7 +57,7 @@ export const CoachDashboardNav: React.FC = () => {
           }
         >
           <Clock className="h-4 w-4" />
-          <span>Activity Feed</span>
+          <span>{t("nav.activityFeed")}</span>
         </NavLink>
       </div>
 
@@ -65,7 +68,7 @@ export const CoachDashboardNav: React.FC = () => {
           className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#101418] px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white hover:border-[#2A313C] transition"
         >
           <Users className="h-3.5 w-3.5 text-[#5BE584]" />
-          <span>Athletes Roster</span>
+          <span>{t("nav.athletesRoster")}</span>
         </NavLink>
 
         <NavLink
@@ -73,7 +76,7 @@ export const CoachDashboardNav: React.FC = () => {
           className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#101418] px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white hover:border-[#2A313C] transition"
         >
           <ClipboardList className="h-3.5 w-3.5 text-blue-400" />
-          <span>Assignments</span>
+          <span>{t("nav.assignments")}</span>
         </NavLink>
       </div>
     </div>

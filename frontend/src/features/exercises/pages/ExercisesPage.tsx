@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react";
-import { AlertCircle, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import {
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+} from "lucide-react";
+import { useTranslation, Trans } from "react-i18next";
 
 import type { Exercise } from "../types/exercise.types";
 import { useAllExercises } from "../hooks/useExercises";
@@ -53,6 +59,8 @@ function ExerciseRowSkeleton() {
 }
 
 const ExercisesPage = () => {
+  const { t } = useTranslation(["exercises"]);
+
   // Filter & Sort State
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMuscle, setSelectedMuscle] = useState("all");
@@ -280,11 +288,13 @@ const ExercisesPage = () => {
             <AlertCircle className="h-6 w-6" />
           </div>
           <h3 className="text-base font-bold text-white">
-            Unable to Load Exercise Library
+            {t("error.title", "Unable to Load Exercise Library")}
           </h3>
           <p className="mx-auto max-w-md text-xs text-[#9CA3AF]">
-            We encountered a network or server error while loading exercises.
-            Please try again.
+            {t(
+              "error.description",
+              "We encountered a network or server error while loading exercises. Please try again.",
+            )}
           </p>
           <button
             type="button"
@@ -292,7 +302,7 @@ const ExercisesPage = () => {
             className="inline-flex items-center gap-2 rounded-xl bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] hover:bg-[#49D472] transition-colors"
           >
             <RefreshCw className="h-3.5 w-3.5" />
-            Retry
+            {t("error.retry", "Retry")}
           </button>
         </div>
       ) : (
@@ -310,21 +320,26 @@ const ExercisesPage = () => {
       {!isLoading && !isError && filteredAndSortedExercises.length > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[#1E2329] bg-[#101418]/90 px-5 py-3.5">
           <p className="text-xs text-[#9CA3AF]">
-            Page <strong className="font-semibold text-white">{safePage}</strong>{" "}
-            of <strong className="font-semibold text-white">{totalPages}</strong>{" "}
-            • Showing{" "}
-            <strong className="font-semibold text-white">
-              {(safePage - 1) * ITEMS_PER_PAGE + 1}–
-              {Math.min(
-                safePage * ITEMS_PER_PAGE,
-                filteredAndSortedExercises.length,
-              )}
-            </strong>{" "}
-            of{" "}
-            <strong className="font-semibold text-white">
-              {filteredAndSortedExercises.length}
-            </strong>{" "}
-            movements
+            <Trans
+              i18nKey="pagination.summary"
+              ns="exercises"
+              values={{
+                page: safePage,
+                totalPages: totalPages,
+                from: (safePage - 1) * ITEMS_PER_PAGE + 1,
+                to: Math.min(
+                  safePage * ITEMS_PER_PAGE,
+                  filteredAndSortedExercises.length,
+                ),
+                total: filteredAndSortedExercises.length,
+              }}
+              components={{
+                1: <strong className="font-semibold text-white" />,
+                3: <strong className="font-semibold text-white" />,
+                5: <strong className="font-semibold text-white" />,
+                7: <strong className="font-semibold text-white" />,
+              }}
+            />
           </p>
 
           <div className="flex items-center gap-1.5">
@@ -334,8 +349,8 @@ const ExercisesPage = () => {
               disabled={safePage === 1}
               className="inline-flex items-center gap-1 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#F3F4F6] hover:border-[#5BE584]/40 hover:text-[#5BE584] disabled:opacity-40 disabled:pointer-events-none transition-colors"
             >
-              <ChevronLeft className="h-3.5 w-3.5" />
-              Previous
+              <ChevronLeft className="h-3.5 w-3.5 rtl:rotate-180" />
+              {t("pagination.previous", "Previous")}
             </button>
 
             <div className="hidden sm:flex items-center gap-1">
@@ -365,8 +380,8 @@ const ExercisesPage = () => {
               disabled={safePage >= totalPages}
               className="inline-flex items-center gap-1 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#F3F4F6] hover:border-[#5BE584]/40 hover:text-[#5BE584] disabled:opacity-40 disabled:pointer-events-none transition-colors"
             >
-              Next
-              <ChevronRight className="h-3.5 w-3.5" />
+              {t("pagination.next", "Next")}
+              <ChevronRight className="h-3.5 w-3.5 rtl:rotate-180" />
             </button>
           </div>
         </div>

@@ -12,6 +12,7 @@ import {
   Plus,
   Play,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type {
   ScheduledWorkout,
   CoachingAppointment,
@@ -38,7 +39,19 @@ export default function CalendarWeekView({
   onSelectDate,
   isCoachView = false,
 }: CalendarWeekViewProps) {
+  const { t, i18n } = useTranslation("trainingCalendar");
   const restDaysSet = useMemo(() => new Set(restDays), [restDays]);
+
+  const formatTime = (isoString: string) => {
+    try {
+      return new Date(isoString).toLocaleTimeString(
+        i18n.language === "ar" ? "ar-EG" : "en-US",
+        { hour: "numeric", minute: "2-digit" },
+      );
+    } catch {
+      return "";
+    }
+  };
 
   // Compute 7 days of the week starting from Monday
   const weekDays = useMemo(() => {
@@ -64,14 +77,17 @@ export default function CalendarWeekView({
       days.push({
         date: current,
         dateKey,
-        dayName: current.toLocaleDateString(undefined, { weekday: "short" }),
+        dayName: current.toLocaleDateString(
+          i18n.language === "ar" ? "ar-EG" : "en-US",
+          { weekday: "short" },
+        ),
         dayNumber: current.getDate(),
         isToday: dateKey === todayStr,
       });
     }
 
     return days;
-  }, [currentDate]);
+  }, [currentDate, i18n.language]);
 
   // Index events by dateKey
   const eventsByDate = useMemo(() => {
@@ -103,25 +119,25 @@ export default function CalendarWeekView({
       case "COMPLETED":
         return (
           <span className="text-[10px] font-semibold text-[#5BE584] flex items-center gap-1">
-            <CheckCircle2 size={11} /> Completed
+            <CheckCircle2 size={11} /> {t("status.completed")}
           </span>
         );
       case "MISSED":
         return (
           <span className="text-[10px] font-semibold text-amber-400 flex items-center gap-1">
-            <AlertTriangle size={11} /> Missed
+            <AlertTriangle size={11} /> {t("status.missed")}
           </span>
         );
       case "CANCELLED":
         return (
           <span className="text-[10px] font-semibold text-gray-500">
-            Cancelled
+            {t("status.cancelled")}
           </span>
         );
       default:
         return (
           <span className="text-[10px] font-semibold text-blue-400 flex items-center gap-1">
-            <Clock size={11} /> Scheduled
+            <Clock size={11} /> {t("status.scheduled")}
           </span>
         );
     }
@@ -168,7 +184,7 @@ export default function CalendarWeekView({
                 <button
                   type="button"
                   onClick={() => onSelectDate?.(day.dateKey)}
-                  title="Schedule on this day"
+                  title={t("controls.scheduleWorkout")}
                   className="h-6 w-6 rounded-md bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors"
                 >
                   <Plus size={13} />
@@ -179,24 +195,18 @@ export default function CalendarWeekView({
               <div className="flex-1 p-2 space-y-2 overflow-y-auto max-h-[500px]">
                 {/* Coaching Appointments */}
                 {events.appointments.map((appt) => {
-                  const startTime = new Date(appt.startTime).toLocaleTimeString(
-                    [],
-                    { hour: "numeric", minute: "2-digit" },
-                  );
-                  const endTime = new Date(appt.endTime).toLocaleTimeString([], {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  });
+                  const startTime = formatTime(appt.startTime);
+                  const endTime = formatTime(appt.endTime);
                   return (
                     <div
                       key={appt.id}
                       onClick={() => onSelectAppointment(appt)}
-                      className="p-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-left cursor-pointer transition-all hover:scale-[1.01]"
+                      className="p-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-left rtl:text-right cursor-pointer transition-all hover:scale-[1.01]"
                     >
                       <div className="flex items-center justify-between text-[10px] text-purple-300 font-semibold mb-1">
                         <span className="flex items-center gap-1">
                           <ShieldCheck size={12} className="text-purple-400" />
-                          Appointment
+                          {t("events.appointment")}
                         </span>
                         <span>{startTime}</span>
                       </div>
@@ -205,9 +215,9 @@ export default function CalendarWeekView({
                       </div>
                       <div className="text-[10px] text-gray-400 mt-0.5 truncate">
                         {isCoachView && appt.member
-                          ? `With ${appt.member.name}`
+                          ? t("events.withMember", { name: appt.member.name })
                           : appt.trainer
-                          ? `With Coach ${appt.trainer.name}`
+                          ? t("events.withCoach", { name: appt.trainer.name })
                           : `${startTime} – ${endTime}`}
                       </div>
                     </div>
@@ -216,15 +226,12 @@ export default function CalendarWeekView({
 
                 {/* Scheduled Workouts */}
                 {events.workouts.map((sw) => {
-                  const timeStr = new Date(sw.scheduledAt).toLocaleTimeString(
-                    [],
-                    { hour: "numeric", minute: "2-digit" },
-                  );
+                  const timeStr = formatTime(sw.scheduledAt);
                   return (
                     <div
                       key={sw.id}
                       onClick={() => onSelectWorkout(sw)}
-                      className="p-2.5 rounded-xl bg-[#161B22] hover:bg-[#1E2329] border border-[#262D35] text-left cursor-pointer transition-all hover:scale-[1.01]"
+                      className="p-2.5 rounded-xl bg-[#161B22] hover:bg-[#1E2329] border border-[#262D35] text-left rtl:text-right cursor-pointer transition-all hover:scale-[1.01]"
                     >
                       <div className="flex items-center justify-between text-[10px] text-gray-400 mb-1">
                         <span className="flex items-center gap-1 font-mono">
@@ -234,14 +241,18 @@ export default function CalendarWeekView({
                         {getWorkoutStatusBadge(sw.status)}
                       </div>
                       <div className="text-xs font-bold text-white truncate">
-                        {sw.workout?.title || "Workout Session"}
+                        {sw.workout?.title || t("events.defaultWorkoutTitle")}
                       </div>
                       <div className="flex items-center justify-between text-[10px] text-gray-400 mt-1">
                         <span>
-                          {sw.workout?.exercises?.length || 0} exercises
+                          {t("events.exerciseCount", {
+                            count: sw.workout?.exercises?.length || 0,
+                          })}
                         </span>
                         {sw.trainer && (
-                          <span className="text-emerald-400">Coach</span>
+                          <span className="text-emerald-400">
+                            {t("events.coachAssigned")}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -255,10 +266,10 @@ export default function CalendarWeekView({
                       <Coffee size={14} />
                     </div>
                     <div className="text-xs font-semibold text-gray-300">
-                      Rest & Recovery
+                      {t("events.restAndRecovery")}
                     </div>
                     <div className="text-[10px] text-gray-500 mt-0.5">
-                      No workouts scheduled
+                      {t("events.noWorkoutsScheduled")}
                     </div>
                   </div>
                 )}

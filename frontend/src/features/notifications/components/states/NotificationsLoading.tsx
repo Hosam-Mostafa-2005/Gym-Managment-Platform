@@ -1,9 +1,16 @@
 // src/features/notifications/components/states/NotificationsLoading.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export const NotificationsLoading: React.FC = () => {
+  const { t } = useTranslation("notifications");
+
   return (
-    <div className="flex w-full flex-col gap-3 animate-pulse">
+    <div
+      role="status"
+      aria-label={t("states.loadingAria")}
+      className="flex w-full flex-col gap-3 animate-pulse"
+    >
       {[...Array(6)].map((_, i) => (
         <div
           key={i}

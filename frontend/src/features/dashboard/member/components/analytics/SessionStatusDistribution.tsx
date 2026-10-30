@@ -1,5 +1,6 @@
 // src/features/dashboard/member/components/analytics/SessionStatusDistribution.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   PieChart,
   Pie,
@@ -18,6 +19,7 @@ interface SessionStatusDistributionProps {
 export const SessionStatusDistribution: React.FC<
   SessionStatusDistributionProps
 > = ({ data = [] }) => {
+  const { t } = useTranslation(["dashboard"]);
   const hasData = data && data.length > 0 && data.some((d) => d.count > 0);
   const total = data.reduce((acc, curr) => acc + (curr.count || 0), 0);
 
@@ -27,19 +29,19 @@ export const SessionStatusDistribution: React.FC<
         <div className="flex items-center gap-2">
           <PieChartIcon className="h-5 w-5 text-gray-400" />
           <h2 className="text-sm font-semibold text-white">
-            Session Status Breakdown
+            {t("member.analyticsView.sessionStatusBreakdown")}
           </h2>
           <InfoTooltip
-            title="Session Status Distribution"
-            description="Proportion of your workout sessions by final operational status: Completed, In Progress, or Cancelled."
-            calculation="SUM(sessions) grouped by status / total sessions × 100"
-            unit="percentage & count"
-            dateRange="All time"
-            limitations="Cancelled sessions record abandoned workouts; in progress denotes active sessions."
+            title={t("member.analyticsView.sessionStatusTooltipTitle")}
+            description={t("member.analyticsView.sessionStatusTooltipDesc")}
+            calculation={t("member.analyticsView.sessionStatusTooltipCalc")}
+            unit={t("member.analyticsView.sessionStatusTooltipUnit")}
+            dateRange={t("member.analyticsView.sessionStatusTooltipRange")}
+            limitations={t("member.analyticsView.sessionStatusTooltipLimit")}
           />
         </div>
         <span className="text-xs font-mono font-medium text-gray-500">
-          {total} Total Sessions
+          {t("member.analyticsView.totalSessions", { count: total })}
         </span>
       </div>
 
@@ -80,7 +82,11 @@ export const SessionStatusDistribution: React.FC<
                           <span className="font-semibold">{item.status}</span>
                         </div>
                         <div className="mt-1 flex items-center justify-between gap-4 text-gray-400">
-                          <span>{item.count} sessions</span>
+                          <span>
+                            {t("member.analyticsView.sessionsCount", {
+                              count: item.count,
+                            })}
+                          </span>
                           <span className="font-mono text-[#5BE584]">
                             {item.percentage}%
                           </span>
@@ -95,9 +101,9 @@ export const SessionStatusDistribution: React.FC<
           </ResponsiveContainer>
         ) : (
           <div className="flex h-full flex-col items-center justify-center gap-1 text-sm text-gray-500">
-            <span>No workout session history recorded yet.</span>
+            <span>{t("member.analyticsView.noSessionHistory")}</span>
             <span className="text-xs text-gray-600">
-              Start a workout to see your completion distribution.
+              {t("member.analyticsView.startWorkoutToSeeDistribution")}
             </span>
           </div>
         )}

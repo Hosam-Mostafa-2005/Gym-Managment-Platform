@@ -52,6 +52,12 @@ describe("STREN — Coach–Member Relationship, Invitations & History Sharing T
     createdAt: new Date("2023-01-01T00:00:00.000Z"),
   };
 
+  const origGlobalTx = prisma.$transaction;
+  (prisma as any).$transaction = async (cb: any) => {
+    if (typeof cb === "function") return cb(prisma);
+    return cb;
+  };
+
   // ──────────────────────────────────────────────────────────────────────────
   // Scenario 1: Coach invites eligible member by email
   // ──────────────────────────────────────────────────────────────────────────
@@ -320,15 +326,20 @@ describe("STREN — Coach–Member Relationship, Invitations & History Sharing T
     let updatedData: any = null;
     let notificationPayload: any = null;
 
-    (prisma.coachMemberRelationship as any).findFirst = async () => ({
-      id: "rel-123",
-      trainerId: coach1Id,
-      memberId,
-      status: RELATIONSHIP_STATUS.PENDING,
-      isActive: true,
-      trainer: coach1User,
-      member: memberUser,
-    });
+    (prisma.coachMemberRelationship as any).findFirst = async ({ where }: any = {}) => {
+      if (where?.status === RELATIONSHIP_STATUS.ACTIVE) {
+        return null;
+      }
+      return {
+        id: "rel-123",
+        trainerId: coach1Id,
+        memberId,
+        status: RELATIONSHIP_STATUS.PENDING,
+        isActive: true,
+        trainer: coach1User,
+        member: memberUser,
+      };
+    };
 
     (prisma.coachMemberRelationship as any).update = async ({ data }: any) => {
       updatedData = data;
@@ -391,15 +402,20 @@ describe("STREN — Coach–Member Relationship, Invitations & History Sharing T
     let updatedData: any = null;
     let notificationPayload: any = null;
 
-    (prisma.coachMemberRelationship as any).findFirst = async () => ({
-      id: "rel-123",
-      trainerId: coach1Id,
-      memberId,
-      status: RELATIONSHIP_STATUS.PENDING,
-      isActive: true,
-      trainer: coach1User,
-      member: memberUser,
-    });
+    (prisma.coachMemberRelationship as any).findFirst = async ({ where }: any = {}) => {
+      if (where?.status === RELATIONSHIP_STATUS.ACTIVE) {
+        return null;
+      }
+      return {
+        id: "rel-123",
+        trainerId: coach1Id,
+        memberId,
+        status: RELATIONSHIP_STATUS.PENDING,
+        isActive: true,
+        trainer: coach1User,
+        member: memberUser,
+      };
+    };
 
     (prisma.coachMemberRelationship as any).update = async ({ data }: any) => {
       updatedData = data;

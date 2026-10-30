@@ -1,5 +1,6 @@
 // src/features/dashboard/member/components/overview/OverviewGrid.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   CheckCircle2,
   Dumbbell,
@@ -11,17 +12,19 @@ import {
 import { OverviewCard } from "./OverviewCard";
 
 interface OverviewGridProps {
-  overview: any; // Type from dashboard.types.ts
+  overview: any;
 }
 
 export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
+  const { t } = useTranslation(["dashboard"]);
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
       <OverviewCard
-        title="Completed"
+        title={t("member.overviewGrid.completed")}
         value={overview?.completedSessions ?? 0}
         icon={CheckCircle2}
-        description="Sessions"
+        description={t("member.overviewGrid.sessions")}
         highlight
         infoTooltip={{
           title: "Completed Sessions",
@@ -34,10 +37,10 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
         }}
       />
       <OverviewCard
-        title="Adherence"
+        title={t("member.overviewGrid.adherence")}
         value={`${overview?.completionRate ?? 0}%`}
         icon={TrendingUp}
-        description="Rate"
+        description={t("member.overviewGrid.rate")}
         highlight
         infoTooltip={{
           title: "Workout Adherence Rate",
@@ -51,10 +54,12 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
         }}
       />
       <OverviewCard
-        title="Streak"
+        title={t("member.overviewGrid.streak")}
         value={`${overview?.currentStreak ?? 0}d`}
         icon={Flame}
-        description={`Best: ${overview?.bestStreak ?? 0}d`}
+        description={t("member.overviewGrid.best", {
+          count: overview?.bestStreak ?? 0,
+        })}
         infoTooltip={{
           title: "Active Workout Streak",
           description:
@@ -68,10 +73,10 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
         }}
       />
       <OverviewCard
-        title="This Week"
+        title={t("member.overviewGrid.thisWeek")}
         value={overview?.workoutsThisWeek ?? 0}
         icon={CalendarDays}
-        description="Workouts"
+        description={t("member.overviewGrid.workouts")}
         infoTooltip={{
           title: "Weekly Frequency",
           description:
@@ -85,10 +90,10 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
         }}
       />
       <OverviewCard
-        title="Avg Duration"
+        title={t("member.overviewGrid.avgDuration")}
         value={`${overview?.averageWorkoutDuration ?? 0}m`}
         icon={Timer}
-        description="Per session"
+        description={t("member.overviewGrid.perSession")}
         infoTooltip={{
           title: "Average Session Duration",
           description:
@@ -101,10 +106,10 @@ export const OverviewGrid: React.FC<OverviewGridProps> = ({ overview }) => {
         }}
       />
       <OverviewCard
-        title="Total Volume"
+        title={t("member.overviewGrid.totalVolume")}
         value={(overview?.totalVolumeLifted ?? 0).toLocaleString()}
         icon={Dumbbell}
-        description="kg lifted"
+        description={t("member.overviewGrid.kgLifted")}
         infoTooltip={{
           title: "Cumulative Tonnage / Volume",
           description:

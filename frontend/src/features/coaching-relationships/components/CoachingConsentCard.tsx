@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import {
   ShieldCheck,
   Lock,
@@ -15,6 +17,7 @@ import { useTerminateRelationship } from "../hooks/useTerminateRelationship";
 import { HistorySharingConsentDialog } from "./HistorySharingConsentDialog";
 
 export const CoachingConsentCard: React.FC = () => {
+  const { t } = useTranslation(["common"]);
   const { data: relationship, isLoading } = useActiveCoachingRelationship();
   const { mutate: updateConsent, isPending: isUpdatingConsent } =
     useUpdateHistoryConsent();
@@ -27,7 +30,7 @@ export const CoachingConsentCard: React.FC = () => {
     return (
       <div className="flex items-center justify-center p-6 text-xs text-gray-500 rounded-xl border border-[#1E2329] bg-[#0D1014]">
         <Loader2 className="h-4 w-4 animate-spin mr-2 text-[#5BE584]" />
-        Loading coaching status...
+        {t("actions.loading", "Loading coaching status...")}
       </div>
     );
   }
@@ -48,6 +51,7 @@ export const CoachingConsentCard: React.FC = () => {
     );
   }
 
+  const coachName = relationship.trainer?.name || "your Coach";
   const isConsentGranted = relationship.historySharingConsent === "GRANTED";
 
   const handleRevokeConsent = () => {
@@ -64,12 +68,28 @@ export const CoachingConsentCard: React.FC = () => {
   };
 
   const handleTerminateRelationship = () => {
-    if (
-      window.confirm(
-        `Are you sure you want to end your coaching relationship with Coach ${relationship.trainer?.name || "your coach"}?`,
-      )
-    ) {
-      terminateRel(relationship.id);
+    const promptMessage = t("coachConflict.confirmEndPromptOnly", {
+      coachName,
+      defaultValue: `Are you sure you want to end your coaching relationship with Coach ${coachName}? You will then be training independently.`,
+    });
+
+    if (window.confirm(promptMessage)) {
+      terminateRel(undefined, {
+        onSuccess: () => {
+          toast.success(
+            t("coachConflict.endedSuccess", {
+              coachName,
+              defaultValue: `Coaching relationship with Coach ${coachName} ended.`,
+            }),
+          );
+        },
+        onError: (err: any) => {
+          toast.error(
+            err?.response?.data?.message ||
+              t("coachConflict.failed", "Failed to update coaching relationship."),
+          );
+        },
+      });
     }
   };
 

@@ -1,0 +1,121 @@
+{
+  "header": {
+    "backToMember": "العودة إلى العضو",
+    "title": "قياسات الجسم",
+    "description": "تتبع وإدارة قياسات الجسم وسجلات التطور بمرور الوقت.",
+    "addMeasurement": "إضافة قياس"
+  },
+  "overview": {
+    "title": "أحدث القياسات",
+    "noMeasurementsTitle": "لم يتم تسجيل أي قياسات بعد.",
+    "noMeasurementsDescription": "أضف قياساً للبدء في تتبع تطور العضو.",
+    "weight": "الوزن",
+    "height": "الطول",
+    "bodyFat": "نسبة الدهون",
+    "bmi": "مؤشر كتلة الجسم (BMI)",
+    "measuredAt": "تاريخ القياس",
+    "circumferencesTitle": "محيط الجسم ({{unit}})",
+    "notesTitle": "ملاحظات",
+    "unitKg": "كجم",
+    "unitCm": "سم",
+    "unitPercent": "٪",
+    "statusActive": "نشط",
+    "statusInactive": "غير نشط"
+  },
+  "circumferences": {
+    "chest": "الصدر",
+    "shoulders": "الأكتاف",
+    "neck": "الرقبة",
+    "leftArm": "الذراع الأيسر",
+    "rightArm": "الذراع الأيمن",
+    "arms": "الذراعان",
+    "forearms": "الساعدان",
+    "waist": "الخصر",
+    "hips": "الأرداف",
+    "leftThigh": "الفخذ الأيسر",
+    "rightThigh": "الفخذ الأيمن",
+    "thighs": "الفخذان",
+    "leftCalf": "ربلة الساق اليسرى",
+    "rightCalf": "ربلة الساق اليمنى",
+    "calves": "ربلتا الساق"
+  },
+  "history": {
+    "title": "سجل القياسات",
+    "colDate": "التاريخ",
+    "colWeight": "الوزن (كجم)",
+    "colHeight": "الطول (سم)",
+    "colBodyFat": "نسبة الدهون (٪)",
+    "colChest": "الصدر (سم)",
+    "colWaist": "الخصر (سم)",
+    "colNotes": "ملاحظات",
+    "colActions": "الإجراءات",
+    "editAria": "تعديل القياس",
+    "deleteAria": "حذف القياس",
+    "viewDetails": "عرض التفاصيل",
+    "emptyTitle": "لا توجد قياسات بعد",
+    "emptyDescription": "لا توجد أي قياسات مسجلة لهذا العضو حتى الآن."
+  },
+  "dialogs": {
+    "create": {
+      "title": "إضافة قياس للجسم",
+      "description": "تسجيل قياس جسم جديد."
+    },
+    "edit": {
+      "title": "تعديل قياس الجسم",
+      "description": "تحديث بيانات هذا القياس المسجل."
+    },
+    "delete": {
+      "title": "حذف القياس؟",
+      "description": "سيتم حذف هذا القياس من سجل القياسات النشط.",
+      "confirm": "حذف القياس",
+      "deleting": "جاري الحذف...",
+      "cancel": "إلغاء"
+    }
+  },
+  "form": {
+    "weightLabel": "الوزن (كجم) *",
+    "heightLabel": "الطول (سم) *",
+    "bodyFatLabel": "نسبة الدهون (٪)",
+    "measuredAtLabel": "تاريخ القياس",
+    "circumferencesSection": "محيط الجسم (سم)",
+    "notesLabel": "ملاحظات",
+    "notesPlaceholder": "أضف أي ملاحظات أو تفاصيل إضافية...",
+    "cancel": "إلغاء",
+    "save": "حفظ القياس",
+    "saving": "جاري الحفظ...",
+    "update": "تحديث القياس",
+    "updating": "جاري التحديث..."
+  },
+  "notifications": {
+    "createSuccess": "تمت إضافة القياس بنجاح.",
+    "createError": "فشلت إضافة القياس.",
+    "updateSuccess": "تم تحديث القياس بنجاح.",
+    "updateError": "فشل تحديث القياس.",
+    "deleteSuccess": "تم حذف القياس بنجاح.",
+    "deleteError": "فشل حذف القياس."
+  },
+  "states": {
+    "loading": "جاري تحميل القياسات...",
+    "errorTitle": "تعذر تحميل قياسات الجسم",
+    "errorDefault": "حدث خطأ غير متوقع.",
+    "tryAgain": "إعادة المحاولة"
+  },
+  "statsAndProgress": {
+    "currentMeasurement": "القياس الحالي",
+    "previousMeasurement": "القياس السابق",
+    "startingMeasurement": "قياس البداية",
+    "latestMeasurement": "أحدث قياس",
+    "change": "التغيير",
+    "difference": "الفرق",
+    "progress": "التقدم",
+    "progressIndicators": "مؤشرات التقدم",
+    "percentageChange": "نسبة التغير",
+    "measurementTrends": "اتجاهات القياسات",
+    "chartTitles": "رسوم بيانية للتقدم",
+    "periodAll": "كل الأوقات",
+    "period1Month": "آخر شهر",
+    "period3Months": "آخر 3 أشهر",
+    "period6Months": "آخر 6 أشهر",
+    "period1Year": "آخر سنة"
+  }
+}

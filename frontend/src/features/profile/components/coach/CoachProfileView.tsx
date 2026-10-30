@@ -1,6 +1,7 @@
 // src/features/profile/components/coach/CoachProfileView.tsx
 import React, { useState } from "react";
 import { Lock, BookOpen, Globe } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ProfileHeader } from "../shared/ProfileHeader";
 import { ChangePasswordDialog } from "../shared/ChangePasswordDialog";
 import { EditCoachProfileDialog } from "./EditCoachProfileDialog";
@@ -19,6 +20,7 @@ interface CoachProfileViewProps {
 }
 
 export const CoachProfileView: React.FC<CoachProfileViewProps> = ({ data }) => {
+  const { t, i18n } = useTranslation(["profile", "common"]);
   const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -40,22 +42,28 @@ export const CoachProfileView: React.FC<CoachProfileViewProps> = ({ data }) => {
       ? currentUser?.avatarUrl
       : null);
 
+  const formatDate = (dateStr: string) => {
+    try {
+      const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
+        month: "short",
+        year: "numeric",
+      }).format(new Date(dateStr));
+    } catch {
+      return dateStr;
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6 w-full">
       {/* 1. Profile Hero Header */}
       <ProfileHeader
         name={profile.name}
         image={effectiveAvatar}
-        role={profile.professionalTitle || "Senior Head Coach"}
+        role={profile.professionalTitle || t("header.defaultCoachTitle")}
         email={profile.email}
-        subtitle={
-          profile.bio ||
-          "Specialized in biomechanics, hypertrophy microcycles, and high-intensity conditioning protocols."
-        }
-        joinedDate={new Date(profile.joinedAt).toLocaleDateString("en-US", {
-          month: "short",
-          year: "numeric",
-        })}
+        subtitle={profile.bio || t("header.defaultCoachBio")}
+        joinedDate={formatDate(profile.joinedAt)}
         actions={
           <div className="flex items-center gap-2">
             <button
@@ -64,14 +72,14 @@ export const CoachProfileView: React.FC<CoachProfileViewProps> = ({ data }) => {
               className="inline-flex items-center gap-1.5 rounded-md border border-[#1e2329] bg-[#161b22] px-3.5 py-2 text-xs font-semibold text-gray-200 transition-colors hover:bg-[#1e2329] hover:text-[#5BE584] cursor-pointer"
             >
               <Lock className="h-3.5 w-3.5" />
-              Security
+              {t("header.actions.security")}
             </button>
             <button
               type="button"
               onClick={() => setIsEditDialogOpen(true)}
               className="inline-flex items-center gap-1.5 rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-colors hover:bg-[#4ade80] cursor-pointer"
             >
-              Edit Profile
+              {t("header.actions.editProfile")}
             </button>
           </div>
         }
@@ -94,7 +102,7 @@ export const CoachProfileView: React.FC<CoachProfileViewProps> = ({ data }) => {
               {profile.specialties && profile.specialties.length > 0 && (
                 <div className="flex flex-col gap-1.5">
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
-                    Core Specialties
+                    {t("coach.headerStats.coreSpecialties")}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {profile.specialties.map((spec, i) => (
@@ -112,7 +120,7 @@ export const CoachProfileView: React.FC<CoachProfileViewProps> = ({ data }) => {
               {profile.certifications && profile.certifications.length > 0 && (
                 <div className="flex flex-col gap-1.5">
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
-                    Certifications
+                    {t("coach.headerStats.certifications")}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {profile.certifications.map((cert, i) => (
@@ -131,7 +139,7 @@ export const CoachProfileView: React.FC<CoachProfileViewProps> = ({ data }) => {
                 <div className="flex flex-col gap-1.5">
                   <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 flex items-center gap-1">
                     <Globe className="w-3 h-3 text-[#5BE584]" />
-                    Languages
+                    {t("coach.headerStats.languages")}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {profile.languagesSpoken.map((lang, i) => (

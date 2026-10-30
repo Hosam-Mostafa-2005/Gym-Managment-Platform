@@ -10,6 +10,7 @@ import {
   Plus,
   Coffee,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type {
   ScheduledWorkout,
   CoachingAppointment,
@@ -26,7 +27,15 @@ interface CalendarMonthViewProps {
   isCoachView?: boolean;
 }
 
-const WEEKDAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAY_KEYS = [
+  "sun",
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+] as const;
 
 export default function CalendarMonthView({
   currentDate,
@@ -38,6 +47,7 @@ export default function CalendarMonthView({
   onSelectDate,
   isCoachView = false,
 }: CalendarMonthViewProps) {
+  const { t, i18n } = useTranslation("trainingCalendar");
   const restDaysSet = useMemo(() => new Set(restDays), [restDays]);
 
   // Compute month cells
@@ -143,133 +153,138 @@ export default function CalendarMonthView({
     }
   };
 
+  const formatTime = (isoString: string) => {
+    try {
+      return new Date(isoString).toLocaleTimeString(
+        i18n.language === "ar" ? "ar-EG" : "en-US",
+        { hour: "numeric", minute: "2-digit" },
+      );
+    } catch {
+      return "";
+    }
+  };
+
   return (
     <div className="bg-[#101418] border border-[#1E2329] rounded-2xl overflow-hidden shadow-xl">
       <div className="overflow-x-auto">
         <div className="min-w-[620px] sm:min-w-0">
           {/* Weekday headers */}
-      <div className="grid grid-cols-7 border-b border-[#1E2329] bg-[#161B22]/50 text-center text-xs font-semibold text-gray-400">
-        {WEEKDAY_NAMES.map((day) => (
-          <div key={day} className="py-3 uppercase tracking-wider">
-            {day}
+          <div className="grid grid-cols-7 border-b border-[#1E2329] bg-[#161B22]/50 text-center text-xs font-semibold text-gray-400">
+            {WEEKDAY_KEYS.map((key) => (
+              <div key={key} className="py-3 uppercase tracking-wider">
+                {t(`weekdays.${key}`)}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* Days Grid */}
-      <div className="grid grid-cols-7 divide-x divide-y divide-[#1E2329]/60">
-        {monthCells.map((cell) => {
-          const events = eventsByDate.get(cell.dateKey) || {
-            workouts: [],
-            appointments: [],
-          };
-          const totalEvents = events.workouts.length + events.appointments.length;
-          const isRest =
-            !isCoachView &&
-            totalEvents === 0 &&
-            cell.isCurrentMonth &&
-            restDaysSet.has(cell.dateKey);
+          {/* Days Grid */}
+          <div className="grid grid-cols-7 divide-x divide-y divide-[#1E2329]/60">
+            {monthCells.map((cell) => {
+              const events = eventsByDate.get(cell.dateKey) || {
+                workouts: [],
+                appointments: [],
+              };
+              const totalEvents = events.workouts.length + events.appointments.length;
+              const isRest =
+                !isCoachView &&
+                totalEvents === 0 &&
+                cell.isCurrentMonth &&
+                restDaysSet.has(cell.dateKey);
 
-          return (
-            <div
-              key={cell.dateKey}
-              onClick={() => onSelectDate?.(cell.dateKey)}
-              className={`min-h-[110px] md:min-h-[125px] p-2 flex flex-col justify-between transition-colors cursor-pointer group hover:bg-[#161B22]/40 ${
-                !cell.isCurrentMonth ? "opacity-35 bg-[#0A0D11]/30" : "bg-[#101418]"
-              }`}
-            >
-              {/* Day Number Row */}
-              <div className="flex items-center justify-between mb-1.5">
-                <span
-                  className={`text-xs font-bold flex items-center justify-center h-6 w-6 rounded-full transition-all ${
-                    cell.isToday
-                      ? "bg-[#5BE584] text-black font-extrabold shadow-md shadow-[#5BE584]/20"
-                      : "text-gray-300 group-hover:text-white"
+              return (
+                <div
+                  key={cell.dateKey}
+                  onClick={() => onSelectDate?.(cell.dateKey)}
+                  className={`min-h-[110px] md:min-h-[125px] p-2 flex flex-col justify-between transition-colors cursor-pointer group hover:bg-[#161B22]/40 ${
+                    !cell.isCurrentMonth ? "opacity-35 bg-[#0A0D11]/30" : "bg-[#101418]"
                   }`}
                 >
-                  {cell.date.getDate()}
-                </span>
+                  {/* Day Number Row */}
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span
+                      className={`text-xs font-bold flex items-center justify-center h-6 w-6 rounded-full transition-all ${
+                        cell.isToday
+                          ? "bg-[#5BE584] text-black font-extrabold shadow-md shadow-[#5BE584]/20"
+                          : "text-gray-300 group-hover:text-white"
+                      }`}
+                    >
+                      {cell.date.getDate()}
+                    </span>
 
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="h-5 w-5 rounded-md bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
-                    <Plus size={12} />
-                  </span>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="h-5 w-5 rounded-md bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
+                        <Plus size={12} />
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Day Events Stack */}
+                  <div className="flex-1 space-y-1 overflow-hidden">
+                    {/* Coaching Appointments */}
+                    {events.appointments.slice(0, 2).map((appt) => {
+                      const startTimeStr = formatTime(appt.startTime);
+                      return (
+                        <button
+                          key={appt.id}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectAppointment(appt);
+                          }}
+                          className="w-full text-left rtl:text-right flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-[11px] font-semibold text-purple-300 truncate transition-colors"
+                        >
+                          <ShieldCheck size={11} className="shrink-0 text-purple-400" />
+                          <span className="truncate">
+                            {startTimeStr} {appt.title}
+                          </span>
+                        </button>
+                      );
+                    })}
+
+                    {/* Scheduled Workouts */}
+                    {events.workouts.slice(0, 2).map((sw) => {
+                      const timeStr = formatTime(sw.scheduledAt);
+                      return (
+                        <button
+                          key={sw.id}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectWorkout(sw);
+                          }}
+                          className="w-full text-left rtl:text-right flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#161B22] hover:bg-[#1E2329] border border-[#262D35] text-[11px] font-medium text-gray-200 truncate transition-colors"
+                        >
+                          <span
+                            className={`h-1.5 w-1.5 rounded-full shrink-0 ${getStatusDot(
+                              sw.status,
+                            )}`}
+                          />
+                          <span className="truncate">
+                            {timeStr} {sw.workout?.title || t("events.defaultWorkoutTitle")}
+                          </span>
+                        </button>
+                      );
+                    })}
+
+                    {/* More indicator */}
+                    {totalEvents > 2 && (
+                      <div className="text-[10px] font-semibold text-gray-400 pl-1 rtl:pl-0 rtl:pr-1">
+                        {t("events.moreEvents", { count: totalEvents - 2 })}
+                      </div>
+                    )}
+
+                    {/* Rest Day Indicator */}
+                    {isRest && (
+                      <div className="flex items-center gap-1 text-[10px] font-medium text-gray-500/80 pt-1">
+                        <Coffee size={11} className="text-gray-500" />
+                        <span>{t("events.restDay")}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-
-              {/* Day Events Stack */}
-              <div className="flex-1 space-y-1 overflow-hidden">
-                {/* Coaching Appointments */}
-                {events.appointments.slice(0, 2).map((appt) => {
-                  const startTimeStr = new Date(appt.startTime).toLocaleTimeString(
-                    [],
-                    { hour: "numeric", minute: "2-digit" },
-                  );
-                  return (
-                    <button
-                      key={appt.id}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectAppointment(appt);
-                      }}
-                      className="w-full text-left flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-[11px] font-semibold text-purple-300 truncate transition-colors"
-                    >
-                      <ShieldCheck size={11} className="shrink-0 text-purple-400" />
-                      <span className="truncate">
-                        {startTimeStr} {appt.title}
-                      </span>
-                    </button>
-                  );
-                })}
-
-                {/* Scheduled Workouts */}
-                {events.workouts.slice(0, 2).map((sw) => {
-                  const timeStr = new Date(sw.scheduledAt).toLocaleTimeString(
-                    [],
-                    { hour: "numeric", minute: "2-digit" },
-                  );
-                  return (
-                    <button
-                      key={sw.id}
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectWorkout(sw);
-                      }}
-                      className="w-full text-left flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#161B22] hover:bg-[#1E2329] border border-[#262D35] text-[11px] font-medium text-gray-200 truncate transition-colors"
-                    >
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full shrink-0 ${getStatusDot(
-                          sw.status,
-                        )}`}
-                      />
-                      <span className="truncate">
-                        {timeStr} {sw.workout?.title || "Workout"}
-                      </span>
-                    </button>
-                  );
-                })}
-
-                {/* More indicator */}
-                {totalEvents > 2 && (
-                  <div className="text-[10px] font-semibold text-gray-400 pl-1">
-                    +{totalEvents - 2} more
-                  </div>
-                )}
-
-                {/* Rest Day Indicator */}
-                {isRest && (
-                  <div className="flex items-center gap-1 text-[10px] font-medium text-gray-500/80 pt-1">
-                    <Coffee size={11} className="text-gray-500" />
-                    <span>Rest Day</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

@@ -6,11 +6,11 @@ import {
   Loader2,
   Calendar,
   Dumbbell,
-  User as UserIcon,
   UserCheck,
   FileText,
   ShieldCheck,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { SearchableMemberSelect } from "@/features/users/components/SearchableMemberSelect";
 
 // Types & Schema
@@ -26,7 +26,6 @@ import { useWorkouts } from "@/features/workouts/hooks/useWorkouts";
 import { useUsers } from "@/features/users/hooks/useUsers";
 import { useMembersManagement } from "@/features/members-management/hooks/use-members-management";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
-import { ROLES } from "@/constants/roles";
 
 interface AssignmentFormProps {
   initialValues?: Partial<AssignmentFormValues>;
@@ -41,8 +40,9 @@ export const AssignmentForm = ({
   preselectedMember,
   onSubmit,
   isLoading = false,
-  submitLabel = "Create Assignment",
+  submitLabel,
 }: AssignmentFormProps) => {
+  const { t } = useTranslation(["assignments", "common"]);
   const { data: user } = useCurrentUser();
   const userRole = user?.role?.toUpperCase();
   const isCoach = userRole === "TRAINER" || userRole === "COACH";
@@ -164,6 +164,30 @@ export const AssignmentForm = ({
     });
   };
 
+  const translateValidation = (msg?: string) => {
+    if (!msg) return "";
+    switch (msg) {
+      case "Please select a member":
+        return t("validation.selectMember", msg);
+      case "Please select a workout routine":
+        return t("validation.selectWorkout", msg);
+      case "Start date is required":
+        return t("validation.startDateRequired", msg);
+      case "End date is required":
+        return t("validation.endDateRequired", msg);
+      case "End date cannot be earlier than the start date":
+        return t("validation.dateRangeInvalid", msg);
+      case "Cancel reason cannot exceed 500 characters":
+        return t("validation.cancelReasonMax", msg);
+      case "Cancel reason is required when cancelling an assignment":
+        return t("validation.cancelReasonRequired", msg);
+      case "Notes cannot exceed 500 characters":
+        return t("validation.notesMax", msg);
+      default:
+        return msg;
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(submitHandler)} className="space-y-6">
       {/* 1. Member & Trainer Row */}
@@ -181,14 +205,18 @@ export const AssignmentForm = ({
                 preselectedMember={preselectedMember}
                 disabled={isFormDisabled}
                 locked={Boolean(initialValues?.member)}
-                error={errors.member?.message}
-                label="Select Member"
+                error={translateValidation(errors.member?.message)}
+                label={t("form.memberLabel", "Select Member")}
+                placeholder={t("form.memberPlaceholder", "Choose an athlete...")}
               />
             )}
           />
           {errorMembers && (
             <p className="text-xs text-destructive mt-1 font-medium">
-              Unable to load assigned members. Please try refreshing.
+              {t(
+                "form.errorMembers",
+                "Unable to load assigned members. Please try refreshing.",
+              )}
             </p>
           )}
         </div>
@@ -198,17 +226,17 @@ export const AssignmentForm = ({
           <div className="space-y-2">
             <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
               <ShieldCheck className="w-3.5 h-3.5 text-[#5BE584]" />
-              <span>Assigned Coach</span>
+              <span>{t("form.assignedCoach", "Assigned Coach")}</span>
             </label>
             <div className="w-full h-10 px-3.5 rounded-lg bg-card/20 border border-border/40 flex items-center justify-between text-sm text-foreground">
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-white">
-                  {user?.name || "You"}
+                  {user?.name || t("common.you", "You")}
                 </span>
                 <span className="text-xs text-[#9CA3AF]">({user?.email})</span>
               </div>
               <span className="rounded bg-[#16291D] border border-[#23422E] px-2 py-0.5 text-[10px] font-semibold text-[#5BE584] uppercase tracking-wider">
-                Logged-In Coach
+                {t("form.loggedInCoach", "Logged-In Coach")}
               </span>
             </div>
             <input type="hidden" {...register("trainer")} value={coachId} />
@@ -217,7 +245,7 @@ export const AssignmentForm = ({
           <div className="space-y-2">
             <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
               <UserCheck className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Assign Trainer</span>
+              <span>{t("form.assignTrainer", "Assign Trainer")}</span>
             </label>
             <select
               {...register("trainer")}
@@ -226,22 +254,22 @@ export const AssignmentForm = ({
             >
               <option value="">
                 {loadingTrainers
-                  ? "Loading trainers..."
-                  : "-- Choose a trainer --"}
+                  ? t("form.loadingTrainers", "Loading trainers...")
+                  : t("form.chooseTrainer", "-- Choose a trainer --")}
               </option>
-              {trainers.map((t: any) => (
+              {trainers.map((tItem: any) => (
                 <option
-                  key={t._id || t.id}
-                  value={t._id || t.id}
+                  key={tItem._id || tItem.id}
+                  value={tItem._id || tItem.id}
                   className="bg-zinc-900"
                 >
-                  {t.name}
+                  {tItem.name}
                 </option>
               ))}
             </select>
             {errors.trainer && (
               <p className="text-xs text-destructive mt-1 font-medium">
-                {errors.trainer.message}
+                {translateValidation(errors.trainer.message)}
               </p>
             )}
           </div>
@@ -252,7 +280,7 @@ export const AssignmentForm = ({
       <div className="space-y-2">
         <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
           <Dumbbell className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Workout Routine</span>
+          <span>{t("form.workoutRoutine", "Workout Routine")}</span>
         </label>
         <select
           {...register("workout")}
@@ -261,8 +289,8 @@ export const AssignmentForm = ({
         >
           <option value="">
             {loadingWorkouts
-              ? "Loading routines..."
-              : "-- Choose a workout routine --"}
+              ? t("form.loadingWorkouts", "Loading routines...")
+              : t("form.chooseWorkout", "-- Choose a workout routine --")}
           </option>
           {workouts.map((w: any) => (
             <option
@@ -276,7 +304,7 @@ export const AssignmentForm = ({
         </select>
         {errors.workout && (
           <p className="text-xs text-destructive mt-1 font-medium">
-            {errors.workout.message}
+            {translateValidation(errors.workout.message)}
           </p>
         )}
       </div>
@@ -286,7 +314,7 @@ export const AssignmentForm = ({
         <div className="space-y-2">
           <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
             <Calendar className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Start Date</span>
+            <span>{t("form.startDate", "Start Date")}</span>
           </label>
           <Input
             type="date"
@@ -296,7 +324,7 @@ export const AssignmentForm = ({
           />
           {errors.startDate && (
             <p className="text-xs text-destructive mt-1 font-medium">
-              {errors.startDate.message}
+              {translateValidation(errors.startDate.message)}
             </p>
           )}
         </div>
@@ -304,7 +332,7 @@ export const AssignmentForm = ({
         <div className="space-y-2">
           <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
             <Calendar className="w-3.5 h-3.5 text-emerald-500" />
-            <span>End Date</span>
+            <span>{t("form.endDate", "End Date")}</span>
           </label>
           <Input
             type="date"
@@ -314,7 +342,7 @@ export const AssignmentForm = ({
           />
           {errors.endDate && (
             <p className="text-xs text-destructive mt-1 font-medium">
-              {errors.endDate.message}
+              {translateValidation(errors.endDate.message)}
             </p>
           )}
         </div>
@@ -325,7 +353,7 @@ export const AssignmentForm = ({
         <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
-              <span>Assignment Status</span>
+              <span>{t("form.assignmentStatus", "Assignment Status")}</span>
             </label>
             <select
               {...register("status")}
@@ -333,18 +361,18 @@ export const AssignmentForm = ({
               className="w-full h-10 px-3 rounded-lg bg-card/40 border border-border/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm text-foreground cursor-pointer disabled:opacity-50 transition-all"
             >
               <option value="ACTIVE" className="bg-zinc-900">
-                ACTIVE
+                {t("status.active", "Active")}
               </option>
               <option value="COMPLETED" className="bg-zinc-900">
-                COMPLETED
+                {t("status.completed", "Completed")}
               </option>
               <option value="CANCELLED" className="bg-zinc-900">
-                CANCELLED
+                {t("status.cancelled", "Cancelled")}
               </option>
             </select>
             {errors.status && (
               <p className="text-xs text-destructive mt-1 font-medium">
-                {errors.status.message}
+                {translateValidation(errors.status.message)}
               </p>
             )}
           </div>
@@ -352,18 +380,26 @@ export const AssignmentForm = ({
           {selectedStatus === "CANCELLED" && (
             <div className="space-y-2">
               <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
-                <span>Cancellation Reason (Required)</span>
+                <span>
+                  {t(
+                    "form.cancelReasonLabel",
+                    "Cancellation Reason (Required)",
+                  )}
+                </span>
               </label>
               <textarea
                 {...register("cancelReason")}
                 disabled={isLoading}
                 rows={3}
-                placeholder="Provide a reason for cancelling this assignment..."
+                placeholder={t(
+                  "form.cancelReasonPlaceholder",
+                  "Provide a reason for cancelling this assignment...",
+                )}
                 className="w-full p-3 rounded-lg bg-card/40 border border-border/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm text-foreground placeholder:text-muted-foreground/60 disabled:opacity-50 transition-all resize-none"
               />
               {errors.cancelReason && (
                 <p className="text-xs text-destructive mt-1 font-medium">
-                  {errors.cancelReason.message}
+                  {translateValidation(errors.cancelReason.message)}
                 </p>
               )}
             </div>
@@ -375,18 +411,21 @@ export const AssignmentForm = ({
       <div className="space-y-2">
         <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
           <FileText className="w-3.5 h-3.5 text-emerald-500" />
-          <span>Additional Notes (Optional)</span>
+          <span>{t("form.notesLabel", "Additional Notes (Optional)")}</span>
         </label>
         <textarea
           {...register("notes")}
           disabled={isLoading}
           rows={4}
-          placeholder="Add any specific instructions, injury notes, or guidelines for this member..."
+          placeholder={t(
+            "form.notesPlaceholder",
+            "Add any specific instructions, injury notes, or guidelines for this member...",
+          )}
           className="w-full p-3 rounded-lg bg-card/40 border border-border/60 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm text-foreground placeholder:text-muted-foreground/60 disabled:opacity-50 transition-all resize-none"
         />
         {errors.notes && (
           <p className="text-xs text-destructive mt-1 font-medium">
-            {errors.notes.message}
+            {translateValidation(errors.notes.message)}
           </p>
         )}
       </div>
@@ -398,25 +437,25 @@ export const AssignmentForm = ({
           variant="outline"
           disabled={isLoading}
           onClick={() => window.history.back()}
-          className="border-border/60 hover:bg-accent/50"
+          className="border-border/60 hover:bg-accent/50 cursor-pointer"
         >
-          Cancel
+          {t("form.cancel", "Cancel")}
         </Button>
 
         <Button
           type="submit"
           disabled={isFormDisabled}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium min-w-[140px] shadow-sm transition-all"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium min-w-[140px] shadow-sm transition-all cursor-pointer"
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
+              <Loader2 className="me-2 h-4 w-4 animate-spin" />
+              {t("form.saving", "Saving...")}
             </>
           ) : (
             <>
-              <Save className="mr-2 h-4 w-4" />
-              {submitLabel}
+              <Save className="me-2 h-4 w-4" />
+              {submitLabel || t("form.createButton", "Create Assignment")}
             </>
           )}
         </Button>

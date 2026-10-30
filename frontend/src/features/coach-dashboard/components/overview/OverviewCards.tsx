@@ -1,5 +1,6 @@
 // src/features/coach-dashboard/components/overview/OverviewCards.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { OverviewCard } from "./OverviewCard";
 import { Users, Mail, Dumbbell, Clock } from "lucide-react";
 import type { DashboardOverview } from "@/features/coach-dashboard/types/coach-dashboard.types";
@@ -9,6 +10,8 @@ interface OverviewCardsProps {
 }
 
 export const OverviewCards: React.FC<OverviewCardsProps> = ({ overview }) => {
+  const { t } = useTranslation(["coachDashboard"]);
+
   const activeCoaching =
     overview.activeCoachingMembers ?? overview.members?.active ?? 0;
   const pendingInvitations = overview.pendingInvitations ?? 0;
@@ -24,78 +27,69 @@ export const OverviewCards: React.FC<OverviewCardsProps> = ({ overview }) => {
     >
       {/* 1. Active Coached Members */}
       <OverviewCard
-        title="Active Coached Members"
+        title={t("overviewCards.activeCoachedMembers")}
         value={activeCoaching}
         secondaryValue={overview.members?.total}
-        secondaryLabel="total roster"
+        secondaryLabel={t("overviewCards.totalRoster")}
         icon={Users}
         infoTooltip={{
-          title: "Active Coached Members",
-          description:
-            "Number of members connected to you with an active coaching relationship.",
-          calculation:
-            "COUNT(CoachMemberRelationship WHERE trainerId = coach.id AND status = 'ACTIVE')",
-          unit: "athletes",
-          dateRange: "Current active roster",
-          limitations:
-            "Excludes pending invitations, terminated relationships, or unassigned members.",
+          title: t("overviewCards.tooltips.activeMembersTitle"),
+          description: t("overviewCards.tooltips.activeMembersDesc"),
+          calculation: t("overviewCards.tooltips.activeMembersCalc"),
+          unit: t("overviewCards.tooltips.activeMembersUnit"),
+          dateRange: t("overviewCards.tooltips.activeMembersRange"),
+          limitations: t("overviewCards.tooltips.activeMembersLimit"),
         }}
       />
 
       {/* 2. Pending Invitations */}
       <OverviewCard
-        title="Pending Invitations"
+        title={t("overviewCards.pendingInvitations")}
         value={pendingInvitations}
-        secondaryValue="sent"
+        secondaryValue={t("overviewCards.sent")}
         secondaryLabel=""
         icon={Mail}
         infoTooltip={{
-          title: "Pending Coaching Invitations",
-          description:
-            "Invitations sent to prospective members that have not yet been accepted or declined.",
-          calculation:
-            "COUNT(CoachMemberRelationship WHERE trainerId = coach.id AND status = 'PENDING')",
-          unit: "invitations",
-          dateRange: "Awaiting response",
-          limitations: "Updated immediately when members accept or decline.",
+          title: t("overviewCards.tooltips.pendingInvitesTitle"),
+          description: t("overviewCards.tooltips.pendingInvitesDesc"),
+          calculation: t("overviewCards.tooltips.pendingInvitesCalc"),
+          unit: t("overviewCards.tooltips.pendingInvitesUnit"),
+          dateRange: t("overviewCards.tooltips.pendingInvitesRange"),
+          limitations: t("overviewCards.tooltips.pendingInvitesLimit"),
         }}
       />
 
       {/* 3. Sessions Completed This Week */}
       <OverviewCard
-        title="Sessions Completed This Week"
+        title={t("overviewCards.sessionsThisWeek")}
         value={sessionsThisWeek}
         secondaryValue={sessionsToday}
-        secondaryLabel="today"
+        secondaryLabel={t("overviewCards.today")}
         icon={Dumbbell}
         infoTooltip={{
-          title: "Client Workout Sessions This Week",
-          description:
-            "Total verified workout sessions completed by your coached and assigned members over the last 7 days.",
-          calculation:
-            "COUNT(WorkoutSession WHERE status = 'COMPLETED' AND startedAt >= weekAgo AND memberId IN roster)",
-          unit: "sessions",
-          dateRange: "Past 7 days",
-          limitations: "Only counts completed sessions.",
+          title: t("overviewCards.tooltips.sessionsWeekTitle"),
+          description: t("overviewCards.tooltips.sessionsWeekDesc"),
+          calculation: t("overviewCards.tooltips.sessionsWeekCalc"),
+          unit: t("overviewCards.tooltips.sessionsWeekUnit"),
+          dateRange: t("overviewCards.tooltips.sessionsWeekRange"),
+          limitations: t("overviewCards.tooltips.sessionsWeekLimit"),
         }}
       />
 
       {/* 4. Expiring Assignments */}
       <OverviewCard
-        title="Expiring Assignments"
+        title={t("overviewCards.expiringAssignments")}
         value={expiringAssignments}
         secondaryValue={activeAssignments}
-        secondaryLabel="total active"
+        secondaryLabel={t("overviewCards.totalActive")}
         icon={Clock}
         infoTooltip={{
-          title: "Assignments Ending Soon",
-          description:
-            "Workout program assignments scheduled to conclude within the next 7 days.",
-          calculation:
-            "COUNT(Assignment WHERE trainerId = coach.id AND status = 'ACTIVE' AND endDate <= now + 7d)",
-          unit: "assignments",
-          dateRange: "Next 7 days",
-          limitations: "Allows proactive review and program renewal.",
+          title: t("overviewCards.tooltips.expiringTitle"),
+          description: t("overviewCards.tooltips.expiringDesc"),
+          calculation: t("overviewCards.tooltips.expiringCalc"),
+          unit: t("overviewCards.tooltips.expiringUnit"),
+          dateRange: t("overviewCards.tooltips.expiringRange"),
+          limitations: t("overviewCards.tooltips.expiringLimit"),
         }}
       />
     </section>

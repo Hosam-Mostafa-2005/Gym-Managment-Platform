@@ -1,6 +1,7 @@
 // src/features/scheduling/components/BuildMonthlyProgramDialog.tsx
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import {
   Calendar,
   Sparkles,
@@ -31,20 +32,21 @@ interface DayConfig {
 }
 
 const DAYS_OF_WEEK = [
-  { key: "monday", label: "Monday", short: "Mon", offset: 0 },
-  { key: "tuesday", label: "Tuesday", short: "Tue", offset: 1 },
-  { key: "wednesday", label: "Wednesday", short: "Wed", offset: 2 },
-  { key: "thursday", label: "Thursday", short: "Thu", offset: 3 },
-  { key: "friday", label: "Friday", short: "Fri", offset: 4 },
-  { key: "saturday", label: "Saturday", short: "Sat", offset: 5 },
-  { key: "sunday", label: "Sunday", short: "Sun", offset: 6 },
-];
+  { key: "monday", labelKey: "weekdays.monday", shortKey: "weekdaysShort.mon", offset: 0 },
+  { key: "tuesday", labelKey: "weekdays.tuesday", shortKey: "weekdaysShort.tue", offset: 1 },
+  { key: "wednesday", labelKey: "weekdays.wednesday", shortKey: "weekdaysShort.wed", offset: 2 },
+  { key: "thursday", labelKey: "weekdays.thursday", shortKey: "weekdaysShort.thu", offset: 3 },
+  { key: "friday", labelKey: "weekdays.friday", shortKey: "weekdaysShort.fri", offset: 4 },
+  { key: "saturday", labelKey: "weekdays.saturday", shortKey: "weekdaysShort.sat", offset: 5 },
+  { key: "sunday", labelKey: "weekdays.sunday", shortKey: "weekdaysShort.sun", offset: 6 },
+] as const;
 
 export default function BuildMonthlyProgramDialog({
   isOpen,
   onClose,
   onSuccess,
 }: BuildMonthlyProgramDialogProps) {
+  const { t } = useTranslation(["trainingCalendar"]);
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
 
@@ -58,13 +60,20 @@ export default function BuildMonthlyProgramDialog({
     return nextMon.toISOString().split("T")[0];
   }, []);
 
-  const [programName, setProgramName] = useState("4-Week Personal Program");
+  const [programName, setProgramName] = useState(() => t("programDialog.defaultProgramName"));
   const [startDate, setStartDate] = useState(defaultMondayStr);
   const [durationWeeks, setDurationWeeks] = useState(4);
   const [preferredTime, setPreferredTime] = useState("09:00");
   const [isGenerating, setIsGenerating] = useState(false);
   const [progressMsg, setProgressMsg] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setProgramName(t("programDialog.defaultProgramName"));
+      setError(null);
+    }
+  }, [isOpen, t]);
 
   // 7-day configuration (Mon..Sun)
   const [weeklySplit, setWeeklySplit] = useState<Record<string, DayConfig>>({
@@ -153,7 +162,7 @@ export default function BuildMonthlyProgramDialog({
     const thirdWId = allAvailableWorkouts[2]?.id || allAvailableWorkouts[2]?._id || secondWId;
 
     if (presetType === "push_pull_legs") {
-      setProgramName("Push-Pull-Legs 4-Week Block");
+      setProgramName(t("programDialog.presetPPLProgramName"));
       setWeeklySplit({
         monday: { isTraining: true, workoutId: firstWId },
         tuesday: { isTraining: true, workoutId: secondWId },
@@ -164,7 +173,7 @@ export default function BuildMonthlyProgramDialog({
         sunday: { isTraining: false, workoutId: "" },
       });
     } else if (presetType === "upper_lower") {
-      setProgramName("Upper-Lower 4-Week Hypertrophy");
+      setProgramName(t("programDialog.presetULProgramName"));
       setWeeklySplit({
         monday: { isTraining: true, workoutId: firstWId },
         tuesday: { isTraining: true, workoutId: secondWId },
@@ -175,7 +184,7 @@ export default function BuildMonthlyProgramDialog({
         sunday: { isTraining: false, workoutId: "" },
       });
     } else if (presetType === "full_body") {
-      setProgramName("Full Body 3x Monthly Plan");
+      setProgramName(t("programDialog.presetFBProgramName"));
       setWeeklySplit({
         monday: { isTraining: true, workoutId: firstWId },
         tuesday: { isTraining: false, workoutId: "" },
@@ -200,17 +209,17 @@ export default function BuildMonthlyProgramDialog({
     setError(null);
 
     if (!programName.trim()) {
-      setError("Please enter a program name.");
+      setError(t("programDialog.errName"));
       return;
     }
 
     if (!startDate) {
-      setError("Please choose a start date.");
+      setError(t("programDialog.errStartDate"));
       return;
     }
 
     if (activeTrainingDaysPerWeek === 0) {
-      setError("Please designate at least one training day with a workout selected.");
+      setError(t("programDialog.errNoDays"));
       return;
     }
 
@@ -218,7 +227,7 @@ export default function BuildMonthlyProgramDialog({
     for (const day of DAYS_OF_WEEK) {
       const config = weeklySplit[day.key];
       if (config.isTraining && !config.workoutId) {
-        setError(`Please select a workout for ${day.label} or mark it as a rest day.`);
+        setError(t("programDialog.errDayMissingWorkout", { day: t(day.labelKey as any) }));
         return;
       }
     }
@@ -230,7 +239,12 @@ export default function BuildMonthlyProgramDialog({
 
       // Loop through each week and each day of the week
       for (let week = 1; week <= durationWeeks; week++) {
-        setProgressMsg(`Scheduling Week ${week} of ${durationWeeks}...`);
+        setProgressMsg(
+          t("programDialog.schedulingWeekProgress", {
+            week,
+            total: durationWeeks,
+          }),
+        );
 
         for (const day of DAYS_OF_WEEK) {
           const config = weeklySplit[day.key];
@@ -245,12 +259,17 @@ export default function BuildMonthlyProgramDialog({
           const matchedWorkout = allAvailableWorkouts.find(
             (w) => (w.id || w._id) === config.workoutId,
           );
-          const workoutTitle = matchedWorkout?.title || "Workout";
+          const workoutTitle = matchedWorkout?.title || t("programDialog.workoutFallback");
 
           await schedulingApi.createScheduledWorkout({
             workoutId: config.workoutId,
             scheduledAt: sessionDate.toISOString(),
-            notes: `Program: ${programName.trim()} • Week ${week} • ${day.label} (${workoutTitle})`,
+            notes: t("programDialog.programNote", {
+              name: programName.trim(),
+              week,
+              day: t(day.labelKey as any),
+              workout: workoutTitle,
+            }),
           });
 
           createdCount++;
@@ -258,7 +277,10 @@ export default function BuildMonthlyProgramDialog({
       }
 
       toast.success(
-        `Successfully generated "${programName}" with ${createdCount} workouts!`,
+        t("programDialog.successToast", {
+          name: programName,
+          count: createdCount,
+        }),
       );
 
       // Invalidate calendar caches so new scheduled workouts display immediately
@@ -272,7 +294,7 @@ export default function BuildMonthlyProgramDialog({
       console.error("Failed to generate program:", err);
       setError(
         err?.response?.data?.message ||
-          "An error occurred while scheduling program workouts. Please try again.",
+          t("programDialog.errFailed"),
       );
     } finally {
       setIsGenerating(false);
@@ -294,13 +316,13 @@ export default function BuildMonthlyProgramDialog({
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  Build Monthly Training Program
+                  {t("programDialog.title")}
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#16291D] border border-[#23422E] text-[#5BE584]">
-                    Member Owned
+                    {t("programDialog.badge")}
                   </span>
                 </h3>
                 <p className="text-xs text-[#9CA3AF]">
-                  Structure your multi-week training cycle and schedule all workouts automatically.
+                  {t("programDialog.subtitle")}
                 </p>
               </div>
             </div>
@@ -327,13 +349,13 @@ export default function BuildMonthlyProgramDialog({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-medium text-[#9CA3AF] mb-1.5 block">
-                  Program Name
+                  {t("programDialog.programNameLabel")}
                 </label>
                 <input
                   type="text"
                   value={programName}
                   onChange={(e) => setProgramName(e.target.value)}
-                  placeholder="e.g. 4-Week Hypertrophy Block"
+                  placeholder={t("programDialog.programNamePlaceholder")}
                   required
                   disabled={isGenerating}
                   className="w-full bg-[#101418] border border-[#1E2329] rounded-xl px-3.5 py-2 text-xs text-white placeholder-[#6B7280] focus:outline-none focus:border-[#5BE584]"
@@ -343,7 +365,7 @@ export default function BuildMonthlyProgramDialog({
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-xs font-medium text-[#9CA3AF] mb-1.5 block">
-                    Duration
+                    {t("programDialog.durationLabel")}
                   </label>
                   <select
                     value={durationWeeks}
@@ -351,16 +373,16 @@ export default function BuildMonthlyProgramDialog({
                     disabled={isGenerating}
                     className="w-full bg-[#101418] border border-[#1E2329] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#5BE584]"
                   >
-                    <option value={2}>2 Weeks</option>
-                    <option value={4}>4 Weeks (Monthly)</option>
-                    <option value={6}>6 Weeks</option>
-                    <option value={8}>8 Weeks</option>
+                    <option value={2}>{t("programDialog.duration2Weeks")}</option>
+                    <option value={4}>{t("programDialog.duration4Weeks")}</option>
+                    <option value={6}>{t("programDialog.duration6Weeks")}</option>
+                    <option value={8}>{t("programDialog.duration8Weeks")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="text-xs font-medium text-[#9CA3AF] mb-1.5 block">
-                    Default Time
+                    {t("programDialog.defaultTimeLabel")}
                   </label>
                   <input
                     type="time"
@@ -375,7 +397,7 @@ export default function BuildMonthlyProgramDialog({
 
             <div>
               <label className="text-xs font-medium text-[#9CA3AF] mb-1.5 block">
-                Program Start Date (Week 1 Monday)
+                {t("programDialog.startDateLabel")}
               </label>
               <input
                 type="date"
@@ -391,10 +413,10 @@ export default function BuildMonthlyProgramDialog({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold text-white">
-                  Quick Split Presets
+                  {t("programDialog.quickPresetsTitle")}
                 </span>
                 <span className="text-[11px] text-[#6B7280]">
-                  Click to pre-fill training split
+                  {t("programDialog.quickPresetsHint")}
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -404,7 +426,7 @@ export default function BuildMonthlyProgramDialog({
                   disabled={isGenerating}
                   className="px-3 py-1.5 rounded-lg border border-[#1E2329] bg-[#101418] text-xs font-medium text-[#9CA3AF] hover:text-[#5BE584] hover:border-[#23422E] transition-colors"
                 >
-                  Push / Pull / Legs (4-Day)
+                  {t("programDialog.presetPushPullLegs")}
                 </button>
                 <button
                   type="button"
@@ -412,7 +434,7 @@ export default function BuildMonthlyProgramDialog({
                   disabled={isGenerating}
                   className="px-3 py-1.5 rounded-lg border border-[#1E2329] bg-[#101418] text-xs font-medium text-[#9CA3AF] hover:text-[#5BE584] hover:border-[#23422E] transition-colors"
                 >
-                  Upper / Lower (4-Day)
+                  {t("programDialog.presetUpperLower")}
                 </button>
                 <button
                   type="button"
@@ -420,7 +442,7 @@ export default function BuildMonthlyProgramDialog({
                   disabled={isGenerating}
                   className="px-3 py-1.5 rounded-lg border border-[#1E2329] bg-[#101418] text-xs font-medium text-[#9CA3AF] hover:text-[#5BE584] hover:border-[#23422E] transition-colors"
                 >
-                  Full Body 3x / Week
+                  {t("programDialog.presetFullBody")}
                 </button>
               </div>
             </div>
@@ -428,7 +450,7 @@ export default function BuildMonthlyProgramDialog({
             {/* Weekly Training Split Configuration */}
             <div className="space-y-3">
               <label className="text-xs font-semibold text-white block">
-                Weekly Routine Schedule
+                {t("programDialog.weeklyScheduleTitle")}
               </label>
 
               <div className="space-y-2 rounded-xl border border-[#1E2329] bg-[#101418]/60 p-3 max-h-[260px] overflow-y-auto">
@@ -449,20 +471,22 @@ export default function BuildMonthlyProgramDialog({
                           type="button"
                           onClick={() => toggleDayTraining(day.key)}
                           disabled={isGenerating}
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs transition-colors ${
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs transition-colors shrink-0 ${
                             dayConfig.isTraining
                               ? "bg-[#5BE584] text-[#090B0F]"
                               : "bg-[#1E2329] text-[#6B7280] hover:text-white"
                           }`}
                         >
-                          {day.short}
+                          {t(day.shortKey as any)}
                         </button>
                         <div>
                           <div className="text-xs font-semibold text-white">
-                            {day.label}
+                            {t(day.labelKey as any)}
                           </div>
                           <div className="text-[10px] text-[#6B7280]">
-                            {dayConfig.isTraining ? "Training Day" : "Rest & Recovery"}
+                            {dayConfig.isTraining
+                              ? t("programDialog.trainingDay")
+                              : t("programDialog.restAndRecovery")}
                           </div>
                         </div>
                       </div>
@@ -477,9 +501,9 @@ export default function BuildMonthlyProgramDialog({
                             disabled={isGenerating}
                             className="w-full bg-[#101418] border border-[#1E2329] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#5BE584]"
                           >
-                            <option value="">Select Routine...</option>
+                            <option value="">{t("programDialog.selectRoutinePlaceholder")}</option>
                             {personalWorkouts.length > 0 && (
-                              <optgroup label="My Personal Routines">
+                              <optgroup label={t("programDialog.myRoutinesOptgroup")}>
                                 {personalWorkouts.map((w: any) => (
                                   <option key={w.id || w._id} value={w.id || w._id}>
                                     {w.title} ({w.estimatedDuration || 45}m)
@@ -488,10 +512,10 @@ export default function BuildMonthlyProgramDialog({
                               </optgroup>
                             )}
                             {templateWorkouts.length > 0 && (
-                              <optgroup label="Library Templates">
+                              <optgroup label={t("programDialog.libraryTemplatesOptgroup")}>
                                 {templateWorkouts.map((w: any) => (
                                   <option key={w.id || w._id} value={w.id || w._id}>
-                                    {w.title} ({w.category || "Template"})
+                                    {w.title} ({w.category || t("programDialog.template")})
                                   </option>
                                 ))}
                               </optgroup>
@@ -500,8 +524,8 @@ export default function BuildMonthlyProgramDialog({
                         </div>
                       ) : (
                         <div className="text-[11px] text-[#6B7280] flex items-center gap-1.5 px-3 py-1">
-                          <Coffee size={13} />
-                          <span>Active Rest</span>
+                          <Coffee size={13} className="shrink-0" />
+                          <span>{t("programDialog.activeRest")}</span>
                         </div>
                       )}
                     </div>
@@ -514,16 +538,16 @@ export default function BuildMonthlyProgramDialog({
             <div className="rounded-xl border border-[#23422E] bg-[#16291D]/30 p-4 flex items-center justify-between">
               <div>
                 <div className="text-xs font-semibold text-[#5BE584] flex items-center gap-1.5">
-                  <CheckCircle2 size={14} />
-                  Program Projection
+                  <CheckCircle2 size={14} className="shrink-0" />
+                  {t("programDialog.projectionTitle")}
                 </div>
                 <div className="text-[11px] text-[#9CA3AF] mt-0.5">
-                  {totalSessions} training sessions scheduled across {durationWeeks} weeks.
+                  {t("programDialog.projectionText", { totalSessions, durationWeeks })}
                 </div>
               </div>
               <div className="text-right">
                 <span className="text-lg font-bold text-white">
-                  {totalSessions} Workouts
+                  {t("programDialog.workoutsCount", { count: totalSessions })}
                 </span>
               </div>
             </div>
@@ -536,7 +560,7 @@ export default function BuildMonthlyProgramDialog({
                 disabled={isGenerating}
                 className="px-4 py-2 text-xs font-semibold text-[#9CA3AF] hover:text-white transition-colors"
               >
-                Cancel
+                {t("programDialog.cancel")}
               </button>
 
               <button
@@ -547,12 +571,12 @@ export default function BuildMonthlyProgramDialog({
                 {isGenerating ? (
                   <>
                     <Loader2 size={15} className="animate-spin" />
-                    <span>{progressMsg || "Generating Program..."}</span>
+                    <span>{progressMsg || t("programDialog.generating")}</span>
                   </>
                 ) : (
                   <>
                     <Sparkles size={15} />
-                    <span>Generate {durationWeeks}-Week Program</span>
+                    <span>{t("programDialog.generateBtn", { weeks: durationWeeks })}</span>
                   </>
                 )}
               </button>

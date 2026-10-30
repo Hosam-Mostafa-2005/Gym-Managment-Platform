@@ -12,6 +12,7 @@ import {
   X,
   Loader2,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useUpdateCoachProfile } from "../../hooks/use-update-coach-profile";
 import type { CoachProfileDetails } from "../../types/profile.types";
 
@@ -56,6 +57,7 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
   onClose,
   initialData,
 }) => {
+  const { t } = useTranslation(["profile"]);
   const [name, setName] = useState(initialData.name || "");
   const [professionalTitle, setProfessionalTitle] = useState(
     initialData.professionalTitle || "",
@@ -143,7 +145,7 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      setErrorMessage("Full name cannot be empty.");
+      setErrorMessage(t("coach.editDialog.nameRequired"));
       return;
     }
 
@@ -170,7 +172,7 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
           setErrorMessage(
             err.response?.data?.message ||
               err.message ||
-              "Failed to update coach profile.",
+              t("coach.editDialog.updateFailed"),
           );
         },
       },
@@ -185,15 +187,16 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
           <div>
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               <Briefcase className="w-5 h-5 text-[#5BE584]" />
-              Edit Coach Profile
+              {t("coach.editDialog.title")}
             </h2>
             <p className="text-xs text-[#9CA3AF] mt-0.5">
-              Update your professional credentials, coaching bio, and specialty areas.
+              {t("coach.editDialog.subtitle")}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
+            aria-label={t("coach.editDialog.cancel")}
             className="rounded-lg p-1.5 text-[#9CA3AF] hover:text-white hover:bg-[#1E2329] transition-colors"
           >
             <X className="h-5 w-5" />
@@ -213,40 +216,40 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-[#9CA3AF] mb-1.5 uppercase tracking-wider">
-                  Full Name <span className="text-red-400">*</span>
+                  {t("coach.editDialog.fullName")} <span className="text-red-400">*</span>
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+                  <User className="absolute left-3.5 rtl:left-auto rtl:right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="w-full rounded-xl border border-[#1E2329] bg-[#101418] pl-10 pr-4 py-2.5 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
-                    placeholder="Coach full name"
+                    className="w-full rounded-xl border border-[#1E2329] bg-[#101418] pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2.5 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
+                    placeholder={t("coach.editDialog.fullNamePlaceholder")}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-[#9CA3AF] mb-1.5 uppercase tracking-wider">
-                  Professional Title
+                  {t("coach.editDialog.professionalTitle")}
                 </label>
                 <div className="relative">
-                  <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+                  <Briefcase className="absolute left-3.5 rtl:left-auto rtl:right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                   <input
                     type="text"
                     value={professionalTitle}
                     onChange={(e) => setProfessionalTitle(e.target.value)}
-                    className="w-full rounded-xl border border-[#1E2329] bg-[#101418] pl-10 pr-4 py-2.5 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
-                    placeholder="e.g. Senior Strength & Conditioning Specialist"
+                    className="w-full rounded-xl border border-[#1E2329] bg-[#101418] pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2.5 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
+                    placeholder={t("coach.editDialog.professionalTitlePlaceholder")}
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-[#9CA3AF] mb-1.5 uppercase tracking-wider">
-                  Years of Experience
+                  {t("coach.editDialog.yearsOfExperience")}
                 </label>
                 <input
                   type="number"
@@ -256,22 +259,22 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
                   inputMode="numeric"
                   onChange={(e) => setYearsOfExperience(e.target.value)}
                   className="w-full rounded-xl border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
-                  placeholder="e.g. 5"
+                  placeholder={t("coach.editDialog.experiencePlaceholder")}
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-[#9CA3AF] mb-1.5 uppercase tracking-wider">
-                  Phone Number
+                  {t("coach.editDialog.phone")}
                 </label>
                 <div className="relative">
-                  <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+                  <Phone className="absolute left-3.5 rtl:left-auto rtl:right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full rounded-xl border border-[#1E2329] bg-[#101418] pl-10 pr-4 py-2.5 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
-                    placeholder="e.g. +1 (555) 012-3456"
+                    className="w-full rounded-xl border border-[#1E2329] bg-[#101418] pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2.5 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
+                    placeholder={t("coach.editDialog.phonePlaceholder")}
                   />
                 </div>
               </div>
@@ -282,10 +285,10 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
               <label className="block text-xs font-semibold text-[#9CA3AF] mb-1.5 uppercase tracking-wider flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-[#5BE584]" />
-                  Coach Biography
+                  {t("coach.editDialog.bio")}
                 </span>
                 <span className="text-[11px] font-normal text-gray-500 lowercase">
-                  optional
+                  {t("coach.editDialog.optional")}
                 </span>
               </label>
               <textarea
@@ -293,7 +296,7 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
                 onChange={(e) => setBio(e.target.value)}
                 rows={3}
                 className="w-full rounded-xl border border-[#1E2329] bg-[#101418] p-3 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors resize-none"
-                placeholder="Highlight your coaching experience, client success stories, and training method..."
+                placeholder={t("coach.editDialog.bioPlaceholder")}
               />
             </div>
 
@@ -302,10 +305,10 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
               <label className="block text-xs font-semibold text-[#9CA3AF] mb-1.5 uppercase tracking-wider flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <BookOpen className="w-3.5 h-3.5 text-[#5BE584]" />
-                  Coaching Philosophy
+                  {t("coach.editDialog.philosophy")}
                 </span>
                 <span className="text-[11px] font-normal text-gray-500 lowercase">
-                  optional
+                  {t("coach.editDialog.optional")}
                 </span>
               </label>
               <textarea
@@ -313,16 +316,16 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
                 onChange={(e) => setCoachingPhilosophy(e.target.value)}
                 rows={2}
                 className="w-full rounded-xl border border-[#1E2329] bg-[#101418] p-3 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors resize-none"
-                placeholder="e.g. Evidence-based periodization with long-term joint health and biomechanics at the core."
+                placeholder={t("coach.editDialog.philosophyPlaceholder")}
               />
             </div>
 
             {/* 4. Core Specialties */}
             <div>
               <label className="block text-xs font-semibold text-[#9CA3AF] mb-1.5 uppercase tracking-wider flex items-center justify-between">
-                <span>Core Specialties</span>
+                <span>{t("coach.editDialog.specialties")}</span>
                 <span className="text-[11px] font-normal text-gray-500 lowercase">
-                  optional
+                  {t("coach.editDialog.optional")}
                 </span>
               </label>
               <div className="flex flex-wrap gap-1.5 mb-2">
@@ -353,7 +356,7 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
                       handleAddSpecialty(newSpecialty);
                     }
                   }}
-                  placeholder="Add custom specialty (press Enter)..."
+                  placeholder={t("coach.editDialog.specialtyPlaceholder")}
                   className="flex-1 rounded-xl border border-[#1E2329] bg-[#101418] px-3 py-2 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
                 />
                 <button
@@ -385,10 +388,10 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
               <label className="block text-xs font-semibold text-[#9CA3AF] mb-1.5 uppercase tracking-wider flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Award className="w-3.5 h-3.5 text-[#5BE584]" />
-                  Certifications & Credentials
+                  {t("coach.editDialog.certifications")}
                 </span>
                 <span className="text-[11px] font-normal text-gray-500 lowercase">
-                  optional
+                  {t("coach.editDialog.optional")}
                 </span>
               </label>
               <div className="flex flex-wrap gap-1.5 mb-2">
@@ -419,7 +422,7 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
                       handleAddCert(newCert);
                     }
                   }}
-                  placeholder="Add certification (e.g. CSCS, NASM-CPT)..."
+                  placeholder={t("coach.editDialog.certPlaceholder")}
                   className="flex-1 rounded-xl border border-[#1E2329] bg-[#101418] px-3 py-2 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
                 />
                 <button
@@ -451,10 +454,10 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
               <label className="block text-xs font-semibold text-[#9CA3AF] mb-1.5 uppercase tracking-wider flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Globe className="w-3.5 h-3.5 text-[#5BE584]" />
-                  Languages Spoken
+                  {t("coach.editDialog.languages")}
                 </span>
                 <span className="text-[11px] font-normal text-gray-500 lowercase">
-                  optional
+                  {t("coach.editDialog.optional")}
                 </span>
               </label>
               <div className="flex flex-wrap gap-1.5 mb-2">
@@ -485,7 +488,7 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
                       handleAddLang(newLang);
                     }
                   }}
-                  placeholder="Add language..."
+                  placeholder={t("coach.editDialog.langPlaceholder")}
                   className="flex-1 rounded-xl border border-[#1E2329] bg-[#101418] px-3 py-2 text-xs text-white placeholder-[#6B7280] focus:border-[#5BE584] focus:outline-none transition-colors"
                 />
                 <button
@@ -515,14 +518,14 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-end gap-3 p-4 border-t border-[#1E2329] bg-[#0D1014] rounded-b-2xl">
+        <div className="flex items-center justify-end rtl:justify-start gap-3 p-4 border-t border-[#1E2329] bg-[#0D1014] rounded-b-2xl">
           <button
             type="button"
             onClick={onClose}
             disabled={isPending}
             className="px-4 py-2 rounded-xl border border-[#1E2329] hover:bg-[#161B22] text-xs font-semibold text-gray-300 transition-colors"
           >
-            Cancel
+            {t("coach.editDialog.cancel")}
           </button>
           <button
             type="submit"
@@ -531,7 +534,7 @@ export const EditCoachProfileDialog: React.FC<EditCoachProfileDialogProps> = ({
             className="inline-flex items-center gap-2 px-5 py-2 rounded-xl bg-[#5BE584] hover:bg-[#4ade80] text-[#090B0F] font-bold text-xs transition-colors disabled:opacity-50"
           >
             {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-            Save Changes
+            {isPending ? t("coach.editDialog.saving") : t("coach.editDialog.save")}
           </button>
         </div>
       </div>

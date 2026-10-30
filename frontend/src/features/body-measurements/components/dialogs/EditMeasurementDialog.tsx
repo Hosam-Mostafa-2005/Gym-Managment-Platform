@@ -1,5 +1,6 @@
 // src/features/body-measurements/components/dialogs/EditMeasurementDialog.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { MeasurementForm } from "../form/MeasurementForm";
 import type { MeasurementFormPayload } from "../form/MeasurementForm";
 import { useUpdateMeasurement } from "../../hooks/use-update-measurement";
@@ -11,6 +12,7 @@ export const EditMeasurementDialog: React.FC<{
   memberId: string;
 }> = ({ measurement, onClose, memberId }) => {
   const { mutate, isPending } = useUpdateMeasurement(memberId);
+  const { t } = useTranslation("bodyMeasurements");
 
   if (!measurement) return null;
 
@@ -25,12 +27,12 @@ export const EditMeasurementDialog: React.FC<{
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-xl max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-xl border border-[#1E2329] bg-[#0D1117] p-4 sm:p-6 shadow-2xl">
+      <div className="w-full max-w-xl max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-xl border border-[#1E2329] bg-[#0D1117] p-4 sm:p-6 shadow-2xl text-left rtl:text-right">
         <h2 className="text-lg font-bold text-gray-100 mb-1">
-          Edit Body Measurement
+          {t("dialogs.edit.title")}
         </h2>
         <p className="text-xs text-gray-400 mb-6">
-          Update the details for this historical measurement.
+          {t("dialogs.edit.description")}
         </p>
         <MeasurementForm
           initialValues={measurement}

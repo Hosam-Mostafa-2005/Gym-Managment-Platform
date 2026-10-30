@@ -6,6 +6,7 @@ import {
 } from "../api/notifications.api";
 import type { NotificationPreference } from "../types/notifications.types";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const useNotificationPreferences = () => {
   return useQuery({
@@ -17,16 +18,17 @@ export const useNotificationPreferences = () => {
 
 export const useUpdateNotificationPreferences = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation("notifications");
 
   return useMutation({
     mutationFn: (preferences: Partial<NotificationPreference>) =>
       updateNotificationPreferences(preferences),
     onSuccess: (updated) => {
       queryClient.setQueryData(["notification-preferences"], updated);
-      toast.success("Notification preferences updated");
+      toast.success(t("toasts.preferencesUpdated"));
     },
     onError: () => {
-      toast.error("Failed to update notification preferences");
+      toast.error(t("toasts.preferencesUpdateFailed"));
     },
   });
 };

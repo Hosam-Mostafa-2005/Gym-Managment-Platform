@@ -1,6 +1,7 @@
 // src/features/landing/components/comparison/DualPerspectiveSection.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
   CheckCircle2,
@@ -11,6 +12,46 @@ import {
 } from "lucide-react";
 
 export const DualPerspectiveSection: React.FC = () => {
+  const { t } = useTranslation(["landing"]);
+
+  const coachPoints = [
+    {
+      title: t("dualPerspective.coachSide.points.builder.title"),
+      desc: t("dualPerspective.coachSide.points.builder.desc"),
+    },
+    {
+      title: t("dualPerspective.coachSide.points.roster.title"),
+      desc: t("dualPerspective.coachSide.points.roster.desc"),
+    },
+    {
+      title: t("dualPerspective.coachSide.points.assignments.title"),
+      desc: t("dualPerspective.coachSide.points.assignments.desc"),
+    },
+    {
+      title: t("dualPerspective.coachSide.points.review.title"),
+      desc: t("dualPerspective.coachSide.points.review.desc"),
+    },
+  ];
+
+  const memberPoints = [
+    {
+      title: t("dualPerspective.memberSide.points.assignments.title"),
+      desc: t("dualPerspective.memberSide.points.assignments.desc"),
+    },
+    {
+      title: t("dualPerspective.memberSide.points.logging.title"),
+      desc: t("dualPerspective.memberSide.points.logging.desc"),
+    },
+    {
+      title: t("dualPerspective.memberSide.points.memory.title"),
+      desc: t("dualPerspective.memberSide.points.memory.desc"),
+    },
+    {
+      title: t("dualPerspective.memberSide.points.swapping.title"),
+      desc: t("dualPerspective.memberSide.points.swapping.desc"),
+    },
+  ];
+
   return (
     <section className="relative overflow-hidden border-b border-[#2A3039] bg-[#090B0F] py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
       {/* Center ambient glow */}
@@ -24,15 +65,13 @@ export const DualPerspectiveSection: React.FC = () => {
         <div className="text-center flex flex-col items-center max-w-3xl mx-auto">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-[#5BE584]/30 bg-[#5BE584]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#5BE584] mb-3">
             <Repeat className="h-3.5 w-3.5" />
-            Two Roles · One Ecosystem
+            {t("dualPerspective.badge")}
           </span>
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-[#F8FAFC] leading-[1.12] mb-4">
-            Designed for both sides of the barbell.
+            {t("dualPerspective.headline")}
           </h2>
           <p className="text-sm sm:text-base lg:text-lg text-[#A7B0BC] leading-relaxed">
-            Coaches need deep programming controls and roster oversight. Athletes need a clean,
-            low-friction session tracker that works on gym floor mobile. STREN provides tailored
-            interfaces backed by a unified training graph.
+            {t("dualPerspective.description")}
           </p>
         </div>
 
@@ -48,42 +87,24 @@ export const DualPerspectiveSection: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5BE584]">
-                      Coaching Side
+                      {t("dualPerspective.coachSide.tag")}
                     </span>
                     <h3 className="text-lg font-bold text-[#F8FAFC]">
-                      The Coach Workspace
+                      {t("dualPerspective.coachSide.title")}
                     </h3>
                   </div>
                 </div>
-                <span className="rounded-full bg-[#1A222C] border border-[#2A3039] px-2.5 py-0.5 text-[10px] font-mono text-[#94A3B8]">
+                <span className="rounded-full bg-[#1A222C] border border-[#2A3039] px-2.5 py-0.5 text-[10px] font-mono text-[#94A3B8]" dir="ltr">
                   /coach-dashboard
                 </span>
               </div>
 
               <p className="mt-4 text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
-                Empowers coaches to build reusable programs, specify exact target intensities,
-                and monitor member training compliance without manual follow-up.
+                {t("dualPerspective.coachSide.description")}
               </p>
 
               <div className="mt-6 space-y-3">
-                {[
-                  {
-                    title: "Workout Builder with Prescription Targets",
-                    desc: "Define exact target kg loads and target RPE for every movement.",
-                  },
-                  {
-                    title: "Member Roster Management",
-                    desc: "Track client adherence rates and manage assigned training splits.",
-                  },
-                  {
-                    title: "Program Assignment Distribution",
-                    desc: "Push structured workout blocks to individual athletes with scheduled dates.",
-                  },
-                  {
-                    title: "Session Review & Feedback Telemetry",
-                    desc: "Inspect verified set tonnage, completed sets, and member RPE submissions.",
-                  },
-                ].map((item, i) => (
+                {coachPoints.map((item, i) => (
                   <div
                     key={i}
                     className="flex items-start gap-3 rounded-[12px] border border-[#222832] bg-[#090B0F]/80 p-3"
@@ -102,7 +123,8 @@ export const DualPerspectiveSection: React.FC = () => {
               to="/coach-dashboard"
               className="inline-flex items-center justify-center gap-2 rounded-[12px] bg-[#5BE584] px-5 py-2.5 text-xs font-semibold text-[#090B0F] shadow-[0_0_16px_rgba(91,229,132,0.22)] transition-all hover:bg-[#49D472]"
             >
-              Explore Coach Workspace <ArrowRight className="h-3.5 w-3.5" />
+              <span>{t("dualPerspective.coachSide.link")}</span>
+              <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
             </Link>
           </div>
 
@@ -114,10 +136,10 @@ export const DualPerspectiveSection: React.FC = () => {
               </div>
               <div className="hidden lg:flex flex-col items-center gap-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#5BE584] text-center">
-                  Live
+                  {t("dualPerspective.liveConnector.live")}
                 </span>
                 <span className="text-[10px] font-mono text-[#94A3B8] text-center">
-                  Socket.IO
+                  {t("dualPerspective.liveConnector.socket")}
                 </span>
               </div>
             </div>
@@ -133,42 +155,24 @@ export const DualPerspectiveSection: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5BE584]">
-                      Athlete Side
+                      {t("dualPerspective.memberSide.tag")}
                     </span>
                     <h3 className="text-lg font-bold text-[#F8FAFC]">
-                      The Member Workspace
+                      {t("dualPerspective.memberSide.title")}
                     </h3>
                   </div>
                 </div>
-                <span className="rounded-full bg-[#1A222C] border border-[#2A3039] px-2.5 py-0.5 text-[10px] font-mono text-[#94A3B8]">
+                <span className="rounded-full bg-[#1A222C] border border-[#2A3039] px-2.5 py-0.5 text-[10px] font-mono text-[#94A3B8]" dir="ltr">
                   /dashboard
                 </span>
               </div>
 
               <p className="mt-4 text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
-                Empowers athletes with zero-friction live logging, previous performance benchmarks,
-                and on-the-fly exercise swapping when gym equipment is busy.
+                {t("dualPerspective.memberSide.description")}
               </p>
 
               <div className="mt-6 space-y-3">
-                {[
-                  {
-                    title: "Assigned Workout Access",
-                    desc: "Open scheduled routines with clear coach notes and prescribed set targets.",
-                  },
-                  {
-                    title: "Live Set & Rep Logging",
-                    desc: "Quick one-tap completion with automated rest countdown timer.",
-                  },
-                  {
-                    title: "Previous Performance Memory",
-                    desc: "Surfaces last week's verified weight and reps right beside current inputs.",
-                  },
-                  {
-                    title: "In-Session Exercise Swapping",
-                    desc: "Swap occupied equipment during active training with automatic reason logging.",
-                  },
-                ].map((item, i) => (
+                {memberPoints.map((item, i) => (
                   <div
                     key={i}
                     className="flex items-start gap-3 rounded-[12px] border border-[#222832] bg-[#090B0F]/80 p-3"
@@ -187,7 +191,8 @@ export const DualPerspectiveSection: React.FC = () => {
               to="/dashboard"
               className="inline-flex items-center justify-center gap-2 rounded-[12px] border border-[#2A3039] bg-[#090B0F] px-5 py-2.5 text-xs font-semibold text-[#F8FAFC] transition-all hover:border-[#38414D] hover:bg-[#13171D]"
             >
-              Explore Member Workspace <ArrowRight className="h-3.5 w-3.5" />
+              <span>{t("dualPerspective.memberSide.link")}</span>
+              <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
             </Link>
           </div>
         </div>
@@ -195,3 +200,5 @@ export const DualPerspectiveSection: React.FC = () => {
     </section>
   );
 };
+
+export default DualPerspectiveSection;

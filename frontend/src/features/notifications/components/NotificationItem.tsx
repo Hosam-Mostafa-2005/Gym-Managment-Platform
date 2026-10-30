@@ -22,30 +22,19 @@ import {
   Calendar,
   Apple,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Notification } from "../types/notifications.types";
 import { useMarkNotificationRead } from "../hooks/use-mark-notification-read";
 import { useMarkNotificationUnread } from "../hooks/use-mark-notification-unread";
 import { useDeleteNotification } from "../hooks/use-delete-notification";
+import {
+  localizeNotification,
+  formatNotificationTimeAgo,
+} from "../utils/notification-localization";
 
 interface NotificationItemProps {
   notification: Notification;
 }
-
-const formatTimeAgo = (dateString: string) => {
-  const date = new Date(dateString);
-  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-  if (seconds < 60) return "Just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-  }).format(date);
-};
 
 const getNotificationIcon = (type: string, category: string) => {
   const normalizedType = type?.toUpperCase() || "";
@@ -66,10 +55,16 @@ const getNotificationIcon = (type: string, category: string) => {
   if (normalizedType.includes("APPOINTMENT")) {
     return <Calendar className="h-4 w-4" />;
   }
-  if (normalizedType === "COACHING_INVITATION_RECEIVED" || normalizedType === "COACHING_INVITATION_ACCEPTED") {
+  if (
+    normalizedType === "COACHING_INVITATION_RECEIVED" ||
+    normalizedType === "COACHING_INVITATION_ACCEPTED"
+  ) {
     return <UserCheck className="h-4 w-4" />;
   }
-  if (normalizedType === "COACHING_INVITATION_DECLINED" || normalizedType === "COACHING_RELATIONSHIP_TERMINATED") {
+  if (
+    normalizedType === "COACHING_INVITATION_DECLINED" ||
+    normalizedType === "COACHING_RELATIONSHIP_TERMINATED"
+  ) {
     return <UserX className="h-4 w-4" />;
   }
   if (normalizedType === "HISTORY_SHARING_GRANTED") {
@@ -81,13 +76,20 @@ const getNotificationIcon = (type: string, category: string) => {
   if (normalizedCat === "NUTRITION") {
     return <Apple className="h-4 w-4" />;
   }
-  if (normalizedCat === "WORKOUT" || normalizedType.includes("WORKOUT") || normalizedType.includes("SESSION")) {
+  if (
+    normalizedCat === "WORKOUT" ||
+    normalizedType.includes("WORKOUT") ||
+    normalizedType.includes("SESSION")
+  ) {
     return <Dumbbell className="h-4 w-4" />;
   }
   if (normalizedType === "ASSIGNMENT" || normalizedType === "WORKOUT_ASSIGNED") {
     return <ClipboardList className="h-4 w-4" />;
   }
-  if (normalizedType === "MEASUREMENT" || normalizedType === "BODY_MEASUREMENT_RECORDED") {
+  if (
+    normalizedType === "MEASUREMENT" ||
+    normalizedType === "BODY_MEASUREMENT_RECORDED"
+  ) {
     return <Scale className="h-4 w-4" />;
   }
   if (normalizedCat === "SYSTEM") {
@@ -114,6 +116,7 @@ const getCategoryBadgeStyles = (category: string) => {
 export const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
 }) => {
+  const { t, i18n } = useTranslation("notifications");
   const navigate = useNavigate();
   const { mutate: markAsRead, isPending: isMarkingRead } =
     useMarkNotificationRead();
@@ -124,6 +127,9 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
 
   const isUnread = !notification.readAt;
   const isHighPriority = notification.priority === "HIGH";
+
+  const { title: localizedTitle, message: localizedMessage } =
+    localizeNotification(notification, t, i18n.language);
 
   const handleClick = () => {
     if (isUnread) markAsRead(notification.id);
@@ -150,6 +156,12 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     deleteNotification(notification.id);
   };
 
+  const categoryLabel = notification.category
+    ? (t(`filters.categories.${notification.category}` as any, {
+        defaultValue: notification.category,
+      }) as string)
+    : "";
+
   return (
     <div
       onClick={handleClick}
@@ -159,9 +171,9 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
           : "border-[#1E2329] bg-[#0D1117] hover:border-[#2A313A]"
       }`}
     >
-      {/* Left green active indicator bar */}
+      {/* Left green active indicator bar (mirrored in RTL) */}
       {isUnread && (
-        <div className="absolute left-0 top-0 h-full w-1 rounded-l-xl bg-[#5BE584]" />
+        <div className="absolute left-0 rtl:left-auto rtl:right-0 top-0 h-full w-1 rounded-l-xl rtl:rounded-l-none rtl:rounded-r-xl bg-[#5BE584]" />
       )}
 
       {/* Type Icon */}
@@ -176,7 +188,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       </div>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col gap-1 pr-16 sm:pr-20 min-w-0">
+      <div className="flex flex-1 flex-col gap-1 pr-16 rtl:pr-0 rtl:pl-16 sm:pr-20 sm:rtl:pr-0 sm:rtl:pl-20 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <h4
@@ -184,7 +196,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
                 isUnread ? "text-gray-100" : "text-gray-300"
               }`}
             >
-              {notification.title}
+              {localizedTitle}
             </h4>
             {/* Category Pill */}
             {notification.category && (
@@ -193,13 +205,13 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
                   notification.category,
                 )}`}
               >
-                {notification.category}
+                {categoryLabel}
               </span>
             )}
             {/* High Priority Pill */}
             {isHighPriority && (
               <span className="rounded-full border border-red-500/30 bg-red-500/15 px-2 py-0.2 text-[9px] font-bold text-red-400">
-                High Priority
+                {t("item.highPriority")}
               </span>
             )}
           </div>
@@ -208,22 +220,26 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
             title={new Date(notification.createdAt).toLocaleString()}
             className="shrink-0 text-[11px] font-medium text-gray-500"
           >
-            {formatTimeAgo(notification.createdAt)}
+            {formatNotificationTimeAgo(
+              notification.createdAt,
+              t,
+              i18n.language,
+            )}
           </span>
         </div>
 
         <p className="text-xs leading-relaxed text-gray-400 line-clamp-2 break-words">
-          {notification.message}
+          {localizedMessage}
         </p>
       </div>
 
-      {/* Quick Action Buttons (visible on hover) */}
-      <div className="absolute right-2.5 top-2.5 sm:right-3 sm:top-3 flex opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity items-center gap-1 bg-[#0D1117]/95 backdrop-blur-sm rounded-lg border border-[#1E2329] px-1 py-0.5 shadow-sm">
+      {/* Quick Action Buttons (visible on hover / RTL mirrored) */}
+      <div className="absolute right-2.5 rtl:right-auto rtl:left-2.5 top-2.5 sm:right-3 sm:rtl:right-auto sm:rtl:left-3 sm:top-3 flex opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity items-center gap-1 bg-[#0D1117]/95 backdrop-blur-sm rounded-lg border border-[#1E2329] px-1 py-0.5 shadow-sm">
         <button
           onClick={handleToggleRead}
           disabled={isMarkingRead || isMarkingUnread}
-          title={isUnread ? "Mark as read" : "Mark as unread"}
-          aria-label={isUnread ? "Mark as read" : "Mark as unread"}
+          title={isUnread ? t("item.markRead") : t("item.markUnread")}
+          aria-label={isUnread ? t("item.markRead") : t("item.markUnread")}
           className="rounded p-1.5 text-gray-400 transition-colors hover:bg-[#1E2329] hover:text-[#5BE584]"
         >
           {isUnread ? (
@@ -236,8 +252,8 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
         <button
           onClick={handleDeleteClick}
           disabled={isDeleting}
-          title="Delete notification"
-          aria-label="Delete notification"
+          title={t("item.delete")}
+          aria-label={t("item.delete")}
           className="rounded p-1.5 text-gray-400 transition-colors hover:bg-red-500/10 hover:text-red-400"
         >
           <Trash2 className="h-3.5 w-3.5" />

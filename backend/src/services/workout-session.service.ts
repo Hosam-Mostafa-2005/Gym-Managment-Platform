@@ -553,9 +553,9 @@ class WorkoutSessionService {
       });
     }
 
-    // Trigger asynchronous gamification and milestone evaluation
+    // Trigger gamification and milestone evaluation
     try {
-      gamificationService.evaluateUserAchievements(memberId).catch(() => {});
+      await gamificationService.evaluateUserAchievements(memberId);
     } catch {
       // Safe fallback
     }

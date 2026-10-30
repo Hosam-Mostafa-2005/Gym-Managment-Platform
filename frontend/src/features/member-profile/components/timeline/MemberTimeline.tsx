@@ -10,6 +10,7 @@ import {
   Scale,
   Activity,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { TimelineEvent } from "../../types/member-profile.types";
 
 interface MemberTimelineProps {
@@ -17,6 +18,9 @@ interface MemberTimelineProps {
 }
 
 export const MemberTimeline: React.FC<MemberTimelineProps> = ({ timeline }) => {
+  const { t, i18n } = useTranslation("profile");
+  const currentLang = i18n.language.startsWith("ar") ? "ar" : "en";
+
   const getEventIcon = (type: string) => {
     switch (type.toUpperCase()) {
       case "WORKOUT_ASSIGNED":
@@ -51,29 +55,43 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({ timeline }) => {
   };
 
   const formatDateTime = (dateStr: string) => {
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(dateStr));
+    try {
+      return new Intl.DateTimeFormat(
+        currentLang === "ar" ? "ar-EG" : "en-US",
+        {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      ).format(new Date(dateStr));
+    } catch {
+      return dateStr;
+    }
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-lg font-semibold text-gray-100">Activity Timeline</h2>
+      <h2 className="text-lg font-semibold text-gray-100">
+        {t("member.timeline.title")}
+      </h2>
       <div className="rounded-xl border border-[#1E2329] bg-[#0D1117] p-6">
         {timeline.length === 0 ? (
           <p className="text-center text-sm text-gray-500 py-4">
-            No recent activity.
+            {t("member.timeline.empty")}
           </p>
         ) : (
-          <div className="relative border-l border-[#1E2329] ml-4">
+          <div className="relative border-l rtl:border-l-0 rtl:border-r border-[#1E2329] ml-4 rtl:ml-0 rtl:mr-4">
             {timeline.map((event, index) => (
-              <div key={index} className="mb-8 last:mb-0 relative pl-8">
+              <div
+                key={index}
+                className="mb-8 last:mb-0 relative pl-8 rtl:pl-0 rtl:pr-8"
+              >
                 <div
-                  className={`absolute -left-[18px] top-1 flex h-9 w-9 items-center justify-center rounded-full border ${getEventColor(event.type)}`}
+                  className={`absolute -left-[18px] rtl:left-auto rtl:-right-[18px] top-1 flex h-9 w-9 items-center justify-center rounded-full border ${getEventColor(
+                    event.type,
+                  )}`}
                 >
                   {getEventIcon(event.type)}
                 </div>

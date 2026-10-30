@@ -77,6 +77,22 @@ export const getMemberActiveRelationship: RequestHandler = catchAsync(
   },
 );
 
+export const terminateActiveMemberRelationship: RequestHandler = catchAsync(
+  async (req, res) => {
+    const relationship =
+      await coachMemberRelationshipService.terminateActiveMemberRelationship(
+        req.user!.id,
+      );
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        relationship,
+      },
+    });
+  },
+);
+
 export const respondInvitation: RequestHandler = catchAsync(
   async (req, res) => {
     const relationship =

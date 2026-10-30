@@ -1,0 +1,426 @@
+{
+  "header": {
+    "activeAccount": "حساب نشط",
+    "inactive": "غير نشط",
+    "verifiedActiveMember": "عضو نشط وموثق",
+    "joinedDate": "انضم في {{date}}",
+    "memberSince": "عضو منذ {{date}}",
+    "coachingSince": "يدرب منذ {{date}}",
+    "defaultLocation": "المقر الرئيسي (المنطقة أ)",
+    "defaultCoachTitle": "كبير المدربين",
+    "defaultMemberRole": "عضو",
+    "defaultCoachBio": "متخصص في الميكانيكا الحيوية ودورات التضخيم العضلي وبروتوكولات اللياقة البدنية المكثفة.",
+    "actions": {
+      "editProfile": "تعديل الملف الشخصي",
+      "security": "الأمان",
+      "managePlan": "إدارة الخطة",
+      "insights": "التحليلات",
+      "measurements": "القياسات",
+      "demoAccount": "حساب تجريبي"
+    }
+  },
+  "avatarDialog": {
+    "title": "الصورة الشخصية",
+    "description": "حمّل صورة شخصية مخصصة (JPG أو PNG أو WEBP، بحجم أقصى 5 ميجابايت).",
+    "selected": "الملف المحدد: {{fileName}}",
+    "currentPicture": "الصورة الشخصية الحالية",
+    "noPicture": "لم يتم تحميل أي صورة",
+    "chooseDifferent": "اختيار صورة أخرى",
+    "selectPhoto": "اختيار صورة من الجهاز",
+    "savePicture": "تعيين كصورة شخصية",
+    "uploading": "جاري التحميل...",
+    "removePicture": "إزالة الصورة الشخصية",
+    "removing": "جاري الإزالة...",
+    "clickToChange": "انقر لتغيير الصورة الشخصية",
+    "changePicture": "تغيير الصورة الشخصية",
+    "errors": {
+      "sizeExceeded": "حجم الملف يتجاوز 5 ميجابايت. يُرجى اختيار صورة أصغر.",
+      "unsupportedFormat": "الصيغ المدعومة فقط هي JPG و PNG و WEBP.",
+      "uploadFailed": "فشل تحميل الصورة الشخصية. يُرجى المحاولة مرة أخرى.",
+      "deleteFailed": "فشل حذف الصورة الشخصية. يُرجى المحاولة مرة أخرى."
+    },
+    "toasts": {
+      "updateSuccess": "تم تحديث الصورة الشخصية بنجاح!",
+      "removeSuccess": "تمت إزالة الصورة الشخصية."
+    }
+  },
+  "passwordDialog": {
+    "titleChange": "تغيير كلمة المرور",
+    "titleSet": "تعيين كلمة مرور محلية",
+    "subtitle": "إدارة بيانات الاعتماد والوصول الأمني.",
+    "googleLinked": "حساب Google مرتبط ({{email}})",
+    "tabs": {
+      "currentPassword": "كلمة المرور الحالية",
+      "emailVerification": "التحقق عبر البريد الإلكتروني"
+    },
+    "fields": {
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+      "verificationCode": "رمز التحقق المكون من 6 أرقام",
+      "minChars": "8 أحرف على الأقل",
+      "reenterNew": "أعد إدخال كلمة المرور الجديدة"
+    },
+    "actions": {
+      "showPasswords": "إظهار كلمات المرور",
+      "hidePasswords": "إخفاء كلمات المرور",
+      "show": "إظهار",
+      "hide": "إخفاء",
+      "passwordsSuffix": "كلمات المرور",
+      "forgotCurrent": "نسيت كلمة المرور الحالية؟",
+      "updatePassword": "تحديث كلمة المرور",
+      "updating": "جاري تحديث كلمة المرور...",
+      "sendCode": "إرسال رمز من 6 أرقام",
+      "sendingCode": "جاري إرسال الرمز...",
+      "resendCode": "إعادة إرسال الرمز",
+      "confirmAndSave": "تأكيد وحفظ كلمة المرور",
+      "verifyingAndSaving": "جاري التحقق والحفظ..."
+    },
+    "emailStep": {
+      "title": "إرسال رمز التحقق",
+      "description": "سنرسل رمز تأكيد مكوناً من 6 أرقام إلى {{email}} للتحقق من هويتك."
+    },
+    "delivery": {
+      "issue": "مشكلة في الإرسال",
+      "issueDefault": "تعذر تسليم البريد الإلكتروني. يُرجى التحقق من إعداداتك أو محاولة الإرسال مجدداً.",
+      "dispatched": "تم إرسال الرمز",
+      "dispatchedDesc": "تم القبول بواسطة {{provider}}{{details}}. تفقّد صندوق الوارد الخاص بك.",
+      "devNotice": "تنبيه بيئة التطوير",
+      "devNoticeDesc": "تسليم البريد الفعلي معطل (وضع المحاكاة في الطرفية مفعّل)."
+    },
+    "errors": {
+      "enterCurrent": "يُرجى إدخال كلمة المرور الحالية.",
+      "min8Chars": "يجب ألا تقل كلمة المرور الجديدة عن 8 أحرف.",
+      "passwordsMismatch": "كلمتا المرور غير متطابقتين.",
+      "codeMustBe6Digits": "يجب أن يتكون رمز التحقق من 6 أرقام.",
+      "failedUpdate": "فشل تحديث كلمة المرور.",
+      "failedSendCode": "فشل إرسال الرمز.",
+      "failedUpdateWithCode": "فشل تحديث كلمة المرور بواسطة الرمز."
+    },
+    "toasts": {
+      "updateSuccess": "تم تحديث كلمة المرور بنجاح!"
+    }
+  },
+  "member": {
+    "overview": {
+      "totalSessions": "إجمالي الجلسات",
+      "completed": "المكتملة",
+      "completionRate": "معدل الإنجاز",
+      "avgDuration": "متوسط المدة",
+      "totalVolume": "إجمالي الأوزان",
+      "min": "دقيقة",
+      "kg": "كجم",
+      "cm": "سم",
+      "percent": "٪"
+    },
+    "headerStats": {
+      "currentWeight": "الوزن الحالي",
+      "bodyFat": "نسبة الدهون ٪",
+      "standingHeight": "الطول القائم",
+      "activeRoutine": "البرنامج النشط",
+      "noActiveProgram": "لا يوجد برنامج نشط"
+    },
+    "personalInfo": {
+      "title": "المعلومات الشخصية",
+      "subtitle": "بيانات التعريف الأساسية وسجلات البداية",
+      "fullName": "الاسم القانوني الكامل",
+      "email": "البريد الإلكتروني الأساسي",
+      "phone": "رقم الهاتف",
+      "accountStatus": "حالة الحساب",
+      "fitnessGoal": "هدف اللياقة الأساسي",
+      "experienceLevel": "مستوى الخبرة",
+      "bio": "نبذة شخصية / تركيز التدريب",
+      "notSpecified": "غير محدد"
+    },
+    "goals": {
+      "STRENGTH_HYPERTROPHY": "القوة والتضخيم العضلي",
+      "FAT_LOSS_LEANING": "خسارة الدهون والتنشيف",
+      "ATHLETIC_PERFORMANCE": "الأداء الرياضي",
+      "HEALTH_LONGEVITY": "اللياقة العامة والصحة"
+    },
+    "experience": {
+      "BEGINNER": "مبتدئ (أقل من سنة)",
+      "INTERMEDIATE": "متوسط (1–3 سنوات)",
+      "ADVANCED": "متقدم (+3 سنوات)"
+    },
+    "security": {
+      "title": "أمان الحساب",
+      "passwordAuth": "كلمة المرور والمصادقة",
+      "googleConnected": "حساب Google متصل",
+      "securedViaBcrypt": "مشفر ومحمي عبر SHA-256 / bcrypt",
+      "setPassword": "تعيين كلمة المرور",
+      "changePassword": "تغيير كلمة المرور"
+    },
+    "currentAssignment": {
+      "title": "التعيين النشط الحالي",
+      "subtitle": "الروتين الموصوف حالياً والمدرب المشرف",
+      "customProgram": "برنامج تدريبي مخصص",
+      "assignedCoach": "المدرب المكلّف: {{coach}}",
+      "independent": "تدريب مستقل",
+      "start": "البداية: {{date}}",
+      "targetEnd": "النهاية المستهدفة: {{date}}",
+      "active": "نشط",
+      "noActiveTitle": "لم يتم العثور على أي تعيين نشط.",
+      "noActiveDesc": "تواصل مع مدربك المكلّف لاستلام روتين جديد."
+    },
+    "measurementHistory": {
+      "title": "سجل القياسات الحيوية",
+      "subtitle": "سجل زمني للتقييمات الفسيولوجية",
+      "recordedDate": "تاريخ التسجيل",
+      "weight": "الوزن",
+      "bodyFat": "نسبة الدهون ٪",
+      "height": "الطول",
+      "notes": "ملاحظات",
+      "empty": "لم يتم تسجيل أي قياسات حيوية سابقة.",
+      "colDate": "التاريخ",
+      "colWeight": "الوزن (كجم)",
+      "colHeight": "الطول (سم)",
+      "colBodyFat": "نسبة الدهون (%)",
+      "colNotes": "الملاحظات",
+      "unspecified": "—"
+    },
+    "recentSessions": {
+      "title": "أحدث الجلسات التدريبية",
+      "subtitle": "أحدث التمارين المسجلة",
+      "independentSession": "جلسة تدريب مستقلة",
+      "duration": "{{count}} دقيقة",
+      "empty": "لم يتم تسجيل أي جلسات تمرين بعد.",
+      "colWorkout": "التمرين",
+      "colStatus": "الحالة",
+      "colStarted": "وقت البدء",
+      "colEnded": "وقت الانتهاء",
+      "colDuration": "المدة (دقيقة)",
+      "statusCompleted": "مكتمل",
+      "statusInProgress": "قيد التنفيذ",
+      "statusCancelled": "ملغى",
+      "unspecified": "—"
+    },
+    "assignmentHistory": {
+      "title": "سجل التعيينات السابق",
+      "subtitle": "البرامج والروتينات التدريبية السابقة",
+      "customRoutine": "روتين مخصص",
+      "trainer": "المدرب: {{trainer}}",
+      "empty": "لا يتوفر أي سجل تعيينات سابق.",
+      "colWorkout": "التمرين",
+      "colTrainer": "المدرب",
+      "colStatus": "الحالة",
+      "colStartDate": "تاريخ البدء",
+      "colEndDate": "تاريخ الانتهاء",
+      "statusCompleted": "مكتمل",
+      "statusCancelled": "ملغى",
+      "unspecified": "—"
+    },
+    "timeline": {
+      "title": "المخطط الزمني للحساب والتدريب",
+      "subtitle": "محطات وأنشطة مرتبة زمنياً",
+      "empty": "لم يتم تسجيل أي أحداث في المخطط الزمني بعد."
+    },
+    "editDialog": {
+      "title": "تعديل الملف الشخصي",
+      "subtitle": "تحديث اسم العرض ورقم الهاتف وأهداف اللياقة والنبذة الشخصية.",
+      "fullName": "الاسم الكامل",
+      "fullNamePlaceholder": "مثال: أليكس مورغان",
+      "phone": "رقم الهاتف",
+      "phonePlaceholder": "مثال: 0123456789",
+      "fitnessGoal": "هدف اللياقة الأساسي",
+      "selectGoal": "اختر هدف لياقتك البدنية",
+      "experienceLevel": "مستوى الخبرة",
+      "selectExperience": "اختر مستوى خبرتك",
+      "bio": "نبذة شخصية / ملاحظات الرياضي",
+      "bioPlaceholder": "أخبر مدربك عن خلفيتك الرياضية أو دوّن أهدافك...",
+      "cancel": "إلغاء",
+      "save": "حفظ التغييرات",
+      "saving": "جاري الحفظ...",
+      "nameRequired": "لا يمكن أن يكون الاسم فارغاً.",
+      "updateFailed": "فشل تحديث الملف الشخصي."
+    }
+  },
+  "coach": {
+    "headerStats": {
+      "coreSpecialties": "التخصصات الأساسية",
+      "certifications": "الشهادات والاعتمادات",
+      "languages": "اللغات"
+    },
+    "overview": {
+      "activeMembers": "الأعضاء النشطون",
+      "activeAssignments": "التعيينات النشطة",
+      "workoutsCreated": "التمارين المنشأة",
+      "sessionsFinished": "الجلسات المكتملة",
+      "adherenceRate": "معدل الالتزام",
+      "biomarkersLogged": "القياسات الحيوية المسجلة"
+    },
+    "memberStats": {
+      "title": "مؤشرات قائمة الأعضاء",
+      "subtitle": "البيانات الديموغرافية للرياضيين النشطين وتوزيع الفئات",
+      "activeRoster": "القائمة النشطة",
+      "inactiveDormant": "غير نشط / خامل",
+      "newThisMonth": "جدد هذا الشهر",
+      "completedPrograms": "البرامج المكتملة"
+    },
+    "workoutStats": {
+      "authoringMatrix": "مصفوفة التأليف",
+      "totalProtocols": "إجمالي البروتوكولات",
+      "templateSyndication": "حالة القوالب",
+      "published": "منشور",
+      "draft": "مسودة",
+      "archived": "مؤرشف",
+      "mostAssignedFlagship": "البرنامج الرائد الأكثر تعييناً",
+      "assignedTimes": "تم تعيينه {{count}} مرة",
+      "noFlagship": "لم يتم تسجيل أي روتين رائد سائد."
+    },
+    "charts": {
+      "sessions30D": "جلسات التمارين (30 يوماً)",
+      "sessions30DSubtitle": "مسار حجم وكثافة التمرين",
+      "memberGrowth6M": "نمو الأعضاء (6 أشهر)",
+      "memberGrowth6MSubtitle": "مسار سعة قائمة الأعضاء",
+      "completionWeekly": "معدل الإنجاز (أسبوعياً)",
+      "completionWeeklySubtitle": "معايير دقة تنفيذ التدريب",
+      "noData": "لا تتوفر أي بيانات",
+      "completion": "الإنجاز"
+    },
+    "achievements": {
+      "title": "الإنجازات والاعتمادات",
+      "earned": "مكتسب",
+      "locked": "مغلق"
+    },
+    "recentActivity": {
+      "title": "شريط الأنشطة المباشر",
+      "athlete": "الرياضي:",
+      "systemAthlete": "رياضي في النظام",
+      "empty": "لم يتم تسجيل أي نشاط حديث للمدرب."
+    },
+    "upcomingTasks": {
+      "title": "المهام القادمة وإجراءات القائمة",
+      "priority": "أولوية {{priority}}",
+      "generalTask": "مهمة عامة",
+      "review": "مراجعة",
+      "athlete": "الرياضي: {{name}}",
+      "empty": "لا توجد مهام معلقة أو إجراءات قادمة للمدرب."
+    },
+    "editDialog": {
+      "title": "تعديل الملف المهني للمدرب",
+      "subtitle": "تحديث بياناتك المهنية ونبذتك التدريبية ومجالات التخصص.",
+      "fullName": "الاسم الكامل",
+      "fullNamePlaceholder": "الاسم الكامل للمدرب",
+      "professionalTitle": "المسمى المهني",
+      "professionalTitlePlaceholder": "مثال: أخصائي أول في القوة والتكييف البدني",
+      "yearsOfExperience": "سنوات الخبرة",
+      "experiencePlaceholder": "مثال: 5",
+      "phone": "رقم الهاتف",
+      "phonePlaceholder": "مثال: 0123456789",
+      "bio": "نبذة المدرب الشخصية",
+      "bioPlaceholder": "سلّط الضوء على خبرتك التدريبية وقصص نجاح المتدربين ومنهجيتك...",
+      "philosophy": "الفلسفة التدريبية",
+      "philosophyPlaceholder": "مثال: دورات تدريبية مبنية على الأدلة العلمية ترتكز على سلامة المفاصل والميكانيكا الحيوية.",
+      "specialties": "التخصصات الأساسية",
+      "specialtyPlaceholder": "إضافة تخصص مخصص (اضغط Enter)...",
+      "certifications": "الشهادات والمؤهلات",
+      "certPlaceholder": "إضافة شهادة (مثال: CSCS, NASM-CPT)...",
+      "languages": "اللغات المتحدثة",
+      "langPlaceholder": "إضافة لغة...",
+      "optional": "اختياري",
+      "cancel": "إلغاء",
+      "save": "حفظ التغييرات",
+      "saving": "جاري الحفظ...",
+      "nameRequired": "لا يمكن أن يكون الاسم فارغاً.",
+      "updateFailed": "فشل تحديث ملف المدرب الشخصي."
+    }
+  },
+  "states": {
+    "loadingAria": "جاري تحميل الملف الشخصي",
+    "errorTitle": "فشل تحميل بيانات الملف الشخصي",
+    "errorDefault": "حدث خطأ غير متوقع أثناء الاتصال بخدمات الملف الشخصي.",
+    "retryConnection": "إعادة محاولة الاتصال",
+    "memberErrorDefault": "تعذر استرجاع معلومات ملف العضو.",
+    "coachErrorDefault": "تعذر استرجاع بيانات ملف المدرب."
+  },
+  "rosterMemberView": {
+    "overview": "نظرة عامة",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "noMeasurements": "لا توجد قياسات",
+    "noMeasurementsDesc": "لم يتم تسجيل أي قياسات جسدية بعد.",
+    "latestBodyStats": "أحدث قياسات الجسم",
+    "weight": "الوزن",
+    "currentAssignment": {
+      "noActive": "لا يوجد تعيين نشط",
+      "noActiveDesc": "ليس لدى هذا العضو أي برنامج تمارين مخصص حالياً.",
+      "activeSplitAssignments": "البرامج التدريبية المجزأة النشطة",
+      "currentAssignment": "البرنامج الحالي",
+      "routinesCount": "{{count}} روتينات",
+      "routineN": "الروتين {{number}}",
+      "workoutPlan": "خطة التمرين",
+      "trainer": "المدرب",
+      "timeline": "الجدول الزمني",
+      "unknown": "غير معروف",
+      "unspecified": "—"
+    },
+    "workoutStats": {
+      "performance": "أداء التمارين",
+      "totalSessions": "إجمالي الجلسات",
+      "completed": "المكتملة",
+      "completion": "نسبة الإكمال",
+      "avgDuration": "متوسط المدة",
+      "totalVolume": "إجمالي الأوزان",
+      "kgUnit": "كجم"
+    },
+    "coachingBanner": {
+      "title": "علاقة تدريبية نشطة",
+      "subtitle": "متابعة تدريبية مباشرة للعضو",
+      "since": "يدرب منذ {{date}}",
+      "accessGranted": "تم منح حق الوصول للسجل",
+      "accessPending": "طلب الوصول للسجل قيد الانتظار",
+      "accessNotGranted": "لم يُمنح حق الوصول للسجل"
+    },
+    "progressSeparation": {
+      "currentTitle": "التقدم مع المدرب الحالي",
+      "currentSubtitle": "المقاييس والجلسات المسجلة منذ بدء العلاقة التدريبية ({{date}})",
+      "badge": "التدريب الحالي",
+      "sessionsCompleted": "الجلسات المكتملة",
+      "outOfTotal": "من إجمالي {{total}} جلسات مبدوءة",
+      "volumeLifted": "إجمالي الأوزان المرفوعة",
+      "underCurrentCoach": "تحت إشراف المدرب الحالي",
+      "weightTrend": "مسار الوزن مع المدرب",
+      "preCoachHistory": "السجل ما قبل المدرب",
+      "historyPrivate": "سجل الرياضي خاص",
+      "historyPrivateDesc": "لم يمنح الرياضي إذن الاطلاع على جلسات التمارين والقياسات الحيوية السابقة للتدريب.",
+      "requestConsent": "طلب الإذن",
+      "initialBaseline": "الوزن الأساسي الابتدائي: {{weight}} كجم",
+      "awaitingBaseline": "في انتظار تسجيل الوزن الأساسي",
+      "workoutsUnderCoach": "تمارين تحت إشراف المدرب الحالي ({{count}})",
+      "activeBadge": "نشط",
+      "sessionDefault": "جلسة تمرين",
+      "noWorkoutsUnderCoach": "لم تكتمل أي تمارين بعد تحت إشراف هذا المدرب.",
+      "measurementsUnderCoach": "القياسات تحت إشراف المدرب الحالي ({{count}})",
+      "noWeightRecorded": "لم يسجل وزن",
+      "bodyFatShort": "دهون",
+      "coachedPeriod": "فترة التدريب",
+      "noMeasurementsUnderCoach": "لم تُسجل أي قياسات للجسم بعد تحت إشراف هذا المدرب.",
+      "preCoachTitle": "السجل التاريخي ما قبل المدرب",
+      "preCoachSubtitle": "السجلات والبيانات المسجلة قبل بدء هذه العلاقة التدريبية",
+      "historicalReference": "مرجع تاريخي",
+      "private": "خاص",
+      "recordsGuidance": "تمثل هذه السجلات نشاط التمرين السابق للعضو قبل بدء الإشراف التدريبي. وهي توفر خط أساس للقوة والحجم التدريبي، ولا تُحتسب ضمن مؤشرات أداء المدرب الحالي.",
+      "preCoachSessions": "جلسات ما قبل المدرب المكتملة",
+      "completedBefore": "اكتملت قبل {{date}}",
+      "preCoachVolume": "حجم أوزان ما قبل المدرب",
+      "baselineVolume": "حجم تدريب خط الأساس",
+      "preCoachWorkouts": "تمارين ما قبل المدرب ({{count}})",
+      "historicalBadge": "تاريخي",
+      "preCoachBadge": "ما قبل المدرب",
+      "noPreCoachWorkouts": "لا توجد تمارين مسجلة ما قبل المدرب.",
+      "preCoachMeasurements": "قياسات ما قبل المدرب ({{count}})",
+      "noPreCoachMeasurements": "لا توجد قياسات مسجلة ما قبل المدرب.",
+      "historyPrivateTitle": "سجلات تاريخية خاصة",
+      "historyPrivateNotice": "اختار هذا العضو عدم مشاركة سجلات التمارين والقياسات المسجلة قبل هذه العلاقة التدريبية. لضمان الخصوصية، تم عزل السجلات السابقة بشكل كامل."
+    },
+    "states": {
+      "emptyTitle": "لم يتم العثور على العضو",
+      "emptyDesc": "تعذر العثور على ملف الرياضي المطلوب في قائمتك.",
+      "backToMembers": "العودة إلى قائمة الأعضاء",
+      "errorTitle": "فشل تحميل ملف الرياضي",
+      "errorDefault": "تعذر استرجاع تفاصيل الرياضي من قاعدة البيانات.",
+      "retry": "إعادة المحاولة"
+    }
+  }
+}

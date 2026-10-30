@@ -1,5 +1,6 @@
 // src/features/dashboard/member/components/analytics/SessionDuration.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   AreaChart,
   Area,
@@ -19,18 +20,22 @@ interface SessionDurationProps {
 export const SessionDuration: React.FC<SessionDurationProps> = ({
   trend = [],
 }) => {
+  const { t } = useTranslation(["dashboard"]);
+
   return (
     <div className="flex flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6 transition-colors hover:border-[#2A313A]">
       <div className="mb-6 flex items-center gap-2">
         <Clock className="h-5 w-5 text-gray-400" />
-        <h2 className="text-sm font-semibold text-white">Duration Trend</h2>
+        <h2 className="text-sm font-semibold text-white">
+          {t("member.analyticsView.durationTrend")}
+        </h2>
         <InfoTooltip
-          title="Session Duration Telemetry"
-          description="Average active workout duration in minutes per day across the past 30 days."
-          calculation="SUM(duration) / COUNT(sessions) on each calendar date"
-          unit="minutes"
-          dateRange="Past 30 days"
-          limitations="Zero-padded on days where no workout session was completed."
+          title={t("member.analyticsView.durationTrendTooltipTitle")}
+          description={t("member.analyticsView.durationTrendTooltipDesc")}
+          calculation={t("member.analyticsView.durationTrendTooltipCalc")}
+          unit={t("member.analyticsView.durationTrendTooltipUnit")}
+          dateRange={t("member.analyticsView.durationTrendTooltipRange")}
+          limitations={t("member.analyticsView.durationTrendTooltipLimit")}
         />
       </div>
 
@@ -71,7 +76,10 @@ export const SessionDuration: React.FC<SessionDurationProps> = ({
                   borderRadius: "8px",
                   color: "#fff",
                 }}
-                formatter={(val: any) => [`${val} min`, "Duration"]}
+                formatter={(val: any) => [
+                  `${val} ${t("member.analyticsView.sessionDurationUnit")}`,
+                  t("member.analyticsView.sessionDurationTooltip"),
+                ]}
               />
               <Area
                 type="monotone"
@@ -84,7 +92,7 @@ export const SessionDuration: React.FC<SessionDurationProps> = ({
           </ResponsiveContainer>
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-gray-500">
-            No duration data available.
+            {t("member.analyticsView.noDurationData")}
           </div>
         )}
       </div>

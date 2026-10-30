@@ -1,16 +1,22 @@
 // src/features/coach-dashboard/components/states/DashboardLoading.tsx
 import React from "react";
-import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Activity } from "lucide-react";
 
 export const DashboardLoading: React.FC = () => {
+  const { t } = useTranslation(["coachDashboard"]);
+
   return (
-    <div className="flex h-[calc(100vh-4rem)] w-full items-center justify-center bg-[#090B0F]">
-      <div className="flex flex-col items-center gap-3 text-gray-500">
-        <Loader2 className="h-8 w-8 animate-spin text-[#5BE584]" />
-        <p className="text-sm font-medium tracking-wide text-gray-300">
-          Synchronizing command telemetry...
-        </p>
+    <div className="flex h-96 flex-col items-center justify-center gap-3">
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#5BE584]/10 text-[#5BE584] animate-pulse">
+        <Activity className="h-6 w-6" />
       </div>
+      <p className="text-sm font-semibold text-gray-200">
+        {t("states.loadingTitle")}
+      </p>
+      <p className="text-xs text-gray-500">
+        {t("states.loadingSubtitle")}
+      </p>
     </div>
   );
 };

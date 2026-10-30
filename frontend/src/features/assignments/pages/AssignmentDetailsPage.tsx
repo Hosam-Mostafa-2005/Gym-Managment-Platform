@@ -15,6 +15,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // Components & Hooks
 import { useAssignment } from "@/features/assignments/hooks/useAssignment";
@@ -24,9 +25,13 @@ import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { ROLES } from "@/constants/roles";
 
 export default function AssignmentDetailsPage() {
+  const { t, i18n } = useTranslation(["assignments", "common"]);
   const navigate = useNavigate();
   const { data: user } = useCurrentUser();
   const canManage = user?.role === ROLES.ADMIN || user?.role === ROLES.TRAINER;
+
+  const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+
   // Fetch id whether it's passed as id or assignmentId
   const { id, assignmentId } = useParams<{
     id: string;
@@ -97,7 +102,9 @@ export default function AssignmentDetailsPage() {
       : getProgressPercentage(item?.status);
 
   const backPath = canManage ? "/assignments" : "/member-dashboard";
-  const backLabel = canManage ? "Assignments" : "Dashboard";
+  const backLabel = canManage
+    ? t("breadcrumb.assignments", "Assignments")
+    : t("breadcrumb.dashboard", "Dashboard");
 
   return (
     <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
@@ -119,35 +126,39 @@ export default function AssignmentDetailsPage() {
                 {backLabel}
               </span>
               <span>/</span>
-              <span className="text-[#F3F4F6]">Details</span>
+              <span className="text-[#F3F4F6]">
+                {t("breadcrumb.details", "Details")}
+              </span>
             </div>
             <div className="flex items-center gap-3 mt-1">
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
-                Assignment Overview
+                {t("details.title", "Assignment Overview")}
               </h1>
               {item?.status && <AssignmentStatusBadge status={item.status} />}
             </div>
             <p className="text-sm text-[#9CA3AF]">
-              Detailed breakdown of the assigned routine, schedule, and
-              progress.
+              {t(
+                "details.subtitle",
+                "Detailed breakdown of the assigned routine, schedule, and progress.",
+              )}
             </p>
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
             <button
               onClick={() => navigate(backPath)}
-              className="group flex items-center justify-center gap-2 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
+              className="group flex items-center justify-center gap-2 rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white cursor-pointer"
             >
-              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-              Back
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1 rtl:group-hover:translate-x-1 rtl:rotate-180" />
+              {t("details.back", "Back")}
             </button>
             {canManage && !isFetching && !isError && item && (
               <button
                 onClick={() => navigate(`/assignments/${targetId}/edit`)}
-                className="flex items-center justify-center gap-2 rounded-md bg-[#16291D] border border-[#23422E] px-4 py-2 text-sm font-medium text-[#5BE584] transition-colors hover:bg-[#1f3827]"
+                className="flex items-center justify-center gap-2 rounded-md bg-[#16291D] border border-[#23422E] px-4 py-2 text-sm font-medium text-[#5BE584] transition-colors hover:bg-[#1f3827] cursor-pointer"
               >
                 <Pencil className="h-3.5 w-3.5" />
-                Edit
+                {t("details.edit", "Edit")}
               </button>
             )}
           </div>
@@ -161,7 +172,7 @@ export default function AssignmentDetailsPage() {
           <div className="flex flex-col items-center justify-center py-24 text-[#6B7280]">
             <Loader2 className="h-8 w-8 animate-spin text-[#5BE584]" />
             <p className="mt-4 text-sm font-medium">
-              Loading assignment details...
+              {t("details.loading", "Loading assignment details...")}
             </p>
           </div>
         )}
@@ -171,17 +182,19 @@ export default function AssignmentDetailsPage() {
           <div className="rounded-xl border border-red-900/50 bg-red-950/20 p-10 flex flex-col items-center justify-center text-center gap-3 backdrop-blur-sm">
             <AlertCircle className="w-10 h-10 text-red-400" />
             <h3 className="text-base font-semibold text-white">
-              Failed to load details
+              {t("details.errorTitle", "Failed to load details")}
             </h3>
             <p className="text-xs text-[#9CA3AF] max-w-sm">
-              We couldn't retrieve the details for this assignment. It might
-              have been deleted or there is a network issue.
+              {t(
+                "details.errorDescription",
+                "We couldn't retrieve the details for this assignment. It might have been deleted or there is a network issue.",
+              )}
             </p>
             <button
               onClick={() => navigate("/assignments")}
-              className="mt-4 rounded-md border border-[#1E2329] bg-[#101418] px-5 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white hover:border-[#6B7280]"
+              className="mt-4 rounded-md border border-[#1E2329] bg-[#101418] px-5 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white hover:border-[#6B7280] cursor-pointer"
             >
-              Back to Assignments
+              {t("details.backToAssignments", "Back to Assignments")}
             </button>
           </div>
         )}
@@ -193,25 +206,25 @@ export default function AssignmentDetailsPage() {
             <section>
               <div className="relative overflow-hidden rounded-xl border border-[#1E2329] bg-[#101418]/80 p-6 sm:p-8 shadow-2xl backdrop-blur-md">
                 <div
-                  className={`absolute top-0 left-0 w-1.5 h-full ${getStatusBorderColor(
+                  className={`absolute top-0 start-0 w-1.5 h-full ${getStatusBorderColor(
                     item.status,
                   )}`}
                 />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center pl-2">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center ps-2">
                   {/* Timeline */}
-                  <div className="space-y-2 md:col-span-1 border-b md:border-b-0 md:border-r border-[#1E2329] pb-6 md:pb-0 md:pr-6">
+                  <div className="space-y-2 md:col-span-1 border-b md:border-b-0 md:border-e border-[#1E2329] pb-6 md:pb-0 md:pe-6">
                     <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest flex items-center gap-1.5">
                       <Calendar className="w-3.5 h-3.5 text-[#5BE584]" />
-                      Routine Schedule
+                      {t("details.routineSchedule", "Routine Schedule")}
                     </span>
                     <div className="text-sm font-semibold text-white mt-1">
-                      {new Date(item.startDate).toLocaleDateString("en-US", {
+                      {new Date(item.startDate).toLocaleDateString(locale, {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
                       })}
                       <span className="text-[#6B7280] mx-2">—</span>
-                      {new Date(item.endDate).toLocaleDateString("en-US", {
+                      {new Date(item.endDate).toLocaleDateString(locale, {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
@@ -219,7 +232,7 @@ export default function AssignmentDetailsPage() {
                     </div>
                     <div className="text-xs text-[#9CA3AF] flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5 text-[#6B7280]" />
-                      <span>Active Duration</span>
+                      <span>{t("details.activeDuration", "Active Duration")}</span>
                     </div>
                   </div>
 
@@ -228,7 +241,7 @@ export default function AssignmentDetailsPage() {
                     <div className="flex justify-between items-center">
                       <span className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280] flex items-center gap-1.5">
                         <Activity className="w-3.5 h-3.5 text-[#5BE584]" />
-                        Estimated Completion
+                        {t("details.estimatedCompletion", "Estimated Completion")}
                       </span>
                       <span className="font-bold text-white text-sm">
                         {progress}%
@@ -244,8 +257,14 @@ export default function AssignmentDetailsPage() {
                     </div>
                     <p className="text-[11px] text-[#6B7280]">
                       {item.status === "COMPLETED"
-                        ? "This workout assignment has been fully completed by the member."
-                        : "Progress is estimated based on schedule and logged activity."}
+                        ? t(
+                            "details.completedNote",
+                            "This workout assignment has been fully completed by the member.",
+                          )
+                        : t(
+                            "details.inProgressNote",
+                            "Progress is estimated based on schedule and logged activity.",
+                          )}
                     </p>
                   </div>
                 </div>
@@ -259,10 +278,10 @@ export default function AssignmentDetailsPage() {
                 <div className="flex items-center justify-between border-b border-[#1E2329] pb-4 mb-4">
                   <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280] flex items-center gap-2">
                     <UserIcon className="w-3.5 h-3.5 text-[#5BE584]" />
-                    Assigned Member
+                    {t("details.assignedMember", "Assigned Member")}
                   </h3>
                   <span className="text-[10px] font-medium text-[#5BE584] bg-[#16291D] border border-[#23422E] px-2 py-0.5 rounded">
-                    Active Gym Member
+                    {t("details.activeGymMember", "Active Gym Member")}
                   </span>
                 </div>
                 <div className="flex items-start gap-4">
@@ -271,11 +290,15 @@ export default function AssignmentDetailsPage() {
                   </div>
                   <div className="space-y-1">
                     <h4 className="font-semibold text-white">
-                      {item.member?.name || "Unknown Member"}
+                      {item.member?.name ||
+                        t("details.unknownMember", "Unknown Member")}
                     </h4>
                     <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF]">
                       <Mail className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
-                      <span>{item.member?.email || "No email provided"}</span>
+                      <span>
+                        {item.member?.email ||
+                          t("details.noEmail", "No email provided")}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -286,10 +309,10 @@ export default function AssignmentDetailsPage() {
                 <div className="flex items-center justify-between border-b border-[#1E2329] pb-4 mb-4">
                   <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280] flex items-center gap-2">
                     <UserCheck className="w-3.5 h-3.5 text-[#5BE584]" />
-                    Supervising Trainer
+                    {t("details.supervisingTrainer", "Supervising Trainer")}
                   </h3>
                   <span className="text-[10px] font-medium text-[#9CA3AF] bg-[#1E2329] px-2 py-0.5 rounded">
-                    Verified Trainer
+                    {t("details.verifiedTrainer", "Verified Trainer")}
                   </span>
                 </div>
                 <div className="flex items-start gap-4">
@@ -298,11 +321,14 @@ export default function AssignmentDetailsPage() {
                   </div>
                   <div className="space-y-1">
                     <h4 className="font-semibold text-white">
-                      {item.trainer?.name || "Not Assigned"}
+                      {item.trainer?.name ||
+                        t("details.notAssigned", "Not Assigned")}
                     </h4>
                     <p className="text-xs text-[#6B7280] leading-relaxed">
-                      Responsible for routine monitoring, adjustments, and
-                      member guidance.
+                      {t(
+                        "details.trainerRoleDescription",
+                        "Responsible for routine monitoring, adjustments, and member guidance.",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -316,10 +342,13 @@ export default function AssignmentDetailsPage() {
               <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
                   <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-                    Workout Structure
+                    {t("details.workoutStructure", "Workout Structure")}
                   </h2>
                   <p className="text-xs text-[#6B7280] mt-1">
-                    The structured plan assigned to the member.
+                    {t(
+                      "details.workoutStructureSubtitle",
+                      "The structured plan assigned to the member.",
+                    )}
                   </p>
                 </div>
                 {(item.workout?.id || item.workout?._id) && (
@@ -331,9 +360,12 @@ export default function AssignmentDetailsPage() {
                           : `/workouts/${item.workout.id || item.workout._id}`,
                       )
                     }
-                    className="flex items-center gap-1.5 text-xs font-medium text-[#5BE584] hover:text-[#4ade80] transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-medium text-[#5BE584] hover:text-[#4ade80] transition-colors cursor-pointer"
                   >
-                    View Routine Details →
+                    {t(
+                      "details.viewRoutineDetails",
+                      "View Routine Details →",
+                    )}
                   </button>
                 )}
               </div>
@@ -345,11 +377,15 @@ export default function AssignmentDetailsPage() {
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-white">
-                      {item.workout?.title || "Custom General Routine"}
+                      {item.workout?.title ||
+                        t("details.customRoutine", "Custom General Routine")}
                     </h3>
                     <p className="text-xs text-[#9CA3AF] mt-1 line-clamp-2 max-w-xl leading-relaxed">
                       {item.workout?.description ||
-                        "No specific routine description available."}
+                        t(
+                          "details.noRoutineDescription",
+                          "No specific routine description available.",
+                        )}
                     </p>
                   </div>
                 </div>
@@ -368,7 +404,7 @@ export default function AssignmentDetailsPage() {
               <div className="mb-6">
                 <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase flex items-center gap-2">
                   <FileText className="w-3.5 h-3.5 text-[#5BE584]" />
-                  Trainer Notes & Guidelines
+                  {t("details.notesTitle", "Trainer Notes & Guidelines")}
                 </h2>
               </div>
 
@@ -380,8 +416,10 @@ export default function AssignmentDetailsPage() {
                 <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-[#1E2329] bg-transparent py-10 px-6 text-center">
                   <CheckCircle2 className="w-6 h-6 text-[#1E2329] mb-3" />
                   <p className="text-xs font-medium text-[#6B7280]">
-                    No special notes or guidelines were attached to this
-                    assignment.
+                    {t(
+                      "details.noNotes",
+                      "No special notes or guidelines were attached to this assignment.",
+                    )}
                   </p>
                 </div>
               )}

@@ -1,12 +1,12 @@
 // src/features/scheduling/components/ScheduleWorkoutDialog.tsx
 import { useState, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import {
   Calendar,
   Clock,
   X,
   Dumbbell,
-  User,
   AlertCircle,
   FileText,
 } from "lucide-react";
@@ -36,6 +36,8 @@ export default function ScheduleWorkoutDialog({
   preselectedMemberId,
   preselectedWorkoutId,
 }: ScheduleWorkoutDialogProps) {
+  const { t } = useTranslation(["trainingCalendar"]);
+
   const getDefaultDate = () => {
     if (initialDate) return initialDate;
     const d = new Date();
@@ -94,23 +96,23 @@ export default function ScheduleWorkoutDialog({
     setError(null);
 
     if (!workoutId) {
-      setError("Please choose a workout to schedule.");
+      setError(t("scheduleDialog.errWorkout"));
       return;
     }
 
     if (isCoach && !memberId) {
-      setError("Please select an athlete to assign this scheduled workout.");
+      setError(t("scheduleDialog.errAthlete"));
       return;
     }
 
     if (!date || !time) {
-      setError("Please select both a date and a time.");
+      setError(t("scheduleDialog.errDateTime"));
       return;
     }
 
     const scheduledDateTime = new Date(`${date}T${time}:00`);
     if (isNaN(scheduledDateTime.getTime())) {
-      setError("Invalid date or time selected.");
+      setError(t("scheduleDialog.errInvalidDateTime"));
       return;
     }
 
@@ -151,17 +153,17 @@ export default function ScheduleWorkoutDialog({
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-[#1E2329]">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#16291D] border border-[#23422E] text-[#5BE584]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#16291D] border border-[#23422E] text-[#5BE584] shrink-0">
                 <Calendar className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">
-                  {isCoach ? "Schedule Workout for Athlete" : "Schedule Workout"}
+                  {isCoach ? t("scheduleDialog.titleCoach") : t("scheduleDialog.titleMember")}
                 </h3>
                 <p className="text-xs text-[#9CA3AF]">
                   {isCoach
-                    ? "Add a workout session to athlete's training calendar"
-                    : "Plan your workout session in advance"}
+                    ? t("scheduleDialog.subtitleCoach")
+                    : t("scheduleDialog.subtitleMember")}
                 </p>
               </div>
             </div>
@@ -192,16 +194,16 @@ export default function ScheduleWorkoutDialog({
                 preselectedMember={preselectedMember}
                 disabled={isLoadingMembers}
                 locked={Boolean(preselectedMemberId)}
-                label="Select Athlete *"
-                placeholder="Choose an athlete..."
+                label={t("scheduleDialog.selectAthleteLabel")}
+                placeholder={t("scheduleDialog.selectAthletePlaceholder")}
               />
             )}
 
             {/* Workout Selector */}
             <div>
               <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center gap-1.5">
-                <Dumbbell size={13} className="text-[#5BE584]" />
-                Select Workout *
+                <Dumbbell size={13} className="text-[#5BE584] shrink-0" />
+                {t("scheduleDialog.selectWorkoutLabel")}
               </label>
               <select
                 required
@@ -210,7 +212,7 @@ export default function ScheduleWorkoutDialog({
                 className="w-full bg-[#12161D] border border-[#1E2329] rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#5BE584]"
                 disabled={isLoadingWorkouts}
               >
-                <option value="">Choose a workout plan...</option>
+                <option value="">{t("scheduleDialog.selectWorkoutPlaceholder")}</option>
                 {workouts.map((w: any) => (
                   <option key={w.id} value={w.id}>
                     {w.title} ({w.difficulty?.toLowerCase() || "standard"})
@@ -223,8 +225,8 @@ export default function ScheduleWorkoutDialog({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center gap-1.5">
-                  <Calendar size={13} className="text-[#5BE584]" />
-                  Date *
+                  <Calendar size={13} className="text-[#5BE584] shrink-0" />
+                  {t("scheduleDialog.dateLabel")}
                 </label>
                 <input
                   type="date"
@@ -237,8 +239,8 @@ export default function ScheduleWorkoutDialog({
 
               <div>
                 <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center gap-1.5">
-                  <Clock size={13} className="text-[#5BE584]" />
-                  Time *
+                  <Clock size={13} className="text-[#5BE584] shrink-0" />
+                  {t("scheduleDialog.timeLabel")}
                 </label>
                 <input
                   type="time"
@@ -253,8 +255,8 @@ export default function ScheduleWorkoutDialog({
             {/* Notes / Instructions */}
             <div>
               <label className="block text-xs font-semibold text-gray-300 mb-1.5 flex items-center gap-1.5">
-                <FileText size={13} className="text-[#5BE584]" />
-                Instructions or Notes (Optional)
+                <FileText size={13} className="text-[#5BE584] shrink-0" />
+                {t("scheduleDialog.notesLabel")}
               </label>
               <textarea
                 rows={3}
@@ -262,8 +264,8 @@ export default function ScheduleWorkoutDialog({
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder={
                   isCoach
-                    ? "Add tempo instructions, target RPE, or focus cues..."
-                    : "Notes for this workout session..."
+                    ? t("scheduleDialog.notesPlaceholderCoach")
+                    : t("scheduleDialog.notesPlaceholderMember")
                 }
                 className="w-full bg-[#12161D] border border-[#1E2329] rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#5BE584]"
               />
@@ -276,7 +278,7 @@ export default function ScheduleWorkoutDialog({
                 onClick={onClose}
                 className="px-4 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
               >
-                Cancel
+                {t("scheduleDialog.cancel")}
               </button>
               <button
                 type="submit"
@@ -284,7 +286,7 @@ export default function ScheduleWorkoutDialog({
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#5BE584] hover:bg-[#4dd273] text-black shadow-lg shadow-[#5BE584]/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
               >
                 <Calendar size={14} className="fill-black" />
-                {isPending ? "Scheduling..." : "Schedule Workout"}
+                {isPending ? t("scheduleDialog.submitting") : t("scheduleDialog.submit")}
               </button>
             </div>
           </form>

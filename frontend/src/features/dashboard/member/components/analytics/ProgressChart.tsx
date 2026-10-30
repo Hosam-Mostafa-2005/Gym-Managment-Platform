@@ -1,5 +1,6 @@
 // src/features/dashboard/member/components/analytics/ProgressChart.tsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   LineChart,
   Line,
@@ -21,6 +22,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
   exercises = [],
   sets = [],
 }) => {
+  const { t } = useTranslation(["dashboard"]);
   const [metric, setMetric] = useState<"exercises" | "sets">("sets");
   const data = metric === "exercises" ? exercises : sets;
 
@@ -29,14 +31,16 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <LineChartIcon className="h-5 w-5 text-gray-400" />
-          <h2 className="text-sm font-semibold text-white">Weekly Output</h2>
+          <h2 className="text-sm font-semibold text-white">
+            {t("member.analyticsView.weeklyOutput")}
+          </h2>
           <InfoTooltip
-            title="Weekly Training Volume Output"
-            description="Total number of completed sets or unique exercises performed each week."
-            calculation="SUM(sets) or COUNT(exercises) grouped by calendar week"
+            title={t("member.analyticsView.weeklyOutputTooltipTitle")}
+            description={t("member.analyticsView.weeklyOutputTooltipDesc")}
+            calculation={t("member.analyticsView.weeklyOutputTooltipCalc")}
             unit={metric === "sets" ? "sets / week" : "exercises / week"}
-            dateRange="Past 4 rolling weeks"
-            limitations="Highlights progressive overload and overall training consistency across weeks."
+            dateRange={t("member.analyticsView.weeklyOutputTooltipRange")}
+            limitations={t("member.analyticsView.weeklyOutputTooltipLimit")}
           />
         </div>
         <select
@@ -44,8 +48,8 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
           onChange={(e) => setMetric(e.target.value as "exercises" | "sets")}
           className="rounded-md border border-[#1E2329] bg-[#090B0F] px-2 py-1 text-xs text-gray-300 focus:border-[#5BE584] focus:outline-none"
         >
-          <option value="sets">Total Sets</option>
-          <option value="exercises">Exercises</option>
+          <option value="sets">{t("member.analyticsView.totalSets")}</option>
+          <option value="exercises">{t("member.analyticsView.exercises")}</option>
         </select>
       </div>
 
@@ -83,7 +87,9 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
                 }}
                 formatter={(val: any) => [
                   val,
-                  metric === "sets" ? "Sets Completed" : "Exercises Completed",
+                  metric === "sets"
+                    ? t("member.analyticsView.setsCompleted")
+                    : t("member.analyticsView.exercisesCompleted"),
                 ]}
               />
               <Line
@@ -97,7 +103,7 @@ export const ProgressChart: React.FC<ProgressChartProps> = ({
           </ResponsiveContainer>
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-gray-500">
-            No weekly output data.
+            {t("member.analyticsView.noWeeklyOutputData")}
           </div>
         )}
       </div>

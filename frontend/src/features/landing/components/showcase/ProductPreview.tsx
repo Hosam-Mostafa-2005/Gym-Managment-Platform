@@ -1,5 +1,6 @@
 // src/features/landing/components/showcase/ProductPreview.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Activity,
   CheckCircle2,
@@ -14,6 +15,8 @@ import {
 export const ProductPreview: React.FC<{ activeTab: string }> = ({
   activeTab,
 }) => {
+  const { t } = useTranslation(["landing"]);
+
   return (
     <div className="w-full rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_20px_60px_rgba(0,0,0,0.45)] overflow-hidden flex flex-col">
       {/* App Window Header */}
@@ -22,15 +25,15 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
           <div className="h-2.5 w-2.5 rounded-full bg-[#EF4444]/60" />
           <div className="h-2.5 w-2.5 rounded-full bg-[#F5B942]/60" />
           <div className="h-2.5 w-2.5 rounded-full bg-[#5BE584]" />
-          <span className="ml-2 text-xs font-semibold text-[#F8FAFC]">
-            STREN Workspace Explorer
+          <span className="ml-2 rtl:mr-2 rtl:ml-0 text-xs font-semibold text-[#F8FAFC]">
+            {t("showcase.preview.windowTitle")}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="rounded-full bg-[#5BE584]/15 border border-[#5BE584]/30 px-2.5 py-0.5 text-[10px] font-semibold text-[#5BE584]">
-            LIVE INTERACTION PREVIEW
+            {t("showcase.preview.liveBadge")}
           </span>
-          <div className="rounded-[8px] border border-[#2A3039] bg-[#13171D] px-2.5 py-0.5 text-[11px] font-mono text-[#94A3B8]">
+          <div className="rounded-[8px] border border-[#2A3039] bg-[#13171D] px-2.5 py-0.5 text-[11px] font-mono text-[#94A3B8]" dir="ltr">
             /{activeTab}
           </div>
         </div>
@@ -45,38 +48,54 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div className="rounded-[14px] border border-[#2A3039] bg-[#13171D] p-4">
                 <div className="flex items-center justify-between text-xs text-[#94A3B8]">
-                  <span>Active Roster</span>
+                  <span>{t("showcase.preview.stats.activeRoster")}</span>
                   <Users className="h-4 w-4 text-[#5BE584]" />
                 </div>
-                <p className="mt-2 text-xl sm:text-2xl font-bold text-[#F8FAFC]">18 Athletes</p>
-                <p className="mt-1 text-[11px] text-[#22C55E]">100% active this mesocycle</p>
+                <p className="mt-2 text-xl sm:text-2xl font-bold text-[#F8FAFC]">
+                  {t("showcase.preview.stats.rosterValue")}
+                </p>
+                <p className="mt-1 text-[11px] text-[#22C55E]">
+                  {t("showcase.preview.stats.rosterNote")}
+                </p>
               </div>
 
               <div className="rounded-[14px] border border-[#2A3039] bg-[#13171D] p-4">
                 <div className="flex items-center justify-between text-xs text-[#94A3B8]">
-                  <span>Active Plans</span>
+                  <span>{t("showcase.preview.stats.activePlans")}</span>
                   <Dumbbell className="h-4 w-4 text-[#5BE584]" />
                 </div>
-                <p className="mt-2 text-xl sm:text-2xl font-bold text-[#F8FAFC]">24 Routines</p>
-                <p className="mt-1 text-[11px] text-[#94A3B8]">Assigned across splits</p>
+                <p className="mt-2 text-xl sm:text-2xl font-bold text-[#F8FAFC]">
+                  {t("showcase.preview.stats.plansValue")}
+                </p>
+                <p className="mt-1 text-[11px] text-[#94A3B8]">
+                  {t("showcase.preview.stats.plansNote")}
+                </p>
               </div>
 
               <div className="rounded-[14px] border border-[#2A3039] bg-[#13171D] p-4">
                 <div className="flex items-center justify-between text-xs text-[#94A3B8]">
-                  <span>Tonnage Lifted</span>
+                  <span>{t("showcase.preview.stats.tonnage")}</span>
                   <Activity className="h-4 w-4 text-[#5BE584]" />
                 </div>
-                <p className="mt-2 text-xl sm:text-2xl font-bold text-[#F8FAFC]">142.8 Tonnes</p>
-                <p className="mt-1 text-[11px] text-[#22C55E]">+8.4% vs last week</p>
+                <p className="mt-2 text-xl sm:text-2xl font-bold text-[#F8FAFC]">
+                  {t("showcase.preview.stats.tonnageValue")}
+                </p>
+                <p className="mt-1 text-[11px] text-[#22C55E]">
+                  {t("showcase.preview.stats.tonnageNote")}
+                </p>
               </div>
 
               <div className="rounded-[14px] border border-[#2A3039] bg-[#13171D] p-4">
                 <div className="flex items-center justify-between text-xs text-[#94A3B8]">
-                  <span>Roster Adherence</span>
+                  <span>{t("showcase.preview.stats.adherence")}</span>
                   <CheckCircle2 className="h-4 w-4 text-[#5BE584]" />
                 </div>
-                <p className="mt-2 text-xl sm:text-2xl font-bold text-[#5BE584]">94.2%</p>
-                <p className="mt-1 text-[11px] text-[#94A3B8]">Completed on schedule</p>
+                <p className="mt-2 text-xl sm:text-2xl font-bold text-[#5BE584]">
+                  {t("showcase.preview.stats.adherenceValue")}
+                </p>
+                <p className="mt-1 text-[11px] text-[#94A3B8]">
+                  {t("showcase.preview.stats.adherenceNote")}
+                </p>
               </div>
             </div>
 
@@ -84,40 +103,37 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
             <div className="rounded-[16px] border border-[#2A3039] bg-[#13171D] overflow-hidden">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#2A3039] px-4 py-3 bg-[#11151C]">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#F8FAFC]">
-                  Live Athlete Session Telemetry
+                  {t("showcase.preview.feed.title")}
                 </span>
                 <span className="text-xs text-[#94A3B8]">
-                  Verified sets & RPE submitted today
+                  {t("showcase.preview.feed.subtitle")}
                 </span>
               </div>
               <div className="divide-y divide-[#1F2630]">
                 {[
                   {
-                    athlete: "Omar Hassan",
-                    workout: "Upper Push Hypertrophy A",
-                    tonnage: "4,820 kg",
-                    sets: "16 sets completed",
-                    rpe: "8.5 RPE",
-                    time: "18m ago",
-                    status: "Verified",
+                    athlete: t("showcase.preview.feed.omarAthlete"),
+                    workout: t("showcase.preview.feed.omarWorkout"),
+                    tonnage: t("showcase.preview.feed.omarTonnage"),
+                    sets: t("showcase.preview.feed.omarSets"),
+                    rpe: t("showcase.preview.feed.omarRpe"),
+                    time: t("showcase.preview.feed.omarTime"),
                   },
                   {
-                    athlete: "Sara Al-Mansoor",
-                    workout: "Lower Body Squat Focus",
-                    tonnage: "6,240 kg",
-                    sets: "18 sets completed",
-                    rpe: "9.0 RPE",
-                    time: "1h ago",
-                    status: "Verified",
+                    athlete: t("showcase.preview.feed.saraAthlete"),
+                    workout: t("showcase.preview.feed.saraWorkout"),
+                    tonnage: t("showcase.preview.feed.saraTonnage"),
+                    sets: t("showcase.preview.feed.saraSets"),
+                    rpe: t("showcase.preview.feed.saraRpe"),
+                    time: t("showcase.preview.feed.saraTime"),
                   },
                   {
-                    athlete: "Karim Nabil",
-                    workout: "Posterior Chain & Back",
-                    tonnage: "5,110 kg",
-                    sets: "15 sets completed",
-                    rpe: "8.0 RPE",
-                    time: "3h ago",
-                    status: "Verified",
+                    athlete: t("showcase.preview.feed.karimAthlete"),
+                    workout: t("showcase.preview.feed.karimWorkout"),
+                    tonnage: t("showcase.preview.feed.karimTonnage"),
+                    sets: t("showcase.preview.feed.karimSets"),
+                    rpe: t("showcase.preview.feed.karimRpe"),
+                    time: t("showcase.preview.feed.karimTime"),
                   },
                 ].map((row) => (
                   <div
@@ -150,20 +166,22 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#5BE584] rounded-full bg-[#5BE584]/15 border border-[#5BE584]/30 px-2 py-0.5">
-                    Template Builder
+                    {t("showcase.preview.builder.templateBadge")}
                   </span>
-                  <span className="text-xs text-[#94A3B8]">4 Exercise Blocks</span>
+                  <span className="text-xs text-[#94A3B8]">
+                    {t("showcase.preview.builder.blocksCount")}
+                  </span>
                 </div>
                 <h4 className="text-base font-bold text-[#F8FAFC] mt-1">
-                  Full Body Power & Posterior Chain (Block 2)
+                  {t("showcase.preview.builder.title")}
                 </h4>
               </div>
               <div className="flex items-center gap-2">
                 <span className="rounded-[8px] bg-[#1E252F] border border-[#2A3039] px-3 py-1.5 text-xs text-[#94A3B8]">
-                  Difficulty: Intermediate
+                  {t("showcase.preview.builder.difficulty")}
                 </span>
                 <span className="rounded-[8px] bg-[#5BE584] px-3 py-1.5 text-xs font-bold text-[#090B0F]">
-                  Assign Template
+                  {t("showcase.preview.builder.assignButton")}
                 </span>
               </div>
             </div>
@@ -173,7 +191,7 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
                 {
                   order: "01",
                   name: "Trap Bar Deadlift",
-                  type: "Primary Compound",
+                  type: t("showcase.preview.builder.exerciseTypes.primaryCompound"),
                   targetWeight: "160 kg",
                   targetRpe: "8.5",
                   rest: "180s",
@@ -181,7 +199,7 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
                 {
                   order: "02",
                   name: "Incline Dumbbell Press",
-                  type: "Upper Hypertrophy",
+                  type: t("showcase.preview.builder.exerciseTypes.upperHypertrophy"),
                   targetWeight: "36 kg",
                   targetRpe: "8.0",
                   rest: "90s",
@@ -189,7 +207,7 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
                 {
                   order: "03",
                   name: "Chest-Supported Row",
-                  type: "Upper Pull",
+                  type: t("showcase.preview.builder.exerciseTypes.upperPull"),
                   targetWeight: "32 kg",
                   targetRpe: "8.0",
                   rest: "90s",
@@ -197,7 +215,7 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
                 {
                   order: "04",
                   name: "Standing Calf Raise",
-                  type: "Isolation Finisher",
+                  type: t("showcase.preview.builder.exerciseTypes.isolationFinisher"),
                   targetWeight: "65 kg",
                   targetRpe: "9.0",
                   rest: "60s",
@@ -220,13 +238,16 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
                   </div>
                   <div className="flex items-center justify-between text-xs pt-2 border-t border-[#2A3039]/60">
                     <span className="text-[#94A3B8]">
-                      Target: <strong className="text-[#F8FAFC]">{ex.targetWeight}</strong>
+                      {t("showcase.preview.builder.targetLabel")}{" "}
+                      <strong className="text-[#F8FAFC]">{ex.targetWeight}</strong>
                     </span>
                     <span className="text-[#94A3B8]">
-                      RPE: <strong className="text-[#5BE584]">{ex.targetRpe}</strong>
+                      {t("showcase.preview.builder.rpeLabel")}{" "}
+                      <strong className="text-[#5BE584]">{ex.targetRpe}</strong>
                     </span>
                     <span className="text-[#94A3B8]">
-                      Rest: <strong className="text-[#F8FAFC]">{ex.rest}</strong>
+                      {t("showcase.preview.builder.restLabel")}{" "}
+                      <strong className="text-[#F8FAFC]">{ex.rest}</strong>
                     </span>
                   </div>
                 </div>
@@ -243,19 +264,19 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
                 <span className="h-3 w-3 rounded-full bg-[#22C55E] animate-pulse" />
                 <div>
                   <h4 className="text-sm font-bold text-[#F8FAFC]">
-                    Live Session: Push Hypertrophy A
+                    {t("showcase.preview.session.title")}
                   </h4>
                   <p className="text-xs text-[#94A3B8]">
-                    Movement 1 of 4 · Barbell Bench Press · Rest: 120s
+                    {t("showcase.preview.session.subtitle")}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <span className="rounded-full bg-[#22C55E]/15 border border-[#22C55E]/30 px-3 py-1 text-xs font-mono font-bold text-[#22C55E]">
-                  01:34 Rest Left
+                  {t("showcase.preview.session.restLeft")}
                 </span>
                 <span className="rounded-[8px] bg-[#1B222D] border border-[#2A3039] px-3 py-1 text-xs text-[#F8FAFC]">
-                  Tonnage: 3,420 kg
+                  {t("showcase.preview.session.tonnage")}
                 </span>
               </div>
             </div>
@@ -265,24 +286,38 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
               <div className="flex items-center gap-2">
                 <RefreshCw className="h-4 w-4" />
                 <span>
-                  <strong>Exercise Swapped:</strong> Replaced Flat Barbell Bench with Incline DB
-                  Press (Reason: Equipment Occupied).
+                  <strong>{t("showcase.preview.session.swappedAlert")}</strong>{" "}
+                  {t("showcase.preview.session.swappedDetails")}
                 </span>
               </div>
-              <span className="text-[10px] uppercase font-bold">Logged to Coach</span>
+              <span className="text-[10px] uppercase font-bold">
+                {t("showcase.preview.session.loggedToCoach")}
+              </span>
             </div>
 
             {/* Set Table */}
             <div className="rounded-[14px] border border-[#2A3039] bg-[#11161D] p-4 overflow-x-auto">
-              <table className="w-full text-left text-xs">
+              <table className="w-full text-left rtl:text-right text-xs">
                 <thead>
                   <tr className="border-b border-[#2A3039] text-[#94A3B8]">
-                    <th className="pb-2 font-semibold">SET</th>
-                    <th className="pb-2 font-semibold">PREVIOUS PERFORMANCE</th>
-                    <th className="pb-2 font-semibold">TARGET (COACH)</th>
-                    <th className="pb-2 font-semibold">LOGGED KG</th>
-                    <th className="pb-2 font-semibold">REPS</th>
-                    <th className="pb-2 font-semibold text-right">STATUS</th>
+                    <th className="pb-2 font-semibold">
+                      {t("showcase.preview.session.table.set")}
+                    </th>
+                    <th className="pb-2 font-semibold">
+                      {t("showcase.preview.session.table.prevPerformance")}
+                    </th>
+                    <th className="pb-2 font-semibold">
+                      {t("showcase.preview.session.table.targetCoach")}
+                    </th>
+                    <th className="pb-2 font-semibold">
+                      {t("showcase.preview.session.table.loggedKg")}
+                    </th>
+                    <th className="pb-2 font-semibold">
+                      {t("showcase.preview.session.table.reps")}
+                    </th>
+                    <th className="pb-2 font-semibold text-right rtl:text-left">
+                      {t("showcase.preview.session.table.status")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#1D242E]">
@@ -292,7 +327,9 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
                     <td className="py-2.5 text-[#94A3B8]">82.5 kg × 10</td>
                     <td className="py-2.5 font-mono font-bold text-[#F8FAFC]">82.5 kg</td>
                     <td className="py-2.5 font-mono font-bold text-[#F8FAFC]">10 reps</td>
-                    <td className="py-2.5 text-right font-semibold text-[#22C55E]">Completed ✓</td>
+                    <td className="py-2.5 text-right rtl:text-left font-semibold text-[#22C55E]">
+                      {t("showcase.preview.session.table.completed")}
+                    </td>
                   </tr>
                   <tr className="bg-[#171D25]">
                     <td className="py-2.5 font-bold text-[#5BE584]">2</td>
@@ -300,7 +337,9 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
                     <td className="py-2.5 text-[#5BE584]">85 kg × 8</td>
                     <td className="py-2.5 font-mono font-bold text-[#5BE584]">85.0 kg</td>
                     <td className="py-2.5 font-mono font-bold text-[#5BE584]">8 reps</td>
-                    <td className="py-2.5 text-right font-semibold text-[#5BE584]">Active Logging</td>
+                    <td className="py-2.5 text-right rtl:text-left font-semibold text-[#5BE584]">
+                      {t("showcase.preview.session.table.activeLogging")}
+                    </td>
                   </tr>
                   <tr>
                     <td className="py-2.5 font-bold text-[#94A3B8]">3</td>
@@ -308,7 +347,9 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
                     <td className="py-2.5 text-[#94A3B8]">85 kg × 8</td>
                     <td className="py-2.5 font-mono text-[#94A3B8]">--</td>
                     <td className="py-2.5 font-mono text-[#94A3B8]">--</td>
-                    <td className="py-2.5 text-right text-[#94A3B8]">Upcoming</td>
+                    <td className="py-2.5 text-right rtl:text-left text-[#94A3B8]">
+                      {t("showcase.preview.session.table.upcoming")}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -322,41 +363,53 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-[14px] border border-[#2A3039] bg-[#13171D] p-3.5">
                 <span className="text-[10px] uppercase font-semibold text-[#94A3B8]">
-                  Body Weight
+                  {t("showcase.preview.measurements.weightLabel")}
                 </span>
-                <p className="mt-1 text-xl font-bold text-[#F8FAFC]">78.4 kg</p>
+                <p className="mt-1 text-xl font-bold text-[#F8FAFC]">
+                  {t("showcase.preview.measurements.weightValue")}
+                </p>
                 <div className="flex items-center gap-1 text-[11px] text-[#22C55E] mt-0.5">
-                  <TrendingDown className="h-3 w-3" /> -1.8 kg vs baseline
+                  <TrendingDown className="h-3 w-3" />{" "}
+                  {t("showcase.preview.measurements.weightNote")}
                 </div>
               </div>
 
               <div className="rounded-[14px] border border-[#2A3039] bg-[#13171D] p-3.5">
                 <span className="text-[10px] uppercase font-semibold text-[#94A3B8]">
-                  Body Fat %
+                  {t("showcase.preview.measurements.fatLabel")}
                 </span>
-                <p className="mt-1 text-xl font-bold text-[#F8FAFC]">14.2%</p>
+                <p className="mt-1 text-xl font-bold text-[#F8FAFC]">
+                  {t("showcase.preview.measurements.fatValue")}
+                </p>
                 <div className="flex items-center gap-1 text-[11px] text-[#22C55E] mt-0.5">
-                  <TrendingDown className="h-3 w-3" /> -1.1% over 6 wks
+                  <TrendingDown className="h-3 w-3" />{" "}
+                  {t("showcase.preview.measurements.fatNote")}
                 </div>
               </div>
 
               <div className="rounded-[14px] border border-[#2A3039] bg-[#13171D] p-3.5">
                 <span className="text-[10px] uppercase font-semibold text-[#94A3B8]">
-                  Chest Circumference
+                  {t("showcase.preview.measurements.chestLabel")}
                 </span>
-                <p className="mt-1 text-xl font-bold text-[#F8FAFC]">104 cm</p>
+                <p className="mt-1 text-xl font-bold text-[#F8FAFC]">
+                  {t("showcase.preview.measurements.chestValue")}
+                </p>
                 <div className="flex items-center gap-1 text-[11px] text-[#5BE584] mt-0.5">
-                  <TrendingUp className="h-3 w-3" /> +2.5 cm hypertrophy
+                  <TrendingUp className="h-3 w-3" />{" "}
+                  {t("showcase.preview.measurements.chestNote")}
                 </div>
               </div>
 
               <div className="rounded-[14px] border border-[#2A3039] bg-[#13171D] p-3.5">
                 <span className="text-[10px] uppercase font-semibold text-[#94A3B8]">
-                  Waist Circumference
+                  {t("showcase.preview.measurements.waistLabel")}
                 </span>
-                <p className="mt-1 text-xl font-bold text-[#F8FAFC]">79 cm</p>
+                <p className="mt-1 text-xl font-bold text-[#F8FAFC]">
+                  {t("showcase.preview.measurements.waistValue")}
+                </p>
                 <div className="flex items-center gap-1 text-[11px] text-[#22C55E] mt-0.5">
-                  <TrendingDown className="h-3 w-3" /> -3.0 cm taper
+                  <TrendingDown className="h-3 w-3" />{" "}
+                  {t("showcase.preview.measurements.waistNote")}
                 </div>
               </div>
             </div>
@@ -365,14 +418,16 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
               <div className="flex items-center gap-3">
                 <Ruler className="h-5 w-5 text-[#5BE584]" />
                 <div>
-                  <p className="font-bold text-[#F8FAFC]">Historical Measurement Telemetry</p>
+                  <p className="font-bold text-[#F8FAFC]">
+                    {t("showcase.preview.measurements.historyTitle")}
+                  </p>
                   <p className="text-[11px] text-[#94A3B8]">
-                    Recorded by athlete every Monday morning before nutrition check-in.
+                    {t("showcase.preview.measurements.historySubtitle")}
                   </p>
                 </div>
               </div>
               <span className="rounded-[8px] bg-[#090B0F] border border-[#2A3039] px-3 py-1.5 text-xs text-[#94A3B8]">
-                Last logged: 2 days ago
+                {t("showcase.preview.measurements.lastLogged")}
               </span>
             </div>
           </div>
@@ -381,3 +436,5 @@ export const ProductPreview: React.FC<{ activeTab: string }> = ({
     </div>
   );
 };
+
+export default ProductPreview;

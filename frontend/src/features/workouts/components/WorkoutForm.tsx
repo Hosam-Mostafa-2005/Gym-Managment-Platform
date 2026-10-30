@@ -33,6 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { ROLES } from "@/constants/roles";
+import { useTranslation } from "react-i18next";
 
 interface WorkoutFormProps {
   defaultValues?: WorkoutFormData;
@@ -64,9 +65,30 @@ export default function WorkoutForm({
   onSubmit,
   isSubmitting = false,
 }: WorkoutFormProps) {
+  const { t } = useTranslation(["workouts", "common"]);
   // NEW:
   const { data: user } = useCurrentUser();
   const isMember = user?.role === ROLES.MEMBER;
+
+  const translatedCategoryOptions = useMemo(
+    () => [
+      { label: t("categories.strength", "Strength"), value: "strength" },
+      { label: t("categories.hypertrophy", "Hypertrophy"), value: "hypertrophy" },
+      { label: t("categories.powerlifting", "Powerlifting"), value: "powerlifting" },
+      { label: t("categories.cardio", "Cardio"), value: "cardio" },
+      { label: t("categories.functional", "Functional"), value: "functional" },
+    ],
+    [t],
+  );
+
+  const translatedDifficultyOptions = useMemo(
+    () => [
+      { label: t("difficulties.beginner", "Beginner"), value: "beginner" },
+      { label: t("difficulties.intermediate", "Intermediate"), value: "intermediate" },
+      { label: t("difficulties.advanced", "Advanced"), value: "advanced" },
+    ],
+    [t],
+  );
 
   const { data: exercisesResponse } = useAllExercises();
   // Safely extract the array whether it's wrapped in data.exercises, data.data.exercises, or returned as an array directly
@@ -229,7 +251,7 @@ export default function WorkoutForm({
             control={control}
             name="title"
             label=""
-            placeholder="Advanced Push Day Phase 2"
+            placeholder={t("form.titlePlaceholder", "e.g. Upper Body Hypertrophy Focus")}
             className="text-2xl font-bold md:text-3xl"
           />
 
@@ -237,7 +259,7 @@ export default function WorkoutForm({
             control={control}
             name="description"
             label=""
-            placeholder="Focus on heavy compound movements with volume progression for upper chest and triceps. Ensure 3 mins rest on primary lifts."
+            placeholder={t("form.descriptionPlaceholder", "Brief notes about the goals, focus, or structure of this routine...")}
             className="min-h-[60px] resize-none text-muted-foreground"
           />
 
@@ -247,8 +269,8 @@ export default function WorkoutForm({
                 control={control}
                 name="category"
                 label=""
-                options={categoryOptions}
-                placeholder="Category"
+                options={translatedCategoryOptions}
+                placeholder={t("form.categoryPlaceholder", "Category")}
               />
             </div>
 
@@ -257,8 +279,8 @@ export default function WorkoutForm({
                 control={control}
                 name="difficulty"
                 label=""
-                options={difficultyOptions}
-                placeholder="Difficulty"
+                options={translatedDifficultyOptions}
+                placeholder={t("form.difficultyPlaceholder", "Difficulty")}
               />
             </div>
 
@@ -268,7 +290,7 @@ export default function WorkoutForm({
                 name="estimatedDuration"
                 label=""
                 min={1}
-                placeholder="Duration (min)"
+                placeholder={t("form.durationPlaceholder", "Duration (min)")}
               />
             </div>
 
@@ -278,9 +300,9 @@ export default function WorkoutForm({
                 title="Your workout will be saved privately in your personal routines collection"
               >
                 <span className="h-2 w-2 rounded-full bg-[#5BE584] animate-pulse" />
-                <span className="font-semibold text-foreground">Personal Routine</span>
+                <span className="font-semibold text-foreground">{t("badges.personalRoutine", "Personal Routine")}</span>
                 <span className="text-[11px] text-muted-foreground">
-                  (Private to you)
+                  ({t("badges.personal", "Personal")})
                 </span>
               </div>
             ) : (
@@ -288,7 +310,7 @@ export default function WorkoutForm({
                 <FormCheckbox
                   control={control}
                   name="isTemplate"
-                  label="Publish as Library Template"
+                  label={t("form.isTemplateLabel", "Publish as Library Template")}
                 />
               </div>
             )}
@@ -298,46 +320,46 @@ export default function WorkoutForm({
           <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-border/30">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               <Clock className="h-3.5 w-3.5 text-[#5BE584]" />
-              <span>Rest Preferences:</span>
+              <span>{t("form.restPreferences", "Rest Preferences:")}</span>
             </div>
 
             <div className="flex items-center gap-1.5">
               <label className="text-xs text-muted-foreground whitespace-nowrap">
-                Large Muscles:
+                {t("form.restLargeLabel", "Large Muscles:")}
               </label>
               <select
                 value={watch("defaultRestLarge") ?? 90}
                 onChange={(e) => handleLargeRestChange(Number(e.target.value))}
                 className="h-8 rounded-md border border-border/60 bg-background/60 px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
               >
-                <option value={45}>45s</option>
-                <option value={60}>60s</option>
-                <option value={90}>90s (Default)</option>
-                <option value={120}>120s (2m)</option>
-                <option value={150}>150s</option>
-                <option value={180}>180s (3m)</option>
+                <option value={45}>45{t("form.secondsUnit", "s")}</option>
+                <option value={60}>60{t("form.secondsUnit", "s")}</option>
+                <option value={90}>90{t("form.secondsUnit", "s")}</option>
+                <option value={120}>120{t("form.secondsUnit", "s")}</option>
+                <option value={150}>150{t("form.secondsUnit", "s")}</option>
+                <option value={180}>180{t("form.secondsUnit", "s")}</option>
               </select>
             </div>
 
             <div className="flex items-center gap-1.5">
               <label className="text-xs text-muted-foreground whitespace-nowrap">
-                Small Muscles:
+                {t("form.restSmallLabel", "Small Muscles:")}
               </label>
               <select
                 value={watch("defaultRestSmall") ?? 60}
                 onChange={(e) => handleSmallRestChange(Number(e.target.value))}
                 className="h-8 rounded-md border border-border/60 bg-background/60 px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
               >
-                <option value={30}>30s</option>
-                <option value={45}>45s</option>
-                <option value={60}>60s (Default)</option>
-                <option value={90}>90s</option>
-                <option value={120}>120s (2m)</option>
+                <option value={30}>30{t("form.secondsUnit", "s")}</option>
+                <option value={45}>45{t("form.secondsUnit", "s")}</option>
+                <option value={60}>60{t("form.secondsUnit", "s")}</option>
+                <option value={90}>90{t("form.secondsUnit", "s")}</option>
+                <option value={120}>120{t("form.secondsUnit", "s")}</option>
               </select>
             </div>
 
             <span className="text-[11px] text-muted-foreground/70 hidden sm:inline">
-              (Auto assigned by muscle group)
+              {t("form.restAutoHint", "(Auto assigned by muscle group)")}
             </span>
           </div>
         </div>
@@ -350,11 +372,11 @@ export default function WorkoutForm({
             onClick={() => reset()}
             className="text-muted-foreground hover:text-foreground"
           >
-            Discard
+            {t("actions.discard", "Discard")}
           </Button>
 
           <Button type="button" variant="outline" className="border-border/60">
-            Preview
+            {t("actions.preview", "Preview")}
           </Button>
 
           <Button
@@ -362,7 +384,7 @@ export default function WorkoutForm({
             disabled={isSubmitting}
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm transition-all"
           >
-            {isSubmitting ? "Saving..." : "Save Workout"}
+            {isSubmitting ? t("actions.saving", "Saving...") : t("actions.saveWorkout", "Save Workout")}
           </Button>
         </div>
       </div>
@@ -372,22 +394,22 @@ export default function WorkoutForm({
       {/* -------------------------------------------------------------------------- */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         {/* ======================= LEFT COLUMN: LIBRARY ======================= */}
-        <div className="space-y-4 lg:col-span-4 lg:border-r lg:border-border/40 lg:pr-6">
+        <div className="space-y-4 lg:col-span-4 lg:border-r lg:border-border/40 lg:pr-6 rtl:lg:border-r-0 rtl:lg:border-l rtl:lg:pr-0 rtl:lg:pl-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold tracking-tight">Library</h3>
+            <h3 className="text-lg font-semibold tracking-tight">{t("form.library", "Library")}</h3>
             <span className="text-xs text-muted-foreground">
-              {filteredExercises.length} available
+              {t("form.availableCount", { count: filteredExercises.length, defaultValue: `${filteredExercises.length} available` })}
             </span>
           </div>
 
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute start-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Find exercises..."
+              placeholder={t("form.findExercises", "Find exercises...")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-card/40 border-border/60 focus-visible:ring-1"
+              className="ps-9 bg-card/40 border-border/60 focus-visible:ring-1"
             />
           </div>
 
@@ -411,10 +433,10 @@ export default function WorkoutForm({
           </div>
 
           {/* Exercise List Cards */}
-          <div className="max-h-[600px] overflow-y-auto space-y-2 pr-1 pt-2 custom-scrollbar">
+          <div className="max-h-[600px] overflow-y-auto space-y-2 pr-1 rtl:pr-0 rtl:pl-1 pt-2 custom-scrollbar">
             {filteredExercises.length === 0 ? (
               <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-                No exercises found.
+                {t("form.noExercisesFound", "No exercises found.")}
               </div>
             ) : (
               filteredExercises.map((ex: Exercise, idx: number) => (
@@ -471,16 +493,16 @@ export default function WorkoutForm({
                   <ListOrdered className="h-4 w-4" />
                 </div>
                 <h3 className="text-lg font-semibold tracking-tight">
-                  Sequence
+                  {t("form.sequence", "Sequence")}
                 </h3>
               </div>
 
               <div className="flex items-center gap-2 rounded-full border border-border/60 bg-background/50 px-3.5 py-1.5 text-xs font-medium text-muted-foreground">
                 <Dumbbell className="h-3.5 w-3.5 text-emerald-500" />
-                <span>{fields.length} Exercises</span>
+                <span>{t("form.exercisesCount", { count: fields.length, defaultValue: `${fields.length} Exercises` })}</span>
                 <span className="text-border">•</span>
                 <Clock className="h-3.5 w-3.5 text-emerald-500" />
-                <span>~{estimatedDuration} mins</span>
+                <span>{t("form.durationEst", { duration: estimatedDuration, defaultValue: `~${estimatedDuration} mins` })}</span>
               </div>
             </div>
 
@@ -489,11 +511,10 @@ export default function WorkoutForm({
                 <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border/60 p-12 text-center">
                   <Dumbbell className="h-10 w-10 text-muted-foreground/40 mb-3 animate-pulse" />
                   <p className="text-base font-medium text-foreground">
-                    Your workout sequence is empty
+                    {t("form.emptySequenceTitle", "Your workout sequence is empty")}
                   </p>
                   <p className="text-sm text-muted-foreground mt-1 max-w-sm">
-                    Click any exercise from the Library on the left to add it to
-                    your routine, or use the button below.
+                    {t("form.emptySequenceDesc", "Click any exercise from the Library on the left to add it to your routine, or use the button below.")}
                   </p>
                   <Button
                     type="button"
@@ -502,8 +523,8 @@ export default function WorkoutForm({
                     onClick={() => handleAddExerciseFromLibrary()}
                     className="mt-6 border-dashed border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10"
                   >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Custom Exercise
+                    <Plus className="me-2 h-4 w-4" />
+                    {t("actions.addCustomExercise", "Add Custom Exercise")}
                   </Button>
                 </div>
               ) : (
@@ -528,7 +549,7 @@ export default function WorkoutForm({
                 className="w-full rounded-lg border border-dashed border-border/60 p-4 text-center text-sm font-medium text-muted-foreground hover:border-emerald-500/50 hover:text-emerald-500 hover:bg-emerald-500/5 transition-all flex items-center justify-center gap-2"
               >
                 <Plus className="h-4 w-4" />
-                Add Another Exercise to Sequence
+                {t("actions.addAnotherExercise", "Add Another Exercise to Sequence")}
               </button>
             )}
           </div>

@@ -1,22 +1,23 @@
 // src/features/landing/components/hero/HeroSection.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { HeroBadge } from "./HeroBadge";
 import { HeroProductPreview } from "./HeroProductPreview";
 
 export const HeroSection: React.FC = () => {
+  const { t } = useTranslation(["landing"]);
   const { data: user } = useCurrentUser();
   const userRole = user?.role?.toUpperCase();
   const isCoachOrAdmin = userRole === "TRAINER" || userRole === "ADMIN";
 
-  const primaryDashboardPath =
-    userRole === "TRAINER" || userRole === "ADMIN" ? "/coach-dashboard" : "/dashboard";
+  const primaryDashboardPath = isCoachOrAdmin ? "/coach-dashboard" : "/dashboard";
 
   const primaryDashboardLabel = isCoachOrAdmin
-    ? "Open Coach Dashboard"
-    : "Open Member Dashboard";
+    ? t("hero.actions.openCoachDashboard")
+    : t("hero.actions.openMemberDashboard");
 
   return (
     <section className="relative overflow-hidden border-b border-[#2A3039] bg-[#090B0F] bg-[radial-gradient(ellipse_at_top_right,rgba(91,229,132,0.11),transparent_48%),radial-gradient(ellipse_at_bottom_left,rgba(91,229,132,0.06),transparent_45%)] py-14 sm:py-20 lg:py-24">
@@ -47,28 +48,27 @@ export const HeroSection: React.FC = () => {
           {/* Left Column: Narrative Copy & Primary CTAs */}
           <div className="flex flex-col items-start gap-6 lg:col-span-6">
             <div className="flex flex-wrap items-center gap-2.5">
-              <HeroBadge text="TRAIN WITH INTENTION. COACH WITH CLARITY." />
+              <HeroBadge text={t("hero.badge")} />
               {user?.name && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#2A3039] bg-gradient-to-b from-[#171C24] to-[#13171D] px-3 py-1 text-xs font-medium text-[#94A3B8] shadow-[0_4px_14px_rgba(0,0,0,0.3)]">
                   <ShieldCheck className="h-3.5 w-3.5 text-[#5BE584]" />
-                  Signed in as <strong className="text-[#F8FAFC]">{user.name}</strong>
+                  {t("hero.signedInAs")}{" "}
+                  <strong className="text-[#F8FAFC]">{user.name}</strong>
                 </span>
               )}
             </div>
 
             <div className="flex flex-col gap-2">
               <h1 className="text-3xl font-extrabold tracking-[-0.035em] text-[#F8FAFC] sm:text-5xl lg:text-[3.5rem] leading-[1.06]">
-                Every session. <br className="hidden sm:inline" />
+                {t("hero.headlinePart1")} <br className="hidden sm:inline" />
                 <span className="bg-gradient-to-r from-[#5BE584] via-[#7CF29C] to-[#49D472] bg-clip-text text-transparent">
-                  A stronger system.
+                  {t("hero.headlinePart2")}
                 </span>
               </h1>
             </div>
 
             <p className="max-w-xl text-base sm:text-lg text-[#A7B0BC] leading-relaxed">
-              STREN connects coaches and members through structured workout prescriptions,
-              guided live training sessions, previous performance benchmarks, and real-time
-              coaching telemetry.
+              {t("hero.description")}
             </p>
 
             {/* CTAs */}
@@ -79,13 +79,14 @@ export const HeroSection: React.FC = () => {
                     to={primaryDashboardPath}
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-[14px] bg-[#5BE584] px-7 text-sm font-semibold text-[#090B0F] shadow-[0_0_28px_rgba(91,229,132,0.3)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#49D472] hover:shadow-[0_0_38px_rgba(91,229,132,0.45)]"
                   >
-                    {primaryDashboardLabel} <ArrowRight className="h-4 w-4" />
+                    <span>{primaryDashboardLabel}</span>
+                    <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                   </Link>
                   <a
                     href="#how-it-works"
                     className="inline-flex h-12 items-center justify-center rounded-[14px] border border-[#2A3039] bg-gradient-to-b from-[#171C24] to-[#13171D] px-6 text-sm font-semibold text-[#F8FAFC] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#38414D] hover:bg-[#1B2028]"
                   >
-                    Explore Workflows
+                    {t("hero.actions.exploreWorkflows")}
                   </a>
                 </>
               ) : (
@@ -94,13 +95,14 @@ export const HeroSection: React.FC = () => {
                     to="/register"
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-[14px] bg-[#5BE584] px-7 text-sm font-semibold text-[#090B0F] shadow-[0_0_28px_rgba(91,229,132,0.3)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#49D472] hover:shadow-[0_0_38px_rgba(91,229,132,0.45)]"
                   >
-                    Start Coaching or Training <ArrowRight className="h-4 w-4" />
+                    <span>{t("hero.actions.startCoachingOrTraining")}</span>
+                    <ArrowRight className="h-4 w-4 rtl:rotate-180" />
                   </Link>
                   <a
                     href="#how-it-works"
                     className="inline-flex h-12 items-center justify-center rounded-[14px] border border-[#2A3039] bg-gradient-to-b from-[#171C24] to-[#13171D] px-6 text-sm font-semibold text-[#F8FAFC] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#38414D] hover:bg-[#1B2028]"
                   >
-                    Explore Workflows
+                    {t("hero.actions.exploreWorkflows")}
                   </a>
                 </>
               )}
@@ -110,15 +112,15 @@ export const HeroSection: React.FC = () => {
             <div className="mt-2 flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs text-[#94A3B8]">
               <span className="inline-flex items-center gap-1.5 font-medium">
                 <CheckCircle2 className="h-4 w-4 text-[#5BE584]" />
-                Target Weight & RPE Prescription
+                {t("hero.highlights.targetPrescription")}
               </span>
               <span className="inline-flex items-center gap-1.5 font-medium">
                 <CheckCircle2 className="h-4 w-4 text-[#5BE584]" />
-                In-Session Exercise Swapping
+                {t("hero.highlights.exerciseSwapping")}
               </span>
               <span className="inline-flex items-center gap-1.5 font-medium">
                 <Sparkles className="h-4 w-4 text-[#5BE584]" />
-                Live Bidirectional Telemetry
+                {t("hero.highlights.liveTelemetry")}
               </span>
             </div>
           </div>
@@ -136,3 +138,5 @@ export const HeroSection: React.FC = () => {
     </section>
   );
 };
+
+export default HeroSection;

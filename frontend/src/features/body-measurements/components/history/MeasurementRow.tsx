@@ -1,6 +1,7 @@
 // src/features/body-measurements/components/history/MeasurementRow.tsx
 import React from "react";
 import { Pencil, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { BodyMeasurement } from "../../types/body-measurements.types";
 
 interface MeasurementRowProps {
@@ -14,12 +15,21 @@ export const MeasurementRow: React.FC<MeasurementRowProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const formatDate = (dateStr: string) =>
-    new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }).format(new Date(dateStr));
+  const { t, i18n } = useTranslation("bodyMeasurements");
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(new Date(dateStr));
+    } catch {
+      return dateStr;
+    }
+  };
+
   const formatNumber = (num?: number | null) =>
     num !== undefined && num !== null ? Number(num.toFixed(1)) : "—";
 
@@ -46,18 +56,20 @@ export const MeasurementRow: React.FC<MeasurementRowProps> = ({
       <td className="px-4 py-3 text-xs text-gray-400 max-w-[200px] truncate">
         {measurement.notes || "—"}
       </td>
-      <td className="whitespace-nowrap px-4 py-3 text-right">
-        <div className="flex items-center justify-end gap-2">
+      <td className="whitespace-nowrap px-4 py-3 text-right rtl:text-left">
+        <div className="flex items-center justify-end rtl:justify-start gap-2">
           <button
             onClick={() => onEdit(measurement)}
-            aria-label="Edit Measurement"
+            aria-label={t("history.editAria")}
+            title={t("history.editAria")}
             className="rounded p-1.5 text-gray-500 hover:bg-[#1E2329] hover:text-[#5BE584] transition-colors"
           >
             <Pencil className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => onDelete(measurement)}
-            aria-label="Delete Measurement"
+            aria-label={t("history.deleteAria")}
+            title={t("history.deleteAria")}
             className="rounded p-1.5 text-gray-500 hover:bg-red-500/10 hover:text-red-400 transition-colors"
           >
             <Trash2 className="h-3.5 w-3.5" />

@@ -1,5 +1,6 @@
 // src/features/body-measurements/components/form/MeasurementForm.tsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BasicMeasurementsFields } from "./BasicMeasurementsFields";
 import { CircumferenceFields } from "./CircumferenceFields";
 import { MeasurementNotes } from "./MeasurementNotes";
@@ -26,6 +27,9 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
   isSubmitting,
   onCancel,
 }) => {
+  const { t } = useTranslation("bodyMeasurements");
+  const isEditing = Boolean(initialValues?.id);
+
   const [formData, setFormData] = useState({
     weight: initialValues?.weight || "",
     height: initialValues?.height || "",
@@ -77,8 +81,16 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
     onSubmit(payload);
   };
 
+  const submitButtonText = isEditing
+    ? isSubmitting
+      ? t("form.updating")
+      : t("form.update")
+    : isSubmitting
+      ? t("form.saving")
+      : t("form.save");
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left rtl:text-right">
       <BasicMeasurementsFields
         formData={formData}
         handleChange={handleChange}
@@ -89,20 +101,20 @@ export const MeasurementForm: React.FC<MeasurementFormProps> = ({
       />
       <MeasurementNotes value={formData.notes} onChange={handleChange} />
 
-      <div className="mt-4 flex justify-end gap-3 border-t border-[#1E2329] pt-4">
+      <div className="mt-4 flex justify-end rtl:justify-start gap-3 border-t border-[#1E2329] pt-4">
         <button
           type="button"
           onClick={onCancel}
           className="rounded-md border border-[#1E2329] bg-[#090B0F] px-4 py-2 text-xs font-medium text-gray-300 transition-colors hover:bg-[#1E2329] disabled:opacity-50"
         >
-          Cancel
+          {t("form.cancel")}
         </button>
         <button
           type="submit"
           disabled={isSubmitting || !formData.weight || !formData.height}
           className="rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-colors hover:bg-[#4ade80] disabled:opacity-50"
         >
-          {isSubmitting ? "Saving..." : "Save Measurement"}
+          {submitButtonText}
         </button>
       </div>
     </form>

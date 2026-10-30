@@ -1,5 +1,6 @@
 // src/features/profile/components/member/MemberProfileContainer.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useMemberProfile } from "../../hooks/use-member-profile";
 import { ProfileLoading } from "../states/ProfileLoading";
 import { ProfileError } from "../states/ProfileError";
@@ -12,6 +13,7 @@ interface MemberProfileContainerProps {
 export const MemberProfileContainer: React.FC<MemberProfileContainerProps> = ({
   memberId,
 }) => {
+  const { t } = useTranslation(["profile"]);
   const { data, isLoading, isError, error, refetch } =
     useMemberProfile(memberId);
 
@@ -25,7 +27,7 @@ export const MemberProfileContainer: React.FC<MemberProfileContainerProps> = ({
         message={
           error instanceof Error
             ? error.message
-            : "Unable to retrieve member profile information."
+            : t("states.memberErrorDefault")
         }
         onRetry={() => refetch()}
       />

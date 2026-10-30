@@ -1,0 +1,242 @@
+{
+  "header": {
+    "atlasBadge": "STREN Movement Atlas",
+    "title": "Exercise Library",
+    "movementsCount": "{{count}} Movements",
+    "customCount": "{{count}} Custom",
+    "description": "Explore verified biomechanical demonstrations, target muscle classifications, equipment requirements, and execution cues across the entire training catalog.",
+    "newExercise": "New Exercise"
+  },
+  "filters": {
+    "searchPlaceholder": "Search exercises by name, target muscle, or equipment...",
+    "clearSearch": "Clear search",
+    "allMuscleGroups": "All Muscle Groups",
+    "allEquipment": "All Equipment",
+    "sort": {
+      "ariaLabel": "Sort exercises",
+      "nameAsc": "Sort: Name (A → Z)",
+      "nameDesc": "Sort: Name (Z → A)",
+      "muscle": "Sort: Primary Muscle",
+      "difficulty": "Sort: Difficulty Level"
+    },
+    "filterByMuscleAria": "Filter by muscle group",
+    "filterByEquipmentAria": "Filter by equipment",
+    "muscleLabel": "Muscle:",
+    "all": "All",
+    "levelLabel": "Level:",
+    "myCustom": "My Custom",
+    "showingCount": "Showing <1>{{count}}</1> of <3>{{total}}</3> exercises",
+    "showingCountSingle": "Showing <1>{{count}}</1> exercises",
+    "resetFilters": "Reset Filters"
+  },
+  "categories": {
+    "lowerBodyCompound": "Lower Body Compound",
+    "lowerBodyIsolation": "Lower Body Isolation",
+    "coreStability": "Core & Stability",
+    "upperPushCompound": "Upper Push Compound",
+    "upperPushIsolation": "Upper Push Isolation",
+    "upperPullCompound": "Upper Pull Compound",
+    "upperPullIsolation": "Upper Pull Isolation",
+    "armCompound": "Arm Compound",
+    "armIsolation": "Arm Isolation",
+    "compoundMovement": "Compound Movement",
+    "targetedIsolation": "Targeted Isolation"
+  },
+  "difficulties": {
+    "all": "All",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced"
+  },
+  "muscles": {
+    "Chest": "Chest",
+    "Back": "Back",
+    "Shoulders": "Shoulders",
+    "Biceps": "Biceps",
+    "Triceps": "Triceps",
+    "Forearms": "Forearms",
+    "Quadriceps": "Quadriceps",
+    "Hamstrings": "Hamstrings",
+    "Glutes": "Glutes",
+    "Calves": "Calves",
+    "Abs": "Abs",
+    "Core": "Core",
+    "Lats": "Lats",
+    "Obliques": "Obliques",
+    "Traps": "Traps"
+  },
+  "equipment": {
+    "Barbell": "Barbell",
+    "Dumbbell": "Dumbbell",
+    "Cable": "Cable",
+    "Machine": "Machine",
+    "Smith Machine": "Smith Machine",
+    "Bodyweight": "Bodyweight",
+    "EZ Bar": "EZ Bar",
+    "Resistance Band": "Resistance Band",
+    "Kettlebell": "Kettlebell"
+  },
+  "card": {
+    "customBadge": "Custom",
+    "videoBadge": "Video",
+    "musclesLabel": "Muscles:",
+    "equipmentLabel": "Equipment:",
+    "secondaryTargetTooltip": "Secondary target muscle",
+    "quickView": "Quick View",
+    "fullGuide": "Full Guide",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "viewDetailsTitle": "View {{name}} details",
+    "bodyweight": "Bodyweight"
+  },
+  "empty": {
+    "title": "No matching exercises found",
+    "description": "Try adjusting your search keywords, muscle group, equipment, or difficulty filters to see more movements from the training library.",
+    "clearFilters": "Clear All Filters"
+  },
+  "pagination": {
+    "summary": "Page <1>{{page}}</1> of <3>{{totalPages}}</3> • Showing <5>{{from}}–{{to}}</5> of <7>{{total}}</7> movements",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "error": {
+    "title": "Unable to Load Exercise Library",
+    "description": "We encountered a network or server error while loading exercises. Please try again.",
+    "retry": "Retry"
+  },
+  "viewDialog": {
+    "noDescription": "No description provided.",
+    "fullPage": "Full Page",
+    "targetMuscleGroups": "Target Muscle Groups",
+    "primary": "Primary",
+    "secondary": "Secondary",
+    "equipmentRequired": "Equipment Required",
+    "noneSpecified": "None specified",
+    "watchVideo": "Watch Video Demonstration",
+    "stepByStep": "Step-by-Step Execution",
+    "coachingCues": "Coaching Cues & Form Tips"
+  },
+  "deleteDialog": {
+    "title": "Archive Exercise",
+    "prompt": "Are you sure you want to archive",
+    "warning": "This exercise will no longer appear in the active exercises list, but it can be restored later.",
+    "cancel": "Cancel",
+    "archive": "Archive",
+    "archiving": "Archiving..."
+  },
+  "create": {
+    "breadcrumbs": {
+      "workoutLibrary": "Workout Library",
+      "exercises": "Exercises",
+      "create": "Create"
+    },
+    "title": "Create Exercise",
+    "createCustomTitle": "Create Custom Exercise",
+    "subtitle": "Add a new movement to your exercise library.",
+    "customSubtitle": "Add a personal custom exercise to your training library.",
+    "backToExercises": "Back to Exercises",
+    "basicInfo": {
+      "title": "Basic Information",
+      "subtitle": "Tell us what this exercise is.",
+      "overviewSubtitle": "Provide the general details and overview of the exercise.",
+      "nameLabel": "Exercise Name",
+      "namePlaceholder": "e.g. Barbell Bench Press",
+      "descLabel": "Description",
+      "descPlaceholder": "Briefly describe the mechanics and purpose...",
+      "overviewPlaceholder": "Briefly describe what this exercise does and its main benefits...",
+      "videoUrlLabel": "Video URL",
+      "videoUrlTutorialLabel": "Video Tutorial URL",
+      "videoUrlPlaceholder": "https://...",
+      "videoUrlYoutubePlaceholder": "https://youtube.com/watch?v=...",
+      "videoUrlHelper": "Link a YouTube or Vimeo video demonstration showing proper range of motion and pacing.",
+      "optional": "(Optional)"
+    },
+    "classification": {
+      "title": "Classification",
+      "subtitle": "Difficulty and required equipment.",
+      "experienceSubtitle": "Set the experience level required for this exercise.",
+      "difficultyLabel": "Difficulty Level",
+      "selectDifficulty": "Select difficulty",
+      "equipmentLabel": "Equipment",
+      "equipmentSubtitle": "Select the equipment required for this exercise."
+    },
+    "media": {
+      "title": "Media & Resources",
+      "subtitle": "Add visual references (image banner and video tutorial) to help users perform the exercise with optimal technique."
+    },
+    "muscles": {
+      "title": "Muscle Groups",
+      "subtitle": "Targeted anatomical regions.",
+      "primaryLabel": "Primary Muscles",
+      "primarySubtitle": "Select the main muscles targeted.",
+      "secondaryLabel": "Secondary Muscles",
+      "secondarySubtitle": "Select any supporting muscles.",
+      "selectionHint": "Tap to toggle or type custom below",
+      "addCustomPlaceholder": "Add custom muscle & Enter"
+    },
+    "instructions": {
+      "title": "Instructions",
+      "subtitle": "Step-by-Step Execution",
+      "guideSubtitle": "Step-by-step execution guide.",
+      "orderSubtitle": "Add the exercise steps in order.",
+      "inputPlaceholder": "Describe this step...",
+      "enterStepPlaceholder": "Enter instructions step...",
+      "addInstruction": "+ Add instruction",
+      "addInstructionButton": "Add Instruction"
+    },
+    "tips": {
+      "title": "Tips",
+      "subtitle": "Coaching Cues & Form Tips",
+      "formSubtitle": "Form cues and common mistakes to avoid.",
+      "optionalSubtitle": "Optional tips for better execution.",
+      "inputPlaceholder": "E.g., Keep your shoulder blades retracted.",
+      "enterTipPlaceholder": "Enter tips step...",
+      "addTip": "+ Add tip",
+      "addTipButton": "Add Tip"
+    },
+    "preview": {
+      "title": "Exercise Preview",
+      "defaultName": "New Exercise",
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "description": "Description"
+    },
+    "uploader": {
+      "label": "Exercise Image",
+      "optional": "(Optional)",
+      "removeImage": "Remove Image",
+      "clickToUpload": "Click to upload",
+      "orDragAndDrop": "or drag and drop",
+      "hint": "JPG, JPEG, PNG, or WEBP (max 5 MB)",
+      "uploading": "Uploading",
+      "previewTitle": "Exercise Image Preview",
+      "replace": "Replace",
+      "remove": "Remove",
+      "unableToLoad": "Unable to load stored image preview",
+      "uploadNew": "Upload New Image",
+      "errors": {
+        "unsupportedFormat": "Unsupported file format. Please upload a JPG, JPEG, PNG, or WEBP image.",
+        "fileEmpty": "The selected file is empty.",
+        "fileTooLarge": "Image size ({{size}} MB) exceeds the 5 MB maximum limit."
+      }
+    },
+    "actions": {
+      "reviewNotice": "Review your details before creating.",
+      "cancel": "Cancel",
+      "createExercise": "Create Exercise",
+      "saveExercise": "Save Exercise",
+      "saving": "Saving...",
+      "uploadingImage": "Uploading Image..."
+    },
+    "validation": {
+      "nameRequired": "Exercise name is required.",
+      "descRequired": "Description is required.",
+      "equipmentRequired": "Select at least one equipment type.",
+      "primaryMusclesRequired": "Select at least one primary muscle.",
+      "instructionsRequired": "At least one instruction is required.",
+      "fillRequiredFields": "Please fill in all required fields.",
+      "checkField": "Please check the {{field}} field."
+    }
+  }
+}

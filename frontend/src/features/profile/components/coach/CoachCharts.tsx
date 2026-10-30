@@ -11,6 +11,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 import type { CoachCharts as ChartsType } from "../../types/profile.types";
 
 interface CoachChartsProps {
@@ -18,16 +19,18 @@ interface CoachChartsProps {
 }
 
 export const CoachCharts: React.FC<CoachChartsProps> = ({ charts }) => {
+  const { t } = useTranslation(["profile"]);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Workout Sessions Chart */}
       <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-5">
         <div className="mb-4">
           <h3 className="text-sm font-semibold text-gray-100">
-            Workout Sessions (30D)
+            {t("coach.charts.sessions30D")}
           </h3>
           <p className="text-xs text-gray-500 mt-0.5">
-            Volume throughput trajectory
+            {t("coach.charts.sessions30DSubtitle")}
           </p>
         </div>
         <div className="h-48 w-full">
@@ -77,7 +80,7 @@ export const CoachCharts: React.FC<CoachChartsProps> = ({ charts }) => {
             </ResponsiveContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-xs text-gray-500">
-              No data available
+              {t("coach.charts.noData")}
             </div>
           )}
         </div>
@@ -87,10 +90,10 @@ export const CoachCharts: React.FC<CoachChartsProps> = ({ charts }) => {
       <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-5">
         <div className="mb-4">
           <h3 className="text-sm font-semibold text-gray-100">
-            Member Growth (6M)
+            {t("coach.charts.memberGrowth6M")}
           </h3>
           <p className="text-xs text-gray-500 mt-0.5">
-            Roster capacity trajectory
+            {t("coach.charts.memberGrowth6MSubtitle")}
           </p>
         </div>
         <div className="h-48 w-full">
@@ -139,7 +142,7 @@ export const CoachCharts: React.FC<CoachChartsProps> = ({ charts }) => {
             </ResponsiveContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-xs text-gray-500">
-              No data available
+              {t("coach.charts.noData")}
             </div>
           )}
         </div>
@@ -149,10 +152,10 @@ export const CoachCharts: React.FC<CoachChartsProps> = ({ charts }) => {
       <div className="flex flex-col rounded-lg border border-[#1e2329] bg-[#0d1014] p-5">
         <div className="mb-4">
           <h3 className="text-sm font-semibold text-gray-100">
-            Completion Rate (Weekly)
+            {t("coach.charts.completionWeekly")}
           </h3>
           <p className="text-xs text-gray-500 mt-0.5">
-            Execution fidelity benchmarks
+            {t("coach.charts.completionWeeklySubtitle")}
           </p>
         </div>
         <div className="h-48 w-full">
@@ -190,7 +193,7 @@ export const CoachCharts: React.FC<CoachChartsProps> = ({ charts }) => {
                     fontSize: "12px",
                     color: "#f3f4f6",
                   }}
-                  formatter={(v: any) => [`${v}%`, "Completion"]}
+                  formatter={(v: any) => [`${v}%`, t("coach.charts.completion")]}
                 />
                 <Line
                   type="monotone"
@@ -203,7 +206,7 @@ export const CoachCharts: React.FC<CoachChartsProps> = ({ charts }) => {
             </ResponsiveContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-xs text-gray-500">
-              No data available
+              {t("coach.charts.noData")}
             </div>
           )}
         </div>
@@ -211,3 +214,5 @@ export const CoachCharts: React.FC<CoachChartsProps> = ({ charts }) => {
     </div>
   );
 };
+
+export default CoachCharts;

@@ -1,6 +1,7 @@
 // src/features/auth/components/GoogleAuthButton.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useGoogleAuth } from "../hooks/useGoogleAuth";
 import { GoogleIcon } from "./GoogleIcon";
 
@@ -28,6 +29,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   mode = "signin",
   disabled = false,
 }) => {
+  const { t } = useTranslation("auth");
   const containerRef = useRef<HTMLDivElement>(null);
   const googleMutation = useGoogleAuth();
   const [scriptError, setScriptError] = useState<string | null>(null);
@@ -40,7 +42,10 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
   useEffect(() => {
     if (!googleClientId) {
       setScriptError(
-        "Google Sign-In is not configured. Missing VITE_GOOGLE_CLIENT_ID in environment.",
+        t(
+          "google.missingClientId",
+          "Google authentication requires VITE_GOOGLE_CLIENT_ID.",
+        ),
       );
       return;
     }
@@ -51,7 +56,10 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       if (!isMounted) return;
       if (!window.google?.accounts?.id) {
         setScriptError(
-          "Google Identity Services failed to load. Check ad blocker or network settings.",
+          t(
+            "google.scriptFailed",
+            "Google Identity Services failed to load. Check ad blocker or network settings.",
+          ),
         );
         return;
       }
@@ -97,7 +105,8 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       } catch (err: any) {
         if (isMounted) {
           setScriptError(
-            err.message || "Failed to initialize Google Sign-In.",
+            err.message ||
+              t("google.initFailed", "Failed to initialize Google Sign-In."),
           );
         }
       }
@@ -124,7 +133,10 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       script.addEventListener("error", () => {
         if (isMounted) {
           setScriptError(
-            "Could not load Google authentication script. Please check your network or ad blocker.",
+            t(
+              "google.loadError",
+              "Could not load Google authentication script. Please check your network or ad blocker.",
+            ),
           );
         }
       });
@@ -138,14 +150,17 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
         // Ignore
       }
     };
-  }, [googleClientId, mode]);
+  }, [googleClientId, mode, t]);
 
   if (!googleClientId) {
     return (
       <div className="flex items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-xs text-amber-300">
         <AlertCircle className="h-4 w-4 shrink-0 text-amber-400" />
         <span>
-          Google authentication requires <code>VITE_GOOGLE_CLIENT_ID</code>.
+          {t(
+            "google.missingClientId",
+            "Google authentication requires VITE_GOOGLE_CLIENT_ID.",
+          )}
         </span>
       </div>
     );
@@ -168,7 +183,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
       {googleMutation.isPending && (
         <div className="flex h-[44px] w-full items-center justify-center gap-2.5 rounded-full border border-[#252B33] bg-[#171B20] text-sm font-medium text-[#F5F6F8]">
           <Loader2 className="h-4 w-4 animate-spin text-[#5BE584]" />
-          <span>Connecting to Google...</span>
+          <span>{t("google.connecting", "Connecting to Google...")}</span>
         </div>
       )}
 
@@ -185,7 +200,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({
         {!isReady && (
           <div className="flex h-[44px] w-full items-center justify-center gap-2.5 rounded-full border border-[#252B33] bg-[#171B20] text-sm font-medium text-[#91A0B5]">
             <GoogleIcon className="h-4 w-4" />
-            <span>Loading Google Sign-In...</span>
+            <span>{t("google.loading", "Loading Google Sign-In...")}</span>
           </div>
         )}
       </div>

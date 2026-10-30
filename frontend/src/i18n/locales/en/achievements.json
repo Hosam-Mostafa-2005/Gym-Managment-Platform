@@ -1,0 +1,201 @@
+{
+  "header": {
+    "title": "Achievements & Streaks",
+    "subtitle": "Celebrate your milestones, maintain daily consistency, and level up your training journey.",
+    "xpTotal": "{{count}} XP Total",
+    "badgesUnlocked": "Badges Unlocked:",
+    "badgesUnlockedStats": "{{earned}} / {{total}} ({{pct}}%)"
+  },
+  "kpi": {
+    "streak": {
+      "title": "Daily Streak",
+      "subtitle": "Consecutive active days",
+      "active": "Active Streak",
+      "inactive": "Inactive",
+      "day": "day",
+      "days": "days",
+      "onFire": "You're on fire! Keep going!",
+      "startStreak": "Complete a workout today to start your streak.",
+      "reigniteStreak": "Log a workout today to reignite your streak.",
+      "bestStreak": "Best: {{count}} {{unit}}",
+      "lastWorkout": "Last: {{date}}"
+    },
+    "weeklyGoal": {
+      "title": "Weekly Target",
+      "subtitle": "Week of {{date}}",
+      "goalMet": "Goal Met!",
+      "remaining": "{{count}} more to go",
+      "workoutsCompleted": "/ {{total}} workouts completed"
+    },
+    "points": {
+      "title": "Reward Points",
+      "subtitle": "Earned experience",
+      "badge": "XP",
+      "accumulated": "points accumulated",
+      "desc": "Earn points for every milestone, streak, and workout completed."
+    },
+    "completion": {
+      "title": "Badge Progress",
+      "subtitle": "Overall library mastery",
+      "unlocked": "/ {{total}} unlocked"
+    }
+  },
+  "categories": {
+    "ALL": "All Badges",
+    "WORKOUT": "Workouts",
+    "CONSISTENCY": "Consistency",
+    "NUTRITION": "Nutrition",
+    "PROGRESS": "Progress"
+  },
+  "filters": {
+    "all": "All",
+    "unlocked": "Unlocked ({{count}})",
+    "locked": "Locked ({{count}})",
+    "inProgress": "In Progress",
+    "status": "Status",
+    "category": "Category"
+  },
+  "badge": {
+    "pts": "+{{count}} pts",
+    "xp": "+{{count}} XP",
+    "unlocked": "Unlocked",
+    "locked": "Locked",
+    "progress": "Progress",
+    "earned": "Earned",
+    "tier": "TIER",
+    "tiers": {
+      "BRONZE": "Bronze",
+      "SILVER": "Silver",
+      "GOLD": "Gold",
+      "PLATINUM": "Platinum",
+      "DIAMOND": "Diamond"
+    }
+  },
+  "detailModal": {
+    "close": "Close",
+    "tierTier": "{{tier}} TIER",
+    "status": "Status",
+    "unlockedAndCompleted": "Unlocked & Completed",
+    "goalRequirement": "Goal Requirement",
+    "unlockedDate": "Unlocked Date",
+    "requirements": "Requirements",
+    "reward": "Reward"
+  },
+  "emptyState": {
+    "noAchievementsFound": "No achievements found",
+    "adjustFilters": "Try adjusting your category or unlock status filter.",
+    "loading": "Loading achievements...",
+    "loadError": "Failed to load achievements.",
+    "retry": "Retry"
+  },
+  "celebration": {
+    "ariaTitle": "Achievement Unlocked",
+    "headerTag": "ACHIEVEMENT UNLOCKED",
+    "tierSuffix": "TIER",
+    "pointsLabel": "POINTS",
+    "congratsLine1": "You're building something great!",
+    "congratsLine2": "Every session counts. Keep pushing your limits.",
+    "continueButton": "Awesome, Keep Going!",
+    "nextButton": "Next Achievement",
+    "close": "Dismiss"
+  },
+  "memberSection": {
+    "title": "Athlete Milestones & Consistency",
+    "subtitle": "Track {{name}}'s engagement, weekly adherence, and achievements.",
+    "encourageBtn": "Encourage Athlete",
+    "currentStreak": "Current Streak",
+    "bestDays": "Best: {{count}}d",
+    "thisWeek": "This Week",
+    "workoutsCount": "/ {{count}} workouts",
+    "badgesEarned": "Badges Earned",
+    "recentUnlockedBadges": "Recent Unlocked Badges",
+    "dialogTitle": "Encourage {{name}}",
+    "dialogSubtitle": "Send a motivational notification directly to your athlete.",
+    "sentSuccessTitle": "Encouragement Sent!",
+    "sentSuccessDesc": "{{name}} has received your motivational message.",
+    "quickCheer": "Quick Cheer Presets",
+    "customMessage": "Custom Message",
+    "placeholder": "Write a personalized encouragement...",
+    "charsCount": "{{count}} / 300 characters",
+    "sendFailed": "Failed to send encouragement.",
+    "cancel": "Cancel",
+    "sending": "Sending...",
+    "sendBtn": "Send Encouragement",
+    "presets": {
+      "preset1": "Incredible consistency this week! Keep crushing it! 🔥",
+      "preset2": "Great job maintaining your workout streak! Proud of your hard work.",
+      "preset3": "You're making noticeable progress. Let's keep this momentum rolling!",
+      "preset4": "Saw your latest session finish strong. Outstanding effort! 💪"
+    }
+  },
+  "items": {
+    "FIRST_WORKOUT": {
+      "title": "First Sweat",
+      "description": "Completed your very first workout session on STREN"
+    },
+    "WORKOUTS_5": {
+      "title": "High Five",
+      "description": "Completed 5 workout sessions"
+    },
+    "WORKOUTS_10": {
+      "title": "Double Digits",
+      "description": "Completed 10 workout sessions"
+    },
+    "WORKOUTS_25": {
+      "title": "Quarter Century",
+      "description": "Completed 25 workout sessions"
+    },
+    "WORKOUTS_50": {
+      "title": "Iron Warrior",
+      "description": "Completed 50 workout sessions"
+    },
+    "WORKOUTS_100": {
+      "title": "Century Club",
+      "description": "Completed 100 workout sessions"
+    },
+    "WEEKLY_GOAL_MET": {
+      "title": "Week Crusher",
+      "description": "Hit your weekly training goal by completing 3+ workouts in a week"
+    },
+    "STREAK_3": {
+      "title": "Building Momentum",
+      "description": "Maintained a 3-day active training streak"
+    },
+    "STREAK_7": {
+      "title": "Unstoppable Force",
+      "description": "Maintained a 7-day active training streak"
+    },
+    "STREAK_14": {
+      "title": "Two-Week Legend",
+      "description": "Maintained a 14-day active training streak"
+    },
+    "STREAK_30": {
+      "title": "Monthly Mastery",
+      "description": "Maintained a 30-day active training streak"
+    },
+    "COMEBACK_CHAMPION": {
+      "title": "The Comeback",
+      "description": "Completed a workout session after 14 or more days away"
+    },
+    "FIRST_FOOD_LOG": {
+      "title": "Mindful Fuel",
+      "description": "Logged your first food item in STREN Nutrition"
+    },
+    "NUTRITION_STREAK_7": {
+      "title": "Fuel Consistency",
+      "description": "Logged nutrition entries across 7 distinct days"
+    },
+    "NUTRITION_WEEKLY_TRACKER": {
+      "title": "Macro Maestro",
+      "description": "Logged nutrition on 5 or more days in a single calendar week"
+    },
+    "FIRST_MEASUREMENT": {
+      "title": "Benchmark Set",
+      "description": "Recorded your baseline body measurements"
+    },
+    "PROGRESS_TRACKER": {
+      "title": "Consistent Tracking",
+      "description": "Recorded 3 or more progress body measurement entries"
+    }
+  }
+}

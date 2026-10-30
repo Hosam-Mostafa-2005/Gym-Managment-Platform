@@ -1,11 +1,17 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { terminateRelationship } from "../api/coaching-relationships.api";
+import {
+  terminateRelationship,
+  terminateActiveMemberRelationship,
+} from "../api/coaching-relationships.api";
 
 export const useTerminateRelationship = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => terminateRelationship(id),
+    mutationFn: (id?: string) =>
+      id
+        ? terminateRelationship(id)
+        : terminateActiveMemberRelationship(),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["coaching-relationships"],
@@ -18,6 +24,9 @@ export const useTerminateRelationship = () => {
       });
       queryClient.invalidateQueries({
         queryKey: ["dashboard"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["assignments"],
       });
     },
   });

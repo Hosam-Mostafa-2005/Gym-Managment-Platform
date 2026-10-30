@@ -25,6 +25,7 @@ import {
   Calendar,
   Utensils,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import { useNotifications } from "@/features/notifications/hooks/use-notifications";
@@ -33,6 +34,10 @@ import { useMarkAllNotificationsRead } from "@/features/notifications/hooks/use-
 import type { Notification } from "@/features/notifications/types/notifications.types";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher/LanguageSwitcher";
+import {
+  localizeNotification,
+  formatNotificationTimeAgo,
+} from "@/features/notifications/utils/notification-localization";
 
 export interface HeaderProps {
   collapsed: boolean;
@@ -60,6 +65,7 @@ function useOnClickOutside<T extends HTMLElement>(
 }
 
 const Breadcrumb = () => {
+  const { t } = useTranslation(["common"]);
   const { isCoachOrAdmin } = useAuth();
   const homePath = isCoachOrAdmin ? "/coach-dashboard" : "/dashboard";
   const location = useLocation();
@@ -68,7 +74,7 @@ const Breadcrumb = () => {
   if (pathnames.length === 0) {
     return (
       <div className="flex items-center text-[11px] font-medium text-[#5BE584]">
-        <span>Dashboard</span>
+        <span>{t("header.dashboardBreadcrumb", "Dashboard")}</span>
       </div>
     );
   }
@@ -82,14 +88,14 @@ const Breadcrumb = () => {
         className="hover:text-[#F8FAFC] transition-colors shrink-0"
         to={homePath}
       >
-        Workspace
+        {t("header.workspaceBreadcrumb", "Workspace")}
       </Link>
       {pathnames.map((value, index) => {
         const to = `/${pathnames.slice(0, index + 1).join("/")}`;
         const isLast = index === pathnames.length - 1;
         const title =
           value.length > 20
-            ? "Details"
+            ? t("header.detailsBreadcrumb", "Details")
             : value
                 .split("-")
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -97,7 +103,7 @@ const Breadcrumb = () => {
 
         return (
           <div key={to} className="flex items-center min-w-0">
-            <ChevronRight className="h-3 w-3 mx-1 text-[#2A3039] shrink-0" />
+            <ChevronRight className="h-3 w-3 mx-1 text-[#2A3039] shrink-0 rtl:rotate-180" />
             {isLast ? (
               <span className="truncate text-[#5BE584] font-semibold">
                 {title}
@@ -118,17 +124,34 @@ const Breadcrumb = () => {
 };
 
 // Helper for relative timestamps
-const formatTimeAgo = (dateString: string) => {
+const formatTimeAgo = (
+  dateString: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: (key: any, options?: any) => string,
+  lang: string,
+) => {
   const date = new Date(dateString);
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-  if (seconds < 60) return "Just now";
+  if (seconds < 60) return t("header.timeAgo.justNow", { defaultValue: "Just now" });
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 60)
+    return t("header.timeAgo.minutesAgo", {
+      count: minutes,
+      defaultValue: `${minutes}m ago`,
+    });
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24)
+    return t("header.timeAgo.hoursAgo", {
+      count: hours,
+      defaultValue: `${hours}h ago`,
+    });
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Intl.DateTimeFormat("en-US", {
+  if (days < 7)
+    return t("header.timeAgo.daysAgo", {
+      count: days,
+      defaultValue: `${days}d ago`,
+    });
+  return new Intl.DateTimeFormat(lang === "ar" ? "ar-EG" : "en-US", {
     month: "short",
     day: "numeric",
   }).format(date);
@@ -186,6 +209,7 @@ const getNotificationStyles = (type: string, category?: string) => {
 };
 
 const NotificationMenu = () => {
+  const { t, i18n } = useTranslation(["common", "notifications"]);
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -227,24 +251,24 @@ const NotificationMenu = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="Notifications"
+        aria-label={t("notifications:dropdown.openNotificationsAria")}
         aria-expanded={isOpen}
         className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-[12px] border border-transparent text-[#94A3B8] transition-colors hover:bg-[#13171D] hover:text-[#F8FAFC] hover:border-[#2A3039] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#5BE584] px-1 text-[9px] font-extrabold text-gray-950 ring-2 ring-[#090B0F]">
+          <span className="absolute -top-1 -end-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#5BE584] px-1 text-[9px] font-extrabold text-gray-950 ring-2 ring-[#090B0F]">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-80 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-30 flex flex-col overflow-hidden">
+        <div className="absolute end-0 mt-2 w-[calc(100vw-2rem)] max-w-80 origin-top-right rtl:origin-top-left rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-30 flex flex-col overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-[#2A3039] px-4 py-3 shrink-0">
             <h3 className="text-sm font-semibold text-[#F8FAFC] flex items-center gap-2">
-              Notifications
+              {t("notifications:dropdown.title")}
               {unreadCount > 0 && (
                 <span className="rounded-full bg-[#5BE584]/15 border border-[#5BE584]/30 px-2 py-0.5 text-[10px] font-bold text-[#5BE584]">
                   {unreadCount}
@@ -257,7 +281,8 @@ const NotificationMenu = () => {
               disabled={unreadCount === 0 || isMarkingAll}
               className="cursor-pointer text-xs font-medium text-[#5BE584] hover:text-[#49D472] transition-colors flex items-center gap-1 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <CheckCircle2 className="h-3.5 w-3.5" /> Mark all read
+              <CheckCircle2 className="h-3.5 w-3.5" />{" "}
+              {t("notifications:dropdown.markAllRead")}
             </button>
           </div>
 
@@ -277,13 +302,13 @@ const NotificationMenu = () => {
               </div>
             ) : isError ? (
               <div className="p-6 text-center text-xs text-[#EF4444] bg-[#EF4444]/10">
-                Unable to load notifications.
+                {t("notifications:dropdown.unableToLoad")}
               </div>
             ) : recentNotifications.length === 0 ? (
               <div className="p-8 flex flex-col items-center justify-center text-center">
                 <Bell className="h-6 w-6 text-[#94A3B8] mb-2" />
                 <span className="text-sm font-medium text-[#94A3B8]">
-                  No notifications yet
+                  {t("notifications:dropdown.noNotificationsYet")}
                 </span>
               </div>
             ) : (
@@ -294,6 +319,11 @@ const NotificationMenu = () => {
                   color,
                   bg,
                 } = getNotificationStyles(notif.type, notif.category);
+                const localized = localizeNotification(
+                  notif,
+                  t,
+                  i18n.language
+                );
 
                 return (
                   <div
@@ -306,14 +336,14 @@ const NotificationMenu = () => {
                     }`}
                   >
                     {isUnread && (
-                      <div className="absolute left-0 top-0 h-full w-0.5 bg-[#5BE584]" />
+                      <div className="absolute start-0 top-0 h-full w-0.5 bg-[#5BE584]" />
                     )}
                     <div
                       className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${bg} ${color}`}
                     >
                       <Icon className="h-4 w-4" />
                     </div>
-                    <div className="flex flex-col gap-1 pr-2 min-w-0">
+                    <div className="flex flex-col gap-1 pe-2 min-w-0">
                       <p
                         className={`text-sm ${
                           isUnread
@@ -321,13 +351,17 @@ const NotificationMenu = () => {
                             : "font-medium text-[#F8FAFC]/80"
                         }`}
                       >
-                        {notif.title}
+                        {localized.title}
                       </p>
                       <p className="text-xs text-[#94A3B8] line-clamp-2 leading-relaxed">
-                        {notif.message}
+                        {localized.message}
                       </p>
                       <span className="text-[11px] font-medium text-[#94A3B8]/70 mt-0.5">
-                        {formatTimeAgo(notif.createdAt)}
+                        {formatNotificationTimeAgo(
+                          notif.createdAt,
+                          t,
+                          i18n.language
+                        )}
                       </span>
                     </div>
                   </div>
@@ -346,7 +380,7 @@ const NotificationMenu = () => {
               }}
               className="w-full cursor-pointer rounded-[12px] py-2 text-xs font-semibold text-[#94A3B8] transition-colors hover:bg-[#13171D] hover:text-[#F8FAFC]"
             >
-              View All Notifications
+              {t("notifications:dropdown.viewAll")}
             </button>
           </div>
         </div>
@@ -356,50 +390,69 @@ const NotificationMenu = () => {
 };
 
 const QuickActionsMenu = () => {
+  const { t } = useTranslation(["common"]);
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { user, isCoachOrAdmin } = useAuth();
+  const { isCoachOrAdmin } = useAuth();
 
   useOnClickOutside(ref, () => setIsOpen(false));
 
   const actions = isCoachOrAdmin
     ? [
         {
-          title: "Create Assignment",
-          description: "Assign a workout plan to a member",
+          title: t("header.quickActionsList.createAssignment", "Create Assignment"),
+          description: t(
+            "header.quickActionsList.createAssignmentDesc",
+            "Assign a workout plan to a member",
+          ),
           icon: ClipboardPlus,
           path: "/assignments/new",
         },
         {
-          title: "Create Workout",
-          description: "Build a new workout template",
+          title: t("header.quickActionsList.createWorkout", "Create Workout"),
+          description: t(
+            "header.quickActionsList.createWorkoutDesc",
+            "Build a new workout template",
+          ),
           icon: Dumbbell,
           path: "/workout-builder/new",
         },
         {
-          title: "Manage Members",
-          description: "View assigned member roster",
+          title: t("header.quickActionsList.manageMembers", "Manage Members"),
+          description: t(
+            "header.quickActionsList.manageMembersDesc",
+            "View assigned member roster",
+          ),
           icon: Users,
           path: "/members",
         },
       ]
     : [
         {
-          title: "Workout Sessions",
-          description: "Start or review your training logs",
+          title: t("header.quickActionsList.workoutSessions", "Workout Sessions"),
+          description: t(
+            "header.quickActionsList.workoutSessionsDesc",
+            "Start or review your training logs",
+          ),
           icon: Flame,
           path: "/sessions",
         },
         {
-          title: "My Assignments",
-          description: "View workouts assigned by your coach",
+          title: t("header.quickActionsList.myAssignments", "My Assignments"),
+          description: t(
+            "header.quickActionsList.myAssignmentsDesc",
+            "View workouts assigned by your coach",
+          ),
           icon: ClipboardList,
           path: "/assignments/all",
         },
         {
-          title: "Exercise Library",
-          description: "Browse exercises and instructions",
+          title: t("header.quickActionsList.exerciseLibrary", "Exercise Library"),
+          description: t(
+            "header.quickActionsList.exerciseLibraryDesc",
+            "Browse exercises and instructions",
+          ),
           icon: BookOpen,
           path: "/workout-library/exercises",
         },
@@ -410,7 +463,7 @@ const QuickActionsMenu = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        aria-label="Quick Actions"
+        aria-label={t("header.quickActions", "Quick Actions")}
         aria-expanded={isOpen}
         className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-[12px] border border-transparent text-[#94A3B8] transition-colors hover:bg-[#13171D] hover:text-[#F8FAFC] hover:border-[#2A3039] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
       >
@@ -418,10 +471,10 @@ const QuickActionsMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-72 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 flex flex-col overflow-hidden">
+        <div className="absolute end-0 mt-2 w-[calc(100vw-2rem)] max-w-72 origin-top-right rtl:origin-top-left rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 flex flex-col overflow-hidden">
           <div className="flex items-center border-b border-[#2A3039] px-4 py-3 shrink-0">
             <h3 className="text-sm font-semibold text-[#F8FAFC]">
-              Quick Actions
+              {t("header.quickActions", "Quick Actions")}
             </h3>
           </div>
 
@@ -434,7 +487,7 @@ const QuickActionsMenu = () => {
                   navigate(action.path);
                   setIsOpen(false);
                 }}
-                className="group flex w-full cursor-pointer items-start gap-3 rounded-[12px] px-3 py-2.5 text-left transition-colors hover:bg-[#1B2028]"
+                className="group flex w-full cursor-pointer items-start gap-3 rounded-[12px] px-3 py-2.5 text-start transition-colors hover:bg-[#1B2028]"
               >
                 <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-[#2A3039] bg-[#090B0F] text-[#5BE584] transition-colors group-hover:bg-[#5BE584] group-hover:text-[#090B0F]">
                   <action.icon className="h-4 w-4" />
@@ -457,6 +510,7 @@ const QuickActionsMenu = () => {
 };
 
 const ProfileMenu = () => {
+  const { t } = useTranslation(["common"]);
   const [isOpen, setIsOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
 
@@ -480,13 +534,13 @@ const ProfileMenu = () => {
   const getRoleLabel = (role?: string) => {
     switch (role?.toUpperCase()) {
       case "TRAINER":
-        return "Coach";
+        return t("roles.coach", "Coach");
       case "MEMBER":
-        return "Member";
+        return t("roles.member", "Member");
       case "ADMIN":
-        return "Admin";
+        return t("roles.admin", "Admin");
       default:
-        return "User";
+        return t("roles.user", "User");
     }
   };
 
@@ -502,7 +556,9 @@ const ProfileMenu = () => {
       .toUpperCase();
   };
 
-  const displayName = isLoading ? "Loading..." : user?.name || "User";
+  const displayName = isLoading
+    ? "..."
+    : user?.name || t("roles.user", "User");
   const roleLabel = getRoleLabel(user?.role);
   const initials = getInitials(user?.name);
   const showAvatar = Boolean(user?.avatarUrl) && !avatarError;
@@ -513,9 +569,9 @@ const ProfileMenu = () => {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
-        className="flex cursor-pointer items-center gap-3 rounded-[12px] border border-transparent p-1 pl-2 transition-colors hover:bg-[#13171D] hover:border-[#2A3039] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
+        className="flex cursor-pointer items-center gap-3 rounded-[12px] border border-transparent p-1 ps-2 transition-colors hover:bg-[#13171D] hover:border-[#2A3039] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
       >
-        <div className="hidden sm:flex flex-col items-end text-right">
+        <div className="hidden sm:flex flex-col items-end text-end">
           <span className="text-sm font-semibold text-[#F8FAFC] leading-none">
             {displayName}
           </span>
@@ -540,7 +596,7 @@ const ProfileMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-56 origin-top-right rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-30 overflow-hidden">
+        <div className="absolute end-0 mt-2 w-[calc(100vw-2rem)] max-w-56 origin-top-right rtl:origin-top-left rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-30 overflow-hidden">
           <div className="border-b border-[#2A3039] px-4 py-3">
             <p className="truncate text-sm font-semibold text-[#F8FAFC]">
               {displayName}
@@ -560,7 +616,7 @@ const ProfileMenu = () => {
               className="flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] px-3 py-2 text-sm font-medium text-[#F8FAFC] transition-colors hover:bg-[#1B2028]"
             >
               <User className="h-4 w-4 text-[#94A3B8]" />
-              Profile & Settings
+              {t("header.profileAndSettings", "Profile & Settings")}
             </button>
           </div>
 
@@ -572,7 +628,9 @@ const ProfileMenu = () => {
               className="flex w-full cursor-pointer items-center gap-2.5 rounded-[10px] px-3 py-2 text-sm font-medium text-[#EF4444] transition-colors hover:bg-[#EF4444]/15"
             >
               <LogOut className="h-4 w-4" />
-              {isPending ? "Signing out..." : "Sign Out"}
+              {isPending
+                ? t("header.signingOut", "Signing out...")
+                : t("header.signOut", "Sign Out")}
             </button>
           </div>
         </div>
@@ -582,26 +640,36 @@ const ProfileMenu = () => {
 };
 
 export default function Header({ collapsed, onToggle }: HeaderProps) {
+  const { t } = useTranslation(["common"]);
+
   return (
     <header className="sticky top-0 z-20 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#2A3039] bg-[#090B0F]/95 px-4 sm:px-6 backdrop-blur-md">
       <div className="flex items-center gap-3 sm:gap-4 min-w-0">
         <button
           onClick={onToggle}
           type="button"
-          aria-label={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-          title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+          aria-label={
+            collapsed
+              ? t("header.expandSidebar", "Expand Sidebar")
+              : t("header.collapseSidebar", "Collapse Sidebar")
+          }
+          title={
+            collapsed
+              ? t("header.expandSidebar", "Expand Sidebar")
+              : t("header.collapseSidebar", "Collapse Sidebar")
+          }
           className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-[12px] border border-[#2A3039] bg-[#13171D] text-[#94A3B8] transition-colors hover:bg-[#1B2028] hover:text-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5BE584]"
         >
           {collapsed ? (
-            <PanelLeftOpen className="h-4 w-4" />
+            <PanelLeftOpen className="h-4 w-4 rtl:rotate-180" />
           ) : (
-            <PanelLeftClose className="h-4 w-4" />
+            <PanelLeftClose className="h-4 w-4 rtl:rotate-180" />
           )}
         </button>
 
         <div className="flex flex-col justify-center min-w-0">
           <h1 className="truncate text-xs font-bold uppercase tracking-wider text-[#F8FAFC] mb-0.5">
-            STREN Workspace
+            {t("header.workspace", "STREN Workspace")}
           </h1>
           <Breadcrumb />
         </div>
@@ -613,7 +681,7 @@ export default function Header({ collapsed, onToggle }: HeaderProps) {
 
         <div className="mx-1 h-5 w-px bg-[#2A3039] hidden sm:block" />
 
-        {/* <LanguageSwitcher /> */}
+        <LanguageSwitcher />
         <ProfileMenu />
       </div>
     </header>

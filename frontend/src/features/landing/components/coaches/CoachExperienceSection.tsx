@@ -1,6 +1,7 @@
 // src/features/landing/components/coaches/CoachExperienceSection.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Users,
   Dumbbell,
@@ -13,77 +14,73 @@ import {
 } from "lucide-react";
 
 export const CoachExperienceSection: React.FC = () => {
+  const { t } = useTranslation(["landing"]);
   const [activeFeature, setActiveFeature] = useState(0);
 
   const coachFeatures = [
     {
-      title: "Active Member Roster",
-      tag: "Roster Management",
+      title: t("coaches.features.roster.title"),
+      tag: t("coaches.features.roster.tag"),
       route: "/members/all",
-      routeLabel: "View Members",
+      routeLabel: t("coaches.features.roster.routeLabel"),
       icon: Users,
-      description:
-        "Maintain direct coach-member connections. Inspect athlete adherence rates, active training programs, and recent session logs.",
+      description: t("coaches.features.roster.description"),
       highlights: [
-        "Track adherence rates & last session dates",
-        "Direct link to athlete body measurements & history",
-        "Role-scoped member isolation",
+        t("coaches.features.roster.highlights.item1"),
+        t("coaches.features.roster.highlights.item2"),
+        t("coaches.features.roster.highlights.item3"),
       ],
     },
     {
-      title: "Workout Builder & Target Prescription",
-      tag: "Programming Engine",
+      title: t("coaches.features.builder.title"),
+      tag: t("coaches.features.builder.tag"),
       route: "/workout-builder/all",
-      routeLabel: "Open Workout Builder",
+      routeLabel: t("coaches.features.builder.routeLabel"),
       icon: Sliders,
-      description:
-        "Build modular training routines with exercise sequencing, prescribed target loads, target RPE ratings, and strict rest timers.",
+      description: t("coaches.features.builder.description"),
       highlights: [
-        "Prescribe exact target kg and target RPE per exercise",
-        "Configure rest timers from 30s to 300s",
-        "Organize exercises into reusable split templates",
+        t("coaches.features.builder.highlights.item1"),
+        t("coaches.features.builder.highlights.item2"),
+        t("coaches.features.builder.highlights.item3"),
       ],
     },
     {
-      title: "Exercise Library & Taxonomy",
-      tag: "Movement Database",
+      title: t("coaches.features.taxonomy.title"),
+      tag: t("coaches.features.taxonomy.tag"),
       route: "/workout-library/exercises",
-      routeLabel: "Browse Exercise Library",
+      routeLabel: t("coaches.features.taxonomy.routeLabel"),
       icon: Dumbbell,
-      description:
-        "Access an extensive movement library categorized by primary muscles (Chest, Back, Quads, Deltoids) and equipment types.",
+      description: t("coaches.features.taxonomy.description"),
       highlights: [
-        "Filter by muscle group, category & equipment",
-        "Detailed execution instructions & setup tips",
-        "Create custom gym-specific exercises",
+        t("coaches.features.taxonomy.highlights.item1"),
+        t("coaches.features.taxonomy.highlights.item2"),
+        t("coaches.features.taxonomy.highlights.item3"),
       ],
     },
     {
-      title: "Assignment Distribution",
-      tag: "Plan Delivery",
+      title: t("coaches.features.assignments.title"),
+      tag: t("coaches.features.assignments.tag"),
       route: "/assignments/all",
-      routeLabel: "Manage Assignments",
+      routeLabel: t("coaches.features.assignments.routeLabel"),
       icon: ClipboardList,
-      description:
-        "Assign custom workout routines directly to specific athletes with assigned start dates and active status monitoring.",
+      description: t("coaches.features.assignments.description"),
       highlights: [
-        "Targeted coach-to-member assignment modal",
-        "Immediate delivery notification via Socket.IO",
-        "Status tracking (Pending, In Progress, Completed)",
+        t("coaches.features.assignments.highlights.item1"),
+        t("coaches.features.assignments.highlights.item2"),
+        t("coaches.features.assignments.highlights.item3"),
       ],
     },
     {
-      title: "Athlete Telemetry & Review",
-      tag: "Session Oversight",
+      title: t("coaches.features.telemetry.title"),
+      tag: t("coaches.features.telemetry.tag"),
       route: "/sessions",
-      routeLabel: "Inspect Sessions",
+      routeLabel: t("coaches.features.telemetry.routeLabel"),
       icon: Activity,
-      description:
-        "Review completed workout sessions with verified set entries, total tonnage lifted, member-submitted RPE, and equipment swap notes.",
+      description: t("coaches.features.telemetry.description"),
       highlights: [
-        "Verified set-by-set weight and repetition telemetry",
-        "Audited in-session exercise swaps with reason logs",
-        "Member RPE exertion score & post-workout reflections",
+        t("coaches.features.telemetry.highlights.item1"),
+        t("coaches.features.telemetry.highlights.item2"),
+        t("coaches.features.telemetry.highlights.item3"),
       ],
     },
   ];
@@ -105,15 +102,14 @@ export const CoachExperienceSection: React.FC = () => {
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[#5BE584]/30 bg-[#5BE584]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#5BE584] mb-3">
               <Shield className="h-3.5 w-3.5" />
-              For Coaches & Trainers
+              {t("coaches.badge")}
             </span>
             <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-[#F8FAFC] leading-[1.12]">
-              Precision programming and active roster oversight.
+              {t("coaches.headline")}
             </h2>
           </div>
           <p className="max-w-md text-sm sm:text-base text-[#A7B0BC] leading-relaxed">
-            STREN gives coaches full control over training prescription, program distribution,
-            and athlete performance monitoring in one unified hub.
+            {t("coaches.description")}
           </p>
         </div>
 
@@ -126,10 +122,10 @@ export const CoachExperienceSection: React.FC = () => {
               const isActive = activeFeature === idx;
               return (
                 <button
-                  key={feat.title}
+                  key={feat.route}
                   type="button"
                   onClick={() => setActiveFeature(idx)}
-                  className={`group relative text-left rounded-[16px] border p-4 sm:p-5 transition-all duration-200 ${
+                  className={`group relative text-left rtl:text-right rounded-[16px] border p-4 sm:p-5 transition-all duration-200 ${
                     isActive
                       ? "border-[#5BE584]/60 bg-gradient-to-r from-[#171D25] to-[#13171D] shadow-[0_8px_24px_rgba(0,0,0,0.4),0_0_24px_rgba(91,229,132,0.08)]"
                       : "border-[#2A3039] bg-[#0E1218]/80 hover:border-[#38414D] hover:bg-[#13171D]"
@@ -184,15 +180,15 @@ export const CoachExperienceSection: React.FC = () => {
                   <div className="h-2.5 w-2.5 rounded-full bg-[#EF4444]/60" />
                   <div className="h-2.5 w-2.5 rounded-full bg-[#F5B942]/60" />
                   <div className="h-2.5 w-2.5 rounded-full bg-[#5BE584]" />
-                  <span className="ml-2 text-xs font-semibold text-[#F8FAFC]">
-                    STREN Coach Hub
+                  <span className="ml-2 rtl:mr-2 rtl:ml-0 text-xs font-semibold text-[#F8FAFC]">
+                    {t("coaches.mockup.windowTitle")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-[#5BE584]/15 border border-[#5BE584]/30 px-2.5 py-0.5 text-[10px] font-semibold text-[#5BE584]">
-                    TRAINER ROLE
+                    {t("coaches.mockup.roleBadge")}
                   </span>
-                  <span className="font-mono text-[11px] text-[#94A3B8]">
+                  <span className="font-mono text-[11px] text-[#94A3B8]" dir="ltr">
                     {coachFeatures[activeFeature].route}
                   </span>
                 </div>
@@ -204,7 +200,7 @@ export const CoachExperienceSection: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-[14px] border border-[#2A3039] bg-gradient-to-r from-[#171D25] to-[#12161E] p-4">
                   <div>
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-[#5BE584]">
-                      Selected Module
+                      {t("coaches.mockup.selectedModule")}
                     </span>
                     <h4 className="text-base font-bold text-[#F8FAFC]">
                       {coachFeatures[activeFeature].title}
@@ -217,14 +213,15 @@ export const CoachExperienceSection: React.FC = () => {
                     to={coachFeatures[activeFeature].route}
                     className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-[10px] bg-[#5BE584] px-3.5 py-2 text-xs font-semibold text-[#090B0F] shadow-[0_0_16px_rgba(91,229,132,0.25)] transition-all hover:bg-[#49D472] whitespace-nowrap"
                   >
-                    {coachFeatures[activeFeature].routeLabel} <ArrowRight className="h-3.5 w-3.5" />
+                    <span>{coachFeatures[activeFeature].routeLabel}</span>
+                    <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
                   </Link>
                 </div>
 
                 {/* Key Verification Capabilities */}
                 <div className="space-y-2">
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">
-                    Engineered Capabilities
+                    {t("coaches.mockup.engineeredCapabilities")}
                   </span>
                   <div className="grid grid-cols-1 gap-2">
                     {coachFeatures[activeFeature].highlights.map((point, i) => (
@@ -242,8 +239,12 @@ export const CoachExperienceSection: React.FC = () => {
                 {/* Concrete Realistic Interface Snippet */}
                 <div className="rounded-[14px] border border-[#2A3039] bg-[#090B0F] p-4 space-y-3">
                   <div className="flex items-center justify-between text-xs text-[#94A3B8] pb-2 border-b border-[#2A3039]/60">
-                    <span className="font-medium text-[#F8FAFC]">Workout Builder Prescription Preview</span>
-                    <span className="text-[11px] text-[#5BE584]">Target Targets Active</span>
+                    <span className="font-medium text-[#F8FAFC]">
+                      {t("coaches.mockup.snippetHeader")}
+                    </span>
+                    <span className="text-[11px] text-[#5BE584]">
+                      {t("coaches.mockup.snippetStatus")}
+                    </span>
                   </div>
                   <div className="rounded-[10px] border border-[#2A3039] bg-[#13171D] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -251,19 +252,32 @@ export const CoachExperienceSection: React.FC = () => {
                         #1
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-[#F8FAFC]">Barbell Back Squat</p>
-                        <p className="text-[11px] text-[#94A3B8]">4 sets · Legs / Quads</p>
+                        <p className="text-xs font-bold text-[#F8FAFC]">
+                          {t("coaches.mockup.exerciseName")}
+                        </p>
+                        <p className="text-[11px] text-[#94A3B8]">
+                          {t("coaches.mockup.exerciseDetails")}
+                        </p>
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2 text-xs">
                       <span className="rounded-[8px] bg-[#090B0F] border border-[#2A3039] px-2.5 py-1 text-[#94A3B8]">
-                        Target: <strong className="text-[#F8FAFC]">140 kg</strong>
+                        {t("coaches.mockup.targetLabel")}{" "}
+                        <strong className="text-[#F8FAFC]">
+                          {t("coaches.mockup.targetValue")}
+                        </strong>
                       </span>
                       <span className="rounded-[8px] bg-[#090B0F] border border-[#2A3039] px-2.5 py-1 text-[#94A3B8]">
-                        Target RPE: <strong className="text-[#5BE584]">8.5</strong>
+                        {t("coaches.mockup.targetRpeLabel")}{" "}
+                        <strong className="text-[#5BE584]">
+                          {t("coaches.mockup.targetRpeValue")}
+                        </strong>
                       </span>
                       <span className="rounded-[8px] bg-[#090B0F] border border-[#2A3039] px-2.5 py-1 text-[#94A3B8]">
-                        Rest: <strong className="text-[#F8FAFC]">180s</strong>
+                        {t("coaches.mockup.restLabel")}{" "}
+                        <strong className="text-[#F8FAFC]">
+                          {t("coaches.mockup.restValue")}
+                        </strong>
                       </span>
                     </div>
                   </div>
@@ -276,3 +290,5 @@ export const CoachExperienceSection: React.FC = () => {
     </section>
   );
 };
+
+export default CoachExperienceSection;

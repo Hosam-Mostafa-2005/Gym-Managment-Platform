@@ -1,6 +1,7 @@
 // src/features/dashboard/member/components/DailyNutritionCard.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Utensils, Flame, ArrowRight, Sparkles, Plus } from "lucide-react";
 import type { DailyNutritionSnapshot } from "../../types/dashboard.types";
 
@@ -12,6 +13,7 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
   nutrition,
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation(["nutrition"]);
 
   if (!nutrition || (!nutrition.hasActivePlan && !nutrition.onboardingCompleted)) {
     return (
@@ -24,9 +26,9 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-white">
-                  Nutrition Snapshot
+                  {t("dashboardCard.title")}
                 </h2>
-                <p className="text-xs text-gray-400">Daily fuel & macros</p>
+                <p className="text-xs text-gray-400">{t("dashboardCard.subtitle")}</p>
               </div>
             </div>
           </div>
@@ -36,11 +38,10 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
               <Sparkles className="h-6 w-6" />
             </div>
             <h3 className="mt-3 text-sm font-semibold text-white">
-              No Active Nutrition Plan
+              {t("dashboardCard.noPlanTitle")}
             </h3>
             <p className="mt-1 max-w-xs text-xs text-gray-400">
-              Personalize your daily calories and macro targets to match your
-              fitness goals.
+              {t("dashboardCard.noPlanDesc")}
             </p>
           </div>
         </div>
@@ -50,7 +51,7 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
           onClick={() => navigate("/nutrition/onboarding")}
           className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#5BE584] px-4 py-2.5 text-xs font-semibold text-black shadow-sm transition hover:bg-[#46c26d]"
         >
-          Set Up Nutrition Plan <ArrowRight className="h-3.5 w-3.5" />
+          {t("dashboardCard.setUpPlan")} <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
         </button>
       </div>
     );
@@ -72,10 +73,10 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
             </div>
             <div>
               <h2 className="text-sm font-semibold text-white">
-                Nutrition Snapshot
+                {t("dashboardCard.title")}
               </h2>
               <p className="text-xs text-gray-400">
-                {nutrition.planName || "Active Plan"}
+                {nutrition.planName || t("overview.sourceSelf")}
               </p>
             </div>
           </div>
@@ -84,7 +85,7 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
             onClick={() => navigate("/nutrition")}
             className="inline-flex items-center gap-1 text-xs font-medium text-[#5BE584] transition hover:underline"
           >
-            Hub <ArrowRight className="h-3 w-3" />
+            {t("dashboardCard.hub")} <ArrowRight className="h-3 w-3 rtl:rotate-180" />
           </button>
         </div>
 
@@ -93,7 +94,7 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-1.5 font-medium text-gray-300">
               <Flame className="h-3.5 w-3.5 text-amber-400" />
-              Calories Today
+              {t("dashboardCard.caloriesToday")}
             </span>
             <span className="text-gray-400">
               <span className="font-semibold text-white">
@@ -116,11 +117,11 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
           </div>
 
           <div className="mt-2 flex items-center justify-between text-[11px] text-gray-400">
-            <span>{caloriePct}% target met</span>
+            <span>{t("dashboardCard.targetMetPct", { pct: caloriePct })}</span>
             <span>
               {nutrition.remainingCalories > 0
-                ? `${nutrition.remainingCalories.toLocaleString()} kcal remaining`
-                : "Calorie target reached"}
+                ? t("dashboardCard.remaining", { count: nutrition.remainingCalories.toLocaleString() })
+                : t("dashboardCard.targetReached")}
             </span>
           </div>
         </div>
@@ -130,13 +131,13 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
           {/* Protein */}
           <div className="rounded-lg border border-[#1E2329] bg-[#12171D] p-2.5 text-center">
             <span className="text-[10px] uppercase tracking-wider text-gray-400">
-              Protein
+              {t("dashboardCard.protein")}
             </span>
             <div className="mt-1 text-xs font-semibold text-white">
               {Math.round(nutrition.loggedProteinG)}g
             </div>
             <div className="text-[10px] text-gray-500">
-              of {Math.round(nutrition.targetProteinG)}g
+              {t("dashboardCard.ofG", { target: Math.round(nutrition.targetProteinG) })}
             </div>
             <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-[#21262D]">
               <div
@@ -149,13 +150,13 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
           {/* Carbs */}
           <div className="rounded-lg border border-[#1E2329] bg-[#12171D] p-2.5 text-center">
             <span className="text-[10px] uppercase tracking-wider text-gray-400">
-              Carbs
+              {t("dashboardCard.carbs")}
             </span>
             <div className="mt-1 text-xs font-semibold text-white">
               {Math.round(nutrition.loggedCarbsG)}g
             </div>
             <div className="text-[10px] text-gray-500">
-              of {Math.round(nutrition.targetCarbsG)}g
+              {t("dashboardCard.ofG", { target: Math.round(nutrition.targetCarbsG) })}
             </div>
             <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-[#21262D]">
               <div
@@ -168,13 +169,13 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
           {/* Fat */}
           <div className="rounded-lg border border-[#1E2329] bg-[#12171D] p-2.5 text-center">
             <span className="text-[10px] uppercase tracking-wider text-gray-400">
-              Fat
+              {t("dashboardCard.fat")}
             </span>
             <div className="mt-1 text-xs font-semibold text-white">
               {Math.round(nutrition.loggedFatG)}g
             </div>
             <div className="text-[10px] text-gray-500">
-              of {Math.round(nutrition.targetFatG)}g
+              {t("dashboardCard.ofG", { target: Math.round(nutrition.targetFatG) })}
             </div>
             <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-[#21262D]">
               <div
@@ -188,8 +189,8 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
         {/* Logged count badge */}
         <div className="mt-3 text-center text-xs text-gray-400">
           {nutrition.logsCount > 0
-            ? `${nutrition.logsCount} food log${nutrition.logsCount === 1 ? "" : "s"} recorded today`
-            : "No meals logged yet today"}
+            ? t("dashboardCard.logsRecorded", { count: nutrition.logsCount })
+            : t("dashboardCard.noMealsLogged")}
         </div>
       </div>
 
@@ -200,7 +201,7 @@ export const DailyNutritionCard: React.FC<DailyNutritionCardProps> = ({
           onClick={() => navigate("/nutrition")}
           className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#5BE584]/15 px-3.5 py-2 text-xs font-semibold text-[#5BE584] transition hover:bg-[#5BE584]/25"
         >
-          <Plus className="h-3.5 w-3.5" /> Log Food / View Meals
+          <Plus className="h-3.5 w-3.5" /> {t("dashboardCard.logFoodBtn")}
         </button>
       </div>
     </div>

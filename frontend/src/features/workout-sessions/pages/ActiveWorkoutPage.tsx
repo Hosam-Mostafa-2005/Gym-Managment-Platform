@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Loader2,
   AlertCircle,
@@ -23,6 +24,7 @@ import { usePreviousPerformance } from "../hooks/usePreviousPerformance";
 import type { WorkoutExerciseLog } from "../types/workout-session.types";
 
 export default function ActiveWorkoutPage() {
+  const { t } = useTranslation(["workoutSessions", "common"]);
   const { data, isLoading } = useCurrentWorkoutSession();
 
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -66,7 +68,9 @@ export default function ActiveWorkoutPage() {
         </div>
         <div className="relative z-10 mx-auto max-w-4xl px-6 lg:px-12 py-32 flex flex-col items-center justify-center text-[#6B7280]">
           <Loader2 className="h-8 w-8 animate-spin text-[#5BE584]" />
-          <p className="mt-4 text-sm font-medium">Loading active session...</p>
+          <p className="mt-4 text-sm font-medium">
+            {t("activeWorkout.loadingSession", "Loading active session...")}
+          </p>
         </div>
       </div>
     );
@@ -84,10 +88,13 @@ export default function ActiveWorkoutPage() {
               <AlertCircle className="h-6 w-6" />
             </div>
             <h2 className="text-base font-semibold text-white">
-              No Active Workout
+              {t("activeWorkout.noActiveTitle", "No Active Workout")}
             </h2>
             <p className="mt-2 text-xs text-[#9CA3AF] max-w-xs mx-auto leading-relaxed">
-              There is no active workout session currently running. Start a workout from your library or coach assignment.
+              {t(
+                "activeWorkout.noActiveDesc",
+                "There is no active workout session currently running. Start a workout from your library or coach assignment.",
+              )}
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <Link
@@ -95,14 +102,14 @@ export default function ActiveWorkoutPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5BE584] px-4 py-2.5 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#49D472]"
               >
                 <Dumbbell className="h-3.5 w-3.5" />
-                Browse Workouts
+                {t("activeWorkout.browseWorkouts", "Browse Workouts")}
               </Link>
               <Link
                 to="/sessions"
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-xs font-semibold text-[#9CA3AF] transition-all hover:text-white hover:border-[#2A313A]"
               >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                Return to Sessions
+                <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
+                {t("activeWorkout.returnToSessions", "Return to Sessions")}
               </Link>
             </div>
           </div>
@@ -161,19 +168,23 @@ export default function ActiveWorkoutPage() {
             <Link
               to="/sessions"
               className="rounded-xl border border-[#1E2329] bg-[#101418] p-2 text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
-              title="Return to Sessions"
+              title={t("activeWorkout.returnToSessions", "Return to Sessions")}
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
             </Link>
 
             <div>
               <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase">
-                <span>Live Training</span>
+                <span>{t("activeWorkout.breadcrumbLive", "Live Training")}</span>
                 <span>/</span>
-                <span className="text-[#5BE584] font-semibold">Active Session</span>
+                <span className="text-[#5BE584] font-semibold">
+                  {t("activeWorkout.breadcrumbActive", "Active Session")}
+                </span>
               </div>
               <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                {session.workout?.title || session.assignment?.workout?.title || "Workout Session"}
+                {session.workout?.title ||
+                  session.assignment?.workout?.title ||
+                  t("overview.workoutSessionDefault", "Workout Session")}
               </h1>
             </div>
           </div>
@@ -186,7 +197,7 @@ export default function ActiveWorkoutPage() {
               className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#101418] px-3 py-2 text-xs font-semibold text-[#5BE584] hover:bg-[#16291D] hover:border-[#5BE584]/40 transition-colors"
             >
               <Plus className="h-3.5 w-3.5 stroke-[2.5]" />
-              <span>Add Exercise</span>
+              <span>{t("activeWorkout.addExercise", "Add Exercise")}</span>
             </button>
 
             {/* Live Elapsed Timer */}
@@ -238,7 +249,8 @@ export default function ActiveWorkoutPage() {
               {/* Active / In-Progress Exercises */}
               <div className="space-y-6">
                 {inProgressExercises.map((exercise: WorkoutExerciseLog) => {
-                  const prev = previousPerformance?.[exercise.exercise?.id || ""];
+                  const prev =
+                    previousPerformance?.[exercise.exercise?.id || ""];
                   return (
                     <ExerciseCard
                       key={exercise.id}
@@ -254,19 +266,26 @@ export default function ActiveWorkoutPage() {
               </div>
 
               {/* All Completed Celebration Notice */}
-              {inProgressExercises.length === 0 && completedExercises.length > 0 && (
-                <div className="rounded-2xl border border-[#23422E] bg-[#121B15] p-6 text-center space-y-2">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#16291D] border border-[#23422E] text-[#5BE584]">
-                    <CheckCircle2 className="h-5 w-5" />
+              {inProgressExercises.length === 0 &&
+                completedExercises.length > 0 && (
+                  <div className="rounded-2xl border border-[#23422E] bg-[#121B15] p-6 text-center space-y-2">
+                    <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#16291D] border border-[#23422E] text-[#5BE584]">
+                      <CheckCircle2 className="h-5 w-5" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white">
+                      {t(
+                        "activeWorkout.allCompletedTitle",
+                        "All Scheduled Exercises Completed!",
+                      )}
+                    </h3>
+                    <p className="text-xs text-[#9CA3AF] max-w-md mx-auto">
+                      {t(
+                        "activeWorkout.allCompletedDesc",
+                        "Great work! You can add extra exercises if you want additional volume, or finish your workout session.",
+                      )}
+                    </p>
                   </div>
-                  <h3 className="text-sm font-bold text-white">
-                    All Scheduled Exercises Completed!
-                  </h3>
-                  <p className="text-xs text-[#9CA3AF] max-w-md mx-auto">
-                    Great work! You can add extra exercises if you want additional volume, or finish your workout session.
-                  </p>
-                </div>
-              )}
+                )}
 
               {/* Action: Add Exercise Card */}
               <button
@@ -276,7 +295,12 @@ export default function ActiveWorkoutPage() {
               >
                 <div className="flex items-center justify-center gap-2 text-xs font-semibold text-[#9CA3AF] group-hover:text-[#5BE584]">
                   <Plus className="h-4 w-4 stroke-[2.5]" />
-                  <span>Add Another Exercise to This Workout</span>
+                  <span>
+                    {t(
+                      "activeWorkout.addAnotherExercise",
+                      "Add Another Exercise to This Workout",
+                    )}
+                  </span>
                 </div>
               </button>
 
@@ -289,16 +313,25 @@ export default function ActiveWorkoutPage() {
                         <CheckCircle2 className="h-3.5 w-3.5 stroke-[2.5]" />
                       </div>
                       <h3 className="text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">
-                        Completed Movements ({completedExercises.length})
+                        {t("activeWorkout.completedMovements", {
+                          count: completedExercises.length,
+                          defaultValue: `Completed Movements (${completedExercises.length})`,
+                        })}
                       </h3>
                     </div>
 
                     <button
                       type="button"
-                      onClick={() => setShowCompletedSection(!showCompletedSection)}
+                      onClick={() =>
+                        setShowCompletedSection(!showCompletedSection)
+                      }
                       className="inline-flex items-center gap-1 text-xs text-[#9CA3AF] hover:text-white transition-colors"
                     >
-                      <span>{showCompletedSection ? "Hide" : "Show"}</span>
+                      <span>
+                        {showCompletedSection
+                          ? t("activeWorkout.hide", "Hide")
+                          : t("activeWorkout.show", "Show")}
+                      </span>
                       {showCompletedSection ? (
                         <ChevronUp className="h-3.5 w-3.5" />
                       ) : (
@@ -310,7 +343,8 @@ export default function ActiveWorkoutPage() {
                   {showCompletedSection && (
                     <div className="space-y-5 opacity-90 transition-opacity">
                       {completedExercises.map((exercise: WorkoutExerciseLog) => {
-                        const prev = previousPerformance?.[exercise.exercise?.id || ""];
+                        const prev =
+                          previousPerformance?.[exercise.exercise?.id || ""];
                         return (
                           <ExerciseCard
                             key={exercise.id}
@@ -353,7 +387,12 @@ export default function ActiveWorkoutPage() {
               >
                 <div className="flex items-center justify-center gap-2 text-xs font-semibold text-[#9CA3AF] group-hover:text-[#5BE584]">
                   <Plus className="h-4 w-4 stroke-[2.5]" />
-                  <span>Add Another Exercise to Workout</span>
+                  <span>
+                    {t(
+                      "activeWorkout.addAnotherExercise",
+                      "Add Another Exercise to Workout",
+                    )}
+                  </span>
                 </div>
               </button>
             </div>

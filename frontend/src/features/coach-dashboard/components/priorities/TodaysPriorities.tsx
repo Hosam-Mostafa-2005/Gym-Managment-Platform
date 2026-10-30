@@ -1,5 +1,6 @@
 // src/features/coach-dashboard/components/priorities/TodaysPriorities.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Target, CheckCircle2 } from "lucide-react";
 import { PriorityCard } from "./PriorityCard";
 import type { DashboardPriority } from "@/features/coach-dashboard/types/coach-dashboard.types";
@@ -11,6 +12,7 @@ interface TodaysPrioritiesProps {
 export const TodaysPriorities: React.FC<TodaysPrioritiesProps> = ({
   priorities = [],
 }) => {
+  const { t } = useTranslation(["coachDashboard"]);
   const hasPriorities = priorities && priorities.length > 0;
 
   return (
@@ -25,11 +27,13 @@ export const TodaysPriorities: React.FC<TodaysPrioritiesProps> = ({
           id="priorities-heading"
           className="text-sm font-semibold text-gray-100"
         >
-          Today's Priorities
+          {t("priorities.title")}
         </h2>
         {hasPriorities && (
           <span className="inline-flex rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-bold text-red-400 uppercase tracking-wider border border-red-500/20">
-            {priorities.length} Action{priorities.length !== 1 && "s"} Required
+            {t("priorities.actionsRequired", {
+              count: priorities.length,
+            })}
           </span>
         )}
       </div>
@@ -51,10 +55,10 @@ export const TodaysPriorities: React.FC<TodaysPrioritiesProps> = ({
             <CheckCircle2 className="h-6 w-6 text-[#5BE584]" />
           </div>
           <h3 className="text-sm font-semibold text-gray-200">
-            You're all caught up!
+            {t("priorities.allCaughtUp")}
           </h3>
           <p className="mt-1 text-xs text-gray-500">
-            No critical priorities require your attention today.
+            {t("priorities.allCaughtUpDesc")}
           </p>
         </div>
       )}

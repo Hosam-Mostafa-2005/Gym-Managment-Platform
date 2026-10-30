@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
+import { toast } from "sonner";
+import i18n from "@/i18n";
 import { updateAssignment } from "../api/assignments.api";
 
 export const useUpdateAssignment = () => {
@@ -27,6 +28,21 @@ export const useUpdateAssignment = () => {
       queryClient.invalidateQueries({
         queryKey: ["dashboard"],
       });
+      toast.success(
+        i18n.t(
+          "assignments:toasts.updateSuccess",
+          "Assignment updated successfully!",
+        ),
+      );
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message ||
+          i18n.t(
+            "assignments:toasts.updateError",
+            "Failed to update assignment.",
+          ),
+      );
     },
   });
 };

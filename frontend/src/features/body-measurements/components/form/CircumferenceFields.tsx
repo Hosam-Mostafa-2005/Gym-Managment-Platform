@@ -1,9 +1,13 @@
+// src/features/body-measurements/components/form/CircumferenceFields.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export const CircumferenceFields: React.FC<{
   circumferences: any;
   handleCircumferenceChange: any;
 }> = ({ circumferences, handleCircumferenceChange }) => {
+  const { t } = useTranslation("bodyMeasurements");
+
   const fields = [
     { key: "chest", label: "Chest" },
     { key: "shoulders", label: "Shoulders" },
@@ -21,13 +25,13 @@ export const CircumferenceFields: React.FC<{
   return (
     <div className="mt-4 border-t border-[#1E2329] pt-4">
       <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
-        Circumferences (cm)
+        {t("form.circumferencesSection")}
       </h3>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
         {fields.map((f) => (
           <div key={f.key} className="flex flex-col gap-1.5">
             <label className="text-[10px] font-medium text-gray-400">
-              {f.label}
+              {t(`circumferences.${f.key}` as any, { defaultValue: f.label })}
             </label>
             <input
               type="number"

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Sparkles, Layers, ShieldCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { ROLES } from "@/constants/roles";
 
@@ -8,6 +9,7 @@ import { useCreateWorkout } from "../hooks/useCreateWorkout";
 import type { WorkoutFormData } from "../schemas/workout.schema";
 
 export default function CreateWorkoutPage() {
+  const { t } = useTranslation(["workouts", "common"]);
   const navigate = useNavigate();
   const { data: user } = useCurrentUser();
   const isMember = user?.role === ROLES.MEMBER;
@@ -40,26 +42,25 @@ export default function CreateWorkoutPage() {
                 onClick={() => navigate("/workout-builder")}
                 className="group inline-flex items-center gap-1.5 text-xs font-medium text-[#6B7280] hover:text-[#F3F4F6] transition-colors"
               >
-                <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
-                Workouts
+                <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" />
+                {t("page.breadcrumbWorkouts", "Workouts")}
               </button>
 
               <span className="text-[#1E2329]">/</span>
 
               <span className="inline-flex items-center gap-1 rounded bg-[#16291D] border border-[#23422E] px-2.5 py-0.5 text-[11px] font-medium text-[#5BE584]">
                 <Sparkles className="h-3 w-3" />
-                {isMember ? "Personal Routine" : "Template Creator"}
+                {isMember ? t("badges.personalRoutine", "Personal Routine") : t("badges.templateCreator", "Template Creator")}
               </span>
             </div>
 
             {/* Title & Description */}
             <div className="space-y-1.5">
               <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">
-                Create Workout Routine
+                {t("createPage.title", "Create Workout Routine")}
               </h1>
               <p className="text-sm text-[#9CA3AF] max-w-2xl leading-relaxed">
-                Design a structured training sequence by picking exercises from
-                your library, configuring target sets, reps, and rest intervals.
+                {t("createPage.description", "Design a structured training sequence by picking exercises from your library, configuring target sets, reps, and rest intervals.")}
               </p>
             </div>
           </div>
@@ -68,12 +69,12 @@ export default function CreateWorkoutPage() {
           <div className="flex items-center gap-2.5 self-start lg:self-auto pt-2 lg:pt-0">
             <div className="flex items-center gap-2 rounded-lg border border-[#1E2329] bg-[#101418] px-3.5 py-1.5 text-xs font-medium text-[#9CA3AF] backdrop-blur-sm">
               <Layers className="h-3.5 w-3.5 text-[#5BE584]" />
-              <span>Draft Mode</span>
+              <span>{t("badges.draftMode", "Draft Mode")}</span>
             </div>
 
             <div className="hidden sm:flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#101418] px-3.5 py-1.5 text-xs font-medium text-[#9CA3AF] backdrop-blur-sm">
               <ShieldCheck className="h-3.5 w-3.5 text-[#5BE584]" />
-              <span>Zod Validated</span>
+              <span>{t("badges.zodValidated", "Zod Validated")}</span>
             </div>
           </div>
         </div>

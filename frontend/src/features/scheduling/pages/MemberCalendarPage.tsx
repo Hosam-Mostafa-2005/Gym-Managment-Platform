@@ -15,6 +15,7 @@ import {
   List,
   Sparkles,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   useMemberScheduledWorkouts,
   useMemberCalendarSummary,
@@ -39,6 +40,7 @@ type CalendarViewMode = "month" | "week" | "agenda";
 type FilterMode = "all" | "workouts" | "appointments";
 
 export default function MemberCalendarPage() {
+  const { t, i18n } = useTranslation("trainingCalendar");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [primaryView, setPrimaryView] = useState<PrimaryView>("calendar");
   const [viewMode, setViewMode] = useState<CalendarViewMode>("month");
@@ -112,10 +114,13 @@ export default function MemberCalendarPage() {
     setIsScheduleOpen(true);
   };
 
-  const formattedMonthYear = currentDate.toLocaleDateString(undefined, {
-    month: "long",
-    year: "numeric",
-  });
+  const formattedMonthYear = currentDate.toLocaleDateString(
+    i18n.language === "ar" ? "ar-EG" : "en-US",
+    {
+      month: "long",
+      year: "numeric",
+    },
+  );
 
   return (
     <div className="min-h-screen bg-[#090B0F] text-white p-4 md:p-8 space-y-6">
@@ -126,14 +131,16 @@ export default function MemberCalendarPage() {
           <div className="p-4 rounded-2xl bg-[#101418] border border-[#1E2329] shadow-lg flex items-center justify-between">
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                Weekly Adherence
+                {t("kpi.weeklyAdherence")}
               </div>
               <div className="text-2xl font-black text-[#5BE584] mt-0.5">
                 {summaryData.weeklyStats.adherenceRatePct}%
               </div>
               <div className="text-[11px] text-gray-500 mt-0.5">
-                {summaryData.weeklyStats.completed} of{" "}
-                {summaryData.weeklyStats.totalScheduled} completed
+                {t("kpi.completedOfTotal", {
+                  completed: summaryData.weeklyStats.completed,
+                  total: summaryData.weeklyStats.totalScheduled,
+                })}
               </div>
             </div>
             <div className="h-10 w-10 rounded-xl bg-[#16291D] border border-[#23422E] flex items-center justify-center text-[#5BE584]">
@@ -145,12 +152,14 @@ export default function MemberCalendarPage() {
           <div className="p-4 rounded-2xl bg-[#101418] border border-[#1E2329] shadow-lg flex items-center justify-between">
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                Sessions Completed
+                {t("kpi.sessionsCompleted")}
               </div>
               <div className="text-2xl font-black text-white mt-0.5">
                 {summaryData.weeklyStats.completed}
               </div>
-              <div className="text-[11px] text-gray-500 mt-0.5">This week</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">
+                {t("kpi.thisWeek")}
+              </div>
             </div>
             <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-[#5BE584]">
               <CheckCircle2 size={20} />
@@ -161,12 +170,14 @@ export default function MemberCalendarPage() {
           <div className="p-4 rounded-2xl bg-[#101418] border border-[#1E2329] shadow-lg flex items-center justify-between">
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                Upcoming Workouts
+                {t("kpi.upcomingWorkouts")}
               </div>
               <div className="text-2xl font-black text-blue-400 mt-0.5">
                 {summaryData.upcomingWorkouts?.length || 0}
               </div>
-              <div className="text-[11px] text-gray-500 mt-0.5">Next 7 days</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">
+                {t("kpi.next7Days")}
+              </div>
             </div>
             <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
               <Clock size={20} />
@@ -177,13 +188,13 @@ export default function MemberCalendarPage() {
           <div className="p-4 rounded-2xl bg-[#101418] border border-[#1E2329] shadow-lg flex items-center justify-between">
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                Rest & Recovery
+                {t("kpi.restAndRecovery")}
               </div>
               <div className="text-2xl font-black text-purple-400 mt-0.5">
                 {summaryData.restDays?.length || 0}
               </div>
               <div className="text-[11px] text-gray-500 mt-0.5">
-                Recovery days this week
+                {t("kpi.recoveryDaysThisWeek")}
               </div>
             </div>
             <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
@@ -203,22 +214,22 @@ export default function MemberCalendarPage() {
                 <button
                   onClick={handlePrev}
                   className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-                  title="Previous"
+                  title={t("controls.previous")}
                 >
-                  <ChevronLeft size={16} />
+                  <ChevronLeft size={16} className="rtl:rotate-180" />
                 </button>
                 <button
                   onClick={handleToday}
                   className="px-3 py-1 rounded-lg text-xs font-semibold text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  Today
+                  {t("controls.today")}
                 </button>
                 <button
                   onClick={handleNext}
                   className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-                  title="Next"
+                  title={t("controls.next")}
                 >
-                  <ChevronRight size={16} />
+                  <ChevronRight size={16} className="rtl:rotate-180" />
                 </button>
               </div>
 
@@ -233,10 +244,10 @@ export default function MemberCalendarPage() {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-white tracking-tight">
-                  Scheduled Workouts
+                  {t("controls.scheduledWorkoutsTitle")}
                 </h2>
                 <p className="text-xs text-gray-400">
-                  Full list of your scheduled training sessions
+                  {t("controls.scheduledWorkoutsSubtitle")}
                 </p>
               </div>
             </div>
@@ -249,7 +260,7 @@ export default function MemberCalendarPage() {
           <div
             className="flex items-center bg-[#161B22] p-1 rounded-xl border border-[#1E2329]"
             role="tablist"
-            aria-label="View Switcher"
+            aria-label={t("controls.viewSwitcher")}
           >
             <button
               role="tab"
@@ -262,7 +273,7 @@ export default function MemberCalendarPage() {
               }`}
             >
               <Calendar size={13} />
-              Calendar
+              {t("controls.calendar")}
             </button>
             <button
               role="tab"
@@ -275,7 +286,7 @@ export default function MemberCalendarPage() {
               }`}
             >
               <List size={13} />
-              List
+              {t("controls.list")}
             </button>
           </div>
 
@@ -289,7 +300,7 @@ export default function MemberCalendarPage() {
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              All Events
+              {t("controls.allEvents")}
             </button>
             <button
               onClick={() => setFilterMode("workouts")}
@@ -299,7 +310,7 @@ export default function MemberCalendarPage() {
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              <Dumbbell size={12} /> Workouts
+              <Dumbbell size={12} /> {t("controls.workouts")}
             </button>
             <button
               onClick={() => setFilterMode("appointments")}
@@ -309,7 +320,7 @@ export default function MemberCalendarPage() {
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              <ShieldCheck size={12} /> Appointments
+              <ShieldCheck size={12} /> {t("controls.appointments")}
             </button>
           </div>
 
@@ -324,7 +335,7 @@ export default function MemberCalendarPage() {
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                Month
+                {t("controls.month")}
               </button>
               <button
                 onClick={() => setViewMode("week")}
@@ -334,7 +345,7 @@ export default function MemberCalendarPage() {
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                Week
+                {t("controls.week")}
               </button>
               <button
                 onClick={() => setViewMode("agenda")}
@@ -344,7 +355,7 @@ export default function MemberCalendarPage() {
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                Agenda
+                {t("controls.agenda")}
               </button>
             </div>
           )}
@@ -355,7 +366,7 @@ export default function MemberCalendarPage() {
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#16291D] border border-[#23422E] hover:bg-[#1E3A28] text-[#5BE584] transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <Sparkles size={14} />
-            Build 4-Week Program
+            {t("controls.buildProgram")}
           </button>
 
           {/* "+ Schedule Workout" */}
@@ -367,7 +378,7 @@ export default function MemberCalendarPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#5BE584] hover:bg-[#4dd273] text-black shadow-lg shadow-[#5BE584]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <Plus size={15} />
-            Schedule Workout
+            {t("controls.scheduleWorkout")}
           </button>
         </div>
       </div>

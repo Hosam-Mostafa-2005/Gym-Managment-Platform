@@ -1,0 +1,201 @@
+{
+  "header": {
+    "title": "الإنجازات وسلاسل التمرين",
+    "subtitle": "احتفل بإنجازاتك، وحافظ على استمرارية تدريبك اليومي، وطور مسارك الرياضي.",
+    "xpTotal": "إجمالي {{count}} نقطة خبرة",
+    "badgesUnlocked": "الأوسمة المكتملة:",
+    "badgesUnlockedStats": "{{earned}} / {{total}} ({{pct}}%)"
+  },
+  "kpi": {
+    "streak": {
+      "title": "سلسلة الأيام المتتالية",
+      "subtitle": "الأيام النشطة المتتالية",
+      "active": "سلسلة نشطة",
+      "inactive": "غير نشطة",
+      "day": "يوم",
+      "days": "أيام",
+      "onFire": "أداء ناري! استمر في التقدم!",
+      "startStreak": "أكمل تمريناً اليوم لبدء سلسلة التمرين.",
+      "reigniteStreak": "سجل تمريناً اليوم لإشعال سلسلة تمرينك من جديد.",
+      "bestStreak": "الأفضل: {{count}} {{unit}}",
+      "lastWorkout": "آخر تمرين: {{date}}"
+    },
+    "weeklyGoal": {
+      "title": "الهدف الأسبوعي",
+      "subtitle": "أسبوع {{date}}",
+      "goalMet": "تم تحقيق الهدف!",
+      "remaining": "متبقي {{count}} للوصول للهدف",
+      "workoutsCompleted": "من أصل {{total}} تمارين مكتملة"
+    },
+    "points": {
+      "title": "نقاط المكافأة",
+      "subtitle": "الخبرة المكتسبة",
+      "badge": "نقطة",
+      "accumulated": "نقطة مكتسبة",
+      "desc": "اكسب نقاطاً مقابل كل إنجاز، وسلسلة تدريب، وتمرين تكمله."
+    },
+    "completion": {
+      "title": "تقدم الأوسمة",
+      "subtitle": "إجمالي إتقان الإنجازات",
+      "unlocked": "من أصل {{total}} مكتملة"
+    }
+  },
+  "categories": {
+    "ALL": "جميع الأوسمة",
+    "WORKOUT": "التمارين",
+    "CONSISTENCY": "الاستمرارية",
+    "NUTRITION": "التغذية",
+    "PROGRESS": "التقدم والقياسات"
+  },
+  "filters": {
+    "all": "الكل",
+    "unlocked": "مكتمل ({{count}})",
+    "locked": "مغلق ({{count}})",
+    "inProgress": "قيد التقدم",
+    "status": "الحالة",
+    "category": "الفئة"
+  },
+  "badge": {
+    "pts": "+{{count}} نقطة",
+    "xp": "+{{count}} خبرة",
+    "unlocked": "مكتمل",
+    "locked": "مغلق",
+    "progress": "التقدم",
+    "earned": "مكتسب",
+    "tier": "المستوى",
+    "tiers": {
+      "BRONZE": "برونزي",
+      "SILVER": "فضي",
+      "GOLD": "ذهبي",
+      "PLATINUM": "بلاتيني",
+      "DIAMOND": "ماسي"
+    }
+  },
+  "detailModal": {
+    "close": "إغلاق",
+    "tierTier": "المستوى {{tier}}",
+    "status": "الحالة",
+    "unlockedAndCompleted": "مكتمل ومُحقق",
+    "goalRequirement": "متطلبات الهدف",
+    "unlockedDate": "تاريخ الإنجاز",
+    "requirements": "المتطلبات",
+    "reward": "المكافأة"
+  },
+  "emptyState": {
+    "noAchievementsFound": "لم يتم العثور على أي إنجازات",
+    "adjustFilters": "جرّب تعديل فئة الإنجازات أو عامل تصفية حالة الإكمال.",
+    "loading": "جاري تحميل الإنجازات...",
+    "loadError": "فشل تحميل الإنجازات.",
+    "retry": "إعادة المحاولة"
+  },
+  "celebration": {
+    "ariaTitle": "إنجاز جديد مكتمل",
+    "headerTag": "إنجاز جديد مُكتمل!",
+    "tierSuffix": "المستوى",
+    "pointsLabel": "نقطة",
+    "congratsLine1": "أنت تبني شيئاً عظيماً!",
+    "congratsLine2": "كل تمرين يصنع فارقاً. استمر في تجاوز حدودك.",
+    "continueButton": "رائع، استمر في التقدم!",
+    "nextButton": "الإنجاز التالي",
+    "close": "إغلاق"
+  },
+  "memberSection": {
+    "title": "إنجازات واستمرارية الرياضي",
+    "subtitle": "تتبع التزام {{name}}، واستمراريته الأسبوعية، وإنجازاته.",
+    "encourageBtn": "تشجيع الرياضي",
+    "currentStreak": "السلسلة الحالية",
+    "bestDays": "الأفضل: {{count}} يوم",
+    "thisWeek": "هذا الأسبوع",
+    "workoutsCount": "من أصل {{count}} تمارين",
+    "badgesEarned": "الأوسمة المحققة",
+    "recentUnlockedBadges": "أحدث الأوسمة المكتملة",
+    "dialogTitle": "تشجيع {{name}}",
+    "dialogSubtitle": "أرسل إشعاراً تحفيزياً مباشرة إلى رياضيك.",
+    "sentSuccessTitle": "تم إرسال التشجيع بنجاح!",
+    "sentSuccessDesc": "تلقى {{name}} رسالتك التحفيزية.",
+    "quickCheer": "عبارات تحفيزية جاهزة",
+    "customMessage": "رسالة مخصصة",
+    "placeholder": "اكتب رسالة تشجيع مخصصة...",
+    "charsCount": "{{count}} / 300 حرف",
+    "sendFailed": "فشل إرسال رسالة التشجيع.",
+    "cancel": "إلغاء",
+    "sending": "جاري الإرسال...",
+    "sendBtn": "إرسال التشجيع",
+    "presets": {
+      "preset1": "استمرارية مذهلة هذا الأسبوع! واصل التقدم والتألق! 🔥",
+      "preset2": "عمل رائع في الحفاظ على سلسلة تمارينك! فخور بجهدك والتزامك.",
+      "preset3": "أنت تحقق تقدماً ملحوظاً. دعنا نحافظ على هذا الزخم القوي!",
+      "preset4": "رأيت إنهاءك القوي لآخر جلسة تمرين. مجهود استثنائي ورائع! 💪"
+    }
+  },
+  "items": {
+    "FIRST_WORKOUT": {
+      "title": "العرق الأول",
+      "description": "أكملت أول جلسة تمرين لك على الإطلاق في STREN"
+    },
+    "WORKOUTS_5": {
+      "title": "الخماسية الأولى",
+      "description": "أكملت 5 جلسات تمرين"
+    },
+    "WORKOUTS_10": {
+      "title": "الأرقام المزدوجة",
+      "description": "أكملت 10 جلسات تمرين"
+    },
+    "WORKOUTS_25": {
+      "title": "ربع قرن",
+      "description": "أكملت 25 جلسة تمرين"
+    },
+    "WORKOUTS_50": {
+      "title": "المحارب الحديدي",
+      "description": "أكملت 50 جلسة تمرين"
+    },
+    "WORKOUTS_100": {
+      "title": "نادي المئة",
+      "description": "أكملت 100 جلسة تمرين"
+    },
+    "WEEKLY_GOAL_MET": {
+      "title": "مُحطم الأسبوع",
+      "description": "حققت هدفك الأسبوعي بإكمال 3 تمارين أو أكثر في أسبوع واحد"
+    },
+    "STREAK_3": {
+      "title": "بناء الزخم",
+      "description": "حافظت على سلسلة تمرين نشطة لمدة 3 أيام متتالية"
+    },
+    "STREAK_7": {
+      "title": "قوة لا تُقهر",
+      "description": "حافظت على سلسلة تمرين نشطة لمدة 7 أيام متتالية"
+    },
+    "STREAK_14": {
+      "title": "أسطورة الأسبوعين",
+      "description": "حافظت على سلسلة تمرين نشطة لمدة 14 يوماً متتالياً"
+    },
+    "STREAK_30": {
+      "title": "الإتقان الشهري",
+      "description": "حافظت على سلسلة تمرين نشطة لمدة 30 يوماً متتالياً"
+    },
+    "COMEBACK_CHAMPION": {
+      "title": "العودة القوية",
+      "description": "أكملت جلسة تمرين بعد انقطاع دام 14 يوماً أو أكثر"
+    },
+    "FIRST_FOOD_LOG": {
+      "title": "الوقود الواعي",
+      "description": "سجلت أول وجبة طعام لك في تغذية STREN"
+    },
+    "NUTRITION_STREAK_7": {
+      "title": "استمرارية التغذية",
+      "description": "سجلت بيانات التغذية عبر 7 أيام مختلفة"
+    },
+    "NUTRITION_WEEKLY_TRACKER": {
+      "title": "مايسترو الماكروز",
+      "description": "سجلت التغذية في 5 أيام أو أكثر خلال أسبوع تقويمي واحد"
+    },
+    "FIRST_MEASUREMENT": {
+      "title": "نقطة البداية",
+      "description": "سجلت قياسات جسمك الأساسية لأول مرة"
+    },
+    "PROGRESS_TRACKER": {
+      "title": "المتابعة المستمرة",
+      "description": "سجلت 3 قياسات جسم أو أكثر لمتابعة التطور"
+    }
+  }
+}

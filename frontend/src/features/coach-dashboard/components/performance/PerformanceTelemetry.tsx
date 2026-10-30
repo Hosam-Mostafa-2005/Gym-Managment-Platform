@@ -1,5 +1,6 @@
 // src/features/coach-dashboard/components/performance/PerformanceTelemetry.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Activity } from "lucide-react";
 import { WorkoutSessionsChart } from "./WorkoutSessionsChart";
 import { CompletionRateChart } from "./CompletionRateChart";
@@ -15,6 +16,8 @@ interface PerformanceTelemetryProps {
 export const PerformanceTelemetry: React.FC<PerformanceTelemetryProps> = ({
   charts,
 }) => {
+  const { t } = useTranslation(["coachDashboard"]);
+
   return (
     <section
       className="mb-8 flex flex-col gap-6"
@@ -27,10 +30,10 @@ export const PerformanceTelemetry: React.FC<PerformanceTelemetryProps> = ({
           id="performance-heading"
           className="text-sm font-semibold text-gray-100"
         >
-          Performance Telemetry & Analytics
+          {t("analyticsView.title")}
         </h2>
-        <span className="text-[10px] font-medium text-gray-500 tracking-wider uppercase ml-auto">
-          Rolling Window: Past 30 Days
+        <span className="text-[10px] font-medium text-gray-500 tracking-wider uppercase ml-auto rtl:ml-0 rtl:mr-auto">
+          {t("analyticsView.rollingWindow")}
         </span>
       </div>
 

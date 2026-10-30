@@ -1,5 +1,6 @@
 // src/features/coach-dashboard/components/performance/WorkoutSessionsChart.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -19,6 +20,7 @@ interface WorkoutSessionsChartProps {
 export const WorkoutSessionsChart: React.FC<WorkoutSessionsChartProps> = ({
   data = [],
 }) => {
+  const { t } = useTranslation(["coachDashboard"]);
   const hasData = data && data.length > 0;
 
   return (
@@ -27,18 +29,20 @@ export const WorkoutSessionsChart: React.FC<WorkoutSessionsChartProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-gray-100">
-              Workout Sessions
+              {t("analyticsView.workoutSessions")}
             </h3>
             <InfoTooltip
-              title="Daily Completed Workout Sessions"
-              description="Daily count of completed workout sessions logged by athletes assigned to you."
-              calculation="COUNT(sessions WHERE status = 'COMPLETED') per calendar day"
-              unit="sessions / day"
-              dateRange="Past 30 rolling days"
-              limitations="Zero-padded for days with no activity across your roster."
+              title={t("analyticsView.tooltips.sessionsTitle")}
+              description={t("analyticsView.tooltips.sessionsDesc")}
+              calculation={t("analyticsView.tooltips.sessionsCalc")}
+              unit={t("analyticsView.tooltips.sessionsUnit")}
+              dateRange={t("analyticsView.tooltips.sessionsRange")}
+              limitations={t("analyticsView.tooltips.sessionsLimit")}
             />
           </div>
-          <p className="text-xs text-gray-500 mt-0.5">Last 30 Days Telemetry</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {t("analyticsView.workoutSessionsSub")}
+          </p>
         </div>
       </div>
 
@@ -97,7 +101,10 @@ export const WorkoutSessionsChart: React.FC<WorkoutSessionsChartProps> = ({
                   color: "#f3f4f6",
                 }}
                 itemStyle={{ color: "#5BE584" }}
-                formatter={(value: any) => [value, "Sessions"]}
+                formatter={(value: any) => [
+                  value,
+                  t("analyticsView.workoutSessions"),
+                ]}
                 labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
               />
               <Area
@@ -112,7 +119,7 @@ export const WorkoutSessionsChart: React.FC<WorkoutSessionsChartProps> = ({
           </ResponsiveContainer>
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-gray-500">
-            No session telemetry recorded for this period.
+            {t("analyticsView.noSessionTelemetry")}
           </div>
         )}
       </div>

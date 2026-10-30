@@ -1,17 +1,19 @@
 // src/features/landing/components/showcase/ProductShowcase.tsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ProductTabs } from "./ProductTabs";
 import { ProductPreview } from "./ProductPreview";
 import { Sparkles } from "lucide-react";
 
 export const ProductShowcase: React.FC = () => {
+  const { t } = useTranslation(["landing"]);
   const [activeTab, setActiveTab] = useState("coach-dashboard");
 
   const tabs = [
-    { id: "coach-dashboard", label: "Coach Command Center" },
-    { id: "workout-builder", label: "Workout Builder" },
-    { id: "active-session", label: "Active Member Session" },
-    { id: "body-measurements", label: "Body Metrics" },
+    { id: "coach-dashboard", label: t("showcase.tabs.coachDashboard") },
+    { id: "workout-builder", label: t("showcase.tabs.workoutBuilder") },
+    { id: "active-session", label: t("showcase.tabs.activeSession") },
+    { id: "body-measurements", label: t("showcase.tabs.bodyMeasurements") },
   ];
 
   return (
@@ -29,14 +31,13 @@ export const ProductShowcase: React.FC = () => {
         <div className="text-center flex flex-col items-center gap-3 max-w-3xl">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#5BE584] uppercase tracking-wider border border-[#5BE584]/30 bg-[#5BE584]/10 px-3 py-1 rounded-full">
             <Sparkles className="h-3.5 w-3.5" />
-            Interactive Workspace Preview
+            {t("showcase.badge")}
           </span>
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-[-0.03em] text-[#F8FAFC]">
-            Inspect the authentic STREN interfaces.
+            {t("showcase.headline")}
           </h2>
           <p className="max-w-xl text-sm sm:text-base text-[#A7B0BC] leading-relaxed">
-            Switch between core STREN views to see how coaches and members interact
-            with prescriptions, live set logging, rest countdowns, and physical body metrics.
+            {t("showcase.description")}
           </p>
         </div>
 
@@ -51,3 +52,5 @@ export const ProductShowcase: React.FC = () => {
     </section>
   );
 };
+
+export default ProductShowcase;

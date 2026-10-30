@@ -1,0 +1,242 @@
+{
+  "header": {
+    "atlasBadge": "أطلس الحركات STREN",
+    "title": "مكتبة التمارين",
+    "movementsCount": "{{count}} حركة",
+    "customCount": "{{count}} مخصص",
+    "description": "استكشف العروض الحركية الدقيقة، والمجموعات العضلية المستهدفة، والمعدات المطلوبة، وإرشادات الأداء عبر دليل التمارين الكامل.",
+    "newExercise": "تمرين جديد"
+  },
+  "filters": {
+    "searchPlaceholder": "ابحث عن تمرين بالاسم، أو العضلة، أو المعدات...",
+    "clearSearch": "مسح البحث",
+    "allMuscleGroups": "كل المجموعات العضلية",
+    "allEquipment": "كل المعدات",
+    "sort": {
+      "ariaLabel": "ترتيب التمارين",
+      "nameAsc": "الترتيب: الاسم (أ ← ي)",
+      "nameDesc": "الترتيب: الاسم (ي ← أ)",
+      "muscle": "الترتيب: العضلة الأساسية",
+      "difficulty": "الترتيب: مستوى الصعوبة"
+    },
+    "filterByMuscleAria": "تصفية حسب المجموعة العضلية",
+    "filterByEquipmentAria": "تصفية حسب المعدات",
+    "muscleLabel": "العضلة:",
+    "all": "الكل",
+    "levelLabel": "المستوى:",
+    "myCustom": "تماريني الخاصة",
+    "showingCount": "عرض <1>{{count}}</1> من <3>{{total}}</3> تمرين",
+    "showingCountSingle": "عرض <1>{{count}}</1> تمرين",
+    "resetFilters": "إعادة ضبط الفلاتر"
+  },
+  "categories": {
+    "lowerBodyCompound": "مركّب للجزء السفلي",
+    "lowerBodyIsolation": "عزل للجزء السفلي",
+    "coreStability": "عضلات البطن والثبات",
+    "upperPushCompound": "دفع علوي مركّب",
+    "upperPushIsolation": "دفع علوي عزل",
+    "upperPullCompound": "سحب علوي مركّب",
+    "upperPullIsolation": "سحب علوي عزل",
+    "armCompound": "ذراع مركّب",
+    "armIsolation": "ذراع عزل",
+    "compoundMovement": "حركة مركبة",
+    "targetedIsolation": "حركة عزل مستهدفة"
+  },
+  "difficulties": {
+    "all": "الكل",
+    "beginner": "مبتدئ",
+    "intermediate": "متوسط",
+    "advanced": "متقدم"
+  },
+  "muscles": {
+    "Chest": "الصدر",
+    "Back": "الظهر",
+    "Shoulders": "الأكتاف",
+    "Biceps": "بايسبس",
+    "Triceps": "ترايسبس",
+    "Forearms": "الساعد",
+    "Quadriceps": "الفخذ الأمامي",
+    "Hamstrings": "الفخذ الخلفي",
+    "Glutes": "المؤخرة / الأرداف",
+    "Calves": "السمانة",
+    "Abs": "عضلات البطن",
+    "Core": "الجذع والبطن",
+    "Lats": "اللاتس",
+    "Obliques": "عضلات البطن الجانبية",
+    "Traps": "الترابيس"
+  },
+  "equipment": {
+    "Barbell": "بار",
+    "Dumbbell": "دمبل",
+    "Cable": "كيبل",
+    "Machine": "جهاز",
+    "Smith Machine": "سميث",
+    "Bodyweight": "وزن الجسم",
+    "EZ Bar": "بار زجزاج (EZ)",
+    "Resistance Band": "حبل مقاومة",
+    "Kettlebell": "كاتل بيل"
+  },
+  "card": {
+    "customBadge": "مخصص",
+    "videoBadge": "فيديو",
+    "musclesLabel": "العضلات:",
+    "equipmentLabel": "المعدات:",
+    "secondaryTargetTooltip": "عضلة مستهدفة ثانوية",
+    "quickView": "عرض سريع",
+    "fullGuide": "الدليل الكامل",
+    "view": "عرض",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "viewDetailsTitle": "عرض تفاصيل {{name}}",
+    "bodyweight": "وزن الجسم"
+  },
+  "empty": {
+    "title": "لم يتم العثور على تمارين مطابقة",
+    "description": "جرّب تغيير كلمات البحث، أو المجموعة العضلية، أو المعدات، أو الفلاتر لعرض مزيد من التمارين من المكتبة.",
+    "clearFilters": "مسح جميع الفلاتر"
+  },
+  "pagination": {
+    "summary": "صفحة <1>{{page}}</1> من <3>{{totalPages}}</3> • عرض <5>{{from}}–{{to}}</5> من <7>{{total}}</7> تمرين",
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "error": {
+    "title": "تعذر تحميل مكتبة التمارين",
+    "description": "حدث خطأ أثناء تحميل التمارين. يرجى المحاولة مرة أخرى.",
+    "retry": "إعادة المحاولة"
+  },
+  "viewDialog": {
+    "noDescription": "لا يوجد وصف متوفر.",
+    "fullPage": "الصفحة الكاملة",
+    "targetMuscleGroups": "المجموعات العضلية المستهدفة",
+    "primary": "أساسية",
+    "secondary": "ثانوية",
+    "equipmentRequired": "المعدات المطلوبة",
+    "noneSpecified": "غير محدد",
+    "watchVideo": "مشاهدة فيديو التمرين",
+    "stepByStep": "خطوات أداء التمرين",
+    "coachingCues": "نصائح وإرشادات الأداء"
+  },
+  "deleteDialog": {
+    "title": "أرشفة التمرين",
+    "prompt": "هل أنت متأكد من رغبتك في أرشفة",
+    "warning": "لن يظهر هذا التمرين في قائمة التمارين النشطة، ولكن يمكنك استعادته لاحقاً.",
+    "cancel": "إلغاء",
+    "archive": "أرشفة",
+    "archiving": "جاري الأرشفة..."
+  },
+  "create": {
+    "breadcrumbs": {
+      "workoutLibrary": "مكتبة التدريب",
+      "exercises": "التمارين",
+      "create": "إنشاء"
+    },
+    "title": "إنشاء تمرين",
+    "createCustomTitle": "إنشاء تمرين مخصص",
+    "subtitle": "أضف حركة تدريبية جديدة إلى مكتبة تمارينك.",
+    "customSubtitle": "أضف تمريناً مخصصاً إلى مكتبتك التدريبية.",
+    "backToExercises": "العودة للتمارين",
+    "basicInfo": {
+      "title": "البيانات الأساسية",
+      "subtitle": "أدخل تفاصيل ووصف هذا التمرين.",
+      "overviewSubtitle": "أدخل التفاصيل العامة ونظرة شاملة على التمرين.",
+      "nameLabel": "اسم التمرين",
+      "namePlaceholder": "مثال: بنش برس بالبار",
+      "descLabel": "الوصف",
+      "descPlaceholder": "اكتب وصفاً موجزاً لطريقة الأداء والهدف من التمرين...",
+      "overviewPlaceholder": "اكتب وصفاً موجزاً لطريقة الأداء وأهم فوائد التمرين...",
+      "videoUrlLabel": "رابط الفيديو",
+      "videoUrlTutorialLabel": "رابط فيديو التمرين",
+      "videoUrlPlaceholder": "https://...",
+      "videoUrlYoutubePlaceholder": "https://youtube.com/watch?v=...",
+      "videoUrlHelper": "أضف رابط فيديو من يوتيوب يوضح المدى الحركي والأداء الصحيح.",
+      "optional": "(اختياري)"
+    },
+    "classification": {
+      "title": "التصنيف والمستوى",
+      "subtitle": "مستوى الصعوبة والمعدات المطلوبة.",
+      "experienceSubtitle": "حدد مستوى الخبرة المطلوب لهذا التمرين.",
+      "difficultyLabel": "مستوى الصعوبة",
+      "selectDifficulty": "اختر مستوى الصعوبة",
+      "equipmentLabel": "المعدات",
+      "equipmentSubtitle": "اختر المعدات اللازمة لأداء هذا التمرين."
+    },
+    "media": {
+      "title": "الوسائط والمصادر",
+      "subtitle": "أضف مراجع بصرية (صورة التمرين وفيديو توضيحي) لمساعدة المتدربين على الأداء بتكنيك مثالي."
+    },
+    "muscles": {
+      "title": "المجموعات العضلية",
+      "subtitle": "المناطق العضلية المستهدفة في التمرين.",
+      "primaryLabel": "العضلات الأساسية",
+      "primarySubtitle": "حدد العضلات الرئيسية المستهدفة.",
+      "secondaryLabel": "العضلات المساعدة",
+      "secondarySubtitle": "حدد أي عضلات مساعدة أخرى.",
+      "selectionHint": "اضغط للاختيار أو اكتب عضلة مخصصة بالأسفل",
+      "addCustomPlaceholder": "أضف عضلة واضغط Enter"
+    },
+    "instructions": {
+      "title": "خطوات الأداء",
+      "subtitle": "خطوات أداء التمرين",
+      "guideSubtitle": "دليل تفصيلي لخطوات أداء التمرين خطوة بخطوة.",
+      "orderSubtitle": "أضف خطوات التمرين بالترتيب.",
+      "inputPlaceholder": "اشرح هذه الخطوة...",
+      "enterStepPlaceholder": "أدخل خطوة التنفيذ...",
+      "addInstruction": "+ إضافة خطوة",
+      "addInstructionButton": "إضافة خطوة"
+    },
+    "tips": {
+      "title": "نصائح وإرشادات",
+      "subtitle": "نصائح وإرشادات الأداء",
+      "formSubtitle": "توجيهات لضبط التكنيك وتجنب الأخطاء الشائعة.",
+      "optionalSubtitle": "نصائح إضافية لتحسين جودة وأمان التمرين.",
+      "inputPlaceholder": "مثال: حافظ على ثبات لوحي الكتف للخلف.",
+      "enterTipPlaceholder": "أدخل نصيحة للأداء...",
+      "addTip": "+ إضافة نصيحة",
+      "addTipButton": "إضافة نصيحة"
+    },
+    "preview": {
+      "title": "معاينة التمرين",
+      "defaultName": "تمرين جديد",
+      "primary": "أساسية",
+      "secondary": "مساعدة",
+      "description": "الوصف"
+    },
+    "uploader": {
+      "label": "صورة التمرين",
+      "optional": "(اختياري)",
+      "removeImage": "إزالة الصورة",
+      "clickToUpload": "اضغط للرفع",
+      "orDragAndDrop": "أو اسحب الصورة وأفلتها هنا",
+      "hint": "JPG أو JPEG أو PNG أو WEBP (بحد أقصى 5 ميجابايت)",
+      "uploading": "جاري الرفع",
+      "previewTitle": "معاينة صورة التمرين",
+      "replace": "استبدال",
+      "remove": "إزالة",
+      "unableToLoad": "تعذر تحميل معاينة الصورة المحفوظة",
+      "uploadNew": "رفع صورة جديدة",
+      "errors": {
+        "unsupportedFormat": "صيغة الملف غير مدعومة. يرجى رفع صورة بصيغة JPG أو JPEG أو PNG أو WEBP.",
+        "fileEmpty": "الملف المحدد فارغ.",
+        "fileTooLarge": "حجم الصورة ({{size}} ميجابايت) يتجاوز الحد الأقصى المسموح به (5 ميجابايت)."
+      }
+    },
+    "actions": {
+      "reviewNotice": "راجع تفاصيل التمرين قبل الإنشاء.",
+      "cancel": "إلغاء",
+      "createExercise": "إنشاء التمرين",
+      "saveExercise": "حفظ التمرين",
+      "saving": "جاري الحفظ...",
+      "uploadingImage": "جاري رفع الصورة..."
+    },
+    "validation": {
+      "nameRequired": "اسم التمرين مطلوب.",
+      "descRequired": "الوصف مطلوب.",
+      "equipmentRequired": "اختر نوع معدة تدريبية واحدة على الأقل.",
+      "primaryMusclesRequired": "اختر عضلة أساسية واحدة على الأقل.",
+      "instructionsRequired": "مطلوب إضافة خطوة أداء واحدة على الأقل.",
+      "fillRequiredFields": "يرجى تعبئة جميع الحقول المطلوبة.",
+      "checkField": "يرجى التحقق من حقل {{field}}."
+    }
+  }
+}

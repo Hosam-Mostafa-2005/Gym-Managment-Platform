@@ -1,4 +1,5 @@
 import { Clock, User, Activity } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { WorkoutSession } from "../types/workout-session.types";
 
 interface WorkoutHeaderProps {
@@ -6,10 +7,12 @@ interface WorkoutHeaderProps {
 }
 
 export default function WorkoutHeader({ session }: WorkoutHeaderProps) {
+  const { t } = useTranslation(["workoutSessions", "common"]);
+
   const workoutTitle =
     session.workout?.title ||
     session.assignment?.workout?.title ||
-    "Workout Session";
+    t("overview.workoutSessionDefault", "Workout Session");
 
   const trainerName = session.assignment?.trainer?.name;
 
@@ -22,14 +25,21 @@ export default function WorkoutHeader({ session }: WorkoutHeaderProps) {
           </h1>
           <div className="flex items-center gap-2 mt-3 text-sm text-[#9CA3AF]">
             <User size={16} className="text-white/40" />
-            <span>{trainerName ? `Coach ${trainerName}` : "Personal Training"}</span>
+            <span>
+              {trainerName
+                ? t("overview.coachPrefix", {
+                    name: trainerName,
+                    defaultValue: `Coach ${trainerName}`,
+                  })
+                : t("activeWorkout.personalTraining", "Personal Training")}
+            </span>
           </div>
         </div>
 
         <div className="flex items-center flex-wrap gap-6 bg-[#090B0F] p-4 rounded-xl border border-white/5">
           <div className="flex flex-col gap-1.5">
             <span className="text-xs text-[#9CA3AF] uppercase tracking-wider font-semibold">
-              Status
+              {t("overview.tableStatus", "Status")}
             </span>
             <span
               className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-medium border ${
@@ -41,11 +51,13 @@ export default function WorkoutHeader({ session }: WorkoutHeaderProps) {
               }`}
             >
               {session.status === "IN_PROGRESS" && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#5BE584] mr-2 animate-pulse"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#5BE584] ltr:mr-2 rtl:ml-2 animate-pulse"></span>
               )}
               {session.status === "IN_PROGRESS"
-                ? "In Progress"
-                : session.status}
+                ? t("overview.inProgress", "In Progress")
+                : session.status === "COMPLETED"
+                  ? t("overview.statusCompleted", "Completed")
+                  : session.status}
             </span>
           </div>
 
@@ -53,9 +65,9 @@ export default function WorkoutHeader({ session }: WorkoutHeaderProps) {
 
           <div className="flex flex-col gap-1.5">
             <span className="text-xs text-[#9CA3AF] uppercase tracking-wider font-semibold flex items-center gap-1.5">
-              <Clock size={14} /> Duration
+              <Clock size={14} /> {t("activeWorkout.duration", "Duration")}
             </span>
-            <span className="font-semibold text-white text-base">
+            <span className="font-semibold text-white text-base font-mono">
               {session.duration ?? 0}m
             </span>
           </div>
@@ -65,9 +77,9 @@ export default function WorkoutHeader({ session }: WorkoutHeaderProps) {
           <div className="flex flex-col gap-2 min-w-[120px]">
             <div className="flex items-center justify-between text-xs text-[#9CA3AF] uppercase tracking-wider font-semibold gap-2">
               <span className="flex items-center gap-1.5">
-                <Activity size={14} /> Progress
+                <Activity size={14} /> {t("activeWorkout.progress", "Progress")}
               </span>
-              <span className="text-white">{session.progress ?? 0}%</span>
+              <span className="text-white font-mono">{session.progress ?? 0}%</span>
             </div>
             <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
               <div

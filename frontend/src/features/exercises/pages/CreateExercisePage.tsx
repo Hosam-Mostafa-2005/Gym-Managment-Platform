@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { MUSCLE_OPTIONS } from "../constants/exercise.constants";
 
 import ExerciseImageUploader from "../components/ExerciseImageUploader";
@@ -28,6 +29,7 @@ const DIFFICULTY_OPTIONS = [
 ];
 
 export const CreateExercisePage: React.FC = () => {
+  const { t } = useTranslation(["exercises"]);
   const navigate = useNavigate();
   const createExerciseMutation = useCreateExercise();
 
@@ -93,7 +95,6 @@ export const CreateExercisePage: React.FC = () => {
         setFormData((prev) => ({ ...prev, [field]: [...prev[field], val] }));
       }
 
-      // Replaced ternary expression to satisfy ESLint no-unused-expressions[cite: 15]
       if (type === "primary") {
         setPrimaryInput("");
       } else {
@@ -148,19 +149,35 @@ export const CreateExercisePage: React.FC = () => {
   // 3. Validation & Submission
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.name.trim()) newErrors.name = "Exercise name is required.";
+    if (!formData.name.trim())
+      newErrors.name = t(
+        "create.validation.nameRequired",
+        "Exercise name is required.",
+      );
     if (!formData.description.trim())
-      newErrors.description = "Description is required.";
+      newErrors.description = t(
+        "create.validation.descRequired",
+        "Description is required.",
+      );
     if (formData.equipment.length === 0)
-      newErrors.equipment = "Select at least one equipment type.";
+      newErrors.equipment = t(
+        "create.validation.equipmentRequired",
+        "Select at least one equipment type.",
+      );
     if (formData.primaryMuscles.length === 0)
-      newErrors.primaryMuscles = "Select at least one primary muscle.";
+      newErrors.primaryMuscles = t(
+        "create.validation.primaryMusclesRequired",
+        "Select at least one primary muscle.",
+      );
 
     const validInstructions = formData.instructions
       .map((i) => i.trim())
       .filter(Boolean);
     if (validInstructions.length === 0) {
-      newErrors.instructions = "At least one instruction is required.";
+      newErrors.instructions = t(
+        "create.validation.instructionsRequired",
+        "At least one instruction is required.",
+      );
     }
 
     setErrors(newErrors);
@@ -170,7 +187,12 @@ export const CreateExercisePage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
-      toast.error("Please fill in all required fields.");
+      toast.error(
+        t(
+          "create.validation.fillRequiredFields",
+          "Please fill in all required fields.",
+        ),
+      );
       return;
     }
 
@@ -213,31 +235,36 @@ export const CreateExercisePage: React.FC = () => {
                 className="hover:text-[#9CA3AF] cursor-pointer"
                 onClick={() => navigate("/workout-library")}
               >
-                Workout Library
+                {t("create.breadcrumbs.workoutLibrary", "Workout Library")}
               </span>
               <span>/</span>
               <span
                 className="hover:text-[#9CA3AF] cursor-pointer"
                 onClick={() => navigate("/workout-library/exercises")}
               >
-                Exercises
+                {t("create.breadcrumbs.exercises", "Exercises")}
               </span>
               <span>/</span>
-              <span className="text-[#F3F4F6]">Create</span>
+              <span className="text-[#F3F4F6]">
+                {t("create.breadcrumbs.create", "Create")}
+              </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mt-1">
-              Create Exercise
+              {t("create.title", "Create Exercise")}
             </h1>
             <p className="text-sm text-[#9CA3AF]">
-              Add a new movement to your exercise library.
+              {t(
+                "create.subtitle",
+                "Add a new movement to your exercise library.",
+              )}
             </p>
           </div>
           <button
             onClick={() => navigate("/workout-library/exercises")}
             className="group hidden md:flex items-center gap-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white"
           >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Back to Exercises
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" />
+            {t("create.backToExercises", "Back to Exercises")}
           </button>
         </div>
       </header>
@@ -245,26 +272,31 @@ export const CreateExercisePage: React.FC = () => {
       <main className="relative z-10 mx-auto max-w-7xl px-6 lg:px-12 py-10 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           <div className="lg:col-span-8 flex flex-col gap-10">
+            {/* SECTION: Basic Information */}
             <section>
               <div className="mb-6">
                 <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-                  Basic Information
+                  {t("create.basicInfo.title", "Basic Information")}
                 </h2>
                 <p className="text-xs text-[#6B7280] mt-1">
-                  Tell us what this exercise is.
+                  {t("create.basicInfo.subtitle", "Tell us what this exercise is.")}
                 </p>
               </div>
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-[#9CA3AF]">
-                    Exercise Name <span className="text-red-400/80">*</span>
+                    {t("create.basicInfo.nameLabel", "Exercise Name")}{" "}
+                    <span className="text-red-400/80">*</span>
                   </label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="e.g. Barbell Bench Press"
+                    placeholder={t(
+                      "create.basicInfo.namePlaceholder",
+                      "e.g. Barbell Bench Press",
+                    )}
                     className={`w-full rounded-md border bg-[#101418] px-4 py-2.5 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:outline-none focus:ring-1 ${
                       errors.name
                         ? "border-red-500/50 focus:border-red-500 focus:ring-red-500"
@@ -281,13 +313,17 @@ export const CreateExercisePage: React.FC = () => {
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-[#9CA3AF]">
-                    Description <span className="text-red-400/80">*</span>
+                    {t("create.basicInfo.descLabel", "Description")}{" "}
+                    <span className="text-red-400/80">*</span>
                   </label>
                   <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    placeholder="Briefly describe the mechanics and purpose..."
+                    placeholder={t(
+                      "create.basicInfo.descPlaceholder",
+                      "Briefly describe the mechanics and purpose...",
+                    )}
                     rows={3}
                     className={`w-full resize-y rounded-md border bg-[#101418] px-4 py-2.5 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:outline-none focus:ring-1 ${
                       errors.description
@@ -316,14 +352,20 @@ export const CreateExercisePage: React.FC = () => {
 
                 <div className="flex flex-col gap-1.5">
                   <label className="text-xs font-semibold text-[#9CA3AF]">
-                    Video URL <span className="text-[10px] text-[#6B7280] font-normal">(Optional)</span>
+                    {t("create.basicInfo.videoUrlLabel", "Video URL")}{" "}
+                    <span className="text-[10px] text-[#6B7280] font-normal">
+                      {t("create.basicInfo.optional", "(Optional)")}
+                    </span>
                   </label>
                   <input
                     type="url"
                     name="videoUrl"
                     value={formData.videoUrl || ""}
                     onChange={handleChange}
-                    placeholder="https://..."
+                    placeholder={t(
+                      "create.basicInfo.videoUrlPlaceholder",
+                      "https://...",
+                    )}
                     className="w-full rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                   />
                 </div>
@@ -332,19 +374,27 @@ export const CreateExercisePage: React.FC = () => {
 
             <div className="h-px w-full bg-gradient-to-r from-[#1E2329] to-transparent" />
 
+            {/* SECTION: Classification */}
             <section>
               <div className="mb-6">
                 <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-                  Classification
+                  {t("create.classification.title", "Classification")}
                 </h2>
                 <p className="text-xs text-[#6B7280] mt-1">
-                  Difficulty and required equipment.
+                  {t(
+                    "create.classification.subtitle",
+                    "Difficulty and required equipment.",
+                  )}
                 </p>
               </div>
               <div className="flex flex-col gap-8">
                 <div className="flex flex-col gap-2">
                   <label className="text-xs font-semibold text-[#9CA3AF]">
-                    Difficulty <span className="text-red-400/80">*</span>
+                    {t(
+                      "create.classification.difficultyLabel",
+                      "Difficulty Level",
+                    )}{" "}
+                    <span className="text-red-400/80">*</span>
                   </label>
                   <div className="flex w-full md:w-fit rounded-md border border-[#1E2329] bg-[#101418] p-1">
                     {DIFFICULTY_OPTIONS.map((opt) => (
@@ -358,7 +408,7 @@ export const CreateExercisePage: React.FC = () => {
                             : "text-[#6B7280] hover:text-[#9CA3AF]"
                         }`}
                       >
-                        {opt.label}
+                        {t(`difficulties.${opt.value}`, opt.label)}
                       </button>
                     ))}
                   </div>
@@ -366,7 +416,8 @@ export const CreateExercisePage: React.FC = () => {
 
                 <div className="flex flex-col gap-3">
                   <label className="text-xs font-semibold text-[#9CA3AF]">
-                    Equipment <span className="text-red-400/80">*</span>
+                    {t("create.classification.equipmentLabel", "Equipment")}{" "}
+                    <span className="text-red-400/80">*</span>
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {EQUIPMENT_OPTIONS.map((eq) => {
@@ -382,7 +433,7 @@ export const CreateExercisePage: React.FC = () => {
                               : "bg-[#101418] border-[#1E2329] text-[#9CA3AF] hover:border-[#6B7280] hover:text-[#F3F4F6]"
                           }`}
                         >
-                          {eq}
+                          {t(`equipment.${eq}`, eq)}
                         </button>
                       );
                     })}
@@ -399,27 +450,38 @@ export const CreateExercisePage: React.FC = () => {
 
             <div className="h-px w-full bg-gradient-to-r from-[#1E2329] to-transparent" />
 
+            {/* SECTION: Muscle Groups */}
             <section>
               <div className="mb-6">
                 <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-                  Muscle Groups
+                  {t("create.muscles.title", "Muscle Groups")}
                 </h2>
                 <p className="text-xs text-[#6B7280] mt-1">
-                  Targeted anatomical regions.
+                  {t(
+                    "create.muscles.subtitle",
+                    "Targeted anatomical regions.",
+                  )}
                 </p>
               </div>
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-[#9CA3AF]">
-                      Primary Muscles <span className="text-red-400/80">*</span>
+                      {t("create.muscles.primaryLabel", "Primary Muscles")}{" "}
+                      <span className="text-red-400/80">*</span>
                     </label>
-                    <span className="text-[10px] text-[#6B7280]">Tap to toggle or type custom below</span>
+                    <span className="text-[10px] text-[#6B7280]">
+                      {t(
+                        "create.muscles.selectionHint",
+                        "Tap to toggle or type custom below",
+                      )}
+                    </span>
                   </div>
                   {/* Predefined Pills for Mobile & Quick Selection */}
                   <div className="flex flex-wrap gap-2">
                     {MUSCLE_OPTIONS.map((muscle) => {
-                      const isSelected = formData.primaryMuscles.includes(muscle);
+                      const isSelected =
+                        formData.primaryMuscles.includes(muscle);
                       return (
                         <button
                           key={muscle}
@@ -431,7 +493,7 @@ export const CreateExercisePage: React.FC = () => {
                               : "bg-[#101418] border-[#1E2329] text-[#9CA3AF] hover:border-[#6B7280] hover:text-[#F3F4F6]"
                           }`}
                         >
-                          {muscle}
+                          {t(`muscles.${muscle}`, muscle)}
                         </button>
                       );
                     })}
@@ -449,7 +511,7 @@ export const CreateExercisePage: React.FC = () => {
                         key={muscle}
                         className="group flex items-center gap-1.5 rounded bg-[#101418] border border-[#1E2329] px-2.5 py-1 text-xs font-medium text-[#F3F4F6] transition-colors hover:border-red-500/30"
                       >
-                        {muscle}
+                        {t(`muscles.${muscle}`, muscle)}
                         <button
                           type="button"
                           onClick={() => removeMuscle(muscle, "primary")}
@@ -464,7 +526,10 @@ export const CreateExercisePage: React.FC = () => {
                       value={primaryInput}
                       onChange={(e) => setPrimaryInput(e.target.value)}
                       onKeyDown={(e) => handleMuscleKeyDown(e, "primary")}
-                      placeholder="Add custom muscle & Enter"
+                      placeholder={t(
+                        "create.muscles.addCustomPlaceholder",
+                        "Add custom muscle & Enter",
+                      )}
                       className="w-48 bg-transparent py-1 text-xs text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none"
                     />
                   </div>
@@ -473,26 +538,37 @@ export const CreateExercisePage: React.FC = () => {
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-semibold text-[#9CA3AF]">
-                      Secondary Muscles <span className="text-xs text-[#6B7280] font-normal">(Optional)</span>
+                      {t("create.muscles.secondaryLabel", "Secondary Muscles")}{" "}
+                      <span className="text-xs text-[#6B7280] font-normal">
+                        {t("create.basicInfo.optional", "(Optional)")}
+                      </span>
                     </label>
-                    <span className="text-[10px] text-[#6B7280]">Tap to toggle or type custom below</span>
+                    <span className="text-[10px] text-[#6B7280]">
+                      {t(
+                        "create.muscles.selectionHint",
+                        "Tap to toggle or type custom below",
+                      )}
+                    </span>
                   </div>
                   {/* Predefined Pills for Mobile & Quick Selection */}
                   <div className="flex flex-wrap gap-2">
                     {MUSCLE_OPTIONS.map((muscle) => {
-                      const isSelected = formData.secondaryMuscles.includes(muscle);
+                      const isSelected =
+                        formData.secondaryMuscles.includes(muscle);
                       return (
                         <button
                           key={muscle}
                           type="button"
-                          onClick={() => toggleMuscleOption(muscle, "secondary")}
+                          onClick={() =>
+                            toggleMuscleOption(muscle, "secondary")
+                          }
                           className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors duration-200 ${
                             isSelected
                               ? "bg-[#16291D] border-[#23422E] text-[#5BE584]"
                               : "bg-[#101418] border-[#1E2329] text-[#9CA3AF] hover:border-[#6B7280] hover:text-[#F3F4F6]"
                           }`}
                         >
-                          {muscle}
+                          {t(`muscles.${muscle}`, muscle)}
                         </button>
                       );
                     })}
@@ -504,7 +580,7 @@ export const CreateExercisePage: React.FC = () => {
                         key={muscle}
                         className="group flex items-center gap-1.5 rounded bg-[#101418] border border-[#1E2329] px-2.5 py-1 text-xs font-medium text-[#F3F4F6] transition-colors hover:border-red-500/30"
                       >
-                        {muscle}
+                        {t(`muscles.${muscle}`, muscle)}
                         <button
                           type="button"
                           onClick={() => removeMuscle(muscle, "secondary")}
@@ -519,7 +595,10 @@ export const CreateExercisePage: React.FC = () => {
                       value={secondaryInput}
                       onChange={(e) => setSecondaryInput(e.target.value)}
                       onKeyDown={(e) => handleMuscleKeyDown(e, "secondary")}
-                      placeholder="Add custom muscle & Enter"
+                      placeholder={t(
+                        "create.muscles.addCustomPlaceholder",
+                        "Add custom muscle & Enter",
+                      )}
                       className="w-48 bg-transparent py-1 text-xs text-[#F3F4F6] placeholder-[#6B7280] focus:outline-none"
                     />
                   </div>
@@ -529,14 +608,18 @@ export const CreateExercisePage: React.FC = () => {
 
             <div className="h-px w-full bg-gradient-to-r from-[#1E2329] to-transparent" />
 
+            {/* SECTION: Instructions */}
             <section>
               <div className="mb-6 flex items-center justify-between">
                 <div>
                   <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-                    Instructions
+                    {t("create.instructions.title", "Instructions")}
                   </h2>
                   <p className="text-xs text-[#6B7280] mt-1">
-                    Step-by-step execution guide.
+                    {t(
+                      "create.instructions.guideSubtitle",
+                      "Step-by-step execution guide.",
+                    )}
                   </p>
                 </div>
                 {errors.instructions && (
@@ -565,15 +648,18 @@ export const CreateExercisePage: React.FC = () => {
                             "instructions",
                           )
                         }
-                        placeholder="Describe this step..."
+                        placeholder={t(
+                          "create.instructions.inputPlaceholder",
+                          "Describe this step...",
+                        )}
                         rows={2}
-                        className="w-full resize-none rounded-md border border-[#1E2329] bg-[#101418] py-2 pl-4 pr-10 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+                        className="w-full resize-none rounded-md border border-[#1E2329] bg-[#101418] py-2 ps-4 pe-10 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                       />
                       <button
                         type="button"
                         onClick={() => removeDynamicItem(index, "instructions")}
                         disabled={formData.instructions.length <= 1}
-                        className="absolute right-2 top-2 rounded p-1 text-[#6B7280] opacity-0 transition-all hover:bg-red-500/10 hover:text-red-400 group-hover:opacity-100 disabled:hidden"
+                        className="absolute end-2 top-2 rounded p-1 text-[#6B7280] opacity-0 transition-all hover:bg-red-500/10 hover:text-red-400 group-hover:opacity-100 disabled:hidden"
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
@@ -581,13 +667,16 @@ export const CreateExercisePage: React.FC = () => {
                   </div>
                 ))}
 
-                <div className="flex pl-10 mt-2">
+                <div className="flex ps-10 mt-2">
                   <button
                     type="button"
                     onClick={() => addDynamicItem("instructions")}
                     className="text-xs font-semibold text-[#6B7280] transition-colors hover:text-[#F3F4F6]"
                   >
-                    + Add instruction
+                    {t(
+                      "create.instructions.addInstruction",
+                      "+ Add instruction",
+                    )}
                   </button>
                 </div>
               </div>
@@ -595,13 +684,17 @@ export const CreateExercisePage: React.FC = () => {
 
             <div className="h-px w-full bg-gradient-to-r from-[#1E2329] to-transparent" />
 
+            {/* SECTION: Tips */}
             <section>
               <div className="mb-6">
                 <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-                  Tips
+                  {t("create.tips.title", "Tips")}
                 </h2>
                 <p className="text-xs text-[#6B7280] mt-1">
-                  Form cues and common mistakes to avoid.
+                  {t(
+                    "create.tips.formSubtitle",
+                    "Form cues and common mistakes to avoid.",
+                  )}
                 </p>
               </div>
 
@@ -618,13 +711,16 @@ export const CreateExercisePage: React.FC = () => {
                         onChange={(e) =>
                           handleDynamicListChange(index, e.target.value, "tips")
                         }
-                        placeholder="E.g., Keep your shoulder blades retracted."
-                        className="w-full rounded-md border border-transparent bg-[#101418] py-2 pl-4 pr-10 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors hover:border-[#1E2329] focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+                        placeholder={t(
+                          "create.tips.inputPlaceholder",
+                          "E.g., Keep your shoulder blades retracted.",
+                        )}
+                        className="w-full rounded-md border border-transparent bg-[#101418] py-2 ps-4 pe-10 text-sm text-[#F3F4F6] placeholder-[#6B7280] transition-colors hover:border-[#1E2329] focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                       />
                       <button
                         type="button"
                         onClick={() => removeDynamicItem(index, "tips")}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-[#6B7280] opacity-0 transition-all hover:bg-red-500/10 hover:text-red-400 group-hover:opacity-100"
+                        className="absolute end-2 top-1/2 -translate-y-1/2 rounded p-1 text-[#6B7280] opacity-0 transition-all hover:bg-red-500/10 hover:text-red-400 group-hover:opacity-100"
                       >
                         <X className="h-3.5 w-3.5" />
                       </button>
@@ -632,24 +728,25 @@ export const CreateExercisePage: React.FC = () => {
                   </div>
                 ))}
 
-                <div className="flex pl-10 mt-1">
+                <div className="flex ps-10 mt-1">
                   <button
                     type="button"
                     onClick={() => addDynamicItem("tips")}
                     className="text-xs font-semibold text-[#6B7280] transition-colors hover:text-[#F3F4F6]"
                   >
-                    + Add tip
+                    {t("create.tips.addTip", "+ Add tip")}
                   </button>
                 </div>
               </div>
             </section>
           </div>
 
+          {/* Sticky Preview Sidebar */}
           <div className="lg:col-span-4 hidden lg:block">
             <div className="sticky top-24 rounded-xl border border-[#1E2329] bg-[#101418]/80 backdrop-blur-md p-6 shadow-2xl">
               <div className="mb-6 flex items-center justify-between border-b border-[#1E2329] pb-4">
                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-[#6B7280]">
-                  Exercise Preview
+                  {t("create.preview.title", "Exercise Preview")}
                 </h3>
                 <span className="flex h-2 w-2 rounded-full bg-[#5BE584] opacity-50" />
               </div>
@@ -659,7 +756,10 @@ export const CreateExercisePage: React.FC = () => {
                   <div className="relative h-44 w-full overflow-hidden rounded-xl border border-[#1E2329] bg-[#090B0F]">
                     <img
                       src={formData.imageUrl}
-                      alt={formData.name || "Exercise Preview"}
+                      alt={
+                        formData.name ||
+                        t("create.preview.defaultName", "Exercise Preview")
+                      }
                       className="h-full w-full object-cover"
                       onError={() => setImageError(true)}
                     />
@@ -670,18 +770,22 @@ export const CreateExercisePage: React.FC = () => {
                   <h4
                     className={`text-lg font-semibold tracking-tight ${formData.name ? "text-white" : "text-[#6B7280]"}`}
                   >
-                    {formData.name || "New Exercise"}
+                    {formData.name ||
+                      t("create.preview.defaultName", "New Exercise")}
                   </h4>
                   <div className="flex flex-wrap items-center gap-2 mt-2">
                     <span className="text-xs capitalize text-[#9CA3AF] bg-[#1E2329] px-2 py-0.5 rounded">
-                      {formData.difficulty}
+                      {t(
+                        `difficulties.${formData.difficulty}`,
+                        formData.difficulty,
+                      )}
                     </span>
                     {formData.equipment.slice(0, 2).map((eq, i) => (
                       <span
                         key={i}
                         className="text-xs text-[#9CA3AF] bg-[#1E2329] px-2 py-0.5 rounded"
                       >
-                        {eq}
+                        {t(`equipment.${eq}`, eq)}
                       </span>
                     ))}
                     {formData.equipment.length > 2 && (
@@ -698,12 +802,12 @@ export const CreateExercisePage: React.FC = () => {
                     {formData.primaryMuscles.length > 0 && (
                       <div>
                         <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block mb-1.5">
-                          Primary
+                          {t("create.preview.primary", "Primary")}
                         </span>
                         <div className="flex flex-wrap gap-1">
                           {formData.primaryMuscles.map((m) => (
                             <span key={m} className="text-xs text-[#F3F4F6]">
-                              {m}
+                              {t(`muscles.${m}`, m)}
                             </span>
                           ))}
                         </div>
@@ -712,12 +816,12 @@ export const CreateExercisePage: React.FC = () => {
                     {formData.secondaryMuscles.length > 0 && (
                       <div>
                         <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block mb-1.5">
-                          Secondary
+                          {t("create.preview.secondary", "Secondary")}
                         </span>
                         <div className="flex flex-wrap gap-1">
                           {formData.secondaryMuscles.map((m) => (
                             <span key={m} className="text-xs text-[#9CA3AF]">
-                              {m}
+                              {t(`muscles.${m}`, m)}
                             </span>
                           ))}
                         </div>
@@ -729,7 +833,7 @@ export const CreateExercisePage: React.FC = () => {
                 {formData.description && (
                   <div className="border-t border-[#1E2329] pt-4">
                     <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block mb-1.5">
-                      Description
+                      {t("create.preview.description", "Description")}
                     </span>
                     <p className="text-xs text-[#9CA3AF] line-clamp-4 leading-relaxed">
                       {formData.description}
@@ -742,10 +846,14 @@ export const CreateExercisePage: React.FC = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 w-full z-20 border-t border-[#1E2329] bg-[#0D1014]/80 backdrop-blur-xl px-6 py-4">
+      {/* Bottom Action Bar */}
+      <div className="fixed bottom-0 start-0 w-full z-20 border-t border-[#1E2329] bg-[#0D1014]/80 backdrop-blur-xl px-6 py-4">
         <div className="mx-auto max-w-7xl flex items-center justify-between">
           <p className="hidden md:block text-xs text-[#6B7280]">
-            Review your details before creating.
+            {t(
+              "create.actions.reviewNotice",
+              "Review your details before creating.",
+            )}
           </p>
           <div className="flex items-center gap-3 w-full md:w-auto justify-end">
             <button
@@ -754,7 +862,7 @@ export const CreateExercisePage: React.FC = () => {
               className="rounded-md px-5 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:bg-[#1E2329] hover:text-white disabled:opacity-50"
               disabled={createExerciseMutation.isPending || isUploadingImage}
             >
-              Cancel
+              {t("create.actions.cancel", "Cancel")}
             </button>
             <button
               onClick={handleSubmit}
@@ -783,12 +891,12 @@ export const CreateExercisePage: React.FC = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Saving...
+                  {t("create.actions.saving", "Saving...")}
                 </span>
               ) : isUploadingImage ? (
-                "Uploading Image..."
+                t("create.actions.uploadingImage", "Uploading Image...")
               ) : (
-                "Create Exercise"
+                t("create.actions.createExercise", "Create Exercise")
               )}
             </button>
           </div>

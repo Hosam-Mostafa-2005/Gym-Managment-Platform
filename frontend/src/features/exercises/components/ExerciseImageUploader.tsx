@@ -9,6 +9,7 @@ import {
   UploadCloud,
   X,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   deleteStagedExerciseImage,
   uploadExerciseImage,
@@ -39,6 +40,7 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
   error: externalError,
   disabled = false,
 }) => {
+  const { t } = useTranslation(["exercises"]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const stagedUploadedUrlRef = useRef<string | null>(null);
@@ -56,15 +58,12 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
     onUploadingChange?.(uploading);
   };
 
-  // Revoke local object URL when unmounting or changing preview
-  // Abort an in-flight upload only when the component unmounts
   useEffect(() => {
     return () => {
       abortControllerRef.current?.abort();
     };
   }, []);
 
-  // Revoke the previous local preview URL when it changes or unmounts
   useEffect(() => {
     return () => {
       if (localPreviewUrl) {
@@ -80,14 +79,23 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
   const validateFile = (file: File): string | null => {
     const normalizedType = file.type.toLowerCase();
     if (!ALLOWED_MIME_TYPES.includes(normalizedType)) {
-      return "Unsupported file format. Please upload a JPG, JPEG, PNG, or WEBP image.";
+      return t(
+        "create.uploader.errors.unsupportedFormat",
+        "Unsupported file format. Please upload a JPG, JPEG, PNG, or WEBP image.",
+      );
     }
     if (file.size <= 0) {
-      return "The selected file is empty.";
+      return t(
+        "create.uploader.errors.fileEmpty",
+        "The selected file is empty.",
+      );
     }
     if (file.size > MAX_FILE_SIZE_BYTES) {
       const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-      return `Image size (${sizeMb} MB) exceeds the 5 MB maximum limit.`;
+      return t("create.uploader.errors.fileTooLarge", {
+        size: sizeMb,
+        defaultValue: `Image size (${sizeMb} MB) exceeds the 5 MB maximum limit.`,
+      });
     }
     return null;
   };
@@ -98,66 +106,49 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
     setValidationError(null);
     setImageLoadError(false);
 
-    const fileError = validateFile(file);
-    if (fileError) {
-      setValidationError(fileError);
+    const validation = validateFile(file);
+    if (validation) {
+      setValidationError(validation);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
 
-    // If a staged image was already uploaded during this session and is being replaced before saving, clean it up
-    const previousStagedUrl = stagedUploadedUrlRef.current;
-
-    if (localPreviewUrl) {
-      URL.revokeObjectURL(localPreviewUrl);
-    }
-    const objectUrl = URL.createObjectURL(file);
-    setLocalPreviewUrl(objectUrl);
+    const previewUrl = URL.createObjectURL(file);
+    setLocalPreviewUrl(previewUrl);
     setSelectedFileName(file.name);
     setUploadProgress(0);
     updateUploadingState(true);
 
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
+    abortControllerRef.current = new AbortController();
 
     try {
-      const response = await uploadExerciseImage(file, {
+      const res = await uploadExerciseImage(file, {
         exerciseId,
-        onProgress: (percent) => setUploadProgress(percent),
-        signal: abortController.signal,
+        onProgress: (progress) => setUploadProgress(progress),
+        signal: abortControllerRef.current?.signal,
       });
 
-      if (previousStagedUrl && previousStagedUrl !== response.imageUrl) {
-        void deleteStagedExerciseImage(previousStagedUrl);
+      if (res?.imageUrl) {
+        stagedUploadedUrlRef.current = res.imageUrl;
+        onChange(res.imageUrl);
       }
-
-      stagedUploadedUrlRef.current = response.imageUrl;
-      setUploadProgress(100);
-      onChange(response.imageUrl);
     } catch (err: unknown) {
-      // Revert local preview on upload failure
-      URL.revokeObjectURL(objectUrl);
+      if ((err as Error)?.name === "AbortError" || (err as Error)?.name === "CanceledError") {
+        return;
+      }
+      const errMessage =
+        (err as { response?: { data?: { message?: string } }; message?: string })
+          ?.response?.data?.message ||
+        (err as Error)?.message ||
+        "Failed to upload image. Please try again.";
+
+      setValidationError(errMessage);
       setLocalPreviewUrl(null);
       setSelectedFileName(null);
-
-      const axiosMessage =
-        typeof err === "object" &&
-        err !== null &&
-        "response" in err &&
-        typeof (err as { response?: { data?: { message?: string } } }).response
-          ?.data?.message === "string"
-          ? (err as { response: { data: { message: string } } }).response.data
-              .message
-          : err instanceof Error
-            ? err.message
-            : "Failed to upload exercise image. Please try again.";
-
-      setValidationError(axiosMessage);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     } finally {
       updateUploadingState(false);
       abortControllerRef.current = null;
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
     }
   };
 
@@ -168,7 +159,7 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
     }
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!disabled && !isUploading) {
@@ -176,55 +167,58 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
     }
   };
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
 
     if (disabled || isUploading) return;
 
-    const droppedFiles = e.dataTransfer.files;
-    if (droppedFiles && droppedFiles.length > 0) {
-      void handleFileSelect(droppedFiles[0]);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      void handleFileSelect(file);
     }
   };
 
-  const handleRemoveImage = () => {
-    if (isUploading) {
-      abortControllerRef.current?.abort();
-      updateUploadingState(false);
-    }
+  const triggerFilePicker = () => {
+    if (disabled || isUploading) return;
+    fileInputRef.current?.click();
+  };
 
-    if (stagedUploadedUrlRef.current) {
-      const stagedToDelete = stagedUploadedUrlRef.current;
-      stagedUploadedUrlRef.current = null;
-      void deleteStagedExerciseImage(stagedToDelete);
+  const handleRemoveImage = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (disabled || isUploading) return;
+
+    const currentUrl = stagedUploadedUrlRef.current || value;
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
     }
 
     if (localPreviewUrl) {
       URL.revokeObjectURL(localPreviewUrl);
       setLocalPreviewUrl(null);
     }
-
     setSelectedFileName(null);
     setValidationError(null);
     setImageLoadError(false);
-    setUploadProgress(0);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
     onChange("");
-  };
+    if (fileInputRef.current) fileInputRef.current.value = "";
 
-  const triggerFilePicker = () => {
-    if (!disabled && !isUploading) {
-      fileInputRef.current?.click();
+    if (currentUrl && !exerciseId) {
+      try {
+        await deleteStagedExerciseImage(currentUrl);
+        stagedUploadedUrlRef.current = null;
+      } catch {
+        // Staged cleanup failure is non-fatal
+      }
     }
   };
 
@@ -236,9 +230,9 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
       <div className="flex items-center justify-between">
         <label className="text-xs font-semibold text-[#9CA3AF] flex items-center gap-1.5">
           <ImageIcon className="h-3.5 w-3.5 text-[#5BE584]" />
-          Exercise Image{" "}
+          {t("create.uploader.label", "Exercise Image")}{" "}
           <span className="text-[10px] text-[#6B7280] font-normal">
-            (Optional)
+            {t("create.uploader.optional", "(Optional)")}
           </span>
         </label>
         {displayPreviewUrl && !isUploading && (
@@ -248,7 +242,8 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
             disabled={disabled}
             className="text-[11px] text-[#9CA3AF] hover:text-red-400 flex items-center gap-1 transition-colors disabled:opacity-50"
           >
-            <X className="h-3 w-3" /> Remove Image
+            <X className="h-3 w-3" />{" "}
+            {t("create.uploader.removeImage", "Remove Image")}
           </button>
         )}
       </div>
@@ -296,12 +291,12 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
 
           <p className="text-xs font-medium text-[#F3F4F6]">
             <span className="text-[#5BE584] font-semibold group-hover:underline">
-              Click to upload
+              {t("create.uploader.clickToUpload", "Click to upload")}
             </span>{" "}
-            or drag and drop
+            {t("create.uploader.orDragAndDrop", "or drag and drop")}
           </p>
           <p className="mt-1 text-[11px] text-[#6B7280]">
-            JPG, JPEG, PNG, or WEBP (max 5 MB)
+            {t("create.uploader.hint", "JPG, JPEG, PNG, or WEBP (max 5 MB)")}
           </p>
         </div>
       ) : (
@@ -322,8 +317,12 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
               )}
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#9CA3AF] truncate">
                 {isUploading
-                  ? `Uploading${selectedFileName ? ` ${selectedFileName}` : ""} (${uploadProgress}%)`
-                  : selectedFileName || "Exercise Image Preview"}
+                  ? `${t("create.uploader.uploading", "Uploading")}${selectedFileName ? ` ${selectedFileName}` : ""} (${uploadProgress}%)`
+                  : selectedFileName ||
+                    t(
+                      "create.uploader.previewTitle",
+                      "Exercise Image Preview",
+                    )}
               </span>
             </div>
 
@@ -336,7 +335,7 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
                   className="inline-flex items-center gap-1 rounded-md border border-[#1E2329] bg-[#101418] px-2.5 py-1 text-[11px] font-medium text-[#F3F4F6] hover:border-[#5BE584]/40 hover:text-[#5BE584] transition-colors disabled:opacity-50"
                 >
                   <RefreshCw className="h-3 w-3" />
-                  Replace
+                  {t("create.uploader.replace", "Replace")}
                 </button>
                 <button
                   type="button"
@@ -345,7 +344,7 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
                   className="inline-flex items-center gap-1 rounded-md border border-[#1E2329] bg-[#101418] px-2.5 py-1 text-[11px] font-medium text-[#9CA3AF] hover:border-red-500/30 hover:bg-red-500/10 hover:text-red-400 transition-colors disabled:opacity-50"
                 >
                   <Trash2 className="h-3 w-3" />
-                  Remove
+                  {t("create.uploader.remove", "Remove")}
                 </button>
               </div>
             )}
@@ -355,21 +354,27 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
             <div className="flex h-40 w-full flex-col items-center justify-center rounded-lg border border-dashed border-red-500/30 bg-red-500/5 text-center p-4">
               <AlertCircle className="h-5 w-5 text-red-400 mb-1" />
               <p className="text-xs font-medium text-red-300">
-                Unable to load stored image preview
+                {t(
+                  "create.uploader.unableToLoad",
+                  "Unable to load stored image preview",
+                )}
               </p>
               <button
                 type="button"
                 onClick={triggerFilePicker}
                 className="mt-2 rounded-md bg-[#1E2329] px-3 py-1 text-[11px] font-medium text-[#F3F4F6] hover:bg-[#2A3039]"
               >
-                Upload New Image
+                {t("create.uploader.uploadNew", "Upload New Image")}
               </button>
             </div>
           ) : (
             <div className="relative h-48 w-full overflow-hidden rounded-lg border border-[#2A313A] bg-white">
               <img
                 src={displayPreviewUrl}
-                alt="Exercise Preview"
+                alt={t(
+                  "create.uploader.previewTitle",
+                  "Exercise Image Preview",
+                )}
                 className={`h-full w-full object-contain p-2 transition-all duration-300 ${
                   isUploading ? "opacity-50 scale-[0.99]" : "hover:scale-[1.02]"
                 }`}
@@ -386,7 +391,7 @@ export const ExerciseImageUploader: React.FC<ExerciseImageUploaderProps> = ({
                     />
                   </div>
                   <span className="mt-1.5 text-[11px] font-semibold text-[#F3F4F6]">
-                    Uploading... {uploadProgress}%
+                    {t("create.uploader.uploading", "Uploading")}... {uploadProgress}%
                   </span>
                 </div>
               )}

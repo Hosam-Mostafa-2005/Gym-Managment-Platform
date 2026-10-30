@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Clock,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { MemberWorkoutStats } from "../../types/member-profile.types";
 import { ProfileStatCard } from "../shared/ProfileStatCard";
 
@@ -16,37 +17,39 @@ interface WorkoutStatsProps {
 }
 
 export const WorkoutStats: React.FC<WorkoutStatsProps> = ({ stats }) => {
+  const { t } = useTranslation("profile");
+
   return (
     <div className="flex h-full flex-col rounded-xl border border-[#1E2329] bg-[#0D1117] p-6">
       <h3 className="mb-4 text-sm font-medium uppercase tracking-wider text-gray-400">
-        Workout Performance
+        {t("rosterMemberView.workoutStats.performance")}
       </h3>
       <div className="grid grid-cols-2 gap-4">
         <ProfileStatCard
-          label="Total Sessions"
+          label={t("rosterMemberView.workoutStats.totalSessions")}
           value={stats.totalSessions}
           icon={<PlayCircle />}
         />
         <ProfileStatCard
-          label="Completed"
+          label={t("rosterMemberView.workoutStats.completed")}
           value={stats.completedSessions}
           icon={<CheckCircle2 />}
         />
         <ProfileStatCard
-          label="Completion"
+          label={t("rosterMemberView.workoutStats.completion")}
           value={`${stats.completionRate}%`}
           icon={<Activity />}
         />
         <ProfileStatCard
-          label="Avg Duration"
+          label={t("rosterMemberView.workoutStats.avgDuration")}
           value={`${stats.averageWorkoutDuration}m`}
           icon={<Clock />}
         />
         <div className="col-span-2">
           <ProfileStatCard
-            label="Total Volume"
+            label={t("rosterMemberView.workoutStats.totalVolume")}
             value={stats.totalWorkoutVolume.toLocaleString()}
-            description="kg"
+            description={t("rosterMemberView.workoutStats.kgUnit")}
             icon={<TrendingUp />}
           />
         </div>

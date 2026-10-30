@@ -1,0 +1,223 @@
+{
+  "header": {
+    "title": "Notifications",
+    "unreadBadge": "{{count}} Unread",
+    "subtitle": "Stay up to date with activity, milestones, and updates across your gym.",
+    "preferences": "Preferences",
+    "markAllRead": "Mark all read",
+    "markCategoryRead": "Mark {{category}} read"
+  },
+  "dropdown": {
+    "title": "Notifications",
+    "markAllRead": "Mark all read",
+    "viewAll": "View All Notifications",
+    "unableToLoad": "Unable to load notifications.",
+    "noNotificationsYet": "No notifications yet",
+    "openNotificationsAria": "Notifications"
+  },
+  "filters": {
+    "searchPlaceholder": "Search notifications...",
+    "clearSearch": "Clear search",
+    "all": "All",
+    "unread": "Unread",
+    "read": "Read",
+    "categories": {
+      "ALL": "All",
+      "WORKOUT": "Workouts",
+      "NUTRITION": "Nutrition",
+      "COACHING": "Coaching",
+      "ACHIEVEMENT": "Achievements",
+      "SYSTEM": "System"
+    }
+  },
+  "item": {
+    "highPriority": "High Priority",
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "delete": "Delete notification"
+  },
+  "timeAgo": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
+  },
+  "states": {
+    "empty": {
+      "unreadTitle": "No unread notifications",
+      "unreadDesc": "You're all caught up! You have no pending unread alerts.",
+      "defaultTitle": "No notifications found",
+      "defaultDesc": "When there is activity, workout updates, or milestone alerts, they will appear here."
+    },
+    "error": {
+      "title": "Failed to load notifications",
+      "defaultDesc": "We encountered a problem while fetching your recent activity.",
+      "retry": "Try Again"
+    },
+    "loadingAria": "Loading notifications"
+  },
+  "preferences": {
+    "title": "Notification Preferences",
+    "subtitle": "Choose which channels and alerts you want to receive.",
+    "loading": "Loading preferences...",
+    "workout": {
+      "title": "Workouts & Training",
+      "desc": "Session reminders, assignment alerts, and completed logs"
+    },
+    "nutrition": {
+      "title": "Nutrition & Meals",
+      "desc": "Daily calorie reminders and nutrition plan adjustments"
+    },
+    "coaching": {
+      "title": "Coaching & Appointments",
+      "desc": "Coach invites, check-ins, schedule changes, and messages"
+    },
+    "achievement": {
+      "title": "Achievements & Streaks",
+      "desc": "Milestones, badge unlocks, level-ups, and coach cheers"
+    },
+    "system": {
+      "title": "System & Security",
+      "desc": "Account security, legal, and essential platform updates",
+      "mandatory": "Mandatory"
+    },
+    "cancel": "Cancel",
+    "save": "Save Preferences",
+    "saving": "Saving..."
+  },
+  "toasts": {
+    "preferencesUpdated": "Notification preferences updated",
+    "preferencesUpdateFailed": "Failed to update notification preferences",
+    "deleted": "Notification deleted",
+    "deleteFailed": "Failed to delete notification",
+    "markAllFailed": "Failed to mark all as read"
+  },
+  "messages": {
+    "ASSIGNMENT_CREATED": {
+      "title": "New Workout Assigned",
+      "message": "A trainer assigned a new workout program to you."
+    },
+    "ASSIGNMENT_UPDATED": {
+      "title": "Workout Assignment Updated",
+      "message": "Your workout assignment has been updated."
+    },
+    "ASSIGNMENT_CANCELLED": {
+      "title": "Workout Assignment Cancelled",
+      "message": "Your workout assignment has been cancelled."
+    },
+    "WORKOUT_STARTED": {
+      "memberTitle": "Workout Started",
+      "memberMessage": "Your workout session has started.",
+      "coachTitle": "Workout Started",
+      "coachMessage": "{{memberName}} started \"{{workoutTitle}}\"."
+    },
+    "WORKOUT_COMPLETED": {
+      "memberTitle": "Workout Completed",
+      "memberMessage": "Great job! You completed \"{{workoutTitle}}\".",
+      "memberMessageWithDuration": "Great job! You completed \"{{workoutTitle}}\" in {{duration}} minutes.",
+      "genericMemberMessage": "Great job completing today's workout.",
+      "coachTitle": "Workout Completed",
+      "coachMessage": "{{memberName}} completed \"{{workoutTitle}}\" in {{duration}} minutes."
+    },
+    "WORKOUT_SCHEDULED": {
+      "title": "New Workout Scheduled",
+      "message": "Coach {{coachName}} scheduled \"{{workoutTitle}}\" for {{date}}."
+    },
+    "WORKOUT_SCHEDULE_UPDATED": {
+      "title": "Workout Schedule Updated",
+      "message": "Coach {{coachName}} rescheduled your workout \"{{workoutTitle}}\" to {{date}}."
+    },
+    "WORKOUT_SCHEDULE_CANCELLED": {
+      "title": "Scheduled Workout Cancelled",
+      "message": "Coach {{coachName}} cancelled the scheduled workout \"{{workoutTitle}}\"."
+    },
+    "NUTRITION_PLAN_ASSIGNED": {
+      "title": "New Nutrition Plan Assigned",
+      "message": "Your coach assigned a new nutrition plan: \"{{name}}\" ({{calories}} kcal)."
+    },
+    "NUTRITION_PLAN_UPDATED": {
+      "title": "Nutrition Plan Updated",
+      "message": "Your nutrition plan has been updated."
+    },
+    "BODY_MEASUREMENT_CREATED": {
+      "title": "New Body Measurement",
+      "message": "Your coach recorded a new body measurement."
+    },
+    "BODY_MEASUREMENT_UPDATED": {
+      "title": "Body Measurement Updated",
+      "message": "A body measurement record was modified."
+    },
+    "BODY_MEASUREMENT_DELETED": {
+      "title": "Body Measurement Deleted",
+      "message": "A body measurement record was removed."
+    },
+    "COACHING_INVITATION_RECEIVED": {
+      "title": "Coaching Invitation Received",
+      "message": "Coach {{coachName}} has invited you to start a coaching relationship."
+    },
+    "COACHING_INVITATION_ACCEPTED": {
+      "title": "Coaching Invitation Accepted",
+      "message": "{{memberName}} accepted your coaching invitation."
+    },
+    "COACHING_INVITATION_DECLINED": {
+      "title": "Coaching Invitation Declined",
+      "message": "{{memberName}} declined your coaching invitation."
+    },
+    "COACHING_RELATIONSHIP_TERMINATED": {
+      "title": "Coaching Relationship Ended",
+      "message": "{{initiatorName}} has ended the coaching relationship."
+    },
+    "HISTORY_SHARING_GRANTED": {
+      "title": "Fitness History Sharing Granted",
+      "message": "{{memberName}} has granted you access to their pre-existing fitness history."
+    },
+    "HISTORY_SHARING_REVOKED": {
+      "title": "Fitness History Access Revoked",
+      "message": "{{memberName}} has revoked access to their pre-existing fitness history."
+    },
+    "COACHING_APPOINTMENT_SCHEDULED": {
+      "title": "Coaching Appointment Scheduled",
+      "message": "Coach {{coachName}} scheduled a \"{{title}}\" ({{type}}) appointment for {{date}}."
+    },
+    "COACHING_APPOINTMENT_RESCHEDULED": {
+      "title": "Coaching Appointment Rescheduled",
+      "message": "Coach {{coachName}} rescheduled your appointment \"{{title}}\" to {{date}}."
+    },
+    "COACHING_APPOINTMENT_CANCELLED": {
+      "title": "Appointment Cancelled",
+      "message": "{{cancelledByName}} cancelled the appointment \"{{title}}\". Reason: {{reason}}"
+    },
+    "COACHING_APPOINTMENT_COMPLETED": {
+      "title": "Appointment Completed",
+      "message": "Your coaching appointment has been marked as completed."
+    },
+    "COACHING_APPOINTMENT_NO_SHOW": {
+      "title": "Missed Appointment",
+      "message": "A scheduled appointment was marked as a missed session."
+    },
+    "ACHIEVEMENT_UNLOCKED": {
+      "memberTitle": "Achievement Unlocked: {{achTitle}}!",
+      "memberMessage": "You earned the \"{{achTitle}}\" badge: {{achDesc}} (+{{points}} pts)",
+      "coachTitle": "Athlete Milestone: {{memberName}}",
+      "coachMessage": "{{memberName}} just unlocked the \"{{achTitle}}\" achievement!"
+    },
+    "STREAK_MILESTONE": {
+      "title": "Streak Milestone Reached!",
+      "message": "You've maintained your training streak for {{count}} consecutive days!"
+    },
+    "WEEKLY_GOAL_COMPLETED": {
+      "title": "Weekly Goal Completed!",
+      "message": "Congratulations! You have completed all your scheduled workouts for this week."
+    },
+    "COACH_ENCOURAGEMENT": {
+      "feedbackTitle": "Coach Feedback on Your Workout",
+      "feedbackMessage": "{{coachName}} reviewed your workout session and left feedback.",
+      "cheerTitle": "Encouragement from Coach {{coachName}}",
+      "cheerMessage": "{{message}}"
+    },
+    "SYSTEM": {
+      "welcomeTitle": "Welcome",
+      "welcomeMessage": "Welcome to Gym Management Platform."
+    }
+  }
+}

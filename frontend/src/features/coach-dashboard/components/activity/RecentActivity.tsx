@@ -1,6 +1,7 @@
 // src/features/coach-dashboard/components/activity/RecentActivity.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Activity as ActivityIcon,
   CheckCircle2,
@@ -21,12 +22,13 @@ interface RecentActivityProps {
 export const RecentActivity: React.FC<RecentActivityProps> = ({
   activities = [],
 }) => {
+  const { t } = useTranslation(["coachDashboard"]);
   const [isExpanded, setIsExpanded] = useState(false);
   const hasActivities = activities && activities.length > 0;
   const displayedActivities = isExpanded ? activities : activities.slice(0, 6);
 
   const formatTimestamp = (dateValue: string | Date | null) => {
-    if (!dateValue) return "Just now";
+    if (!dateValue) return t("recentActivity.justNow");
     try {
       const date = new Date(dateValue);
       const now = new Date();
@@ -35,24 +37,25 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
       const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
       const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-      if (diffMins < 1) return "Just now";
-      if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
+      if (diffMins < 1) return t("recentActivity.justNow");
+      if (diffMins < 60) return t("recentActivity.minsAgo", { count: diffMins });
       if (diffHours < 24)
-        return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-      return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+        return t("recentActivity.hoursAgo", { count: diffHours });
+      return t("recentActivity.daysAgo", { count: diffDays });
     } catch {
-      return "Recently";
+      return t("recentActivity.recently");
     }
   };
 
   const formatDuration = (mins?: number | null) => {
     if (mins === undefined || mins === null) return null;
-    if (mins <= 0) return "< 1 min";
-    if (mins === 1) return "1 min";
-    if (mins < 60) return `${mins} mins`;
+    if (mins <= 0) return t("recentActivity.lessThanOneMin");
+    if (mins < 60) return t("recentActivity.minsDuration", { count: mins });
     const hrs = Math.floor(mins / 60);
     const remMins = mins % 60;
-    return remMins > 0 ? `${hrs}h ${remMins}m` : `${hrs}h`;
+    return remMins > 0
+      ? t("recentActivity.hoursMinsDuration", { hours: hrs, mins: remMins })
+      : t("recentActivity.hoursDuration", { count: hrs });
   };
 
   const getActionDetails = (item: DashboardActivity) => {
@@ -61,7 +64,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 
     if (action === "COMPLETED" || (!action && type === "WORKOUT")) {
       return {
-        verb: "completed",
+        verb: t("recentActivity.verbCompleted"),
         Icon: CheckCircle2,
         badgeClasses: "bg-[#5BE584]/10 border-[#5BE584]/20 text-[#5BE584]",
       };
@@ -69,7 +72,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 
     if (action === "STARTED") {
       return {
-        verb: "started",
+        verb: t("recentActivity.verbStarted"),
         Icon: Play,
         badgeClasses: "bg-blue-500/10 border-blue-500/20 text-blue-400",
       };
@@ -77,7 +80,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 
     if (action === "CREATED" || type === "ASSIGNMENT") {
       return {
-        verb: "assigned",
+        verb: t("recentActivity.verbAssigned"),
         Icon: Calendar,
         badgeClasses: "bg-purple-500/10 border-purple-500/20 text-purple-400",
       };
@@ -85,14 +88,14 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
 
     if (action === "RECORDED" || type === "BODY_MEASUREMENT") {
       return {
-        verb: "logged metrics for",
+        verb: t("recentActivity.verbLoggedMetrics"),
         Icon: Scale,
         badgeClasses: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
       };
     }
 
     return {
-      verb: "logged",
+      verb: t("recentActivity.verbLogged"),
       Icon: ActivityIcon,
       badgeClasses: "bg-gray-500/10 border-gray-500/20 text-gray-400",
     };
@@ -108,10 +111,10 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
           </div>
           <div>
             <h2 className="text-sm font-semibold text-white">
-              Recent Coaching Activity
+              {t("recentActivity.title")}
             </h2>
             <p className="text-xs text-gray-400">
-              Verified timeline of client training and program milestones
+              {t("recentActivity.subtitle")}
             </p>
           </div>
         </div>
@@ -121,7 +124,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
             to="/coach-dashboard/activity"
             className="flex items-center gap-1 text-xs font-medium text-[#5BE584] hover:underline transition-colors"
           >
-            <span>Full Activity Feed</span>
+            <span>{t("recentActivity.fullActivityFeed")}</span>
           </Link>
           <span className="text-gray-600">|</span>
           <Link
@@ -129,7 +132,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
             className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors"
           >
             <Users className="h-3.5 w-3.5" />
-            <span>Roster</span>
+            <span>{t("recentActivity.roster")}</span>
           </Link>
         </div>
       </div>
@@ -140,9 +143,9 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
           <div className="divide-y divide-[#1E2329]">
             {displayedActivities.map((item, index) => {
               const memberId = item.member?.id;
-              const memberName = item.member?.name || "Member";
+              const memberName = item.member?.name || t("recentActivity.fallbackMember");
               const workoutTitle =
-                item.metadata?.workoutTitle || item.action || "Activity logged";
+                item.metadata?.workoutTitle || item.action || t("recentActivity.activityLogged");
               const timeAgo = formatTimestamp(item.date);
               const { verb, Icon, badgeClasses } = getActionDetails(item);
               const formattedDuration = formatDuration(item.metadata?.duration);
@@ -163,16 +166,16 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                         {memberId ? (
                           <Link
                             to={`/members/${memberId}`}
-                            className="font-semibold text-white hover:text-[#5BE584] transition-colors mr-1.5"
+                            className="font-semibold text-white hover:text-[#5BE584] transition-colors mr-1.5 rtl:mr-0 rtl:ml-1.5"
                           >
                             {memberName}
                           </Link>
                         ) : (
-                          <span className="font-semibold text-white mr-1.5">
+                          <span className="font-semibold text-white mr-1.5 rtl:mr-0 rtl:ml-1.5">
                             {memberName}
                           </span>
                         )}
-                        <span className="text-gray-400 mr-1.5">{verb}</span>
+                        <span className="text-gray-400 mr-1.5 rtl:mr-0 rtl:ml-1.5">{verb}</span>
                         <span className="font-medium text-white">
                           {workoutTitle}
                         </span>
@@ -182,7 +185,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                         <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-400 mt-1">
                           {formattedDuration && (
                             <span>
-                              Duration:{" "}
+                              {t("recentActivity.duration")}{" "}
                               <strong className="text-gray-300 font-mono">
                                 {formattedDuration}
                               </strong>
@@ -191,7 +194,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                           {item.metadata.volume !== undefined &&
                             item.metadata.volume > 0 && (
                               <span>
-                                Volume:{" "}
+                                {t("recentActivity.volume")}{" "}
                                 <strong className="text-gray-300 font-mono">
                                   {item.metadata.volume.toLocaleString()}kg
                                 </strong>
@@ -199,7 +202,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                             )}
                           {item.metadata.weight !== undefined && (
                             <span>
-                              Weight:{" "}
+                              {t("recentActivity.weight")}{" "}
                               <strong className="text-gray-300 font-mono">
                                 {item.metadata.weight}kg
                               </strong>
@@ -207,7 +210,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                           )}
                           {item.metadata.bodyFat !== undefined && (
                             <span>
-                              Body Fat:{" "}
+                              {t("recentActivity.bodyFat")}{" "}
                               <strong className="text-gray-300 font-mono">
                                 {item.metadata.bodyFat}%
                               </strong>
@@ -237,8 +240,10 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
               >
                 <span>
                   {isExpanded
-                    ? "Show fewer activities"
-                    : `Show all ${activities.length} activities`}
+                    ? t("recentActivity.showFewer")
+                    : t("recentActivity.showAll", {
+                        count: activities.length,
+                      })}
                 </span>
                 {isExpanded ? (
                   <ChevronUp className="h-3.5 w-3.5" />
@@ -256,10 +261,10 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
             <ActivityIcon className="h-5 w-5 text-gray-500" />
           </div>
           <p className="text-sm font-semibold text-white">
-            No recent coaching activity
+            {t("recentActivity.emptyTitle")}
           </p>
           <p className="text-xs text-gray-500 mt-0.5">
-            Verified session completions and assignments will appear here.
+            {t("recentActivity.emptyDesc")}
           </p>
         </div>
       )}

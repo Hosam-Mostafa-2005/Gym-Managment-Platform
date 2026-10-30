@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   RotateCcw,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ScheduledWorkout } from "../types/scheduling.types";
 import {
   useCancelScheduledWorkout,
@@ -37,6 +38,7 @@ export default function ScheduledWorkoutDetailModal({
   isCoachView = false,
   onReschedule,
 }: ScheduledWorkoutDetailModalProps) {
+  const { t, i18n } = useTranslation("trainingCalendar");
   const navigate = useNavigate();
   const [confirmCancel, setConfirmCancel] = useState(false);
 
@@ -95,28 +97,28 @@ export default function ScheduledWorkoutDetailModal({
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-[#5BE584] border border-[#5BE584]/20">
             <CheckCircle2 size={13} />
-            Completed
+            {t("status.completed")}
           </span>
         );
       case "MISSED":
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
             <AlertTriangle size={13} />
-            Missed
+            {t("status.missed")}
           </span>
         );
       case "CANCELLED":
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
             <X size={13} />
-            Cancelled
+            {t("status.cancelled")}
           </span>
         );
       case "RESCHEDULED":
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
             <RotateCcw size={13} />
-            Rescheduled
+            {t("status.rescheduled")}
           </span>
         );
       case "SCHEDULED":
@@ -124,16 +126,33 @@ export default function ScheduledWorkoutDetailModal({
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
             <Clock size={13} />
-            Scheduled
+            {t("status.scheduled")}
           </span>
         );
     }
   };
 
+  const formattedDate = scheduledDate.toLocaleDateString(
+    i18n.language === "ar" ? "ar-EG" : "en-US",
+    {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    },
+  );
+
+  const formattedTime = scheduledDate.toLocaleTimeString(
+    i18n.language === "ar" ? "ar-EG" : "en-US",
+    {
+      hour: "numeric",
+      minute: "2-digit",
+    },
+  );
+
   return createPortal(
     <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md">
       <div className="min-h-full flex items-center justify-center p-4">
-        <div className="bg-[#0D1014] border border-[#1E2329] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="bg-[#0D1014] border border-[#1E2329] rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 text-left rtl:text-right">
           {/* Header */}
           <div className="flex items-start justify-between p-6 border-b border-[#1E2329]">
             <div className="flex items-center gap-3">
@@ -142,7 +161,7 @@ export default function ScheduledWorkoutDetailModal({
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white leading-tight">
-                  {scheduledWorkout.workout?.title || "Workout Session"}
+                  {scheduledWorkout.workout?.title || t("events.defaultWorkoutTitle")}
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
                   {getStatusBadge()}
@@ -171,14 +190,10 @@ export default function ScheduledWorkoutDetailModal({
                 <Calendar className="h-4 w-4 text-[#5BE584]" />
                 <div>
                   <div className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">
-                    Date
+                    {t("workoutModal.date")}
                   </div>
                   <div className="font-semibold text-white">
-                    {scheduledDate.toLocaleDateString(undefined, {
-                      weekday: "short",
-                      month: "short",
-                      day: "numeric",
-                    })}
+                    {formattedDate}
                   </div>
                 </div>
               </div>
@@ -187,13 +202,10 @@ export default function ScheduledWorkoutDetailModal({
                 <Clock className="h-4 w-4 text-[#5BE584]" />
                 <div>
                   <div className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">
-                    Time
+                    {t("workoutModal.time")}
                   </div>
                   <div className="font-semibold text-white">
-                    {scheduledDate.toLocaleTimeString(undefined, {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
+                    {formattedTime}
                   </div>
                 </div>
               </div>
@@ -206,9 +218,9 @@ export default function ScheduledWorkoutDetailModal({
                   <User size={15} />
                 </div>
                 <div className="text-xs">
-                  <span className="text-gray-400">Assigned / Scheduled by:</span>{" "}
+                  <span className="text-gray-400">{t("workoutModal.assignedByNotice")}</span>{" "}
                   <span className="font-semibold text-white">
-                    Coach {scheduledWorkout.trainer.name}
+                    {t("events.coachLabel", { name: scheduledWorkout.trainer.name })}
                   </span>
                 </div>
               </div>
@@ -220,11 +232,11 @@ export default function ScheduledWorkoutDetailModal({
                   <User size={15} />
                 </div>
                 <div className="text-xs">
-                  <span className="text-gray-400">Athlete:</span>{" "}
+                  <span className="text-gray-400">{t("events.athleteLabel", { name: "" })}</span>{" "}
                   <span className="font-semibold text-white">
                     {scheduledWorkout.member.name}
                   </span>
-                  <span className="text-gray-500 ml-1">
+                  <span className="text-gray-500 ml-1 rtl:ml-0 rtl:mr-1">
                     ({scheduledWorkout.member.email})
                   </span>
                 </div>
@@ -236,7 +248,7 @@ export default function ScheduledWorkoutDetailModal({
               <div className="p-3.5 bg-[#12161D] border border-[#1E2329] rounded-xl text-sm">
                 <div className="text-xs font-semibold text-gray-400 mb-1 flex items-center gap-1.5">
                   <AlertCircle size={13} className="text-[#5BE584]" />
-                  Instructions & Notes
+                  {t("workoutModal.instructionsAndNotes")}
                 </div>
                 <p className="text-gray-300 text-xs leading-relaxed whitespace-pre-wrap">
                   {scheduledWorkout.notes}
@@ -249,9 +261,11 @@ export default function ScheduledWorkoutDetailModal({
               scheduledWorkout.workout.exercises.length > 0 && (
                 <div>
                   <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                    Exercises ({scheduledWorkout.workout.exercises.length})
+                    {t("workoutModal.exercisesTitle", {
+                      count: scheduledWorkout.workout.exercises.length,
+                    })}
                   </div>
-                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1 rtl:pr-0 rtl:pl-1">
                     {scheduledWorkout.workout.exercises.map((item, idx) => (
                       <div
                         key={item.id || idx}
@@ -266,7 +280,10 @@ export default function ScheduledWorkoutDetailModal({
                           </span>
                         </div>
                         <div className="flex-shrink-0 text-gray-400 font-medium">
-                          {item.sets} sets × {item.reps} reps
+                          {t("workoutModal.setsReps", {
+                            sets: item.sets,
+                            reps: item.reps,
+                          })}
                         </div>
                       </div>
                     ))}
@@ -279,8 +296,9 @@ export default function ScheduledWorkoutDetailModal({
               <div className="text-[11px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-lg flex items-center gap-2">
                 <AlertCircle size={14} className="flex-shrink-0" />
                 <span>
-                  This workout was assigned by your coach. To modify or cancel it,
-                  please communicate with Coach {scheduledWorkout.trainer?.name}.
+                  {t("workoutModal.coachNotice", {
+                    name: scheduledWorkout.trainer?.name,
+                  })}
                 </span>
               </div>
             )}
@@ -300,7 +318,7 @@ export default function ScheduledWorkoutDetailModal({
                       className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors"
                     >
                       <Trash2 size={14} />
-                      Cancel Schedule
+                      {t("workoutModal.cancelSchedule")}
                     </button>
                   )}
 
@@ -318,14 +336,14 @@ export default function ScheduledWorkoutDetailModal({
                       className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-purple-400 hover:bg-purple-500/10 transition-colors"
                     >
                       <RotateCcw size={14} />
-                      Reschedule
+                      {t("workoutModal.reschedule")}
                     </button>
                   )}
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-rose-400 font-medium">
-                  Cancel this?
+                  {t("workoutModal.cancelPrompt")}
                 </span>
                 <button
                   type="button"
@@ -333,14 +351,14 @@ export default function ScheduledWorkoutDetailModal({
                   disabled={isCancelling}
                   className="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white transition-colors disabled:opacity-50"
                 >
-                  {isCancelling ? "Cancelling..." : "Yes, Cancel"}
+                  {isCancelling ? t("workoutModal.cancelling") : t("workoutModal.yesCancel")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmCancel(false)}
                   className="px-2 py-1 rounded-lg text-xs text-gray-400 hover:text-white"
                 >
-                  No
+                  {t("list.no")}
                 </button>
               </div>
             )}
@@ -352,7 +370,7 @@ export default function ScheduledWorkoutDetailModal({
                 onClick={onClose}
                 className="px-4 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
               >
-                Close
+                {t("workoutModal.close")}
               </button>
 
               {!isCoachView &&
@@ -366,7 +384,7 @@ export default function ScheduledWorkoutDetailModal({
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-[#5BE584] hover:bg-[#4dd273] text-black shadow-lg shadow-[#5BE584]/20 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
                   >
                     <Play size={14} className="fill-black" />
-                    {isStarting ? "Starting..." : "Start Workout"}
+                    {isStarting ? t("workoutModal.starting") : t("workoutModal.startWorkout")}
                   </button>
                 )}
             </div>

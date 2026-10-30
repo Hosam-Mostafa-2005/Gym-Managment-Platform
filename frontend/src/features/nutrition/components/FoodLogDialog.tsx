@@ -1,15 +1,14 @@
 // src/features/nutrition/components/FoodLogDialog.tsx
 import React, { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Search,
   Plus,
   Check,
   X,
-  Flame,
   ShieldAlert,
   Sparkles,
   Loader2,
-  Tag,
 } from "lucide-react";
 import {
   useSearchFoods,
@@ -27,15 +26,15 @@ interface FoodLogDialogProps {
   defaultDate?: string;
 }
 
-const MEAL_TYPE_OPTIONS: Array<{ value: MealType; label: string }> = [
-  { value: "BREAKFAST", label: "Breakfast" },
-  { value: "MORNING_SNACK", label: "Morning Snack" },
-  { value: "LUNCH", label: "Lunch" },
-  { value: "AFTERNOON_SNACK", label: "Afternoon Snack" },
-  { value: "DINNER", label: "Dinner" },
-  { value: "EVENING_SNACK", label: "Evening Snack" },
-  { value: "PRE_WORKOUT", label: "Pre-Workout" },
-  { value: "POST_WORKOUT", label: "Post-Workout" },
+const MEAL_TYPES: MealType[] = [
+  "BREAKFAST",
+  "MORNING_SNACK",
+  "LUNCH",
+  "AFTERNOON_SNACK",
+  "DINNER",
+  "EVENING_SNACK",
+  "PRE_WORKOUT",
+  "POST_WORKOUT",
 ];
 
 export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
@@ -44,6 +43,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
   defaultMealType = "BREAKFAST",
   defaultDate,
 }) => {
+  const { t, i18n } = useTranslation(["nutrition"]);
   const [mealType, setMealType] = useState<MealType>(defaultMealType);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
@@ -97,11 +97,11 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFood) {
-      setErrorMsg("Please select a food item to log.");
+      setErrorMsg(t("foodLog.errSelectFood"));
       return;
     }
     if (!quantity || quantity <= 0) {
-      setErrorMsg("Please enter a valid quantity greater than 0.");
+      setErrorMsg(t("foodLog.errValidQuantity"));
       return;
     }
 
@@ -122,7 +122,9 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
         },
         onError: (err: any) => {
           setErrorMsg(
-            err.response?.data?.message || err.message || "Failed to log food.",
+            err.response?.data?.message ||
+              err.message ||
+              t("foodLog.errFailed"),
           );
         },
       },
@@ -143,11 +145,9 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
               </div>
               <div>
                 <h2 className="text-lg font-semibold text-zinc-100">
-                  Log Food Intake
+                  {t("foodLog.title")}
                 </h2>
-                <p className="text-xs text-zinc-400">
-                  Search food database or log your custom home recipes
-                </p>
+                <p className="text-xs text-zinc-400">{t("foodLog.subtitle")}</p>
               </div>
             </div>
             <button
@@ -172,21 +172,21 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
             {/* Meal Type Selector */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
-                Meal Assignment
+                {t("foodLog.mealAssignment")}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {MEAL_TYPE_OPTIONS.map((opt) => (
+                {MEAL_TYPES.map((typeKey) => (
                   <button
                     type="button"
-                    key={opt.value}
-                    onClick={() => setMealType(opt.value)}
+                    key={typeKey}
+                    onClick={() => setMealType(typeKey)}
                     className={`rounded-lg px-3 py-2 text-xs font-medium border text-center transition-all ${
-                      mealType === opt.value
+                      mealType === typeKey
                         ? "bg-[#5BE584]/20 text-[#5BE584] border-[#5BE584]/50 shadow-sm"
                         : "bg-[#161B22] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200"
                     }`}
                   >
-                    {opt.label}
+                    {t(`meals.${typeKey}` as any)}
                   </button>
                 ))}
               </div>
@@ -196,7 +196,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider">
-                  Search Foods
+                  {t("foodLog.searchFoodsLabel")}
                 </label>
                 <button
                   type="button"
@@ -204,18 +204,18 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                   className="inline-flex items-center gap-1.5 rounded-lg border border-[#5BE584]/30 bg-[#16291D]/50 px-2.5 py-1 text-xs font-semibold text-[#5BE584] hover:bg-[#5BE584]/20 transition-colors"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
-                  <span>+ Add Custom Food</span>
+                  <span>{t("foodLog.addCustomBtn")}</span>
                 </button>
               </div>
 
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <Search className="absolute left-3.5 rtl:left-auto rtl:right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search chicken, oats, rice, eggs, custom recipes..."
-                  className="w-full rounded-xl border border-zinc-800 bg-[#161B22] pl-10 pr-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584] transition-all"
+                  placeholder={t("foodLog.searchPlaceholder")}
+                  className="w-full rounded-xl border border-zinc-800 bg-[#161B22] pl-10 pr-4 rtl:pl-4 rtl:pr-10 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584] transition-all"
                 />
               </div>
 
@@ -230,7 +230,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                       : "bg-zinc-800/60 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
                   }`}
                 >
-                  All
+                  {t("foodLog.categoryAll")}
                 </button>
                 {categories.map((cat) => (
                   <button
@@ -254,30 +254,34 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
               {isSearching ? (
                 <div className="flex items-center justify-center p-6 text-zinc-500 text-sm gap-2">
                   <Loader2 className="h-4 w-4 animate-spin text-[#5BE584]" />
-                  <span>Searching foods...</span>
+                  <span>{t("foodLog.searching")}</span>
                 </div>
               ) : searchResult && searchResult.foods.length > 0 ? (
                 searchResult.foods.map((food) => {
                   const isSelected = selectedFood?.id === food.id;
+                  const displayName =
+                    i18n.language === "ar" && food.nameAr
+                      ? food.name
+                      : food.nameAr;
                   return (
                     <button
                       type="button"
                       key={food.id}
                       onClick={() => handleSelectFood(food)}
-                      className={`w-full text-left px-4 py-2.5 flex items-center justify-between hover:bg-zinc-800/40 transition-colors ${
+                      className={`w-full text-left rtl:text-right px-4 py-2.5 flex items-center justify-between hover:bg-zinc-800/40 transition-colors ${
                         isSelected
-                          ? "bg-[#5BE584]/10 border-l-4 border-l-[#5BE584]"
+                          ? "bg-[#5BE584]/10 border-l-4 rtl:border-l-0 rtl:border-r-4 border-[#5BE584]"
                           : ""
                       }`}
                     >
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium text-zinc-100">
-                            {food.name}
+                            {displayName}
                           </span>
                           {food.isCustom && (
                             <span className="rounded bg-amber-500/10 border border-amber-500/30 px-1.5 py-0.2 text-[10px] font-bold text-amber-400">
-                              My Food
+                              {t("foodLog.myFoodBadge")}
                             </span>
                           )}
                           {isSelected && (
@@ -285,11 +289,17 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                           )}
                         </div>
                         <div className="text-xs text-zinc-400 mt-0.5">
-                          {food.servingSize} {food.servingUnit} • {food.category}
-                          {food.nameAr && ` • ${food.nameAr}`}
+                          {food.servingSize} {food.servingUnit} •{" "}
+                          {food.category}
+                          {food.nameAr &&
+                            i18n.language !== "ar" &&
+                            ` • ${food.nameAr}`}
+                          {food.nameAr &&
+                            i18n.language === "ar" &&
+                            ` • ${food.name}`}
                         </div>
                       </div>
-                      <div className="text-right text-xs">
+                      <div className="text-right rtl:text-left text-xs">
                         <div className="font-semibold text-zinc-200">
                           {food.calories} kcal
                         </div>
@@ -302,7 +312,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                 })
               ) : (
                 <div className="p-6 text-center text-sm text-zinc-500 space-y-2">
-                  <p>No foods found matching &ldquo;{searchQuery}&rdquo;.</p>
+                  <p>{t("foodLog.noFoodsFound", { query: searchQuery })}</p>
                   <Button
                     type="button"
                     variant="outline"
@@ -311,7 +321,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                     className="border-[#5BE584]/30 text-[#5BE584] hover:bg-[#5BE584]/10 text-xs"
                   >
                     <Plus className="h-3.5 w-3.5 mr-1" />
-                    Create Custom Food Item
+                    {t("foodLog.createCustomBtn")}
                   </Button>
                 </div>
               )}
@@ -323,19 +333,24 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                 <div className="flex items-start justify-between">
                   <div>
                     <span className="text-xs font-semibold uppercase tracking-wider text-[#5BE584]">
-                      Selected Item
+                      {t("foodLog.selectedItem")}
                     </span>
                     <h3 className="text-base font-bold text-zinc-100 flex items-center gap-2">
-                      {selectedFood.name}
+                      {i18n.language === "ar" && selectedFood.nameAr
+                        ? selectedFood.nameAr
+                        : selectedFood.name}
                       {selectedFood.isCustom && (
                         <span className="rounded bg-amber-500/10 border border-amber-500/30 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">
-                          Personal Custom
+                          {t("foodLog.personalCustom")}
                         </span>
                       )}
                     </h3>
                     <p className="text-xs text-zinc-400">
-                      Baseline: {selectedFood.servingSize}{" "}
-                      {selectedFood.servingUnit} ({selectedFood.calories} kcal)
+                      {t("foodLog.baseline", {
+                        size: selectedFood.servingSize,
+                        unit: selectedFood.servingUnit,
+                        calories: selectedFood.calories,
+                      })}
                     </p>
                   </div>
                   <button
@@ -343,7 +358,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                     onClick={() => setSelectedFood(null)}
                     className="text-xs text-zinc-500 hover:text-zinc-300"
                   >
-                    Change
+                    {t("foodLog.change")}
                   </button>
                 </div>
 
@@ -351,14 +366,18 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                   {/* Quantity Input */}
                   <div>
                     <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
-                      Intake Amount ({selectedFood.servingUnit})
+                      {t("foodLog.intakeAmountLabel", {
+                        unit: selectedFood.servingUnit,
+                      })}
                     </label>
                     <div className="flex items-center gap-2">
                       <input
                         type="number"
                         min={1}
                         value={quantity || ""}
-                        onChange={(e) => setQuantity(Number(e.target.value) || 0)}
+                        onChange={(e) =>
+                          setQuantity(Number(e.target.value) || 0)
+                        }
                         className="w-full rounded-xl border border-zinc-800 bg-[#161B22] px-3.5 py-2 text-sm text-zinc-100 font-mono font-semibold focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                       />
                       <span className="text-xs font-medium text-zinc-400 shrink-0">
@@ -370,13 +389,13 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                   {/* Notes Input */}
                   <div>
                     <label className="block text-xs font-semibold text-zinc-300 mb-1.5">
-                      Notes (Optional)
+                      {t("foodLog.notesLabel")}
                     </label>
                     <input
                       type="text"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
-                      placeholder="e.g. Cooked with olive oil spray"
+                      placeholder={t("foodLog.notesPlaceholder")}
                       className="w-full rounded-xl border border-zinc-800 bg-[#161B22] px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                     />
                   </div>
@@ -386,7 +405,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                 <div className="grid grid-cols-4 gap-2 pt-2 border-t border-zinc-800/60">
                   <div className="rounded-lg bg-[#161B22] p-2 text-center">
                     <span className="text-[10px] text-zinc-500 uppercase tracking-wider block">
-                      Calories
+                      {t("foodLog.calories")}
                     </span>
                     <span className="text-sm font-bold text-zinc-100 font-mono">
                       {liveNutrients.calories} kcal
@@ -394,7 +413,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                   </div>
                   <div className="rounded-lg bg-[#161B22] p-2 text-center">
                     <span className="text-[10px] text-[#5BE584] uppercase tracking-wider block">
-                      Protein
+                      {t("foodLog.protein")}
                     </span>
                     <span className="text-sm font-bold text-zinc-100 font-mono">
                       {liveNutrients.protein}g
@@ -402,7 +421,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                   </div>
                   <div className="rounded-lg bg-[#161B22] p-2 text-center">
                     <span className="text-[10px] text-sky-400 uppercase tracking-wider block">
-                      Carbs
+                      {t("foodLog.carbs")}
                     </span>
                     <span className="text-sm font-bold text-zinc-100 font-mono">
                       {liveNutrients.carbs}g
@@ -410,7 +429,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                   </div>
                   <div className="rounded-lg bg-[#161B22] p-2 text-center">
                     <span className="text-[10px] text-amber-400 uppercase tracking-wider block">
-                      Fat
+                      {t("foodLog.fat")}
                     </span>
                     <span className="text-sm font-bold text-zinc-100 font-mono">
                       {liveNutrients.fat}g
@@ -427,7 +446,7 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                 onClick={onClose}
                 className="rounded-xl px-4 py-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
               >
-                Cancel
+                {t("foodLog.cancel")}
               </button>
               <button
                 type="submit"
@@ -437,12 +456,12 @@ export const FoodLogDialog: React.FC<FoodLogDialogProps> = ({
                 {isLogging ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Logging...</span>
+                    <span>{t("foodLog.saving")}</span>
                   </>
                 ) : (
                   <>
                     <Check className="h-4 w-4" />
-                    <span>Save Food Log</span>
+                    <span>{t("foodLog.save")}</span>
                   </>
                 )}
               </button>

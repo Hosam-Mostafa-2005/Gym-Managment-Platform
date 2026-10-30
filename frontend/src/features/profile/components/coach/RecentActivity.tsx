@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Activity, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ProfileSection } from "../shared/ProfileSection";
 import type { CoachActivity } from "../../types/profile.types";
 
@@ -12,13 +13,28 @@ interface RecentActivityProps {
 export const RecentActivity: React.FC<RecentActivityProps> = ({
   recentActivity = [],
 }) => {
+  const { t, i18n } = useTranslation(["profile"]);
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(new Date(dateStr));
+    } catch {
+      return dateStr;
+    }
+  };
+
   return (
-    <ProfileSection title="Live Activity Feed" icon={Activity}>
+    <ProfileSection title={t("coach.recentActivity.title")} icon={Activity}>
       {recentActivity?.length > 0 ? (
         <div className="divide-y divide-[#1e2329]">
           {recentActivity.map((item, idx) => {
             const memberId = item.member?.id;
-            const memberName = item.member?.name || "System Athlete";
+            const memberName = item.member?.name || t("coach.recentActivity.systemAthlete");
             return (
               <div
                 key={idx}
@@ -29,7 +45,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                     {item.action}
                   </span>
                   <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
-                    <span>Athlete:</span>
+                    <span>{t("coach.recentActivity.athlete")}</span>
                     {memberId ? (
                       <Link
                         to={`/members/${memberId}`}
@@ -44,7 +60,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-gray-500 whitespace-nowrap">
                   <Clock className="h-3 w-3 text-gray-600" />
-                  <span>{new Date(item.date).toLocaleDateString()}</span>
+                  <span>{formatDate(item.date)}</span>
                 </div>
               </div>
             );
@@ -52,9 +68,11 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
         </div>
       ) : (
         <div className="py-8 text-center text-xs text-gray-500">
-          No recent coach activity recorded.
+          {t("coach.recentActivity.empty")}
         </div>
       )}
     </ProfileSection>
   );
 };
+
+export default RecentActivity;

@@ -1,9 +1,11 @@
 // src/features/landing/components/footer/LandingFooter.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Dumbbell } from "lucide-react";
 
 export const LandingFooter: React.FC = () => {
+  const { t } = useTranslation(["landing"]);
   const currentYear = new Date().getFullYear();
 
   const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -38,14 +40,13 @@ export const LandingFooter: React.FC = () => {
             </Link>
 
             <p className="max-w-sm text-xs sm:text-sm text-[#A7B0BC] leading-relaxed">
-              A high-performance strength coaching platform connecting exercise prescriptions,
-              live session tracking, previous lift benchmarks, and coach oversight in one unified system.
+              {t("footer.brandDescription")}
             </p>
 
             <div className="flex items-center gap-2 mt-2">
               <span className="flex h-2 w-2 rounded-full bg-[#22C55E]" />
               <span className="text-xs text-[#94A3B8]">
-                STREN Platform · All services operational
+                {t("footer.status")}
               </span>
             </div>
           </div>
@@ -53,7 +54,7 @@ export const LandingFooter: React.FC = () => {
           {/* Column 1: Platform Exploration */}
           <div className="flex flex-col gap-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#F8FAFC]">
-              Platform
+              {t("footer.columns.platform")}
             </h4>
             <ul className="flex flex-col gap-2.5 text-xs sm:text-sm">
               <li>
@@ -62,7 +63,7 @@ export const LandingFooter: React.FC = () => {
                   onClick={(e) => handleAnchorClick(e, "#platform")}
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Overview & Loop
+                  {t("footer.links.overview")}
                 </a>
               </li>
               <li>
@@ -71,7 +72,7 @@ export const LandingFooter: React.FC = () => {
                   onClick={(e) => handleAnchorClick(e, "#coaches")}
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  For Coaches
+                  {t("footer.links.forCoaches")}
                 </a>
               </li>
               <li>
@@ -80,7 +81,7 @@ export const LandingFooter: React.FC = () => {
                   onClick={(e) => handleAnchorClick(e, "#members")}
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  For Members
+                  {t("footer.links.forMembers")}
                 </a>
               </li>
               <li>
@@ -89,7 +90,7 @@ export const LandingFooter: React.FC = () => {
                   onClick={(e) => handleAnchorClick(e, "#how-it-works")}
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  How It Works
+                  {t("footer.links.howItWorks")}
                 </a>
               </li>
               <li>
@@ -98,7 +99,7 @@ export const LandingFooter: React.FC = () => {
                   onClick={(e) => handleAnchorClick(e, "#features")}
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Capabilities
+                  {t("footer.links.capabilities")}
                 </a>
               </li>
               <li>
@@ -107,16 +108,16 @@ export const LandingFooter: React.FC = () => {
                   onClick={(e) => handleAnchorClick(e, "#preview")}
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Live Preview
+                  {t("footer.links.livePreview")}
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Column 2: Role Workflows */}
+          {/* Column 2: Role Workspaces */}
           <div className="flex flex-col gap-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#F8FAFC]">
-              Workspaces
+              {t("footer.columns.workspaces")}
             </h4>
             <ul className="flex flex-col gap-2.5 text-xs sm:text-sm">
               <li>
@@ -124,7 +125,7 @@ export const LandingFooter: React.FC = () => {
                   to="/coach-dashboard"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Coach Dashboard
+                  {t("footer.links.coachDashboard")}
                 </Link>
               </li>
               <li>
@@ -132,7 +133,7 @@ export const LandingFooter: React.FC = () => {
                   to="/workout-builder/all"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Workout Builder
+                  {t("footer.links.workoutBuilder")}
                 </Link>
               </li>
               <li>
@@ -140,7 +141,7 @@ export const LandingFooter: React.FC = () => {
                   to="/assignments/all"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Assignments
+                  {t("footer.links.assignments")}
                 </Link>
               </li>
               <li>
@@ -148,7 +149,7 @@ export const LandingFooter: React.FC = () => {
                   to="/members/all"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Member Roster
+                  {t("footer.links.memberRoster")}
                 </Link>
               </li>
               <li>
@@ -156,7 +157,7 @@ export const LandingFooter: React.FC = () => {
                   to="/dashboard"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Member Dashboard
+                  {t("footer.links.memberDashboard")}
                 </Link>
               </li>
               <li>
@@ -164,7 +165,7 @@ export const LandingFooter: React.FC = () => {
                   to="/sessions"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Active Sessions
+                  {t("footer.links.activeSessions")}
                 </Link>
               </li>
               <li>
@@ -172,7 +173,7 @@ export const LandingFooter: React.FC = () => {
                   to="/measurements"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Body Measurements
+                  {t("footer.links.bodyMeasurements")}
                 </Link>
               </li>
             </ul>
@@ -181,7 +182,7 @@ export const LandingFooter: React.FC = () => {
           {/* Column 3: Resources & Account */}
           <div className="flex flex-col gap-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#F8FAFC]">
-              Access & Database
+              {t("footer.columns.access")}
             </h4>
             <ul className="flex flex-col gap-2.5 text-xs sm:text-sm">
               <li>
@@ -189,7 +190,7 @@ export const LandingFooter: React.FC = () => {
                   to="/workout-library/exercises"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Exercise Taxonomy
+                  {t("footer.links.exerciseTaxonomy")}
                 </Link>
               </li>
               <li>
@@ -197,7 +198,7 @@ export const LandingFooter: React.FC = () => {
                   to="/workout-library/workouts"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Public Workouts
+                  {t("footer.links.publicWorkouts")}
                 </Link>
               </li>
               <li>
@@ -205,7 +206,7 @@ export const LandingFooter: React.FC = () => {
                   to="/notifications"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Live Notifications
+                  {t("footer.links.liveNotifications")}
                 </Link>
               </li>
               <li>
@@ -213,7 +214,7 @@ export const LandingFooter: React.FC = () => {
                   to="/login"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Sign In
+                  {t("footer.links.signIn")}
                 </Link>
               </li>
               <li>
@@ -221,7 +222,7 @@ export const LandingFooter: React.FC = () => {
                   to="/register"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Create Account
+                  {t("footer.links.createAccount")}
                 </Link>
               </li>
               <li>
@@ -229,7 +230,7 @@ export const LandingFooter: React.FC = () => {
                   to="/privacy-policy"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Privacy Policy
+                  {t("footer.links.privacyPolicy")}
                 </Link>
               </li>
               <li>
@@ -237,7 +238,7 @@ export const LandingFooter: React.FC = () => {
                   to="/terms-of-service"
                   className="transition-colors hover:text-[#5BE584]"
                 >
-                  Terms of Service
+                  {t("footer.links.termsOfService")}
                 </Link>
               </li>
             </ul>
@@ -246,26 +247,28 @@ export const LandingFooter: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-[#1F2630] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#94A3B8]">
-          <p>© {currentYear} STREN. All rights reserved.</p>
+          <p>{t("footer.bottom.copyright", { year: currentYear })}</p>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <Link
               to="/privacy-policy"
               className="transition-colors hover:text-[#5BE584]"
             >
-              Privacy Policy
+              {t("footer.bottom.privacyPolicy")}
             </Link>
             <span className="text-[#38414D]">·</span>
             <Link
               to="/terms-of-service"
               className="transition-colors hover:text-[#5BE584]"
             >
-              Terms of Service
+              {t("footer.bottom.termsOfService")}
             </Link>
             <span className="text-[#38414D]">·</span>
-            <span>Built for Coaches and Athletes</span>
+            <span>{t("footer.bottom.builtFor")}</span>
           </div>
         </div>
       </div>
     </footer>
   );
 };
+
+export default LandingFooter;

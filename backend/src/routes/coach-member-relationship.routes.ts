@@ -62,6 +62,12 @@ router.patch(
   relationshipController.updateHistoryConsent,
 );
 
+router.delete(
+  "/member/active",
+  restrictTo(Roles.MEMBER),
+  relationshipController.terminateActiveMemberRelationship,
+);
+
 // ─── Termination (Coach or Member) ────────────────────────────────
 router.delete("/:id", relationshipController.terminateRelationship);
 

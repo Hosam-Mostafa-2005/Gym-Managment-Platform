@@ -1,6 +1,7 @@
 // src/features/scheduling/components/RescheduleWorkoutDialog.tsx
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { Calendar, Clock, X, Dumbbell, User, FileText, Loader2, RotateCcw } from "lucide-react";
 import type { ScheduledWorkout } from "../types/scheduling.types";
 import {
@@ -21,6 +22,7 @@ export default function RescheduleWorkoutDialog({
   scheduledWorkout,
   isCoach = false,
 }: RescheduleWorkoutDialogProps) {
+  const { t } = useTranslation(["trainingCalendar"]);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("09:00");
   const [notes, setNotes] = useState("");
@@ -64,18 +66,18 @@ export default function RescheduleWorkoutDialog({
     setError(null);
 
     if (!date || !time) {
-      setError("Please select both a date and a time.");
+      setError(t("scheduleDialog.errDateTime"));
       return;
     }
 
     const scheduledDateTime = new Date(`${date}T${time}:00`);
     if (isNaN(scheduledDateTime.getTime())) {
-      setError("Invalid date or time value.");
+      setError(t("rescheduleDialog.errInvalid"));
       return;
     }
 
     if (scheduledDateTime.getTime() <= Date.now()) {
-      setError("Please select a date and time in the future.");
+      setError(t("rescheduleDialog.errFuture"));
       return;
     }
 
@@ -94,7 +96,7 @@ export default function RescheduleWorkoutDialog({
           onError: (err: any) => {
             setError(
               err?.response?.data?.message ||
-                "Failed to reschedule workout. Please try again.",
+                t("rescheduleDialog.errFailed"),
             );
           },
         },
@@ -109,7 +111,7 @@ export default function RescheduleWorkoutDialog({
           onError: (err: any) => {
             setError(
               err?.response?.data?.message ||
-                "Failed to reschedule workout. Please try again.",
+                t("rescheduleDialog.errFailed"),
             );
           },
         },
@@ -124,15 +126,15 @@ export default function RescheduleWorkoutDialog({
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-[#1E2329]">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 shrink-0">
                 <RotateCcw className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-white leading-tight">
-                  Reschedule Workout
+                  {t("rescheduleDialog.title")}
                 </h3>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  Update scheduled date & time
+                  {t("rescheduleDialog.subtitle")}
                 </p>
               </div>
             </div>
@@ -161,12 +163,12 @@ export default function RescheduleWorkoutDialog({
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-xs font-semibold text-white truncate">
-                  {scheduledWorkout.workout?.title || "Workout Session"}
+                  {scheduledWorkout.workout?.title || t("rescheduleDialog.workoutFallback")}
                 </div>
                 {scheduledWorkout.member?.name && isCoach && (
                   <div className="text-[11px] text-gray-400 truncate flex items-center gap-1 mt-0.5">
-                    <User size={11} className="text-[#5BE584]" />
-                    Athlete: {scheduledWorkout.member.name}
+                    <User size={11} className="text-[#5BE584] shrink-0" />
+                    {t("rescheduleDialog.athleteLabel", { name: scheduledWorkout.member.name })}
                   </div>
                 )}
               </div>
@@ -175,8 +177,8 @@ export default function RescheduleWorkoutDialog({
             {/* Date Input */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                <Calendar size={13} className="text-[#5BE584]" />
-                New Scheduled Date
+                <Calendar size={13} className="text-[#5BE584] shrink-0" />
+                {t("rescheduleDialog.newDateLabel")}
               </label>
               <input
                 type="date"
@@ -191,8 +193,8 @@ export default function RescheduleWorkoutDialog({
             {/* Time Input */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                <Clock size={13} className="text-[#5BE584]" />
-                New Scheduled Time
+                <Clock size={13} className="text-[#5BE584] shrink-0" />
+                {t("rescheduleDialog.newTimeLabel")}
               </label>
               <input
                 type="time"
@@ -206,13 +208,13 @@ export default function RescheduleWorkoutDialog({
             {/* Notes */}
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-gray-300 flex items-center gap-1.5">
-                <FileText size={13} className="text-[#5BE584]" />
-                Notes / Instructions (Optional)
+                <FileText size={13} className="text-[#5BE584] shrink-0" />
+                {t("rescheduleDialog.notesLabel")}
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="e.g. Moved from morning due to travel..."
+                placeholder={t("rescheduleDialog.notesPlaceholder")}
                 rows={2}
                 maxLength={500}
                 className="w-full bg-[#161B22] border border-[#1E2329] rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#5BE584] transition-colors resize-none"
@@ -227,7 +229,7 @@ export default function RescheduleWorkoutDialog({
                 disabled={isPending}
                 className="px-4 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
               >
-                Cancel
+                {t("rescheduleDialog.cancel")}
               </button>
               <button
                 type="submit"
@@ -237,12 +239,12 @@ export default function RescheduleWorkoutDialog({
                 {isPending ? (
                   <>
                     <Loader2 size={13} className="animate-spin" />
-                    Saving...
+                    {t("rescheduleDialog.saving")}
                   </>
                 ) : (
                   <>
                     <RotateCcw size={13} />
-                    Confirm Reschedule
+                    {t("rescheduleDialog.confirm")}
                   </>
                 )}
               </button>

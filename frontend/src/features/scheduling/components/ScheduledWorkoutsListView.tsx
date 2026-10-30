@@ -1,6 +1,6 @@
 // src/features/scheduling/components/ScheduledWorkoutsListView.tsx
 import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Calendar,
   Clock,
@@ -16,11 +16,11 @@ import {
   Search,
   ArrowUpDown,
   Filter,
-  ShieldCheck,
   Plus,
   Loader2,
   ExternalLink,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type {
   ScheduledWorkout,
   CoachingAppointment,
@@ -52,9 +52,8 @@ export default function ScheduledWorkoutsListView({
   onSelectWorkout,
   onRescheduleWorkout,
   onNewSchedule,
-  coachingAppointments = [],
-  onSelectAppointment,
 }: ScheduledWorkoutsListViewProps) {
+  const { t, i18n } = useTranslation("trainingCalendar");
   const navigate = useNavigate();
 
   // Local state for table presentation concerns
@@ -77,7 +76,7 @@ export default function ScheduledWorkoutsListView({
   const formatDate = (dateString: string) => {
     const d = new Date(dateString);
     if (isNaN(d.getTime())) return dateString;
-    return d.toLocaleDateString(undefined, {
+    return d.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", {
       weekday: "short",
       month: "short",
       day: "numeric",
@@ -88,7 +87,7 @@ export default function ScheduledWorkoutsListView({
   const formatTime = (dateString: string) => {
     const d = new Date(dateString);
     if (isNaN(d.getTime())) return "";
-    return d.toLocaleTimeString(undefined, {
+    return d.toLocaleTimeString(i18n.language === "ar" ? "ar-EG" : "en-US", {
       hour: "numeric",
       minute: "2-digit",
     });
@@ -111,28 +110,28 @@ export default function ScheduledWorkoutsListView({
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-[#5BE584] border border-[#5BE584]/20">
             <CheckCircle2 size={12} />
-            Completed
+            {t("status.completed")}
           </span>
         );
       case "MISSED":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
             <AlertTriangle size={12} />
-            Missed
+            {t("status.missed")}
           </span>
         );
       case "CANCELLED":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
             <XCircle size={12} />
-            Cancelled
+            {t("status.cancelled")}
           </span>
         );
       case "RESCHEDULED":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
             <RotateCcw size={12} />
-            Rescheduled
+            {t("status.rescheduled")}
           </span>
         );
       case "SCHEDULED":
@@ -140,7 +139,7 @@ export default function ScheduledWorkoutsListView({
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
             <Clock size={12} />
-            Scheduled
+            {t("status.scheduled")}
           </span>
         );
     }
@@ -265,21 +264,21 @@ export default function ScheduledWorkoutsListView({
         <div className="relative flex-1">
           <Search
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+            className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
           />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by workout, member, or notes..."
-            className="w-full bg-[#161B22] border border-[#1E2329] rounded-xl pl-9 pr-3.5 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#5BE584] transition-colors"
+            placeholder={t("list.searchPlaceholder")}
+            className="w-full bg-[#161B22] border border-[#1E2329] rounded-xl pl-9 rtl:pl-3.5 rtl:pr-9 pr-3.5 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#5BE584] transition-colors"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white text-xs px-1"
+              className="absolute right-2.5 rtl:right-auto rtl:left-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white text-xs px-1"
             >
-              Clear
+              {t("list.clearSearch")}
             </button>
           )}
         </div>
@@ -295,22 +294,22 @@ export default function ScheduledWorkoutsListView({
               className="bg-transparent text-xs text-white focus:outline-none cursor-pointer"
             >
               <option value="ALL" className="bg-[#161B22]">
-                All Statuses
+                {t("list.allStatuses")}
               </option>
               <option value="SCHEDULED" className="bg-[#161B22]">
-                Scheduled
+                {t("status.scheduled")}
               </option>
               <option value="RESCHEDULED" className="bg-[#161B22]">
-                Rescheduled
+                {t("status.rescheduled")}
               </option>
               <option value="COMPLETED" className="bg-[#161B22]">
-                Completed
+                {t("status.completed")}
               </option>
               <option value="MISSED" className="bg-[#161B22]">
-                Missed
+                {t("status.missed")}
               </option>
               <option value="CANCELLED" className="bg-[#161B22]">
-                Cancelled
+                {t("status.cancelled")}
               </option>
             </select>
           </div>
@@ -324,21 +323,22 @@ export default function ScheduledWorkoutsListView({
               className="bg-transparent text-xs text-white focus:outline-none cursor-pointer"
             >
               <option value="date-asc" className="bg-[#161B22]">
-                Date: Earliest First
+                {t("list.sortEarliest")}
               </option>
               <option value="date-desc" className="bg-[#161B22]">
-                Date: Latest First
+                {t("list.sortLatest")}
               </option>
               <option value="name-asc" className="bg-[#161B22]">
-                Workout: A to Z
+                {t("list.sortName")}
               </option>
             </select>
           </div>
 
           {/* Result Count Badge */}
           <div className="text-[11px] text-gray-400 px-2 py-1 bg-[#161B22] border border-[#1E2329] rounded-xl">
-            {processedWorkouts.length}{" "}
-            {processedWorkouts.length === 1 ? "routine" : "routines"}
+            {processedWorkouts.length === 1
+              ? t("list.routineCountSingle")
+              : t("list.routineCount", { count: processedWorkouts.length })}
           </div>
         </div>
       </div>
@@ -347,7 +347,7 @@ export default function ScheduledWorkoutsListView({
       {isLoading ? (
         <div className="p-12 text-center bg-[#101418] border border-[#1E2329] rounded-2xl">
           <Loader2 size={24} className="animate-spin text-[#5BE584] mx-auto mb-3" />
-          <p className="text-xs text-gray-400">Loading scheduled workouts...</p>
+          <p className="text-xs text-gray-400">{t("list.loading")}</p>
         </div>
       ) : processedWorkouts.length === 0 ? (
         /* Empty State */
@@ -356,39 +356,35 @@ export default function ScheduledWorkoutsListView({
             <Dumbbell size={22} />
           </div>
           <h3 className="text-sm font-bold text-white">
-            No Scheduled Workouts Found
+            {t("list.noWorkoutsTitle")}
           </h3>
           <p className="text-xs text-gray-400 max-w-sm mx-auto">
             {searchQuery || statusFilter !== "ALL"
-              ? "No scheduled sessions match your current search or filter criteria."
-              : "Plan and organize your fitness journey by scheduling your upcoming workouts."}
+              ? t("list.noWorkoutsFilter")
+              : t("list.noWorkoutsEmpty")}
           </p>
           {onNewSchedule && (
             <button
               onClick={onNewSchedule}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#5BE584] hover:bg-[#49d472] text-[#090B0F] shadow-lg shadow-[#5BE584]/20 transition-all mt-2"
             >
-              <Plus size={14} /> Schedule a Workout
+              <Plus size={14} /> {t("list.scheduleAWorkout")}
             </button>
           )}
         </div>
       ) : (
         <>
-          {/* ========================================================= */}
-          {/* Desktop Table View (>= 768px)                             */}
-          {/* ========================================================= */}
+          {/* Desktop Table View (>= 768px) */}
           <div className="hidden md:block overflow-x-auto rounded-2xl border border-[#1E2329] bg-[#101418] shadow-xl">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left rtl:text-right border-collapse">
               <thead>
                 <tr className="border-b border-[#1E2329] bg-[#141920] text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                  <th className="py-3.5 px-4">Workout</th>
-                  <th className="py-3.5 px-4">
-                    {isCoachView ? "Member / Athlete" : "Scheduled For / By"}
-                  </th>
-                  <th className="py-3.5 px-4">Date</th>
-                  <th className="py-3.5 px-4">Time</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
+                  <th className="py-3.5 px-4">{t("list.colWorkout")}</th>
+                  <th className="py-3.5 px-4">{t("list.colMemberCoach")}</th>
+                  <th className="py-3.5 px-4">{t("list.colDate")}</th>
+                  <th className="py-3.5 px-4">{t("list.colTime")}</th>
+                  <th className="py-3.5 px-4">{t("list.colStatus")}</th>
+                  <th className="py-3.5 px-4 text-right rtl:text-left">{t("list.colActions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1E2329]/60 text-xs text-gray-300">
@@ -424,18 +420,18 @@ export default function ScheduledWorkoutsListView({
                           </div>
                           <div className="min-w-0">
                             <div className="font-bold text-white group-hover:text-[#5BE584] transition-colors truncate max-w-[220px]">
-                              {sw.workout?.title || "Workout Session"}
+                              {sw.workout?.title || t("events.defaultWorkoutTitle")}
                             </div>
                             <div className="text-[11px] text-gray-400 flex items-center gap-1.5 mt-0.5">
                               {sw.workout?.estimatedDuration && (
-                                <span>{sw.workout.estimatedDuration} min</span>
+                                <span>{t("list.durationMinutes", { count: sw.workout.estimatedDuration })}</span>
                               )}
                               {sw.workout?.difficulty && (
                                 <span>• {sw.workout.difficulty}</span>
                               )}
                               {sw.workout?.exercises && (
                                 <span>
-                                  • {sw.workout.exercises.length} ex
+                                  • {t("list.exerciseCountShort", { count: sw.workout.exercises.length })}
                                 </span>
                               )}
                             </div>
@@ -462,7 +458,7 @@ export default function ScheduledWorkoutsListView({
                             )}
                             <div className="min-w-0">
                               <span className="font-semibold text-white hover:text-[#5BE584] hover:underline flex items-center gap-1">
-                                {sw.member?.name || "Athlete"}
+                                {sw.member?.name || t("events.athleteLabel", { name: "" })}
                                 <ExternalLink size={10} className="opacity-60" />
                               </span>
                               {sw.member?.email && (
@@ -482,17 +478,17 @@ export default function ScheduledWorkoutsListView({
                                 )}
                                 <div>
                                   <div className="text-white font-medium">
-                                    Coach {sw.trainer.name}
+                                    {t("events.coachLabel", { name: sw.trainer.name })}
                                   </div>
                                   <div className="text-[10px] text-purple-400">
-                                    Assigned by Coach
+                                    {t("events.assignedByCoach")}
                                   </div>
                                 </div>
                               </>
                             ) : (
                               <div className="inline-flex items-center gap-1.5 text-gray-400">
                                 <User size={13} className="text-[#5BE584]" />
-                                <span>Personal Schedule</span>
+                                <span>{t("events.personalSchedule")}</span>
                               </div>
                             )}
                           </div>
@@ -505,8 +501,8 @@ export default function ScheduledWorkoutsListView({
                           <Calendar size={13} className="text-[#5BE584]" />
                           <span>{formatDate(sw.scheduledAt)}</span>
                           {today && (
-                            <span className="ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#5BE584]/20 text-[#5BE584]">
-                              Today
+                            <span className="ml-1 rtl:ml-0 rtl:mr-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#5BE584]/20 text-[#5BE584]">
+                              {t("events.todayBadge")}
                             </span>
                           )}
                         </div>
@@ -527,26 +523,26 @@ export default function ScheduledWorkoutsListView({
 
                       {/* 6. Applicable Actions */}
                       <td
-                        className="py-3.5 px-4 text-right whitespace-nowrap"
+                        className="py-3.5 px-4 text-right rtl:text-left whitespace-nowrap"
                         onClick={(e) => e.stopPropagation()}
                       >
                         {cancellingId === sw.id ? (
                           <div className="inline-flex items-center gap-2 bg-[#1A212B] p-1.5 rounded-xl border border-rose-500/30">
                             <span className="text-[11px] text-rose-400 font-medium">
-                              Cancel?
+                              {t("list.cancelConfirm")}
                             </span>
                             <button
                               onClick={(e) => handleConfirmCancel(e, sw.id)}
                               disabled={isCancelling}
                               className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-600 hover:bg-rose-500 text-white"
                             >
-                              Yes
+                              {t("list.yes")}
                             </button>
                             <button
                               onClick={() => setCancellingId(null)}
                               className="px-1.5 py-0.5 rounded text-[10px] text-gray-400 hover:text-white"
                             >
-                              No
+                              {t("list.no")}
                             </button>
                           </div>
                         ) : (
@@ -557,10 +553,10 @@ export default function ScheduledWorkoutsListView({
                                 onClick={(e) => handleStart(e, sw.id)}
                                 disabled={isStarting}
                                 className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-[#5BE584] hover:bg-[#4dd273] text-[#090B0F] shadow-sm transition-all hover:scale-105 active:scale-95"
-                                title="Start this workout session"
+                                title={t("list.startTitle")}
                               >
                                 <Play size={11} className="fill-[#090B0F]" />
-                                Start
+                                {t("events.start")}
                               </button>
                             )}
 
@@ -569,7 +565,7 @@ export default function ScheduledWorkoutsListView({
                               <button
                                 onClick={() => onRescheduleWorkout(sw)}
                                 className="p-1.5 rounded-lg text-gray-400 hover:text-purple-400 hover:bg-purple-500/10 transition-colors"
-                                title="Reschedule workout"
+                                title={t("list.rescheduleTitle")}
                               >
                                 <RotateCcw size={14} />
                               </button>
@@ -579,7 +575,7 @@ export default function ScheduledWorkoutsListView({
                             <button
                               onClick={() => onSelectWorkout(sw)}
                               className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-                              title="View details"
+                              title={t("list.viewDetailsTitle")}
                             >
                               <Eye size={14} />
                             </button>
@@ -589,7 +585,7 @@ export default function ScheduledWorkoutsListView({
                               <button
                                 onClick={() => setCancellingId(sw.id)}
                                 className="p-1.5 rounded-lg text-gray-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                                title="Cancel workout"
+                                title={t("list.cancelTitle")}
                               >
                                 <Trash2 size={14} />
                               </button>
@@ -604,9 +600,7 @@ export default function ScheduledWorkoutsListView({
             </table>
           </div>
 
-          {/* ========================================================= */}
-          {/* Mobile Responsive Cards (< 768px)                         */}
-          {/* ========================================================= */}
+          {/* Mobile Responsive Cards (< 768px) */}
           <div className="md:hidden space-y-3">
             {processedWorkouts.map((sw) => {
               const today = isToday(sw.scheduledAt);
@@ -630,7 +624,7 @@ export default function ScheduledWorkoutsListView({
                 <div
                   key={sw.id}
                   onClick={() => onSelectWorkout(sw)}
-                  className="bg-[#101418] border border-[#1E2329] p-4 rounded-2xl shadow-md space-y-3 active:scale-[0.99] transition-transform"
+                  className="bg-[#101418] border border-[#1E2329] p-4 rounded-2xl shadow-md space-y-3 active:scale-[0.99] transition-transform text-left rtl:text-right"
                 >
                   {/* Card Top: Workout Title & Status */}
                   <div className="flex items-start justify-between gap-2">
@@ -640,11 +634,11 @@ export default function ScheduledWorkoutsListView({
                       </div>
                       <div className="min-w-0">
                         <h4 className="text-sm font-bold text-white truncate">
-                          {sw.workout?.title || "Workout Session"}
+                          {sw.workout?.title || t("events.defaultWorkoutTitle")}
                         </h4>
                         <div className="text-[11px] text-gray-400 flex items-center gap-1.5 mt-0.5">
                           {sw.workout?.estimatedDuration && (
-                            <span>{sw.workout.estimatedDuration} min</span>
+                            <span>{t("list.durationMinutes", { count: sw.workout.estimatedDuration })}</span>
                           )}
                           {sw.workout?.difficulty && (
                             <span>• {sw.workout.difficulty}</span>
@@ -678,7 +672,7 @@ export default function ScheduledWorkoutsListView({
                             "size-6",
                           )}
                           <span className="font-semibold text-white truncate hover:underline">
-                            {sw.member?.name || "Athlete"}
+                            {sw.member?.name || t("events.athleteLabel", { name: "" })}
                           </span>
                         </div>
                       ) : (
@@ -691,12 +685,12 @@ export default function ScheduledWorkoutsListView({
                                 "size-6",
                               )}
                               <span className="text-purple-400 text-[11px] truncate">
-                                Coach {sw.trainer.name}
+                                {t("events.coachLabel", { name: sw.trainer.name })}
                               </span>
                             </>
                           ) : (
                             <span className="text-gray-400 text-[11px]">
-                              Personal
+                              {t("list.personal")}
                             </span>
                           )}
                         </div>
@@ -710,7 +704,7 @@ export default function ScheduledWorkoutsListView({
                         <span>{formatDate(sw.scheduledAt)}</span>
                         {today && (
                           <span className="px-1 py-0.2 rounded text-[9px] font-bold bg-[#5BE584]/20 text-[#5BE584]">
-                            Today
+                            {t("events.todayBadge")}
                           </span>
                         )}
                       </div>
@@ -731,7 +725,7 @@ export default function ScheduledWorkoutsListView({
                       onClick={() => onSelectWorkout(sw)}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-gray-300 bg-[#161B22] border border-[#1E2329] hover:text-white"
                     >
-                      <Eye size={13} /> Details
+                      <Eye size={13} /> {t("events.details")}
                     </button>
 
                     {/* Right Action buttons */}
@@ -741,8 +735,8 @@ export default function ScheduledWorkoutsListView({
                           onClick={() => onRescheduleWorkout(sw)}
                           className="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20"
                         >
-                          <RotateCcw size={13} className="inline mr-1" />
-                          Reschedule
+                          <RotateCcw size={13} className="inline mr-1 rtl:mr-0 rtl:ml-1" />
+                          {t("workoutModal.reschedule")}
                         </button>
                       )}
 
@@ -754,7 +748,7 @@ export default function ScheduledWorkoutsListView({
                               disabled={isCancelling}
                               className="px-2 py-1 rounded text-[10px] font-bold bg-rose-600 text-white"
                             >
-                              Confirm
+                              {t("list.confirm")}
                             </button>
                             <button
                               onClick={() => setCancellingId(null)}
@@ -767,7 +761,7 @@ export default function ScheduledWorkoutsListView({
                           <button
                             onClick={() => setCancellingId(sw.id)}
                             className="p-2 rounded-xl text-rose-400 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20"
-                            title="Cancel"
+                            title={t("list.cancelTitle")}
                           >
                             <Trash2 size={13} />
                           </button>
@@ -780,7 +774,7 @@ export default function ScheduledWorkoutsListView({
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#5BE584] text-[#090B0F] shadow-sm hover:bg-[#49d472]"
                         >
                           <Play size={12} className="fill-[#090B0F]" />
-                          Start
+                          {t("events.start")}
                         </button>
                       )}
                     </div>

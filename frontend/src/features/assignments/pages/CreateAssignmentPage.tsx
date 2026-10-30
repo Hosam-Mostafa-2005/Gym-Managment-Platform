@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // Components & Hooks
 import { AssignmentForm } from "@/features/assignments/components/AssignmentForm";
@@ -8,6 +9,7 @@ import { useMemberProfile } from "@/features/member-profile/hooks/use-member-pro
 import type { AssignmentFormValues } from "@/features/assignments/schemas/assignment.schema";
 
 export default function CreateAssignmentPage() {
+  const { t } = useTranslation(["assignments", "common"]);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -61,24 +63,33 @@ export default function CreateAssignmentPage() {
                 className="hover:text-[#9CA3AF] cursor-pointer transition-colors"
                 onClick={() => navigate(returnUrl)}
               >
-                {preselectedMemberId ? "Member Plan" : "Assignments"}
+                {preselectedMemberId
+                  ? t("breadcrumb.memberPlan", "Member Plan")
+                  : t("breadcrumb.assignments", "Assignments")}
               </span>
               <span>/</span>
-              <span className="text-[#F3F4F6]">Assign Routine</span>
+              <span className="text-[#F3F4F6]">
+                {t("breadcrumb.assignRoutine", "Assign Routine")}
+              </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mt-1">
-              Assign Workout Routine
+              {t("form.createTitle", "Assign Workout Routine")}
             </h1>
             <p className="text-sm text-[#9CA3AF]">
-              Create a structured workout assignment for a gym member with real scheduling telemetry.
+              {t(
+                "form.createSubtitle",
+                "Create a structured workout assignment for a gym member with real scheduling telemetry.",
+              )}
             </p>
           </div>
           <button
             onClick={() => navigate(returnUrl)}
-            className="group hidden md:flex items-center gap-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white"
+            className="group hidden md:flex items-center gap-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white cursor-pointer"
           >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            {preselectedMemberId ? "Back to Member Plan" : "Back to Assignments"}
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1 rtl:group-hover:translate-x-1 rtl:rotate-180" />
+            {preselectedMemberId
+              ? t("form.backToPlan", "Back to Member Plan")
+              : t("form.backToAssignments", "Back to Assignments")}
           </button>
         </div>
       </header>
@@ -88,10 +99,13 @@ export default function CreateAssignmentPage() {
         <div className="rounded-xl border border-[#1E2329] bg-[#101418]/80 backdrop-blur-sm p-6 sm:p-10 shadow-2xl">
           <div className="mb-8 border-b border-[#1E2329] pb-4">
             <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-              Assignment Details
+              {t("form.sectionTitle", "Assignment Details")}
             </h2>
             <p className="text-xs text-[#6B7280] mt-1">
-              Select the member and routine duration.
+              {t(
+                "form.sectionSubtitle",
+                "Select the member and routine duration.",
+              )}
             </p>
           </div>
 
@@ -103,7 +117,7 @@ export default function CreateAssignmentPage() {
             preselectedMember={preselectedMember}
             onSubmit={handleCreate}
             isLoading={isPending}
-            submitLabel="Assign Routine"
+            submitLabel={t("form.createButton", "Create Assignment")}
           />
         </div>
       </main>

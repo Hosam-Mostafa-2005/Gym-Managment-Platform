@@ -1,6 +1,7 @@
 // src/features/coach-dashboard/components/action-center/CoachActionCenter.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   AlertCircle,
   Mail,
@@ -23,6 +24,7 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
     inactiveClients: [],
   },
 }) => {
+  const { t, i18n } = useTranslation(["coachDashboard"]);
   const navigate = useNavigate();
 
   const invitations = actionCenter.pendingInvitations || [];
@@ -31,6 +33,8 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
 
   const totalActions = invitations.length + expiring.length + inactive.length;
   const isClear = totalActions === 0;
+
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   return (
     <div className="flex flex-col rounded-xl border border-[#1E2329] bg-[#101418] p-5 shadow-sm transition hover:border-[#2A313C]">
@@ -51,16 +55,18 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
             )}
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-white">Action Center</h2>
+            <h2 className="text-sm font-semibold text-white">
+              {t("actionCenter.title")}
+            </h2>
             <p className="text-xs text-gray-400">
-              Prioritized operational coaching follow-ups
+              {t("actionCenter.subtitle")}
             </p>
           </div>
         </div>
 
         {!isClear && (
           <span className="flex h-5 items-center justify-center rounded-full bg-amber-500/20 px-2 text-[11px] font-bold text-amber-400">
-            {totalActions} item{totalActions > 1 ? "s" : ""}
+            {t("actionCenter.itemsCount", { count: totalActions })}
           </span>
         )}
       </div>
@@ -73,14 +79,19 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-400">
                 <Mail className="h-3.5 w-3.5" />
-                <span>Pending Invitations ({invitations.length})</span>
+                <span>
+                  {t("actionCenter.pendingInvitations", {
+                    count: invitations.length,
+                  })}
+                </span>
               </div>
               <button
                 type="button"
                 onClick={() => navigate("/members")}
-                className="text-[11px] font-medium text-amber-400/80 hover:text-amber-300 transition inline-flex items-center"
+                className="text-[11px] font-medium text-amber-400/80 hover:text-amber-300 transition inline-flex items-center gap-1"
               >
-                Manage <ArrowRight className="ml-1 h-3 w-3" />
+                <span>{t("actionCenter.manage")}</span>
+                <ArrowRight className="h-3 w-3 rtl:rotate-180" />
               </button>
             </div>
 
@@ -92,14 +103,16 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
                 >
                   <div>
                     <span className="font-medium text-white">{inv.member.name}</span>
-                    <span className="text-[11px] text-gray-400 ml-1.5">
+                    <span className="text-[11px] text-gray-400 ml-1.5 rtl:mr-1.5 rtl:ml-0">
                       ({inv.member.email})
                     </span>
                   </div>
                   <span className="text-[10px] text-amber-400/80">
-                    Sent {new Date(inv.invitedAt).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
+                    {t("actionCenter.sentDate", {
+                      date: new Date(inv.invitedAt).toLocaleDateString(currentLang, {
+                        month: "short",
+                        day: "numeric",
+                      }),
                     })}
                   </span>
                 </div>
@@ -114,14 +127,19 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-purple-400">
                 <Clock className="h-3.5 w-3.5" />
-                <span>Expiring Assignments ({expiring.length})</span>
+                <span>
+                  {t("actionCenter.expiringAssignments", {
+                    count: expiring.length,
+                  })}
+                </span>
               </div>
               <button
                 type="button"
                 onClick={() => navigate("/assignments")}
-                className="text-[11px] font-medium text-purple-400/80 hover:text-purple-300 transition inline-flex items-center"
+                className="text-[11px] font-medium text-purple-400/80 hover:text-purple-300 transition inline-flex items-center gap-1"
               >
-                View all <ArrowRight className="ml-1 h-3 w-3" />
+                <span>{t("actionCenter.viewAll")}</span>
+                <ArrowRight className="h-3 w-3 rtl:rotate-180" />
               </button>
             </div>
 
@@ -133,14 +151,18 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
                 >
                   <div>
                     <span className="font-medium text-white">
-                      {a.member?.name || "Client"}
+                      {a.member?.name || t("actionCenter.fallbackClient")}
                     </span>
-                    <span className="text-[11px] text-gray-400 ml-1.5">
-                      • {a.workout?.title || "Workout Plan"}
+                    <span className="text-[11px] text-gray-400 ml-1.5 rtl:mr-1.5 rtl:ml-0">
+                      • {a.workout?.title || t("actionCenter.fallbackWorkout")}
                     </span>
                   </div>
                   <span className="rounded bg-purple-500/20 px-2 py-0.5 text-[10px] font-semibold text-purple-300">
-                    {a.daysRemaining === 0 ? "Ends today" : `${a.daysRemaining}d left`}
+                    {a.daysRemaining === 0
+                      ? t("actionCenter.endsToday")
+                      : t("actionCenter.daysLeft", {
+                          count: a.daysRemaining,
+                        })}
                   </span>
                 </div>
               ))}
@@ -154,7 +176,11 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-orange-400">
                 <UserX className="h-3.5 w-3.5" />
-                <span>Inactive Members &gt;7 Days ({inactive.length})</span>
+                <span>
+                  {t("actionCenter.inactiveMembers", {
+                    count: inactive.length,
+                  })}
+                </span>
               </div>
             </div>
 
@@ -166,10 +192,12 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
                 >
                   <div>
                     <span className="font-medium text-white">{client.name}</span>
-                    <span className="text-[11px] text-gray-400 ml-1.5">
+                    <span className="text-[11px] text-gray-400 ml-1.5 rtl:mr-1.5 rtl:ml-0">
                       {client.daysSinceLastWorkout !== null
-                        ? `(No workout in ${client.daysSinceLastWorkout}d)`
-                        : "(No workouts recorded)"}
+                        ? t("actionCenter.noWorkoutInDays", {
+                            days: client.daysSinceLastWorkout,
+                          })
+                        : t("actionCenter.noWorkoutsRecorded")}
                     </span>
                   </div>
                   <button
@@ -177,7 +205,8 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
                     onClick={() => navigate(`/members/${client.id}`)}
                     className="inline-flex items-center gap-1 rounded bg-[#161B22] border border-gray-700 px-2 py-0.5 text-[11px] text-gray-300 hover:border-[#5BE584] hover:text-white transition"
                   >
-                    Follow up <ChevronRight className="h-3 w-3 text-[#5BE584]" />
+                    <span>{t("actionCenter.followUp")}</span>
+                    <ChevronRight className="h-3 w-3 text-[#5BE584] rtl:rotate-180" />
                   </button>
                 </div>
               ))}
@@ -191,10 +220,10 @@ export const CoachActionCenter: React.FC<CoachActionCenterProps> = ({
             <ShieldCheck className="h-5 w-5 text-emerald-400 shrink-0" />
             <div>
               <h4 className="text-xs font-semibold text-white">
-                Action Center Clear
+                {t("actionCenter.clearTitle")}
               </h4>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                All client assignments, invitations, and workout cadences are on track.
+                {t("actionCenter.clearDesc")}
               </p>
             </div>
           </div>

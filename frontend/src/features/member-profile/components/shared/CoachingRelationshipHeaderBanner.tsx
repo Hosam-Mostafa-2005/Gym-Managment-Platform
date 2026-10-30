@@ -1,5 +1,7 @@
+// src/features/member-profile/components/shared/CoachingRelationshipHeaderBanner.tsx
 import React from "react";
 import { ShieldCheck, Lock, Clock, UserCheck, Calendar } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { CoachingRelationshipInfo } from "../../types/member-profile.types";
 
 interface CoachingRelationshipHeaderBannerProps {
@@ -9,15 +11,18 @@ interface CoachingRelationshipHeaderBannerProps {
 export const CoachingRelationshipHeaderBanner: React.FC<
   CoachingRelationshipHeaderBannerProps
 > = ({ relationship }) => {
+  const { t, i18n } = useTranslation(["profile"]);
+
   if (!relationship) return null;
 
   const isConsentGranted = relationship.historySharingConsent === "GRANTED";
   const isConsentPending = relationship.historySharingConsent === "PENDING";
 
   const formatDate = (dateStr?: string | null) => {
-    if (!dateStr) return "N/A";
+    if (!dateStr) return "—";
     try {
-      return new Intl.DateTimeFormat("en-US", {
+      const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -36,10 +41,10 @@ export const CoachingRelationshipHeaderBanner: React.FC<
           </div>
           <div>
             <span className="text-xs font-bold text-gray-200">
-              Active Coaching Relationship
+              {t("rosterMemberView.coachingBanner.title")}
             </span>
             <span className="text-[10px] text-gray-500 block">
-              Direct member engagement
+              {t("rosterMemberView.coachingBanner.subtitle")}
             </span>
           </div>
         </div>
@@ -48,36 +53,34 @@ export const CoachingRelationshipHeaderBanner: React.FC<
           {relationship.startedAt && (
             <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
               <Calendar className="h-3.5 w-3.5 text-gray-500" />
-              <span>Coaching since {formatDate(relationship.startedAt)}</span>
+              <span>
+                {t("rosterMemberView.coachingBanner.since", {
+                  date: formatDate(relationship.startedAt),
+                })}
+              </span>
             </div>
           )}
 
           {isConsentGranted ? (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#16291d] border border-[#23422e] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#5BE584]">
               <ShieldCheck className="h-3 w-3" />
-              History Access Granted
+              {t("rosterMemberView.coachingBanner.accessGranted")}
             </span>
           ) : isConsentPending ? (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-400">
               <Clock className="h-3 w-3" />
-              Consent Pending
+              {t("rosterMemberView.coachingBanner.accessPending")}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-800/80 border border-zinc-700 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-800 border border-gray-700 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-gray-400">
               <Lock className="h-3 w-3" />
-              History Kept Private
+              {t("rosterMemberView.coachingBanner.accessNotGranted")}
             </span>
           )}
         </div>
       </div>
-
-      <div className="flex items-start gap-2 text-xs text-gray-400">
-        <p className="leading-relaxed">
-          {isConsentGranted
-            ? "The member has granted access to their past workout sessions and measurements. Pre-coaching records are clearly distinguished below and not attributed to your coaching period."
-            : "The member has chosen to keep pre-coaching workout and measurement records private. Only activities and metrics logged during this coaching relationship are accessible."}
-        </p>
-      </div>
     </div>
   );
 };
+
+export default CoachingRelationshipHeaderBanner;

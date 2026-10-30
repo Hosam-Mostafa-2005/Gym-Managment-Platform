@@ -1,6 +1,7 @@
 // src/features/dashboard/member/views/MemberActivityView.tsx
 import React, { useState, useMemo } from "react";
 import { Link, useOutletContext } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
   Clock,
@@ -9,7 +10,6 @@ import {
   CheckCircle2,
   ClipboardList,
   Filter,
-  ExternalLink,
 } from "lucide-react";
 import { useMemberDashboard } from "../../hooks/use-dashboard";
 import type {
@@ -18,6 +18,7 @@ import type {
 } from "../../types/dashboard.types";
 
 export const MemberActivityView: React.FC = () => {
+  const { t, i18n } = useTranslation(["dashboard"]);
   const contextData = useOutletContext<MemberDashboardData | undefined>();
   const { data: queryData } = useMemberDashboard();
 
@@ -26,6 +27,8 @@ export const MemberActivityView: React.FC = () => {
 
   const [filterType, setFilterType] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   const filteredActivities = useMemo(() => {
     return activities.filter((act) => {
@@ -46,19 +49,19 @@ export const MemberActivityView: React.FC = () => {
     try {
       const d = new Date(dateStr);
       return {
-        date: d.toLocaleDateString("en-US", {
+        date: d.toLocaleDateString(currentLang, {
           weekday: "short",
           month: "short",
           day: "numeric",
           year: "numeric",
         }),
-        time: d.toLocaleTimeString("en-US", {
+        time: d.toLocaleTimeString(currentLang, {
           hour: "numeric",
           minute: "2-digit",
         }),
       };
     } catch {
-      return { date: "Recently", time: "" };
+      return { date: t("member.activityView.recently"), time: "" };
     }
   };
 
@@ -72,10 +75,10 @@ export const MemberActivityView: React.FC = () => {
           </div>
           <div>
             <h1 className="text-base font-bold text-white">
-              Training Activity History
+              {t("member.activityView.title")}
             </h1>
             <p className="text-xs text-gray-400">
-              Verified chronological timeline of workouts finished and coaching assignments received
+              {t("member.activityView.subtitle")}
             </p>
           </div>
         </div>
@@ -85,15 +88,15 @@ export const MemberActivityView: React.FC = () => {
             to="/dashboard"
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#161B22] px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:border-[#5BE584]/40 transition"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Return to Overview</span>
+            <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
+            <span>{t("member.activityView.returnToOverview")}</span>
           </Link>
           <Link
             to="/sessions"
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#161B22] px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white transition"
           >
             <History className="h-3.5 w-3.5 text-blue-400" />
-            <span>All Sessions</span>
+            <span>{t("member.activityView.allSessions")}</span>
           </Link>
         </div>
       </div>
@@ -102,7 +105,7 @@ export const MemberActivityView: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#1E2329] bg-[#101418] p-4">
         {/* Filter Pills */}
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-500 mr-1" />
+          <Filter className="h-4 w-4 text-gray-500 mr-1 rtl:ml-1 rtl:mr-0" />
           <button
             type="button"
             onClick={() => setFilterType("ALL")}
@@ -112,7 +115,7 @@ export const MemberActivityView: React.FC = () => {
                 : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
-            All Events ({activities.length})
+            {t("member.activityView.allEvents", { count: activities.length })}
           </button>
           <button
             type="button"
@@ -123,7 +126,7 @@ export const MemberActivityView: React.FC = () => {
                 : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
-            Workouts Completed
+            {t("member.activityView.workoutsCompleted")}
           </button>
           <button
             type="button"
@@ -134,19 +137,19 @@ export const MemberActivityView: React.FC = () => {
                 : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
-            Assignments
+            {t("member.activityView.assignments")}
           </button>
         </div>
 
         {/* Search Input */}
         <div className="relative min-w-[220px]">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
+          <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
-            placeholder="Search activity..."
+            placeholder={t("member.activityView.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-[#1E2329] bg-[#0D1014] py-1.5 pl-8 pr-3 text-xs text-white placeholder-gray-500 focus:border-[#5BE584] focus:outline-none"
+            className="w-full rounded-lg border border-[#1E2329] bg-[#0D1014] py-1.5 pl-8 pr-3 rtl:pl-3 rtl:pr-8 text-xs text-white placeholder-gray-500 focus:border-[#5BE584] focus:outline-none"
           />
         </div>
       </div>
@@ -184,7 +187,9 @@ export const MemberActivityView: React.FC = () => {
                         {act.message}
                       </span>
                       <span className="text-[11px] text-gray-500 mt-0.5">
-                        {isWorkout ? "Workout Completion" : "Coach Assignment"}
+                        {isWorkout
+                          ? t("member.activityView.workoutCompletion")
+                          : t("member.activityView.coachAssignment")}
                       </span>
                     </div>
                   </div>
@@ -203,12 +208,14 @@ export const MemberActivityView: React.FC = () => {
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
             <Clock className="h-8 w-8 text-gray-600 mb-2" />
             <h3 className="text-sm font-semibold text-white">
-              No matching activity records
+              {t("member.activityView.noMatchingRecords")}
             </h3>
             <p className="text-xs text-gray-500 mt-1 max-w-sm">
               {searchQuery
-                ? `No activity records match "${searchQuery}".`
-                : "Your completed workouts and coaching assignments will appear here."}
+                ? t("member.activityView.noMatchSearch", {
+                    query: searchQuery,
+                  })
+                : t("member.activityView.noMatchFallback")}
             </p>
           </div>
         )}

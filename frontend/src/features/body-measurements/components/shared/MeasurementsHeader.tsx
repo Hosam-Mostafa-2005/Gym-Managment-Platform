@@ -2,6 +2,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface MeasurementsHeaderProps {
   memberId: string;
@@ -13,6 +14,7 @@ export const MeasurementsHeader: React.FC<MeasurementsHeaderProps> = ({
   onAddMeasurement,
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation("bodyMeasurements");
 
   return (
     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between border-b border-[#1E2329] pb-6">
@@ -21,14 +23,14 @@ export const MeasurementsHeader: React.FC<MeasurementsHeaderProps> = ({
           onClick={() => navigate(`/members/${memberId}`)}
           className="inline-flex w-fit items-center gap-2 text-xs font-medium text-gray-400 transition-colors hover:text-[#5BE584]"
         >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Back to Member
+          <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
+          {t("header.backToMember")}
         </button>
         <h1 className="text-xl font-bold tracking-tight text-gray-100">
-          Body Measurements
+          {t("header.title")}
         </h1>
         <p className="text-xs text-gray-500">
-          Track and manage body measurements over time.
+          {t("header.description")}
         </p>
       </div>
       <button
@@ -36,7 +38,7 @@ export const MeasurementsHeader: React.FC<MeasurementsHeaderProps> = ({
         className="inline-flex items-center gap-2 rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-colors hover:bg-[#4ade80]"
       >
         <Plus className="h-4 w-4" />
-        Add Measurement
+        {t("header.addMeasurement")}
       </button>
     </div>
   );

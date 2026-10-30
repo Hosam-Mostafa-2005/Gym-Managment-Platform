@@ -1,5 +1,6 @@
 // src/features/dashboard/member/components/activity/WorkoutActivity.tsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   BarChart,
   Bar,
@@ -21,6 +22,7 @@ export const WorkoutActivity: React.FC<WorkoutActivityProps> = ({
   last30Days = [],
   last12Months = [],
 }) => {
+  const { t } = useTranslation(["dashboard"]);
   const [view, setView] = useState<"30D" | "12M">("30D");
 
   const data = view === "30D" ? last30Days : last12Months;
@@ -31,14 +33,20 @@ export const WorkoutActivity: React.FC<WorkoutActivityProps> = ({
       <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-5 w-5 text-gray-400" />
-          <h2 className="text-sm font-semibold text-white">Volume Activity</h2>
+          <h2 className="text-sm font-semibold text-white">
+            {t("member.analyticsView.volumeActivity")}
+          </h2>
           <InfoTooltip
-            title="Training Volume Over Time"
-            description="Total weight tonnage lifted per day (past 30 days) or per month (past 12 months)."
-            calculation="SUM(reps × weight_kg) for all completed sets within each date interval"
-            unit="kg lifted"
-            dateRange={view === "30D" ? "Past 30 days" : "Past 12 months"}
-            limitations="Days with 0 kg indicate rest days or non-weightlifting routines."
+            title={t("member.analyticsView.volumeActivityTooltipTitle")}
+            description={t("member.analyticsView.volumeActivityTooltipDesc")}
+            calculation={t("member.analyticsView.volumeActivityTooltipCalc")}
+            unit={t("member.analyticsView.volumeActivityTooltipUnit")}
+            dateRange={
+              view === "30D"
+                ? t("member.analyticsView.volumeActivityTooltipRange30D")
+                : t("member.analyticsView.volumeActivityTooltipRange12M")
+            }
+            limitations={t("member.analyticsView.volumeActivityTooltipLimit")}
           />
         </div>
         <div className="flex rounded-lg border border-[#1E2329] bg-[#090B0F] p-1">
@@ -50,7 +58,7 @@ export const WorkoutActivity: React.FC<WorkoutActivityProps> = ({
                 : "text-gray-500 hover:text-gray-300"
             }`}
           >
-            30 Days
+            {t("member.analyticsView.range30D")}
           </button>
           <button
             onClick={() => setView("12M")}
@@ -60,7 +68,7 @@ export const WorkoutActivity: React.FC<WorkoutActivityProps> = ({
                 : "text-gray-500 hover:text-gray-300"
             }`}
           >
-            12 Months
+            {t("member.analyticsView.range12M")}
           </button>
         </div>
       </div>
@@ -97,19 +105,17 @@ export const WorkoutActivity: React.FC<WorkoutActivityProps> = ({
                   borderRadius: "8px",
                   color: "#fff",
                 }}
-                formatter={(val: any) => [`${Number(val).toLocaleString()} kg`, "Volume"]}
+                formatter={(val: any) => [
+                  `${Number(val).toLocaleString()} kg`,
+                  t("member.analyticsView.volume"),
+                ]}
               />
-              <Bar
-                dataKey="volume"
-                fill="#5BE584"
-                radius={[4, 4, 0, 0]}
-                maxBarSize={40}
-              />
+              <Bar dataKey="volume" fill="#5BE584" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         ) : (
           <div className="flex h-full items-center justify-center text-sm text-gray-500">
-            No volume data available.
+            {t("member.progressSnapshot.noVolumeData")}
           </div>
         )}
       </div>

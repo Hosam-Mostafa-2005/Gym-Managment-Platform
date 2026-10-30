@@ -1,6 +1,7 @@
 // src/features/gamification/pages/GamificationPage.tsx
 
 import React, { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Trophy,
   Flame,
@@ -22,15 +23,16 @@ import type {
   AchievementWithStatus,
 } from "../types/gamification.types";
 
-const CATEGORIES: { label: string; value: "ALL" | AchievementCategory; icon: React.ElementType }[] = [
-  { label: "All Badges", value: "ALL", icon: Award },
-  { label: "Workouts", value: "WORKOUT", icon: Dumbbell },
-  { label: "Consistency", value: "CONSISTENCY", icon: Flame },
-  { label: "Nutrition", value: "NUTRITION", icon: Apple },
-  { label: "Progress", value: "PROGRESS", icon: Scale },
+const CATEGORIES: { key: "ALL" | AchievementCategory; icon: React.ElementType }[] = [
+  { key: "ALL", icon: Award },
+  { key: "WORKOUT", icon: Dumbbell },
+  { key: "CONSISTENCY", icon: Flame },
+  { key: "NUTRITION", icon: Apple },
+  { key: "PROGRESS", icon: Scale },
 ];
 
 export const GamificationPage: React.FC = () => {
+  const { t } = useTranslation(["achievements"]);
   const { data, isLoading, isError, error, refetch } = useMyGamification();
 
   const [selectedCategory, setSelectedCategory] = useState<"ALL" | AchievementCategory>("ALL");
@@ -95,13 +97,13 @@ export const GamificationPage: React.FC = () => {
       <div className="min-h-full w-full bg-[#090B0F] p-8 flex items-center justify-center">
         <div className="max-w-md rounded-2xl border border-red-500/20 bg-red-500/5 p-6 text-center">
           <p className="text-sm text-red-400 font-semibold mb-3">
-            {error instanceof Error ? error.message : "Failed to load achievements."}
+            {error instanceof Error ? error.message : t("emptyState.loadError")}
           </p>
           <button
             onClick={() => refetch()}
             className="inline-flex items-center gap-2 rounded-xl bg-[#1E2329] px-4 py-2 text-xs font-semibold text-white hover:bg-[#2A313A]"
           >
-            <RotateCcw className="h-3.5 w-3.5" /> Retry
+            <RotateCcw className="h-3.5 w-3.5 rtl:rotate-180" /> {t("emptyState.retry")}
           </button>
         </div>
       </div>
@@ -116,23 +118,27 @@ export const GamificationPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-                <Trophy className="h-7 w-7 text-yellow-400" /> Achievements & Streaks
+                <Trophy className="h-7 w-7 text-yellow-400" /> {t("header.title")}
               </h1>
               <span className="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-3 py-0.5 text-xs font-bold text-yellow-400">
-                {summary.totalPoints} XP Total
+                {t("header.xpTotal", { count: summary.totalPoints })}
               </span>
             </div>
             <p className="mt-1.5 text-xs md:text-sm text-gray-400">
-              Celebrate your milestones, maintain daily consistency, and level up your training journey.
+              {t("header.subtitle")}
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 rounded-xl border border-[#1E2329] bg-[#101418] px-4 py-2">
               <Sparkles className="h-4 w-4 text-[#5BE584]" />
-              <span className="text-xs text-gray-400">Badges Unlocked:</span>
+              <span className="text-xs text-gray-400">{t("header.badgesUnlocked")}</span>
               <span className="text-xs font-bold text-white">
-                {summary.totalEarned} / {summary.totalAvailable} ({summary.completionRate}%)
+                {t("header.badgesUnlockedStats", {
+                  earned: summary.totalEarned,
+                  total: summary.totalAvailable,
+                  pct: summary.completionRate,
+                })}
               </span>
             </div>
           </div>
@@ -152,22 +158,22 @@ export const GamificationPage: React.FC = () => {
                   <Zap className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-100">Reward Points</h3>
-                  <p className="text-[11px] text-gray-400">Earned experience</p>
+                  <h3 className="text-sm font-semibold text-gray-100">{t("kpi.points.title")}</h3>
+                  <p className="text-[11px] text-gray-400">{t("kpi.points.subtitle")}</p>
                 </div>
               </div>
               <span className="rounded-full border border-yellow-500/30 bg-yellow-500/10 px-2 py-0.5 text-[10px] font-bold text-yellow-400">
-                XP
+                {t("kpi.points.badge")}
               </span>
             </div>
             <div className="mt-4 flex items-baseline gap-1.5">
               <span className="text-3xl font-extrabold tracking-tight text-white">
                 {summary.totalPoints}
               </span>
-              <span className="text-xs font-semibold text-gray-400">points accumulated</span>
+              <span className="text-xs font-semibold text-gray-400">{t("kpi.points.accumulated")}</span>
             </div>
             <p className="mt-1 text-xs text-gray-400">
-              Earn points for every milestone, streak, and workout completed.
+              {t("kpi.points.desc")}
             </p>
           </div>
 
@@ -180,8 +186,8 @@ export const GamificationPage: React.FC = () => {
                   <Award className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-100">Badge Progress</h3>
-                  <p className="text-[11px] text-gray-400">Overall library mastery</p>
+                  <h3 className="text-sm font-semibold text-gray-100">{t("kpi.completion.title")}</h3>
+                  <p className="text-[11px] text-gray-400">{t("kpi.completion.subtitle")}</p>
                 </div>
               </div>
               <span className="rounded-full border border-purple-500/30 bg-purple-500/10 px-2 py-0.5 text-[10px] font-bold text-purple-400">
@@ -193,7 +199,7 @@ export const GamificationPage: React.FC = () => {
                 {summary.totalEarned}
               </span>
               <span className="text-xs font-semibold text-gray-400">
-                / {summary.totalAvailable} unlocked
+                {t("kpi.completion.unlocked", { total: summary.totalAvailable })}
               </span>
             </div>
             <div className="mt-2 h-1.5 w-full rounded-full bg-[#161B22] overflow-hidden">
@@ -211,11 +217,11 @@ export const GamificationPage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#101418] p-1.5">
             {CATEGORIES.map((cat) => {
               const Icon = cat.icon;
-              const isActive = selectedCategory === cat.value;
+              const isActive = selectedCategory === cat.key;
               return (
                 <button
-                  key={cat.value}
-                  onClick={() => setSelectedCategory(cat.value)}
+                  key={cat.key}
+                  onClick={() => setSelectedCategory(cat.key)}
                   className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
                     isActive
                       ? "bg-[#1E2329] text-white shadow-sm"
@@ -223,7 +229,7 @@ export const GamificationPage: React.FC = () => {
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
-                  {cat.label}
+                  {t(`categories.${cat.key}` as any)}
                 </button>
               );
             })}
@@ -239,7 +245,7 @@ export const GamificationPage: React.FC = () => {
                   : "text-gray-400 hover:text-gray-200"
               }`}
             >
-              All
+              {t("filters.all")}
             </button>
             <button
               onClick={() => setStatusFilter("UNLOCKED")}
@@ -249,7 +255,7 @@ export const GamificationPage: React.FC = () => {
                   : "text-gray-400 hover:text-gray-200"
               }`}
             >
-              Unlocked ({summary.totalEarned})
+              {t("filters.unlocked", { count: summary.totalEarned })}
             </button>
             <button
               onClick={() => setStatusFilter("LOCKED")}
@@ -259,7 +265,7 @@ export const GamificationPage: React.FC = () => {
                   : "text-gray-400 hover:text-gray-200"
               }`}
             >
-              Locked ({summary.totalAvailable - summary.totalEarned})
+              {t("filters.locked", { count: summary.totalAvailable - summary.totalEarned })}
             </button>
           </div>
         </div>
@@ -268,9 +274,9 @@ export const GamificationPage: React.FC = () => {
         {filteredAchievements.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#1E2329] bg-[#101418]/50 p-12 text-center">
             <Award className="h-10 w-10 text-gray-600 mb-3" />
-            <h3 className="text-base font-semibold text-gray-300">No achievements found</h3>
+            <h3 className="text-base font-semibold text-gray-300">{t("emptyState.noAchievementsFound")}</h3>
             <p className="mt-1 text-xs text-gray-500">
-              Try adjusting your category or unlock status filter.
+              {t("emptyState.adjustFilters")}
             </p>
           </div>
         ) : (

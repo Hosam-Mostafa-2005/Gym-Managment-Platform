@@ -5,6 +5,7 @@ import { Outlet, useLocation } from "react-router-dom";
 
 import Sidebar from "../sidebar/Sidebar";
 import Header from "../Header/Header";
+import { AchievementCelebrationProvider } from "@/features/gamification/context/AchievementCelebrationContext";
 
 const AppLayout = () => {
   // Default = Collapsed (closed on mobile, icon rail on desktop)
@@ -25,17 +26,19 @@ const AppLayout = () => {
   };
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden bg-[#090B0F] text-[#F8FAFC]">
-      <Sidebar collapsed={collapsed} onCloseMobile={handleCloseMobile} />
+    <AchievementCelebrationProvider>
+      <div className="flex h-[100dvh] overflow-hidden bg-[#090B0F] text-[#F8FAFC]">
+        <Sidebar collapsed={collapsed} onCloseMobile={handleCloseMobile} />
 
-      <div className="flex flex-1 flex-col overflow-hidden h-[100dvh] min-w-0 relative z-10">
-        <Header collapsed={collapsed} onToggle={handleToggle} />
+        <div className="flex flex-1 flex-col overflow-hidden h-[100dvh] min-w-0 relative z-10">
+          <Header collapsed={collapsed} onToggle={handleToggle} />
 
-        <main className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
-          <Outlet />
-        </main>
+          <main className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </AchievementCelebrationProvider>
   );
 };
 

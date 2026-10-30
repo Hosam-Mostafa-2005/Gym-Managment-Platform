@@ -1,6 +1,7 @@
 // src/features/coach-dashboard/views/CoachActivityView.tsx
 import React, { useState, useMemo } from "react";
 import { Link, useOutletContext } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
   Clock,
@@ -20,6 +21,7 @@ import type {
 } from "../types/coach-dashboard.types";
 
 export const CoachActivityView: React.FC = () => {
+  const { t, i18n } = useTranslation(["coachDashboard"]);
   const contextData = useOutletContext<CoachDashboard | undefined>();
   const { data: queryData } = useCoachDashboard();
 
@@ -28,6 +30,8 @@ export const CoachActivityView: React.FC = () => {
 
   const [filterAction, setFilterAction] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   const filteredActivities = useMemo(() => {
     return activities.filter((act) => {
@@ -57,34 +61,35 @@ export const CoachActivityView: React.FC = () => {
   }, [activities, filterAction, searchQuery]);
 
   const formatActivityDate = (dateValue: string | Date | null) => {
-    if (!dateValue) return { date: "Recently", time: "" };
+    if (!dateValue) return { date: t("activityView.recently"), time: "" };
     try {
       const d = new Date(dateValue);
       return {
-        date: d.toLocaleDateString("en-US", {
+        date: d.toLocaleDateString(currentLang, {
           weekday: "short",
           month: "short",
           day: "numeric",
           year: "numeric",
         }),
-        time: d.toLocaleTimeString("en-US", {
+        time: d.toLocaleTimeString(currentLang, {
           hour: "numeric",
           minute: "2-digit",
         }),
       };
     } catch {
-      return { date: "Recently", time: "" };
+      return { date: t("activityView.recently"), time: "" };
     }
   };
 
   const formatDuration = (mins?: number | null) => {
     if (mins === undefined || mins === null) return null;
-    if (mins <= 0) return "< 1 min";
-    if (mins === 1) return "1 min";
-    if (mins < 60) return `${mins} mins`;
+    if (mins <= 0) return t("recentActivity.lessThanOneMin");
+    if (mins < 60) return t("recentActivity.minsDuration", { count: mins });
     const hrs = Math.floor(mins / 60);
     const remMins = mins % 60;
-    return remMins > 0 ? `${hrs}h ${remMins}m` : `${hrs}h`;
+    return remMins > 0
+      ? t("recentActivity.hoursMinsDuration", { hours: hrs, mins: remMins })
+      : t("recentActivity.hoursDuration", { count: hrs });
   };
 
   const getActionDetails = (item: DashboardActivity) => {
@@ -93,7 +98,7 @@ export const CoachActivityView: React.FC = () => {
 
     if (action === "COMPLETED" || (!action && type === "WORKOUT")) {
       return {
-        verb: "completed",
+        verb: t("recentActivity.verbCompleted"),
         Icon: CheckCircle2,
         badgeClasses: "bg-[#5BE584]/10 border-[#5BE584]/20 text-[#5BE584]",
       };
@@ -101,7 +106,7 @@ export const CoachActivityView: React.FC = () => {
 
     if (action === "STARTED") {
       return {
-        verb: "started",
+        verb: t("recentActivity.verbStarted"),
         Icon: Play,
         badgeClasses: "bg-blue-500/10 border-blue-500/20 text-blue-400",
       };
@@ -109,7 +114,7 @@ export const CoachActivityView: React.FC = () => {
 
     if (action === "CREATED" || type === "ASSIGNMENT") {
       return {
-        verb: "assigned",
+        verb: t("recentActivity.verbAssigned"),
         Icon: Calendar,
         badgeClasses: "bg-purple-500/10 border-purple-500/20 text-purple-400",
       };
@@ -117,14 +122,14 @@ export const CoachActivityView: React.FC = () => {
 
     if (action === "RECORDED" || type === "BODY_MEASUREMENT") {
       return {
-        verb: "logged metrics for",
+        verb: t("recentActivity.verbLoggedMetrics"),
         Icon: Scale,
         badgeClasses: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
       };
     }
 
     return {
-      verb: "logged",
+      verb: t("recentActivity.verbLogged"),
       Icon: ActivityIcon,
       badgeClasses: "bg-gray-500/10 border-gray-500/20 text-gray-400",
     };
@@ -140,10 +145,10 @@ export const CoachActivityView: React.FC = () => {
           </div>
           <div>
             <h1 className="text-base font-bold text-white">
-              Coaching Activity Feed
+              {t("activityView.title")}
             </h1>
             <p className="text-xs text-gray-400">
-              Verified chronological timeline of all athlete workouts, program assignments, and metric updates
+              {t("activityView.subtitle")}
             </p>
           </div>
         </div>
@@ -153,15 +158,15 @@ export const CoachActivityView: React.FC = () => {
             to="/coach-dashboard"
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#161B22] px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:border-[#5BE584]/40 transition"
           >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Return to Overview</span>
+            <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
+            <span>{t("activityView.returnToOverview")}</span>
           </Link>
           <Link
             to="/members"
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#161B22] px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white transition"
           >
             <Users className="h-3.5 w-3.5 text-[#5BE584]" />
-            <span>Athletes Roster</span>
+            <span>{t("activityView.athletesRoster")}</span>
           </Link>
         </div>
       </div>
@@ -170,7 +175,7 @@ export const CoachActivityView: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#1E2329] bg-[#101418] p-4">
         {/* Filter Pills */}
         <div className="flex flex-wrap items-center gap-2">
-          <Filter className="h-4 w-4 text-gray-500 mr-1" />
+          <Filter className="h-4 w-4 text-gray-500 mr-1 rtl:ml-1 rtl:mr-0" />
           <button
             type="button"
             onClick={() => setFilterAction("ALL")}
@@ -180,7 +185,7 @@ export const CoachActivityView: React.FC = () => {
                 : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
-            All Events ({activities.length})
+            {t("activityView.allEvents", { count: activities.length })}
           </button>
           <button
             type="button"
@@ -191,7 +196,7 @@ export const CoachActivityView: React.FC = () => {
                 : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
-            Completed Sessions
+            {t("activityView.completedSessions")}
           </button>
           <button
             type="button"
@@ -202,7 +207,7 @@ export const CoachActivityView: React.FC = () => {
                 : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
-            In-Progress
+            {t("activityView.inProgress")}
           </button>
           <button
             type="button"
@@ -213,7 +218,7 @@ export const CoachActivityView: React.FC = () => {
                 : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
-            Assignments
+            {t("activityView.assignments")}
           </button>
           <button
             type="button"
@@ -224,19 +229,19 @@ export const CoachActivityView: React.FC = () => {
                 : "text-gray-400 hover:text-white hover:bg-white/[0.04]"
             }`}
           >
-            Body Metrics
+            {t("activityView.bodyMetrics")}
           </button>
         </div>
 
         {/* Search Input */}
         <div className="relative min-w-[220px]">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
+          <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
           <input
             type="text"
-            placeholder="Search by athlete or workout..."
+            placeholder={t("activityView.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-lg border border-[#1E2329] bg-[#0D1014] py-1.5 pl-8 pr-3 text-xs text-white placeholder-gray-500 focus:border-[#5BE584] focus:outline-none"
+            className="w-full rounded-lg border border-[#1E2329] bg-[#0D1014] py-1.5 pl-8 pr-3 rtl:pl-3 rtl:pr-8 text-xs text-white placeholder-gray-500 focus:border-[#5BE584] focus:outline-none"
           />
         </div>
       </div>
@@ -247,9 +252,9 @@ export const CoachActivityView: React.FC = () => {
           <div className="divide-y divide-[#1E2329]">
             {filteredActivities.map((item, index) => {
               const memberId = item.member?.id;
-              const memberName = item.member?.name || "Member";
+              const memberName = item.member?.name || t("recentActivity.fallbackMember");
               const workoutTitle =
-                item.metadata?.workoutTitle || item.action || "Activity logged";
+                item.metadata?.workoutTitle || item.action || t("recentActivity.activityLogged");
               const { date, time } = formatActivityDate(item.date);
               const { verb, Icon, badgeClasses } = getActionDetails(item);
               const formattedDuration = formatDuration(item.metadata?.duration);
@@ -271,16 +276,16 @@ export const CoachActivityView: React.FC = () => {
                         {memberId ? (
                           <Link
                             to={`/members/${memberId}`}
-                            className="font-semibold text-white hover:text-[#5BE584] transition-colors mr-1.5"
+                            className="font-semibold text-white hover:text-[#5BE584] transition-colors mr-1.5 rtl:mr-0 rtl:ml-1.5"
                           >
                             {memberName}
                           </Link>
                         ) : (
-                          <span className="font-semibold text-white mr-1.5">
+                          <span className="font-semibold text-white mr-1.5 rtl:mr-0 rtl:ml-1.5">
                             {memberName}
                           </span>
                         )}
-                        <span className="text-gray-400 mr-1.5">{verb}</span>
+                        <span className="text-gray-400 mr-1.5 rtl:mr-0 rtl:ml-1.5">{verb}</span>
                         <span className="font-medium text-white">
                           {workoutTitle}
                         </span>
@@ -290,7 +295,7 @@ export const CoachActivityView: React.FC = () => {
                         <div className="flex flex-wrap items-center gap-3 text-[11px] text-gray-400 mt-1">
                           {formattedDuration && (
                             <span>
-                              Duration:{" "}
+                              {t("recentActivity.duration")}{" "}
                               <strong className="text-gray-300 font-mono">
                                 {formattedDuration}
                               </strong>
@@ -299,7 +304,7 @@ export const CoachActivityView: React.FC = () => {
                           {item.metadata.volume !== undefined &&
                             item.metadata.volume > 0 && (
                               <span>
-                                Volume:{" "}
+                                {t("recentActivity.volume")}{" "}
                                 <strong className="text-gray-300 font-mono">
                                   {item.metadata.volume.toLocaleString()}kg
                                 </strong>
@@ -307,7 +312,7 @@ export const CoachActivityView: React.FC = () => {
                             )}
                           {item.metadata.weight !== undefined && (
                             <span>
-                              Weight:{" "}
+                              {t("recentActivity.weight")}{" "}
                               <strong className="text-gray-300 font-mono">
                                 {item.metadata.weight}kg
                               </strong>
@@ -315,7 +320,7 @@ export const CoachActivityView: React.FC = () => {
                           )}
                           {item.metadata.bodyFat !== undefined && (
                             <span>
-                              Body Fat:{" "}
+                              {t("recentActivity.bodyFat")}{" "}
                               <strong className="text-gray-300 font-mono">
                                 {item.metadata.bodyFat}%
                               </strong>
@@ -340,12 +345,14 @@ export const CoachActivityView: React.FC = () => {
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
             <Clock className="h-8 w-8 text-gray-600 mb-2" />
             <h3 className="text-sm font-semibold text-white">
-              No matching coaching activity
+              {t("activityView.noMatchingActivity")}
             </h3>
             <p className="text-xs text-gray-500 mt-1 max-w-sm">
               {searchQuery
-                ? `No activity records match "${searchQuery}".`
-                : "Verified workout completions and program assignments by your athletes will appear here."}
+                ? t("activityView.noMatchSearch", {
+                    query: searchQuery,
+                  })
+                : t("activityView.noMatchFallback")}
             </p>
           </div>
         )}

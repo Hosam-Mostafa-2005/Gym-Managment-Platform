@@ -1,6 +1,7 @@
 // src/features/dashboard/member/components/WelcomeQuickStats.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Dumbbell, Calendar, Scale, TrendingUp, TrendingDown, ArrowRight } from "lucide-react";
 import type { MemberDashboardOverview } from "../../types/dashboard.types";
 
@@ -9,6 +10,7 @@ interface WelcomeQuickStatsProps {
 }
 
 export const WelcomeQuickStats: React.FC<WelcomeQuickStatsProps> = ({ overview }) => {
+  const { t, i18n } = useTranslation(["dashboard"]);
   const navigate = useNavigate();
 
   const completedWorkouts = overview.completedSessions ?? 0;
@@ -20,13 +22,15 @@ export const WelcomeQuickStats: React.FC<WelcomeQuickStatsProps> = ({ overview }
   const latestMeasurement = overview.latestMeasurement;
   const totalVolume = overview.totalVolumeLifted ?? 0;
 
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
+
   return (
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {/* 1. Workouts Completed */}
       <div className="relative overflow-hidden rounded-xl border border-[#1E2329] bg-[#101418] p-5 shadow-sm transition hover:border-[#2A313C]">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-            Workouts Completed
+            {t("member.quickStats.workoutsCompleted")}
           </span>
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#5BE584]/10 text-[#5BE584]">
             <Dumbbell className="h-5 w-5" />
@@ -37,7 +41,9 @@ export const WelcomeQuickStats: React.FC<WelcomeQuickStatsProps> = ({ overview }
             {completedWorkouts}
           </div>
           <p className="mt-1 text-xs text-gray-400">
-            <span className="text-[#5BE584] font-medium">{overview.workoutsThisMonth ?? 0}</span> sessions this month
+            {t("member.quickStats.sessionsThisMonth", {
+              count: overview.workoutsThisMonth ?? 0,
+            })}
           </p>
         </div>
       </div>
@@ -46,7 +52,7 @@ export const WelcomeQuickStats: React.FC<WelcomeQuickStatsProps> = ({ overview }
       <div className="relative overflow-hidden rounded-xl border border-[#1E2329] bg-[#101418] p-5 shadow-sm transition hover:border-[#2A313C]">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-            30-Day Consistency
+            {t("member.quickStats.consistency30Days")}
           </span>
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400">
             <Calendar className="h-5 w-5" />
@@ -57,7 +63,9 @@ export const WelcomeQuickStats: React.FC<WelcomeQuickStatsProps> = ({ overview }
             {consistency.percentage}%
           </div>
           <p className="mt-1 text-xs text-gray-400">
-            <span className="text-blue-400 font-medium">{consistency.activeDays}</span> active days out of 30
+            {t("member.quickStats.activeDaysOutOf30", {
+              count: consistency.activeDays,
+            })}
           </p>
         </div>
       </div>
@@ -66,7 +74,7 @@ export const WelcomeQuickStats: React.FC<WelcomeQuickStatsProps> = ({ overview }
       <div className="relative overflow-hidden rounded-xl border border-[#1E2329] bg-[#101418] p-5 shadow-sm transition hover:border-[#2A313C]">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-            Latest Body Weight
+            {t("member.quickStats.latestBodyWeight")}
           </span>
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
             <Scale className="h-5 w-5" />
@@ -88,30 +96,35 @@ export const WelcomeQuickStats: React.FC<WelcomeQuickStatsProps> = ({ overview }
                     }`}
                   >
                     {latestMeasurement.diffFromPrevious <= 0 ? (
-                      <TrendingDown className="mr-0.5 h-3.5 w-3.5" />
+                      <TrendingDown className="mr-0.5 h-3.5 w-3.5 rtl:ml-0.5 rtl:mr-0" />
                     ) : (
-                      <TrendingUp className="mr-0.5 h-3.5 w-3.5" />
+                      <TrendingUp className="mr-0.5 h-3.5 w-3.5 rtl:ml-0.5 rtl:mr-0" />
                     )}
                     {Math.abs(latestMeasurement.diffFromPrevious)} kg
                   </span>
                 )}
               </div>
               <p className="mt-1 text-xs text-gray-400">
-                Recorded on {new Date(latestMeasurement.measuredAt).toLocaleDateString(undefined, {
-                  month: "short",
-                  day: "numeric",
+                {t("member.quickStats.recordedOn", {
+                  date: new Date(latestMeasurement.measuredAt).toLocaleDateString(currentLang, {
+                    month: "short",
+                    day: "numeric",
+                  }),
                 })}
               </p>
             </>
           ) : (
             <div className="flex flex-col gap-1">
-              <span className="text-sm text-gray-400">No weight recorded</span>
+              <span className="text-sm text-gray-400">
+                {t("member.quickStats.noWeightRecorded")}
+              </span>
               <button
                 type="button"
                 onClick={() => navigate("/measurements")}
                 className="inline-flex items-center text-xs font-semibold text-[#5BE584] hover:underline"
               >
-                Log measurement <ArrowRight className="ml-1 h-3 w-3" />
+                <span>{t("member.quickStats.logMeasurement")}</span>
+                <ArrowRight className="ml-1 h-3 w-3 rtl:mr-1 rtl:ml-0 rtl:rotate-180" />
               </button>
             </div>
           )}
@@ -122,7 +135,7 @@ export const WelcomeQuickStats: React.FC<WelcomeQuickStatsProps> = ({ overview }
       <div className="relative overflow-hidden rounded-xl border border-[#1E2329] bg-[#101418] p-5 shadow-sm transition hover:border-[#2A313C]">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-            Total Volume Lifted
+            {t("member.quickStats.totalVolumeLifted")}
           </span>
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-500/10 text-purple-400">
             <TrendingUp className="h-5 w-5" />
@@ -133,7 +146,9 @@ export const WelcomeQuickStats: React.FC<WelcomeQuickStatsProps> = ({ overview }
             {totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}k` : totalVolume} kg
           </div>
           <p className="mt-1 text-xs text-gray-400">
-            Across {overview.totalSetsCompleted ?? 0} completed sets
+            {t("member.quickStats.acrossCompletedSets", {
+              count: overview.totalSetsCompleted ?? 0,
+            })}
           </p>
         </div>
       </div>

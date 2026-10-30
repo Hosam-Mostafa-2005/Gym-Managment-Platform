@@ -1,6 +1,7 @@
 // src/features/gamification/components/WeeklyGoalCard.tsx
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Target, CheckCircle2 } from "lucide-react";
 import type { WeeklyGoalInfo } from "../types/gamification.types";
 
@@ -9,6 +10,7 @@ interface WeeklyGoalCardProps {
 }
 
 export const WeeklyGoalCard: React.FC<WeeklyGoalCardProps> = ({ weeklyGoal }) => {
+  const { t, i18n } = useTranslation(["achievements"]);
   const { targetWorkouts, completedThisWeek, percent, weekStartDate } = weeklyGoal;
   const isCompleted = completedThisWeek >= targetWorkouts;
 
@@ -22,9 +24,14 @@ export const WeeklyGoalCard: React.FC<WeeklyGoalCardProps> = ({ weeklyGoal }) =>
             <Target className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-100">Weekly Target</h3>
+            <h3 className="text-sm font-semibold text-gray-100">{t("kpi.weeklyGoal.title")}</h3>
             <p className="text-[11px] text-gray-400">
-              Week of {new Date(weekStartDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+              {t("kpi.weeklyGoal.subtitle", {
+                date: new Date(weekStartDate).toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", {
+                  month: "short",
+                  day: "numeric",
+                }),
+              })}
             </p>
           </div>
         </div>
@@ -38,10 +45,10 @@ export const WeeklyGoalCard: React.FC<WeeklyGoalCardProps> = ({ weeklyGoal }) =>
         >
           {isCompleted ? (
             <>
-              <CheckCircle2 className="h-3 w-3" /> Goal Met!
+              <CheckCircle2 className="h-3 w-3" /> {t("kpi.weeklyGoal.goalMet")}
             </>
           ) : (
-            `${targetWorkouts - completedThisWeek} more to go`
+            t("kpi.weeklyGoal.remaining", { count: targetWorkouts - completedThisWeek })
           )}
         </span>
       </div>
@@ -53,7 +60,7 @@ export const WeeklyGoalCard: React.FC<WeeklyGoalCardProps> = ({ weeklyGoal }) =>
               {completedThisWeek}
             </span>
             <span className="text-xs font-semibold text-gray-400">
-              / {targetWorkouts} workouts completed
+              {t("kpi.weeklyGoal.workoutsCompleted", { total: targetWorkouts })}
             </span>
           </div>
           <span className="text-sm font-bold text-[#5BE584]">

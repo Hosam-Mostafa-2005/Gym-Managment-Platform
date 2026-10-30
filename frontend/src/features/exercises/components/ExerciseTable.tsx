@@ -10,6 +10,7 @@ import {
   Target,
   Trash2,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Exercise } from "../types/exercise.types";
 import ExerciseImage from "./ExerciseImage";
 
@@ -22,7 +23,11 @@ interface ExerciseTableProps {
   onResetFilters?: () => void;
 }
 
-function getMovementCategory(exercise: Exercise): string {
+function getMovementCategory(
+  exercise: Exercise,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: (key: any) => string,
+): string {
   const primary = (exercise.primaryMuscles || []).map((m) => m.toLowerCase());
   const secondary = (exercise.secondaryMuscles || []).map((m) =>
     m.toLowerCase(),
@@ -34,25 +39,41 @@ function getMovementCategory(exercise: Exercise): string {
       ["quadriceps", "hamstrings", "glutes", "calves"].includes(m),
     )
   ) {
-    return isCompound ? "Lower Body Compound" : "Lower Body Isolation";
+    return isCompound
+      ? t("categories.lowerBodyCompound")
+      : t("categories.lowerBodyIsolation");
   }
   if (primary.some((m) => ["core", "abs", "obliques"].includes(m))) {
-    return "Core & Stability";
+    return t("categories.coreStability");
   }
-  if (primary.some((m) => ["chest", "shoulders", "anterior deltoids", "lateral deltoids"].includes(m))) {
-    return isCompound ? "Upper Push Compound" : "Upper Push Isolation";
+  if (
+    primary.some((m) =>
+      ["chest", "shoulders", "anterior deltoids", "lateral deltoids"].includes(
+        m,
+      ),
+    )
+  ) {
+    return isCompound
+      ? t("categories.upperPushCompound")
+      : t("categories.upperPushIsolation");
   }
   if (
     primary.some((m) =>
       ["back", "lats", "rear deltoids", "erector spinae", "traps"].includes(m),
     )
   ) {
-    return isCompound ? "Upper Pull Compound" : "Upper Pull Isolation";
+    return isCompound
+      ? t("categories.upperPullCompound")
+      : t("categories.upperPullIsolation");
   }
   if (primary.some((m) => ["biceps", "triceps", "forearms"].includes(m))) {
-    return isCompound ? "Arm Compound" : "Arm Isolation";
+    return isCompound
+      ? t("categories.armCompound")
+      : t("categories.armIsolation");
   }
-  return isCompound ? "Compound Movement" : "Targeted Isolation";
+  return isCompound
+    ? t("categories.compoundMovement")
+    : t("categories.targetedIsolation");
 }
 
 function getDifficultyBadgeStyle(difficulty: string): string {
@@ -76,6 +97,8 @@ export default function ExerciseTable({
   canModifyExercise,
   onResetFilters,
 }: ExerciseTableProps) {
+  const { t } = useTranslation(["exercises"]);
+
   if (exercises.length === 0) {
     return (
       <div className="rounded-2xl border border-[#1E2329] bg-[#101418]/90 px-6 py-16 text-center shadow-lg">
@@ -83,11 +106,13 @@ export default function ExerciseTable({
           <Dumbbell className="h-6 w-6" />
         </div>
         <h3 className="text-base font-bold text-white">
-          No matching exercises found
+          {t("empty.title", "No matching exercises found")}
         </h3>
         <p className="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-[#9CA3AF]">
-          Try adjusting your search keywords, muscle group, equipment, or
-          difficulty filters to see more movements from the training library.
+          {t(
+            "empty.description",
+            "Try adjusting your search keywords, muscle group, equipment, or difficulty filters to see more movements from the training library.",
+          )}
         </p>
         {onResetFilters && (
           <button
@@ -95,7 +120,7 @@ export default function ExerciseTable({
             onClick={onResetFilters}
             className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] hover:bg-[#49D472] transition-colors"
           >
-            Clear All Filters
+            {t("empty.clearFilters", "Clear All Filters")}
           </button>
         )}
       </div>
@@ -109,7 +134,7 @@ export default function ExerciseTable({
         const canModify = canModifyExercise
           ? canModifyExercise(exercise)
           : true;
-        const categoryLabel = getMovementCategory(exercise);
+        const categoryLabel = getMovementCategory(exercise, t);
         const primaryMuscles = exercise.primaryMuscles ?? [];
         const secondaryMuscles = exercise.secondaryMuscles ?? [];
         const equipmentList = exercise.equipment ?? [];
@@ -133,7 +158,7 @@ export default function ExerciseTable({
                     <button
                       type="button"
                       onClick={() => onView(exercise)}
-                      className="text-left text-base sm:text-lg font-bold tracking-tight text-white transition-colors hover:text-[#5BE584] focus:outline-none"
+                      className="text-start text-base sm:text-lg font-bold tracking-tight text-white transition-colors hover:text-[#5BE584] focus:outline-none"
                     >
                       {exercise.name}
                     </button>
@@ -150,14 +175,17 @@ export default function ExerciseTable({
                         exercise.difficulty,
                       )}`}
                     >
-                      {exercise.difficulty}
+                      {t(
+                        `difficulties.${exercise.difficulty?.toLowerCase()}`,
+                        exercise.difficulty,
+                      )}
                     </span>
 
                     {/* Custom Exercise Badge */}
                     {exercise.isCustom && (
                       <span className="inline-flex items-center gap-1 rounded-md border border-[#5BE584]/35 bg-[#5BE584]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#5BE584]">
                         <Sparkles className="h-2.5 w-2.5" />
-                        Custom
+                        {t("card.customBadge", "Custom")}
                       </span>
                     )}
 
@@ -165,7 +193,7 @@ export default function ExerciseTable({
                     {exercise.videoUrl && (
                       <span className="inline-flex items-center gap-1 rounded-md border border-sky-500/25 bg-sky-500/10 px-2 py-0.5 text-[10px] font-medium text-sky-400">
                         <PlayCircle className="h-2.5 w-2.5" />
-                        Video
+                        {t("card.videoBadge", "Video")}
                       </span>
                     )}
                   </div>
@@ -182,25 +210,28 @@ export default function ExerciseTable({
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-0.5">
                   {/* Primary & Secondary Muscles */}
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6B7280] mr-0.5">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6B7280] me-0.5">
                       <Target className="h-3 w-3 text-[#5BE584]" />
-                      Muscles:
+                      {t("card.musclesLabel", "Muscles:")}
                     </span>
                     {primaryMuscles.map((muscle) => (
                       <span
                         key={`primary-${muscle}`}
                         className="inline-flex items-center rounded-lg border border-[#5BE584]/30 bg-[#5BE584]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#5BE584]"
                       >
-                        {muscle}
+                        {t(`muscles.${muscle}`, muscle)}
                       </span>
                     ))}
                     {secondaryMuscles.map((muscle) => (
                       <span
                         key={`secondary-${muscle}`}
                         className="inline-flex items-center rounded-lg border border-[#1E2329] bg-[#090B0F] px-2 py-0.5 text-[11px] font-medium text-[#9CA3AF]"
-                        title="Secondary target muscle"
+                        title={t(
+                          "card.secondaryTargetTooltip",
+                          "Secondary target muscle",
+                        )}
                       >
-                        {muscle}
+                        {t(`muscles.${muscle}`, muscle)}
                       </span>
                     ))}
                   </div>
@@ -208,16 +239,16 @@ export default function ExerciseTable({
                   {/* Equipment Badges */}
                   {equipmentList.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6B7280] mr-0.5">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#6B7280] me-0.5">
                         <Dumbbell className="h-3 w-3 text-[#9CA3AF]" />
-                        Equipment:
+                        {t("card.equipmentLabel", "Equipment:")}
                       </span>
                       {equipmentList.map((eq) => (
                         <span
                           key={eq}
                           className="inline-flex items-center rounded-lg border border-[#262D36] bg-[#141920] px-2.5 py-0.5 text-[11px] font-medium text-[#E5E7EB]"
                         >
-                          {eq}
+                          {t(`equipment.${eq}`, eq)}
                         </span>
                       ))}
                     </div>
@@ -232,7 +263,7 @@ export default function ExerciseTable({
                     className="inline-flex items-center gap-1.5 rounded-xl border border-[#262D36] bg-[#141920] px-3 py-1.5 text-xs font-semibold text-[#F3F4F6] transition-all hover:border-[#5BE584]/50 hover:bg-[#16291D] hover:text-[#5BE584]"
                   >
                     <Eye className="h-3.5 w-3.5" />
-                    Quick View
+                    {t("card.quickView", "Quick View")}
                   </button>
 
                   <Link
@@ -240,7 +271,7 @@ export default function ExerciseTable({
                     className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] transition-all hover:border-[#2A313A] hover:text-white"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
-                    Full Guide
+                    {t("card.fullGuide", "Full Guide")}
                   </Link>
 
                   {canModify && (
@@ -251,7 +282,7 @@ export default function ExerciseTable({
                         className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] transition-all hover:border-[#5BE584]/40 hover:text-[#5BE584]"
                       >
                         <Edit className="h-3.5 w-3.5" />
-                        Edit
+                        {t("card.edit", "Edit")}
                       </button>
 
                       <button
@@ -260,7 +291,7 @@ export default function ExerciseTable({
                         className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] transition-all hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                        Delete
+                        {t("card.delete", "Delete")}
                       </button>
                     </>
                   )}
@@ -274,7 +305,10 @@ export default function ExerciseTable({
                 type="button"
                 onClick={() => onView(exercise)}
                 className="group/img relative self-stretch sm:self-center shrink-0 focus:outline-none"
-                title={`View ${exercise.name} details`}
+                title={t("card.viewDetailsTitle", {
+                  name: exercise.name,
+                  defaultValue: `View ${exercise.name} details`,
+                })}
               >
                 <ExerciseImage
                   src={exercise.imageUrl}

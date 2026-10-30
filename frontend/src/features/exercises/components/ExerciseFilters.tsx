@@ -1,11 +1,16 @@
 import { Search, SlidersHorizontal, X, Sparkles } from "lucide-react";
+import { useTranslation, Trans } from "react-i18next";
 import {
   DIFFICULTY_OPTIONS,
   EQUIPMENT_OPTIONS,
   ALL_MUSCLE_CATEGORIES,
 } from "../constants/exercise.constants";
 
-export type ExerciseSortOption = "name-asc" | "name-desc" | "difficulty" | "muscle";
+export type ExerciseSortOption =
+  | "name-asc"
+  | "name-desc"
+  | "difficulty"
+  | "muscle";
 
 interface ExerciseFiltersProps {
   searchTerm: string;
@@ -44,6 +49,8 @@ export default function ExerciseFilters({
   totalAll,
   onResetFilters,
 }: ExerciseFiltersProps) {
+  const { t } = useTranslation(["exercises"]);
+
   const hasActiveFilters =
     Boolean(searchTerm.trim()) ||
     selectedMuscle !== "all" ||
@@ -57,20 +64,23 @@ export default function ExerciseFilters({
       <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
         {/* Search Input */}
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+          <Search className="pointer-events-none absolute start-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
           <input
             type="text"
-            placeholder="Search exercises by name, target muscle, or equipment..."
+            placeholder={t(
+              "filters.searchPlaceholder",
+              "Search exercises by name, target muscle, or equipment...",
+            )}
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="h-11 w-full rounded-xl border border-[#1E2329] bg-[#090B0F] pl-10 pr-9 text-sm text-[#F3F4F6] placeholder:text-[#6B7280] focus:border-[#5BE584]/60 focus:outline-none focus:ring-2 focus:ring-[#5BE584]/15 transition-all"
+            className="h-11 w-full rounded-xl border border-[#1E2329] bg-[#090B0F] ps-10 pe-9 text-sm text-[#F3F4F6] placeholder:text-[#6B7280] focus:border-[#5BE584]/60 focus:outline-none focus:ring-2 focus:ring-[#5BE584]/15 transition-all"
           />
           {searchTerm && (
             <button
               type="button"
               onClick={() => onSearchChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-[#6B7280] hover:bg-[#1E2329] hover:text-white transition-colors"
-              title="Clear search"
+              className="absolute end-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-[#6B7280] hover:bg-[#1E2329] hover:text-white transition-colors"
+              title={t("filters.clearSearch", "Clear search")}
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -84,13 +94,18 @@ export default function ExerciseFilters({
             <select
               value={selectedMuscle}
               onChange={(e) => onMuscleChange(e.target.value)}
-              aria-label="Filter by muscle group"
+              aria-label={t(
+                "filters.filterByMuscleAria",
+                "Filter by muscle group",
+              )}
               className="h-11 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3.5 text-xs font-medium text-[#F3F4F6] focus:border-[#5BE584]/60 focus:outline-none focus:ring-2 focus:ring-[#5BE584]/15 transition-all cursor-pointer"
             >
-              <option value="all">All Muscle Groups</option>
+              <option value="all">
+                {t("filters.allMuscleGroups", "All Muscle Groups")}
+              </option>
               {FILTER_MUSCLES.map((muscle) => (
                 <option key={muscle} value={muscle}>
-                  {muscle}
+                  {t(`muscles.${muscle}`, muscle)}
                 </option>
               ))}
             </select>
@@ -101,13 +116,15 @@ export default function ExerciseFilters({
             <select
               value={selectedEquipment}
               onChange={(e) => onEquipmentChange(e.target.value)}
-              aria-label="Filter by equipment"
+              aria-label={t("filters.filterByEquipmentAria", "Filter by equipment")}
               className="h-11 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3.5 text-xs font-medium text-[#F3F4F6] focus:border-[#5BE584]/60 focus:outline-none focus:ring-2 focus:ring-[#5BE584]/15 transition-all cursor-pointer"
             >
-              <option value="all">All Equipment</option>
+              <option value="all">
+                {t("filters.allEquipment", "All Equipment")}
+              </option>
               {EQUIPMENT_OPTIONS.map((eq) => (
                 <option key={eq} value={eq}>
-                  {eq}
+                  {t(`equipment.${eq}`, eq)}
                 </option>
               ))}
             </select>
@@ -120,13 +137,21 @@ export default function ExerciseFilters({
               onChange={(e) =>
                 onSortByChange(e.target.value as ExerciseSortOption)
               }
-              aria-label="Sort exercises"
+              aria-label={t("filters.sort.ariaLabel", "Sort exercises")}
               className="h-11 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3.5 text-xs font-medium text-[#F3F4F6] focus:border-[#5BE584]/60 focus:outline-none focus:ring-2 focus:ring-[#5BE584]/15 transition-all cursor-pointer"
             >
-              <option value="name-asc">Sort: Name (A → Z)</option>
-              <option value="name-desc">Sort: Name (Z → A)</option>
-              <option value="muscle">Sort: Primary Muscle</option>
-              <option value="difficulty">Sort: Difficulty Level</option>
+              <option value="name-asc">
+                {t("filters.sort.nameAsc", "Sort: Name (A → Z)")}
+              </option>
+              <option value="name-desc">
+                {t("filters.sort.nameDesc", "Sort: Name (Z → A)")}
+              </option>
+              <option value="muscle">
+                {t("filters.sort.muscle", "Sort: Primary Muscle")}
+              </option>
+              <option value="difficulty">
+                {t("filters.sort.difficulty", "Sort: Difficulty Level")}
+              </option>
             </select>
           )}
         </div>
@@ -135,8 +160,8 @@ export default function ExerciseFilters({
       {/* Quick Muscle Category Chips */}
       {onMuscleChange && (
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin pt-0.5">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mr-1 shrink-0">
-            Muscle:
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] me-1 shrink-0">
+            {t("filters.muscleLabel", "Muscle:")}
           </span>
           <button
             type="button"
@@ -147,10 +172,11 @@ export default function ExerciseFilters({
                 : "border border-[#1E2329] bg-[#090B0F] text-[#9CA3AF] hover:border-[#2A313A] hover:text-white"
             }`}
           >
-            All
+            {t("filters.all", "All")}
           </button>
           {FILTER_MUSCLES.map((muscle) => {
-            const isActive = selectedMuscle.toLowerCase() === muscle.toLowerCase();
+            const isActive =
+              selectedMuscle.toLowerCase() === muscle.toLowerCase();
             return (
               <button
                 key={muscle}
@@ -162,7 +188,7 @@ export default function ExerciseFilters({
                     : "border border-[#1E2329] bg-[#090B0F] text-[#9CA3AF] hover:border-[#2A313A] hover:text-white"
                 }`}
               >
-                {muscle}
+                {t(`muscles.${muscle}`, muscle)}
               </button>
             );
           })}
@@ -172,9 +198,9 @@ export default function ExerciseFilters({
       {/* Bottom Row: Difficulty Pills + Custom Toggle + Results Summary */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#1E2329]/80">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] mr-1">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#6B7280] me-1">
             <SlidersHorizontal className="h-3 w-3 text-[#5BE584]" />
-            Level:
+            {t("filters.levelLabel", "Level:")}
           </span>
 
           {onDifficultyChange && (
@@ -188,7 +214,7 @@ export default function ExerciseFilters({
                     : "border border-[#1E2329] bg-[#090B0F] text-[#9CA3AF] hover:border-[#2A313A] hover:text-white"
                 }`}
               >
-                All
+                {t("filters.all", "All")}
               </button>
               {DIFFICULTY_OPTIONS.map((diff) => {
                 const isActive = selectedDifficulty === diff;
@@ -196,16 +222,14 @@ export default function ExerciseFilters({
                   <button
                     key={diff}
                     type="button"
-                    onClick={() =>
-                      onDifficultyChange(isActive ? "all" : diff)
-                    }
+                    onClick={() => onDifficultyChange(isActive ? "all" : diff)}
                     className={`rounded-lg px-2.5 py-1 text-xs font-medium capitalize transition-all ${
                       isActive
                         ? "bg-[#5BE584] text-[#090B0F] font-semibold shadow-[0_0_12px_rgba(91,229,132,0.25)]"
                         : "border border-[#1E2329] bg-[#090B0F] text-[#9CA3AF] hover:border-[#2A313A] hover:text-white"
                     }`}
                   >
-                    {diff}
+                    {t(`difficulties.${diff}`, diff)}
                   </button>
                 );
               })}
@@ -216,14 +240,14 @@ export default function ExerciseFilters({
             <button
               type="button"
               onClick={() => onOnlyCustomChange(!onlyCustom)}
-              className={`ml-1 inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+              className={`ms-1 inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
                 onlyCustom
                   ? "border border-[#5BE584]/50 bg-[#5BE584]/15 text-[#5BE584] font-semibold"
                   : "border border-[#1E2329] bg-[#090B0F] text-[#9CA3AF] hover:border-[#2A313A] hover:text-white"
               }`}
             >
               <Sparkles className="h-3 w-3" />
-              My Custom
+              {t("filters.myCustom", "My Custom")}
             </button>
           )}
         </div>
@@ -231,14 +255,19 @@ export default function ExerciseFilters({
         <div className="flex items-center gap-3">
           {typeof totalMatching === "number" && (
             <span className="text-xs text-[#9CA3AF]">
-              Showing{" "}
-              <strong className="font-semibold text-white">
-                {totalMatching}
-              </strong>
-              {typeof totalAll === "number" && totalAll !== totalMatching
-                ? ` of ${totalAll}`
-                : ""}{" "}
-              exercises
+              <Trans
+                i18nKey={
+                  typeof totalAll === "number" && totalAll !== totalMatching
+                    ? "filters.showingCount"
+                    : "filters.showingCountSingle"
+                }
+                ns="exercises"
+                values={{ count: totalMatching, total: totalAll }}
+                components={{
+                  1: <strong className="font-semibold text-white" />,
+                  3: <strong className="font-semibold text-white" />,
+                }}
+              />
             </span>
           )}
 
@@ -249,7 +278,7 @@ export default function ExerciseFilters({
               className="inline-flex items-center gap-1 rounded-lg border border-[#2A313A] bg-[#13181E] px-2.5 py-1 text-xs font-medium text-[#9CA3AF] hover:border-[#5BE584]/40 hover:text-white transition-colors"
             >
               <X className="h-3 w-3" />
-              Reset Filters
+              {t("filters.resetFilters", "Reset Filters")}
             </button>
           )}
         </div>

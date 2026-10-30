@@ -1,6 +1,7 @@
 // src/features/profile/components/member/AssignmentHistory.tsx
 import React from "react";
 import { ClipboardList } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ProfileSection } from "../shared/ProfileSection";
 import type { MemberAssignment } from "../../types/profile.types";
 
@@ -11,10 +12,13 @@ interface AssignmentHistoryProps {
 export const AssignmentHistory: React.FC<AssignmentHistoryProps> = ({
   assignments = [],
 }) => {
+  const { t, i18n } = useTranslation(["profile"]);
+
   const formatDate = (dateStr?: string | null) => {
-    if (!dateStr) return "N/A";
+    if (!dateStr) return "—";
     try {
-      return new Intl.DateTimeFormat("en-US", {
+      const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -26,8 +30,8 @@ export const AssignmentHistory: React.FC<AssignmentHistoryProps> = ({
 
   return (
     <ProfileSection
-      title="Assignment History"
-      subtitle="Past training programs and routines"
+      title={t("member.assignmentHistory.title")}
+      subtitle={t("member.assignmentHistory.subtitle")}
       icon={ClipboardList}
     >
       {assignments?.length > 0 ? (
@@ -39,17 +43,16 @@ export const AssignmentHistory: React.FC<AssignmentHistoryProps> = ({
             >
               <div className="flex flex-col gap-1">
                 <span className="font-semibold text-gray-200">
-                  {item.workout?.title || "Custom Routine"}
+                  {item.workout?.title || t("member.assignmentHistory.customRoutine")}
                 </span>
                 <span className="text-[11px] text-gray-400">
-                  Trainer:{" "}
-                  <strong className="text-gray-300">
-                    {item.trainer?.name || "Independent"}
-                  </strong>
+                  {t("member.assignmentHistory.trainer", {
+                    trainer: item.trainer?.name || t("member.currentAssignment.independent"),
+                  })}
                 </span>
                 <div className="flex items-center gap-2 text-[10px] text-gray-500">
                   <span>{formatDate(item.startDate)}</span>
-                  <span>→</span>
+                  <span className="rtl:rotate-180">→</span>
                   <span>{formatDate(item.endDate)}</span>
                 </div>
               </div>
@@ -61,9 +64,11 @@ export const AssignmentHistory: React.FC<AssignmentHistoryProps> = ({
         </div>
       ) : (
         <div className="py-8 text-center text-xs text-gray-500">
-          No past assignment history available.
+          {t("member.assignmentHistory.empty")}
         </div>
       )}
     </ProfileSection>
   );
 };
+
+export default AssignmentHistory;

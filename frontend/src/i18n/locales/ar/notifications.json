@@ -1,0 +1,223 @@
+{
+  "header": {
+    "title": "الإشعارات",
+    "unreadBadge": "{{count}} غير مقروء",
+    "subtitle": "ابقَ على اطلاع دائم بجميع الأنشطة والمحطات البارزة والتحديثات في ناديك.",
+    "preferences": "التفضيلات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "markCategoryRead": "تحديد {{category}} كمقروء"
+  },
+  "dropdown": {
+    "title": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "viewAll": "عرض جميع الإشعارات",
+    "unableToLoad": "تعذر تحميل الإشعارات.",
+    "noNotificationsYet": "لا توجد إشعارات حتى الآن",
+    "openNotificationsAria": "الإشعارات"
+  },
+  "filters": {
+    "searchPlaceholder": "البحث في الإشعارات...",
+    "clearSearch": "مسح البحث",
+    "all": "الكل",
+    "unread": "غير مقروءة",
+    "read": "مقروءة",
+    "categories": {
+      "ALL": "الكل",
+      "WORKOUT": "التمارين",
+      "NUTRITION": "التغذية",
+      "COACHING": "التدريب",
+      "ACHIEVEMENT": "الإنجازات",
+      "SYSTEM": "النظام"
+    }
+  },
+  "item": {
+    "highPriority": "أولوية قصوى",
+    "markRead": "تحديد كمقروء",
+    "markUnread": "تحديد كغير مقروء",
+    "delete": "حذف الإشعار"
+  },
+  "timeAgo": {
+    "justNow": "الآن",
+    "minutesAgo": "منذ {{count}} د",
+    "hoursAgo": "منذ {{count}} س",
+    "daysAgo": "منذ {{count}} ي"
+  },
+  "states": {
+    "empty": {
+      "unreadTitle": "لا توجد إشعارات غير مقروءة",
+      "unreadDesc": "أنت على اطلاع بكل جديد! ليس لديك أي تنبيهات معلقة حالياً.",
+      "defaultTitle": "لا توجد إشعارات",
+      "defaultDesc": "عند وجود نشاط جديد أو تحديثات للتمارين أو تنبيهات إنجازات، ستظهر هنا."
+    },
+    "error": {
+      "title": "فشل تحميل الإشعارات",
+      "defaultDesc": "واجهتنا مشكلة أثناء جلب سجل نشاطاتك وإشعاراتك الأخيرة.",
+      "retry": "إعادة المحاولة"
+    },
+    "loadingAria": "جاري تحميل الإشعارات"
+  },
+  "preferences": {
+    "title": "تفضيلات الإشعارات",
+    "subtitle": "حدد التنبيهات والقنوات التي ترغب في استلامها.",
+    "loading": "جاري تحميل التفضيلات...",
+    "workout": {
+      "title": "التمارين والتدريب",
+      "desc": "تذكيرات الجلسات وتنبيهات التعيين وسجلات التمارين المكتملة"
+    },
+    "nutrition": {
+      "title": "التغذية والوجبات",
+      "desc": "تذكيرات السعرات اليومية وتحديثات الخطط الغذائية"
+    },
+    "coaching": {
+      "title": "التدريب والمواعيد",
+      "desc": "دعوات المدرب وتحديثات المواعيد وتغييرات الجداول والرسائل"
+    },
+    "achievement": {
+      "title": "الإنجازات وسلاسل الالتزام",
+      "desc": "المحطات المميزة وفتح الأوسمة والارتقاء بالمستوى وتشجيعات المدرب"
+    },
+    "system": {
+      "title": "النظام والأمان",
+      "desc": "أمان الحساب والتحديثات القانونية وتنبيهات المنصة الأساسية",
+      "mandatory": "إلزامي"
+    },
+    "cancel": "إلغاء",
+    "save": "حفظ التفضيلات",
+    "saving": "جاري الحفظ..."
+  },
+  "toasts": {
+    "preferencesUpdated": "تم تحديث تفضيلات الإشعارات بنجاح",
+    "preferencesUpdateFailed": "فشل تحديث تفضيلات الإشعارات",
+    "deleted": "تم حذف الإشعار",
+    "deleteFailed": "فشل حذف الإشعار",
+    "markAllFailed": "فشل تحديد الكل كمقروء"
+  },
+  "messages": {
+    "ASSIGNMENT_CREATED": {
+      "title": "تم تعيين تمرين جديد",
+      "message": "قام المدرب بتعيين برنامج تدريبي جديد لك."
+    },
+    "ASSIGNMENT_UPDATED": {
+      "title": "تم تحديث تعيين التمرين",
+      "message": "تم تحديث برنامج التمرين المخصص لك."
+    },
+    "ASSIGNMENT_CANCELLED": {
+      "title": "تم إلغاء تعيين التمرين",
+      "message": "تم إلغاء تعيين البرنامج التدريبي الخاص بك."
+    },
+    "WORKOUT_STARTED": {
+      "memberTitle": "بدء جلسة التمرين",
+      "memberMessage": "بدأت جلسة تمرينك الآن.",
+      "coachTitle": "بدء جلسة التمرين",
+      "coachMessage": "بدأ {{memberName}} تمرين \"{{workoutTitle}}\"."
+    },
+    "WORKOUT_COMPLETED": {
+      "memberTitle": "اكتمل التمرين",
+      "memberMessage": "عمل رائع! لقد أكملت \"{{workoutTitle}}\" بنجاح.",
+      "memberMessageWithDuration": "عمل رائع! لقد أكملت \"{{workoutTitle}}\" خلال {{duration}} دقيقة.",
+      "genericMemberMessage": "عمل رائع بإكمال تمرين اليوم.",
+      "coachTitle": "اكتمل التمرين",
+      "coachMessage": "أكمل {{memberName}} تمرين \"{{workoutTitle}}\" خلال {{duration}} دقيقة."
+    },
+    "WORKOUT_SCHEDULED": {
+      "title": "تمت جدولة تمرين جديد",
+      "message": "قام المدرب {{coachName}} بجدولة تمرين \"{{workoutTitle}}\" لتاريخ {{date}}."
+    },
+    "WORKOUT_SCHEDULE_UPDATED": {
+      "title": "تم تحديث موعد التمرين",
+      "message": "قام المدرب {{coachName}} بإعادة جدولة تمرين \"{{workoutTitle}}\" إلى {{date}}."
+    },
+    "WORKOUT_SCHEDULE_CANCELLED": {
+      "title": "تم إلغاء التمرين المجدول",
+      "message": "قام المدرب {{coachName}} بإلغاء التمرين المجدول \"{{workoutTitle}}\"."
+    },
+    "NUTRITION_PLAN_ASSIGNED": {
+      "title": "تم تعيين خطة غذائية جديدة",
+      "message": "قام مدربك بتعيين خطة غذائية جديدة: \"{{name}}\" ({{calories}} سعرة حرارية)."
+    },
+    "NUTRITION_PLAN_UPDATED": {
+      "title": "تم تحديث الخطة الغذائية",
+      "message": "تم تحديث خطتك الغذائية من قِبل المدرب."
+    },
+    "BODY_MEASUREMENT_CREATED": {
+      "title": "تسجيل قياسات جديدة للجسم",
+      "message": "قام مدربك بتسجيل قياسات حيوية جديدة لجسمك."
+    },
+    "BODY_MEASUREMENT_UPDATED": {
+      "title": "تم تحديث قياسات الجسم",
+      "message": "تم تعديل سجل القياسات الحيوية للجسم."
+    },
+    "BODY_MEASUREMENT_DELETED": {
+      "title": "تم حذف قياسات الجسم",
+      "message": "تم حذف سجل القياسات الحيوية للجسم."
+    },
+    "COACHING_INVITATION_RECEIVED": {
+      "title": "دعوة تدريب جديدة",
+      "message": "دعاك المدرب {{coachName}} لبدء علاقة تدريبية معه."
+    },
+    "COACHING_INVITATION_ACCEPTED": {
+      "title": "تم قبول دعوة التدريب",
+      "message": "قبل {{memberName}} دعوتك التدريبية."
+    },
+    "COACHING_INVITATION_DECLINED": {
+      "title": "تم رفض دعوة التدريب",
+      "message": "اعتذر {{memberName}} عن قبول دعوتك التدريبية."
+    },
+    "COACHING_RELATIONSHIP_TERMINATED": {
+      "title": "انتهاء العلاقة التدريبية",
+      "message": "قام {{initiatorName}} بإنهاء العلاقة التدريبية."
+    },
+    "HISTORY_SHARING_GRANTED": {
+      "title": "تم منح الإذن بمشاركة السجل",
+      "message": "منحك {{memberName}} إذن الاطلاع على سجله التدريبي السابق."
+    },
+    "HISTORY_SHARING_REVOKED": {
+      "title": "تم إلغاء الإذن بمشاركة السجل",
+      "message": "ألغى {{memberName}} إذن الاطلاع على سجله التدريبي السابق."
+    },
+    "COACHING_APPOINTMENT_SCHEDULED": {
+      "title": "تمت جدولة موعد تدريب",
+      "message": "قام المدرب {{coachName}} بجدولة موعد \"{{title}}\" ({{type}}) لتاريخ {{date}}."
+    },
+    "COACHING_APPOINTMENT_RESCHEDULED": {
+      "title": "تم إعادة جدولة موعد التدريب",
+      "message": "قام المدرب {{coachName}} بتغيير موعد \"{{title}}\" إلى {{date}}."
+    },
+    "COACHING_APPOINTMENT_CANCELLED": {
+      "title": "تم إلغاء موعد التدريب",
+      "message": "قام {{cancelledByName}} بإلغاء موعد \"{{title}}\". السبب: {{reason}}"
+    },
+    "COACHING_APPOINTMENT_COMPLETED": {
+      "title": "اكتمل موعد التدريب",
+      "message": "تم تسجيل موعد التدريب كمكتمل بنجاح."
+    },
+    "COACHING_APPOINTMENT_NO_SHOW": {
+      "title": "موعد تدريب فائت",
+      "message": "تم تسجيل الموعد التدريبي كجلسة لم يتم حضورها."
+    },
+    "ACHIEVEMENT_UNLOCKED": {
+      "memberTitle": "إنجاز جديد: {{achTitle}}!",
+      "memberMessage": "لقد حصلت على وسام \"{{achTitle}}\": {{achDesc}} (+{{points}} نقطة)",
+      "coachTitle": "إنجاز رياضي: {{memberName}}",
+      "coachMessage": "حقق {{memberName}} إنجاز \"{{achTitle}}\" للتو!"
+    },
+    "STREAK_MILESTONE": {
+      "title": "إنجاز سلسلة الالتزام!",
+      "message": "حافظت على سلسلة تمارينك المتتالية لمدة {{count}} يوماً!"
+    },
+    "WEEKLY_GOAL_COMPLETED": {
+      "title": "اكتمل الهدف الأسبوعي!",
+      "message": "تهانينا! لقد أكملت جميع التمارين المجدولة لهذا الأسبوع."
+    },
+    "COACH_ENCOURAGEMENT": {
+      "feedbackTitle": "ملاحظات المدرب على تمرينك",
+      "feedbackMessage": "قام المدرب {{coachName}} بمراجعة جلستك التدريبية وترك ملاحظاته.",
+      "cheerTitle": "تشجيع من المدرب {{coachName}}",
+      "cheerMessage": "{{message}}"
+    },
+    "SYSTEM": {
+      "welcomeTitle": "مرحباً بك",
+      "welcomeMessage": "أهلاً بك في منصة STREN لإدارة اللياقة البدنية والتمارين."
+    }
+  }
+}

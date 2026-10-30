@@ -1,5 +1,6 @@
 // src/features/landing/components/hero/HeroProductPreview.tsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Activity,
   Check,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 
 export const HeroProductPreview: React.FC = () => {
+  const { t } = useTranslation(["landing"]);
   const [activeTab, setActiveTab] = useState<"live" | "coach">("live");
 
   return (
@@ -28,15 +30,15 @@ export const HeroProductPreview: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-[#F8FAFC]">
-                STREN Live Training
+                {t("heroPreview.liveTraining")}
               </span>
               <span className="inline-flex items-center gap-1 rounded-full border border-[#5BE584]/30 bg-[#5BE584]/10 px-2 py-0.5 text-[9px] font-bold text-[#5BE584]">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#5BE584] animate-pulse" />
-                ACTIVE LOG
+                {t("heroPreview.activeLog")}
               </span>
             </div>
             <p className="text-[10px] text-[#94A3B8]">
-              Coach: Coach Alex • Athlete: Jordan Vance
+              {t("heroPreview.coachAthlete", { coach: "Coach Alex", athlete: "Jordan Vance" })}
             </p>
           </div>
         </div>
@@ -52,7 +54,7 @@ export const HeroProductPreview: React.FC = () => {
                 : "text-[#94A3B8] hover:text-[#F8FAFC]"
             }`}
           >
-            Athlete Session
+            {t("heroPreview.tabs.athleteSession")}
           </button>
           <button
             type="button"
@@ -63,7 +65,7 @@ export const HeroProductPreview: React.FC = () => {
                 : "text-[#94A3B8] hover:text-[#F8FAFC]"
             }`}
           >
-            Coach Prescription
+            {t("heroPreview.tabs.coachPrescription")}
           </button>
         </div>
       </div>
@@ -74,10 +76,10 @@ export const HeroProductPreview: React.FC = () => {
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#2A3039] bg-[#0E1217] p-3 sm:p-4">
             <div>
               <div className="text-[10px] font-semibold uppercase tracking-wider text-[#94A3B8]">
-                Assigned Routine · Block 2
+                {t("heroPreview.banner.assignedRoutine")}
               </div>
               <h4 className="text-sm sm:text-base font-bold text-white">
-                Hypertrophy Lower: Squat Focus
+                {t("heroPreview.banner.routineTitle")}
               </h4>
             </div>
 
@@ -87,7 +89,7 @@ export const HeroProductPreview: React.FC = () => {
                 <span>34:18</span>
               </div>
               <div className="rounded-lg border border-[#23422E] bg-[#16291D] px-2.5 py-1 text-[11px] font-bold text-[#5BE584]">
-                3 / 4 Movements Done
+                {t("heroPreview.banner.movementsDone")}
               </div>
             </div>
           </div>
@@ -101,17 +103,17 @@ export const HeroProductPreview: React.FC = () => {
                 </span>
                 <div>
                   <h5 className="text-xs sm:text-sm font-bold text-white">
-                    Barbell Back Squat
+                    {t("heroPreview.movement.name")}
                   </h5>
                   <span className="text-[10px] text-[#94A3B8]">
-                    Prescribed: 4 sets × 6 reps · Rest 120s
+                    {t("heroPreview.movement.prescribed")}
                   </span>
                 </div>
               </div>
 
               {/* Prescription Target Tag */}
               <span className="hidden sm:inline-flex items-center gap-1 rounded-md border border-[#5BE584]/30 bg-[#5BE584]/10 px-2 py-0.5 text-[10px] font-bold text-[#5BE584]">
-                <Target className="h-3 w-3" /> Target: 100 kg · RPE 8.5
+                <Target className="h-3 w-3" /> {t("heroPreview.movement.target")}
               </span>
             </div>
 
@@ -119,9 +121,15 @@ export const HeroProductPreview: React.FC = () => {
             <div className="space-y-1.5 font-mono text-xs">
               {/* Completed Set 1 */}
               <div className="grid grid-cols-12 items-center gap-2 rounded-lg bg-[#5BE584]/5 border border-[#5BE584]/20 px-3 py-2 text-[#94A3B8]">
-                <span className="col-span-2 text-xs font-bold text-[#5BE584]">SET 1</span>
-                <span className="col-span-3 text-[11px] text-gray-400">Target 6</span>
-                <span className="col-span-4 text-xs font-bold text-white">95 kg × 6</span>
+                <span className="col-span-2 text-xs font-bold text-[#5BE584]">
+                  {t("heroPreview.sets.setLabel", { num: 1 })}
+                </span>
+                <span className="col-span-3 text-[11px] text-gray-400">
+                  {t("heroPreview.sets.targetReps", { reps: 6 })}
+                </span>
+                <span className="col-span-4 text-xs font-bold text-white">
+                  95 kg × 6
+                </span>
                 <div className="col-span-3 flex justify-end">
                   <span className="flex h-6 w-6 items-center justify-center rounded bg-[#5BE584] text-[#090B0F]">
                     <Check className="h-3.5 w-3.5 stroke-[3]" />
@@ -131,9 +139,15 @@ export const HeroProductPreview: React.FC = () => {
 
               {/* Completed Set 2 */}
               <div className="grid grid-cols-12 items-center gap-2 rounded-lg bg-[#5BE584]/5 border border-[#5BE584]/20 px-3 py-2 text-[#94A3B8]">
-                <span className="col-span-2 text-xs font-bold text-[#5BE584]">SET 2</span>
-                <span className="col-span-3 text-[11px] text-gray-400">Target 6</span>
-                <span className="col-span-4 text-xs font-bold text-white">100 kg × 6</span>
+                <span className="col-span-2 text-xs font-bold text-[#5BE584]">
+                  {t("heroPreview.sets.setLabel", { num: 2 })}
+                </span>
+                <span className="col-span-3 text-[11px] text-gray-400">
+                  {t("heroPreview.sets.targetReps", { reps: 6 })}
+                </span>
+                <span className="col-span-4 text-xs font-bold text-white">
+                  100 kg × 6
+                </span>
                 <div className="col-span-3 flex justify-end">
                   <span className="flex h-6 w-6 items-center justify-center rounded bg-[#5BE584] text-[#090B0F]">
                     <Check className="h-3.5 w-3.5 stroke-[3]" />
@@ -143,16 +157,19 @@ export const HeroProductPreview: React.FC = () => {
 
               {/* Active Set 3 (Currently Logging) */}
               <div className="grid grid-cols-12 items-center gap-2 rounded-lg bg-[#141920] border border-[#5BE584]/40 px-3 py-2 shadow-[0_0_15px_rgba(91,229,132,0.1)]">
-                <span className="col-span-2 text-xs font-bold text-[#5BE584]">SET 3</span>
+                <span className="col-span-2 text-xs font-bold text-[#5BE584]">
+                  {t("heroPreview.sets.setLabel", { num: 3 })}
+                </span>
                 <span className="col-span-3 text-[10px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded w-fit">
-                  Prev 100 × 6
+                  {t("heroPreview.sets.prevBenchmark", { weight: 100, reps: 6 })}
                 </span>
                 <span className="col-span-4 text-xs font-bold text-white font-mono">
-                  100 kg · 6 reps
+                  {t("heroPreview.sets.activeLog", { weight: 100, reps: 6 })}
                 </span>
                 <div className="col-span-3 flex justify-end">
                   <button
                     type="button"
+                    aria-label="Confirm completed set"
                     className="flex h-6 w-6 items-center justify-center rounded bg-[#5BE584] text-[#090B0F] hover:bg-[#4ade80] transition-colors shadow-sm"
                   >
                     <Check className="h-3.5 w-3.5 stroke-[3]" />
@@ -165,9 +182,11 @@ export const HeroProductPreview: React.FC = () => {
             <div className="flex items-center justify-between rounded-lg border border-[#2A3039] bg-[#090B0F] px-3 py-2 text-[11px]">
               <div className="flex items-center gap-2 text-[#94A3B8]">
                 <Clock className="h-3.5 w-3.5 text-[#5BE584]" />
-                <span>Rest interval ticking</span>
+                <span>{t("heroPreview.restTimer.ticking")}</span>
               </div>
-              <span className="font-mono font-bold text-[#5BE584]">01:42 left</span>
+              <span className="font-mono font-bold text-[#5BE584]">
+                {t("heroPreview.restTimer.timeLeft", { time: "01:42" })}
+              </span>
             </div>
           </div>
         </div>
@@ -178,45 +197,49 @@ export const HeroProductPreview: React.FC = () => {
             <div className="flex items-center justify-between border-b border-[#1E2329] pb-3">
               <div>
                 <span className="text-[10px] font-bold text-[#5BE584] uppercase tracking-wider">
-                  Workout Builder Prescription
+                  {t("heroPreview.coach.prescriptionTitle")}
                 </span>
                 <h4 className="text-sm font-bold text-white">
-                  Athlete Target Parameters
+                  {t("heroPreview.coach.athleteParameters")}
                 </h4>
               </div>
               <span className="text-xs font-mono text-[#94A3B8]">
-                Assignee: Jordan Vance
+                {t("heroPreview.coach.assignee", { name: "Jordan Vance" })}
               </span>
             </div>
 
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="rounded-lg border border-[#1E2329] bg-[#090B0F] p-3">
                 <span className="text-[10px] uppercase font-bold text-[#94A3B8]">
-                  Target Load
+                  {t("heroPreview.coach.targetLoad")}
                 </span>
                 <p className="text-lg font-black text-white font-mono mt-0.5">
-                  100.0 <span className="text-xs text-[#5BE584]">kg</span>
+                  100.0 <span className="text-xs text-[#5BE584]">{t("heroPreview.coach.targetLoadUnit")}</span>
                 </p>
-                <p className="text-[10px] text-gray-500 mt-1">Calibrated from Week 3 benchmark</p>
+                <p className="text-[10px] text-gray-500 mt-1">
+                  {t("heroPreview.coach.targetLoadNote")}
+                </p>
               </div>
 
               <div className="rounded-lg border border-[#1E2329] bg-[#090B0F] p-3">
                 <span className="text-[10px] uppercase font-bold text-[#94A3B8]">
-                  Target Exertion
+                  {t("heroPreview.coach.targetExertion")}
                 </span>
                 <p className="text-lg font-black text-[#5BE584] font-mono mt-0.5">
-                  RPE 8.5
+                  {t("heroPreview.coach.targetExertionValue")}
                 </p>
-                <p className="text-[10px] text-gray-500 mt-1">Leave 1–2 reps in reserve</p>
+                <p className="text-[10px] text-gray-500 mt-1">
+                  {t("heroPreview.coach.targetExertionNote")}
+                </p>
               </div>
             </div>
 
             <div className="rounded-lg border border-[#1E2329] bg-[#090B0F] p-3">
               <span className="text-[10px] uppercase font-bold text-[#94A3B8]">
-                Coach Direct Instructions
+                {t("heroPreview.coach.directInstructions")}
               </span>
               <p className="text-xs text-[#F8FAFC] leading-relaxed mt-1">
-                "Keep chest high and brace into the belt at the bottom of set 3. If bar speed slows noticeably on set 4, hold load at 100 kg instead of increasing."
+                {t("heroPreview.coach.instructionText")}
               </p>
             </div>
           </div>
@@ -227,10 +250,11 @@ export const HeroProductPreview: React.FC = () => {
       <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-[#2A3039]/60 pt-3 text-[11px] text-[#94A3B8]">
         <div className="flex items-center gap-1.5">
           <Activity className="h-3.5 w-3.5 text-[#5BE584]" />
-          <span>Real-time bidirectional synchronization</span>
+          <span>{t("heroPreview.footer.bidirectionalSync")}</span>
         </div>
         <div className="font-mono text-white">
-          Session Volume: <span className="font-bold text-[#5BE584]">4,200 kg</span>
+          {t("heroPreview.footer.sessionVolume")}{" "}
+          <span className="font-bold text-[#5BE584]">4,200 kg</span>
         </div>
       </div>
     </div>

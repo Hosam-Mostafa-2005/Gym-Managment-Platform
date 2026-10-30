@@ -1,14 +1,12 @@
 // src/features/nutrition/pages/NutritionPlanPage.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
-  CalendarDays,
   Clock,
   Sparkles,
   UserCheck,
-  Flame,
   ArrowRight,
-  ShieldCheck,
   Loader2,
   Utensils,
 } from "lucide-react";
@@ -16,6 +14,7 @@ import { useNutritionOverview } from "../hooks/useNutrition";
 import { NutritionNavTabs } from "../components/NutritionNavTabs";
 
 export const NutritionPlanPage: React.FC = () => {
+  const { t } = useTranslation(["nutrition"]);
   const { data: overview, isLoading } = useNutritionOverview();
 
   if (isLoading) {
@@ -37,15 +36,15 @@ export const NutritionPlanPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2.5">
-              <span>Personalized Meal Plan Schedule</span>
+              <span>{t("plan.title")}</span>
               {plan && (
                 <span className="rounded-full bg-[#5BE584]/15 border border-[#5BE584]/30 px-3 py-0.5 text-xs font-semibold text-[#5BE584]">
-                  Version {plan.version}
+                  {t("plan.versionBadge", { version: plan.version })}
                 </span>
               )}
             </h1>
             <p className="text-sm text-zinc-400 mt-0.5">
-              Structured meal schedule tailored to your daily caloric and macronutrient targets
+              {t("plan.subtitle")}
             </p>
           </div>
 
@@ -55,7 +54,7 @@ export const NutritionPlanPage: React.FC = () => {
               className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 bg-[#161B22] px-4 py-2 text-xs font-semibold text-zinc-200 hover:border-[#5BE584] hover:text-[#5BE584] transition-all"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Regenerate / Adjust Plan</span>
+              <span>{t("plan.regenerateBtn")}</span>
             </Link>
           </div>
         </div>
@@ -63,17 +62,16 @@ export const NutritionPlanPage: React.FC = () => {
         {!plan ? (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-12 text-center space-y-4">
             <Utensils className="mx-auto h-12 w-12 text-zinc-600" />
-            <h2 className="text-xl font-bold text-zinc-100">No Active Meal Plan</h2>
+            <h2 className="text-xl font-bold text-zinc-100">{t("plan.noPlanTitle")}</h2>
             <p className="text-sm text-zinc-400 max-w-md mx-auto">
-              You haven&apos;t generated an active nutrition plan yet. Complete the quick onboarding
-              assessment to calculate your daily targets and generate your first meal plan.
+              {t("plan.noPlanDesc")}
             </p>
             <Link
               to="/nutrition/onboarding"
               className="inline-flex items-center gap-2 rounded-xl bg-[#5BE584] px-6 py-2.5 text-sm font-bold text-zinc-950 hover:bg-[#4dd374] transition-all shadow-md shadow-[#5BE584]/20"
             >
-              <span>Start Assessment</span>
-              <ArrowRight className="h-4 w-4" />
+              <span>{t("plan.startAssessment")}</span>
+              <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </Link>
           </div>
         ) : (
@@ -85,13 +83,13 @@ export const NutritionPlanPage: React.FC = () => {
                   <div className="flex items-center gap-2.5">
                     <h2 className="text-xl font-extrabold text-zinc-100">{plan.name}</h2>
                     <span className="rounded-md bg-zinc-800/80 px-2.5 py-0.5 text-xs text-zinc-300 font-mono">
-                      {plan.source === "COACH_ASSIGNED" ? "Coach Assigned" : "Self-Guided"}
+                      {plan.source === "COACH_ASSIGNED" ? t("plan.sourceCoach") : t("plan.sourceSelf")}
                     </span>
                   </div>
                   {plan.coach && (
                     <div className="text-xs text-emerald-400 mt-1 flex items-center gap-1.5">
                       <UserCheck className="h-3.5 w-3.5" />
-                      <span>Coached by {plan.coach.name} ({plan.coach.email})</span>
+                      <span>{t("plan.coachedBy", { name: plan.coach.name, email: plan.coach.email })}</span>
                     </div>
                   )}
                   {plan.notes && (
@@ -101,7 +99,7 @@ export const NutritionPlanPage: React.FC = () => {
 
                 <div className="flex items-center gap-3">
                   <div className="rounded-xl bg-[#161B22] p-3 text-center border border-zinc-800/80">
-                    <div className="text-[11px] text-zinc-400">Total Plan Calories</div>
+                    <div className="text-[11px] text-zinc-400">{t("plan.totalPlanCalories")}</div>
                     <div className="text-xl font-black text-amber-400 mt-0.5">
                       {plan.totalPlanCalories}{" "}
                       <span className="text-xs font-normal text-zinc-500">kcal</span>
@@ -113,42 +111,42 @@ export const NutritionPlanPage: React.FC = () => {
               {/* Targets vs Plan Total Comparison */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                 <div className="rounded-xl bg-[#161B22] p-3.5 border border-zinc-800 text-center">
-                  <div className="text-xs text-zinc-400">Target Calories</div>
+                  <div className="text-xs text-zinc-400">{t("plan.targetCalories")}</div>
                   <div className="text-lg font-extrabold text-amber-400 mt-0.5">
                     {plan.targetCalories} kcal
                   </div>
                   <div className="text-[11px] text-zinc-500 mt-0.5">
-                    Plan: {plan.totalPlanCalories} kcal
+                    {t("plan.planCalorieVal", { calories: plan.totalPlanCalories })}
                   </div>
                 </div>
 
                 <div className="rounded-xl bg-[#161B22] p-3.5 border border-zinc-800 text-center">
-                  <div className="text-xs text-zinc-400">Target Protein</div>
+                  <div className="text-xs text-zinc-400">{t("plan.targetProtein")}</div>
                   <div className="text-lg font-extrabold text-emerald-400 mt-0.5">
                     {plan.targetProteinG} g
                   </div>
                   <div className="text-[11px] text-zinc-500 mt-0.5">
-                    Plan: {plan.totalPlanProteinG} g
+                    {t("plan.planProteinVal", { protein: plan.totalPlanProteinG })}
                   </div>
                 </div>
 
                 <div className="rounded-xl bg-[#161B22] p-3.5 border border-zinc-800 text-center">
-                  <div className="text-xs text-zinc-400">Target Carbs</div>
+                  <div className="text-xs text-zinc-400">{t("plan.targetCarbs")}</div>
                   <div className="text-lg font-extrabold text-blue-400 mt-0.5">
                     {plan.targetCarbsG} g
                   </div>
                   <div className="text-[11px] text-zinc-500 mt-0.5">
-                    Plan: {plan.totalPlanCarbsG} g
+                    {t("plan.planCarbsVal", { carbs: plan.totalPlanCarbsG })}
                   </div>
                 </div>
 
                 <div className="rounded-xl bg-[#161B22] p-3.5 border border-zinc-800 text-center">
-                  <div className="text-xs text-zinc-400">Target Fat</div>
+                  <div className="text-xs text-zinc-400">{t("plan.targetFat")}</div>
                   <div className="text-lg font-extrabold text-purple-400 mt-0.5">
                     {plan.targetFatG} g
                   </div>
                   <div className="text-[11px] text-zinc-500 mt-0.5">
-                    Plan: {plan.totalPlanFatG} g
+                    {t("plan.planFatVal", { fat: plan.totalPlanFatG })}
                   </div>
                 </div>
               </div>
@@ -156,7 +154,7 @@ export const NutritionPlanPage: React.FC = () => {
 
             {/* Individual Meals List */}
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-zinc-100">Meal Schedule & Prescribed Foods</h3>
+              <h3 className="text-lg font-bold text-zinc-100">{t("plan.scheduleHeading")}</h3>
               <div className="space-y-4">
                 {plan.meals.map((meal) => (
                   <div
@@ -168,13 +166,13 @@ export const NutritionPlanPage: React.FC = () => {
                         <div className="flex items-center gap-2.5">
                           <h4 className="text-base font-bold text-zinc-100">{meal.name}</h4>
                           <span className="rounded-lg bg-zinc-800/80 px-2 py-0.5 text-xs text-zinc-300">
-                            {meal.mealType}
+                            {t(`meals.${meal.mealType}` as any) || meal.mealType}
                           </span>
                         </div>
                         {meal.suggestedTime && (
                           <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-0.5">
                             <Clock className="h-3 w-3 text-zinc-500" />
-                            <span>Suggested Window: {meal.suggestedTime}</span>
+                            <span>{t("plan.suggestedWindow", { time: meal.suggestedTime })}</span>
                           </div>
                         )}
                       </div>
@@ -194,30 +192,30 @@ export const NutritionPlanPage: React.FC = () => {
 
                     {/* Meal Food Items Table */}
                     <div className="overflow-x-auto">
-                      <table className="w-full min-w-[500px] text-left text-xs">
+                      <table className="w-full min-w-[500px] text-left rtl:text-right text-xs">
                         <thead>
                           <tr className="border-b border-zinc-800/60 text-zinc-400 uppercase tracking-wider text-[10px]">
-                            <th className="pb-2">Food Item</th>
-                            <th className="pb-2">Prescribed Portion</th>
-                            <th className="pb-2 text-right">Calories</th>
-                            <th className="pb-2 text-right">Protein</th>
-                            <th className="pb-2 text-right">Carbs</th>
-                            <th className="pb-2 text-right">Fat</th>
+                            <th className="pb-2 text-left rtl:text-right">{t("plan.colFood")}</th>
+                            <th className="pb-2 text-left rtl:text-right">{t("plan.colPortion")}</th>
+                            <th className="pb-2 text-right rtl:text-left">{t("plan.colCalories")}</th>
+                            <th className="pb-2 text-right rtl:text-left">{t("plan.colProtein")}</th>
+                            <th className="pb-2 text-right rtl:text-left">{t("plan.colCarbs")}</th>
+                            <th className="pb-2 text-right rtl:text-left">{t("plan.colFat")}</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-zinc-800/40">
                           {meal.items.map((it) => (
                             <tr key={it.id} className="hover:bg-zinc-800/20">
-                              <td className="py-2.5 font-medium text-zinc-200">{it.foodName}</td>
-                              <td className="py-2.5 text-zinc-400">
+                              <td className="py-2.5 font-medium text-zinc-200 text-left rtl:text-right">{it.foodName}</td>
+                              <td className="py-2.5 text-zinc-400 text-left rtl:text-right">
                                 {it.quantity} {it.unit}
                               </td>
-                              <td className="py-2.5 text-right font-semibold text-amber-400">
+                              <td className="py-2.5 text-right rtl:text-left font-semibold text-amber-400">
                                 {it.calories}
                               </td>
-                              <td className="py-2.5 text-right text-emerald-400">{it.protein}g</td>
-                              <td className="py-2.5 text-right text-blue-400">{it.carbs}g</td>
-                              <td className="py-2.5 text-right text-purple-400">{it.fat}g</td>
+                              <td className="py-2.5 text-right rtl:text-left text-emerald-400">{it.protein}g</td>
+                              <td className="py-2.5 text-right rtl:text-left text-blue-400">{it.carbs}g</td>
+                              <td className="py-2.5 text-right rtl:text-left text-purple-400">{it.fat}g</td>
                             </tr>
                           ))}
                         </tbody>

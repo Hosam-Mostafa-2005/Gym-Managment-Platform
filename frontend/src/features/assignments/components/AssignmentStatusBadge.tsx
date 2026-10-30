@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import type { AssignmentStatus } from "@/features/assignments/types/assignment.types";
 
@@ -6,6 +7,8 @@ interface Props {
 }
 
 export const AssignmentStatusBadge = ({ status }: Props) => {
+  const { t } = useTranslation(["assignments"]);
+
   switch (status) {
     case "ACTIVE":
       return (
@@ -14,7 +17,7 @@ export const AssignmentStatusBadge = ({ status }: Props) => {
           className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20 font-medium text-xs gap-1.5"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          Active
+          {t("status.active", "Active")}
         </Badge>
       );
     case "COMPLETED":
@@ -23,7 +26,7 @@ export const AssignmentStatusBadge = ({ status }: Props) => {
           variant="secondary"
           className="bg-zinc-800 text-zinc-300 hover:bg-zinc-800/80 border border-zinc-700 font-medium text-xs gap-1"
         >
-          ✓ Completed
+          ✓ {t("status.completed", "Completed")}
         </Badge>
       );
     case "CANCELLED":
@@ -33,7 +36,7 @@ export const AssignmentStatusBadge = ({ status }: Props) => {
           className="bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 font-medium text-xs gap-1.5"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-          Cancelled
+          {t("status.cancelled", "Cancelled")}
         </Badge>
       );
     default:

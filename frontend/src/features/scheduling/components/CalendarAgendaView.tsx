@@ -12,9 +12,9 @@ import {
   Play,
   User,
   MapPin,
-  MessageSquare,
   ArrowRight,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type {
   ScheduledWorkout,
   CoachingAppointment,
@@ -40,6 +40,7 @@ export default function CalendarAgendaView({
   onSelectAppointment,
   isCoachView = false,
 }: CalendarAgendaViewProps) {
+  const { t, i18n } = useTranslation("trainingCalendar");
   const navigate = useNavigate();
   const { mutate: startWorkout, isPending: isStarting } =
     useStartScheduledWorkout();
@@ -87,23 +88,27 @@ export default function CalendarAgendaView({
     }
 
     for (const [dateKey, events] of groupMap.entries()) {
-      let label = new Date(dateKey + "T00:00:00").toLocaleDateString(undefined, {
-        weekday: "long",
-        month: "short",
-        day: "numeric",
-      });
+      const formattedDate = new Date(dateKey + "T00:00:00").toLocaleDateString(
+        i18n.language === "ar" ? "ar-EG" : "en-US",
+        {
+          weekday: "long",
+          month: "short",
+          day: "numeric",
+        },
+      );
 
+      let label = formattedDate;
       if (dateKey === todayStr) {
-        label = `Today (${label})`;
+        label = t("agenda.todayGroup", { date: formattedDate });
       } else if (dateKey === tomorrowStr) {
-        label = `Tomorrow (${label})`;
+        label = t("agenda.tomorrowGroup", { date: formattedDate });
       }
 
       groups.push({ dateKey, label, events });
     }
 
     return groups;
-  }, [scheduledWorkouts, coachingAppointments]);
+  }, [scheduledWorkouts, coachingAppointments, i18n.language, t]);
 
   const handleStartWorkout = (sw: ScheduledWorkout, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -123,33 +128,44 @@ export default function CalendarAgendaView({
       case "COMPLETED":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-[#5BE584] border border-[#5BE584]/20">
-            <CheckCircle2 size={12} /> Completed
+            <CheckCircle2 size={12} /> {t("status.completed")}
           </span>
         );
       case "MISSED":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-            <AlertTriangle size={12} /> Missed
+            <AlertTriangle size={12} /> {t("status.missed")}
           </span>
         );
       case "CANCELLED":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
-            Cancelled
+            {t("status.cancelled")}
           </span>
         );
       case "RESCHEDULED":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
-            <RotateCcw size={12} /> Rescheduled
+            <RotateCcw size={12} /> {t("status.rescheduled")}
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
-            <Clock size={12} /> Scheduled
+            <Clock size={12} /> {t("status.scheduled")}
           </span>
         );
+    }
+  };
+
+  const formatTime = (isoString: string) => {
+    try {
+      return new Date(isoString).toLocaleTimeString(
+        i18n.language === "ar" ? "ar-EG" : "en-US",
+        { hour: "numeric", minute: "2-digit" },
+      );
+    } catch {
+      return "";
     }
   };
 
@@ -159,11 +175,11 @@ export default function CalendarAgendaView({
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#16291D] border border-[#23422E] text-[#5BE584] mb-3">
           <Calendar className="h-6 w-6" />
         </div>
-        <h3 className="text-base font-bold text-white">No Scheduled Events</h3>
+        <h3 className="text-base font-bold text-white">{t("agenda.noEventsTitle")}</h3>
         <p className="text-xs text-gray-400 max-w-sm mx-auto mt-1">
           {isCoachView
-            ? "No workouts or appointments scheduled for this view range."
-            : "You have no upcoming workout sessions or coaching appointments scheduled."}
+            ? t("agenda.noEventsCoachDescription")
+            : t("agenda.noEventsDescription")}
         </p>
       </div>
     );
@@ -187,20 +203,14 @@ export default function CalendarAgendaView({
             {group.events.map((event) => {
               if (event.kind === "appointment") {
                 const appt = event.data;
-                const startTime = new Date(appt.startTime).toLocaleTimeString(
-                  [],
-                  { hour: "numeric", minute: "2-digit" },
-                );
-                const endTime = new Date(appt.endTime).toLocaleTimeString([], {
-                  hour: "numeric",
-                  minute: "2-digit",
-                });
+                const startTime = formatTime(appt.startTime);
+                const endTime = formatTime(appt.endTime);
 
                 return (
                   <div
                     key={appt.id}
                     onClick={() => onSelectAppointment(appt)}
-                    className="p-4 rounded-2xl bg-[#101418] hover:bg-[#13181E] border border-purple-500/20 hover:border-purple-500/40 cursor-pointer transition-all shadow-lg group"
+                    className="p-4 rounded-2xl bg-[#101418] hover:bg-[#13181E] border border-purple-500/20 hover:border-purple-500/40 cursor-pointer transition-all shadow-lg group text-left rtl:text-right"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-2.5">
@@ -209,7 +219,7 @@ export default function CalendarAgendaView({
                         </div>
                         <div>
                           <span className="text-[10px] font-bold text-purple-400 uppercase tracking-wider">
-                            Coaching Appointment
+                            {t("events.coachingAppointment")}
                           </span>
                           <h5 className="text-sm font-bold text-white group-hover:text-purple-300 transition-colors">
                             {appt.title}
@@ -240,15 +250,15 @@ export default function CalendarAgendaView({
                         <User size={13} className="text-purple-400 shrink-0" />
                         <span>
                           {isCoachView && appt.member
-                            ? `Athlete: ${appt.member.name}`
+                            ? t("events.athleteLabel", { name: appt.member.name })
                             : appt.trainer
-                            ? `Coach ${appt.trainer.name}`
-                            : "1-on-1"}
+                            ? t("events.coachLabel", { name: appt.trainer.name })
+                            : t("events.oneOnOne")}
                         </span>
                       </div>
 
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-400 group-hover:translate-x-0.5 transition-transform">
-                        Details <ArrowRight size={12} />
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-400 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5 transition-transform">
+                        {t("events.details")} <ArrowRight size={12} className="rtl:rotate-180" />
                       </span>
                     </div>
                   </div>
@@ -257,16 +267,13 @@ export default function CalendarAgendaView({
 
               // Workout Card
               const sw = event.data;
-              const timeStr = new Date(sw.scheduledAt).toLocaleTimeString([], {
-                hour: "numeric",
-                minute: "2-digit",
-              });
+              const timeStr = formatTime(sw.scheduledAt);
 
               return (
                 <div
                   key={sw.id}
                   onClick={() => onSelectWorkout(sw)}
-                  className="p-4 rounded-2xl bg-[#101418] hover:bg-[#13181E] border border-[#1E2329] hover:border-[#2A323D] cursor-pointer transition-all shadow-lg group"
+                  className="p-4 rounded-2xl bg-[#101418] hover:bg-[#13181E] border border-[#1E2329] hover:border-[#2A323D] cursor-pointer transition-all shadow-lg group text-left rtl:text-right"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2.5">
@@ -275,10 +282,10 @@ export default function CalendarAgendaView({
                       </div>
                       <div>
                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                          Training Session
+                          {t("events.trainingSession")}
                         </span>
                         <h5 className="text-sm font-bold text-white group-hover:text-[#5BE584] transition-colors">
-                          {sw.workout?.title || "Workout Session"}
+                          {sw.workout?.title || t("events.defaultWorkoutTitle")}
                         </h5>
                       </div>
                     </div>
@@ -291,11 +298,13 @@ export default function CalendarAgendaView({
                       <span>{timeStr}</span>
                     </div>
                     <div>
-                      {sw.workout?.exercises?.length || 0} exercises planned
+                      {t("events.exercisesPlanned", {
+                        count: sw.workout?.exercises?.length || 0,
+                      })}
                     </div>
                     {sw.trainer && (
                       <div className="text-emerald-400 font-medium">
-                        Coach assigned
+                        {t("events.coachAssigned")}
                       </div>
                     )}
                   </div>
@@ -310,7 +319,9 @@ export default function CalendarAgendaView({
                   <div className="mt-3 pt-3 border-t border-[#1E2329] flex items-center justify-between">
                     <div className="text-xs text-gray-500">
                       {isCoachView && sw.member && (
-                        <span>Athlete: {sw.member.name}</span>
+                        <span>
+                          {t("events.athleteLabel", { name: sw.member.name })}
+                        </span>
                       )}
                     </div>
 
@@ -325,7 +336,7 @@ export default function CalendarAgendaView({
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#5BE584] hover:bg-[#4dd273] text-black shadow-md shadow-[#5BE584]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                         >
                           <Play size={12} className="fill-black" />
-                          Start
+                          {t("events.start")}
                         </button>
                       )}
                   </div>

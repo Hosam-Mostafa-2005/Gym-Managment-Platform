@@ -1,6 +1,7 @@
 // src/features/profile/components/member/RecentSessions.tsx
 import React from "react";
 import { Activity, Calendar } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ProfileSection } from "../shared/ProfileSection";
 import type { MemberSession } from "../../types/profile.types";
 
@@ -11,10 +12,13 @@ interface RecentSessionsProps {
 export const RecentSessions: React.FC<RecentSessionsProps> = ({
   sessions = [],
 }) => {
+  const { t, i18n } = useTranslation(["profile"]);
+
   const formatDate = (dateStr?: string | null) => {
-    if (!dateStr) return "N/A";
+    if (!dateStr) return "—";
     try {
-      return new Intl.DateTimeFormat("en-US", {
+      const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -26,8 +30,8 @@ export const RecentSessions: React.FC<RecentSessionsProps> = ({
 
   return (
     <ProfileSection
-      title="Recent Training Sessions"
-      subtitle="Latest workouts logged by athlete"
+      title={t("member.recentSessions.title")}
+      subtitle={t("member.recentSessions.subtitle")}
       icon={Activity}
     >
       {sessions?.length > 0 ? (
@@ -39,12 +43,14 @@ export const RecentSessions: React.FC<RecentSessionsProps> = ({
             >
               <div className="flex flex-col gap-0.5">
                 <span className="font-semibold text-gray-200">
-                  {session.workout?.title || "Independent Training Session"}
+                  {session.workout?.title || t("member.recentSessions.independentSession")}
                 </span>
                 <span className="text-[10px] text-gray-500 flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {formatDate(session.startedAt)}
-                  {session.duration ? ` • ${session.duration} mins` : ""}
+                  {session.duration
+                    ? ` • ${t("member.recentSessions.duration", { count: session.duration })}`
+                    : ""}
                 </span>
               </div>
               <span className="font-mono text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[10px]">
@@ -55,9 +61,11 @@ export const RecentSessions: React.FC<RecentSessionsProps> = ({
         </div>
       ) : (
         <div className="py-8 text-center text-xs text-gray-500">
-          No workout sessions logged yet.
+          {t("member.recentSessions.empty")}
         </div>
       )}
     </ProfileSection>
   );
 };
+
+export default RecentSessions;

@@ -1,6 +1,7 @@
 // src/features/body-measurements/hooks/use-update-measurement.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import i18n from "@/i18n";
 import { updateBodyMeasurement } from "../api/body-measurements.api";
 import type { UpdateBodyMeasurementDto } from "../types/body-measurements.types";
 
@@ -31,10 +32,20 @@ export const useUpdateMeasurement = (memberId: string) => {
       queryClient.invalidateQueries({
         queryKey: ["gamification"],
       });
-      toast.success("Measurement updated successfully.");
+      toast.success(
+        i18n.t(
+          "bodyMeasurements:notifications.updateSuccess",
+          "Measurement updated successfully.",
+        ),
+      );
     },
     onError: () => {
-      toast.error("Failed to update measurement.");
+      toast.error(
+        i18n.t(
+          "bodyMeasurements:notifications.updateError",
+          "Failed to update measurement.",
+        ),
+      );
     },
   });
 };

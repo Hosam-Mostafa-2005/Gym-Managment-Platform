@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Search,
   Calendar,
@@ -20,6 +21,7 @@ import StartWorkoutDialog from "../components/StartWorkoutDialog";
 import ActiveWorkoutConflictDialog from "../components/ActiveWorkoutConflictDialog";
 
 export default function WorkoutSessionsPage() {
+  const { t, i18n } = useTranslation(["workoutSessions", "common"]);
   const navigate = useNavigate();
   const { data: user } = useCurrentUser();
 
@@ -60,7 +62,7 @@ export default function WorkoutSessionsPage() {
   const activeWorkoutTitle =
     activeSession?.workout?.title ||
     activeSession?.assignment?.workout?.title ||
-    "Active Workout";
+    t("overview.workoutSessionDefault", "Workout Session");
 
   const stats = useMemo(() => {
     const completed = sessions.filter(
@@ -160,13 +162,18 @@ export default function WorkoutSessionsPage() {
       session.assignment?.workoutId ||
       session.assignment?.workout?.id;
     if (!wId) {
-      toast.error("Could not find the workout details for this session.");
+      toast.error(
+        t(
+          "overview.sessionNotFoundDetails",
+          "Could not find the workout details for this session.",
+        ),
+      );
       return;
     }
     const title =
       session.workout?.title ||
       session.assignment?.workout?.title ||
-      "Workout Routine";
+      t("overview.workoutSessionDefault", "Workout Routine");
 
     if (hasActiveSession && activeSession) {
       setConflictModal({
@@ -186,17 +193,25 @@ export default function WorkoutSessionsPage() {
         : { workout: wId },
       {
         onSuccess: () => {
-          toast.success(`Started new session: ${title}`);
+          toast.success(
+            t("overview.startedNewSession", {
+              title,
+              defaultValue: "Started new session: {{title}}",
+            }),
+          );
           navigate("/sessions/active");
         },
         onError: (err: any) => {
           toast.error(
-            err?.response?.data?.message || "Failed to start workout session",
+            err?.response?.data?.message ||
+              t("overview.failedToStart", "Failed to start workout session"),
           );
         },
       },
     );
   };
+
+  const dateLocale = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   return (
     <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30">
@@ -211,18 +226,22 @@ export default function WorkoutSessionsPage() {
         <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase">
-              <span className="text-[#F3F4F6]">Sessions</span>
+              <span className="text-[#F3F4F6]">
+                {t("overview.breadcrumbSessions", "Sessions")}
+              </span>
               <span>/</span>
               <span className="hover:text-[#9CA3AF] cursor-pointer">
-                Overview
+                {t("overview.breadcrumbOverview", "Overview")}
               </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mt-1">
-              Workout Sessions
+              {t("overview.title", "Workout Sessions")}
             </h1>
             <p className="text-sm text-[#9CA3AF]">
-              Monitor live workout activity and review completed session
-              history.
+              {t(
+                "overview.description",
+                "Monitor live workout activity and review completed session history.",
+              )}
             </p>
           </div>
 
@@ -235,7 +254,7 @@ export default function WorkoutSessionsPage() {
                   className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-xs font-semibold text-[#9CA3AF] transition-all hover:text-white hover:border-[#2A313A]"
                 >
                   <Dumbbell className="w-3.5 h-3.5 text-[#5BE584]" />
-                  <span>Choose Another Workout</span>
+                  <span>{t("overview.chooseAnother", "Choose Another Workout")}</span>
                 </button>
                 <button
                   type="button"
@@ -243,7 +262,7 @@ export default function WorkoutSessionsPage() {
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5BE584] px-5 py-2.5 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80] shadow-md shadow-[#5BE584]/10"
                 >
                   <Activity className="w-3.5 h-3.5 animate-pulse" />
-                  <span>Continue Live Session</span>
+                  <span>{t("overview.continueLive", "Continue Live Session")}</span>
                 </button>
               </>
             ) : (
@@ -252,8 +271,8 @@ export default function WorkoutSessionsPage() {
                 onClick={() => setIsStartWorkoutModalOpen(true)}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#5BE584] px-5 py-2.5 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80] shadow-md shadow-[#5BE584]/10"
               >
-                <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Start Workout</span>
+                <Play className="w-3.5 h-3.5 fill-current rtl:rotate-180" />
+                <span>{t("overview.startWorkout", "Start Workout")}</span>
               </button>
             )}
           </div>
@@ -266,7 +285,7 @@ export default function WorkoutSessionsPage() {
         <section>
           <div className="mb-4">
             <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-              Activity Metrics
+              {t("overview.activityMetrics", "Activity Metrics")}
             </h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -274,7 +293,7 @@ export default function WorkoutSessionsPage() {
             <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
               <div>
                 <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                  Total Sessions
+                  {t("overview.totalSessions", "Total Sessions")}
                 </p>
                 <h3 className="text-2xl font-semibold text-white mt-2">
                   {stats.total}
@@ -289,7 +308,7 @@ export default function WorkoutSessionsPage() {
             <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
               <div>
                 <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                  Active Sessions
+                  {t("overview.activeSessions", "Active Sessions")}
                 </p>
                 <div className="flex items-baseline gap-2 mt-2">
                   <h3 className="text-2xl font-semibold text-white">
@@ -298,7 +317,7 @@ export default function WorkoutSessionsPage() {
                   {stats.inProgress > 0 && (
                     <span className="flex items-center gap-1 text-[10px] font-medium text-[#5BE584] bg-[#16291D] border border-[#23422E] px-2 py-0.5 rounded">
                       <span className="w-1.5 h-1.5 rounded-full bg-[#5BE584] animate-pulse"></span>
-                      LIVE
+                      {t("overview.liveBadge", "LIVE")}
                     </span>
                   )}
                 </div>
@@ -312,7 +331,7 @@ export default function WorkoutSessionsPage() {
             <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
               <div>
                 <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                  Completed
+                  {t("overview.completedSessions", "Completed")}
                 </p>
                 <h3 className="text-2xl font-semibold text-white mt-2">
                   {stats.completed}
@@ -327,7 +346,7 @@ export default function WorkoutSessionsPage() {
             <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
               <div>
                 <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                  Avg Duration
+                  {t("overview.avgDuration", "Avg Duration")}
                 </p>
                 <h3 className="text-2xl font-semibold text-white mt-2">
                   {stats.averageDuration}m
@@ -346,22 +365,22 @@ export default function WorkoutSessionsPage() {
         <section>
           <div className="mb-4">
             <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-              Filter & History
+              {t("overview.filterHistory", "Filter & History")}
             </h2>
           </div>
 
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6B7280]"
+                className="absolute ltr:left-3.5 rtl:right-3.5 top-1/2 -translate-y-1/2 text-[#6B7280]"
                 size={16}
               />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search name or ID..."
-                className="w-full bg-[#101418] border border-[#1E2329] rounded-md h-9 pl-9 pr-4 text-xs text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+                placeholder={t("overview.searchPlaceholder", "Search name or ID...")}
+                className="w-full bg-[#101418] border border-[#1E2329] rounded-md h-9 ltr:pl-9 ltr:pr-4 rtl:pr-9 rtl:pl-4 text-xs text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
               />
             </div>
             <div className="flex gap-2">
@@ -370,18 +389,18 @@ export default function WorkoutSessionsPage() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="bg-[#101418] border border-[#1E2329] rounded-md px-3 h-9 text-xs text-[#F3F4F6] focus:outline-none focus:border-[#5BE584] focus:ring-1 focus:ring-[#5BE584] cursor-pointer appearance-none min-w-[130px]"
               >
-                <option value="all">All Status</option>
-                <option value="IN_PROGRESS">Active</option>
-                <option value="COMPLETED">Completed</option>
+                <option value="all">{t("overview.statusAll", "All Status")}</option>
+                <option value="IN_PROGRESS">{t("overview.statusActive", "Active")}</option>
+                <option value="COMPLETED">{t("overview.statusCompleted", "Completed")}</option>
               </select>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="bg-[#101418] border border-[#1E2329] rounded-md px-3 h-9 text-xs text-[#F3F4F6] focus:outline-none focus:border-[#5BE584] focus:ring-1 focus:ring-[#5BE584] cursor-pointer appearance-none min-w-[130px]"
               >
-                <option value="newest">Newest</option>
-                <option value="oldest">Oldest</option>
-                <option value="duration">Duration</option>
+                <option value="newest">{t("overview.sortNewest", "Newest")}</option>
+                <option value="oldest">{t("overview.sortOldest", "Oldest")}</option>
+                <option value="duration">{t("overview.sortDuration", "Duration")}</option>
               </select>
             </div>
           </div>
@@ -399,13 +418,13 @@ export default function WorkoutSessionsPage() {
             {isError && (
               <div className="flex flex-col justify-center items-center py-24 text-center">
                 <p className="text-red-400 mb-4 text-sm">
-                  Error loading sessions.
+                  {t("overview.errorLoading", "Error loading sessions.")}
                 </p>
                 <button
                   onClick={() => refetch()}
                   className="rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:text-white hover:border-[#6B7280]"
                 >
-                  Try Again
+                  {t("overview.tryAgain", "Try Again")}
                 </button>
               </div>
             )}
@@ -413,7 +432,7 @@ export default function WorkoutSessionsPage() {
             {!isLoading && !isError && filteredSessions.length === 0 && (
               <div className="flex flex-col justify-center items-center py-24 text-center px-4">
                 <p className="text-[#9CA3AF] mb-4 text-xs">
-                  No workout sessions found.
+                  {t("overview.noSessionsFound", "No workout sessions found.")}
                 </p>
                 {search || statusFilter !== "all" ? (
                   <button
@@ -423,14 +442,14 @@ export default function WorkoutSessionsPage() {
                     }}
                     className="rounded-md border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:text-white hover:border-[#6B7280]"
                   >
-                    Clear Filters
+                    {t("overview.clearFilters", "Clear Filters")}
                   </button>
                 ) : (
                   <button
                     onClick={handleContinueWorkout}
                     className="rounded-md bg-[#5BE584] px-4 py-2 text-xs font-semibold text-[#090B0F] transition-all hover:bg-[#4ade80]"
                   >
-                    Start your first workout
+                    {t("overview.startFirstWorkout", "Start your first workout")}
                   </button>
                 )}
               </div>
@@ -439,15 +458,15 @@ export default function WorkoutSessionsPage() {
             {!isLoading && !isError && filteredSessions.length > 0 && (
               <>
                 <div className="overflow-x-auto">
-                  <table className="w-full min-w-[580px] text-left text-sm whitespace-nowrap">
+                  <table className="w-full min-w-[580px] text-start text-sm whitespace-nowrap">
                     <thead className="text-[#6B7280] border-b border-[#1E2329] uppercase text-[10px] font-bold tracking-widest bg-[#101418]">
                       <tr>
-                        <th className="px-5 py-4">Workout</th>
-                        <th className="px-5 py-4">Coach</th>
-                        <th className="px-5 py-4">Time</th>
-                        <th className="px-5 py-4">Progress</th>
-                        <th className="px-5 py-4">Status</th>
-                        <th className="px-5 py-4 text-right">Actions</th>
+                        <th className="px-5 py-4 text-start">{t("overview.tableWorkout", "Workout")}</th>
+                        <th className="px-5 py-4 text-start">{t("overview.tableCoach", "Coach")}</th>
+                        <th className="px-5 py-4 text-start">{t("overview.tableTime", "Time")}</th>
+                        <th className="px-5 py-4 text-start">{t("overview.tableProgress", "Progress")}</th>
+                        <th className="px-5 py-4 text-start">{t("overview.tableStatus", "Status")}</th>
+                        <th className="px-5 py-4 text-end">{t("overview.tableActions", "Actions")}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#1E2329] text-sm">
@@ -463,21 +482,24 @@ export default function WorkoutSessionsPage() {
                             <div className="font-medium text-[#F3F4F6] group-hover:text-[#5BE584] transition-colors">
                               {session.workout?.title ||
                                 session.assignment?.workout?.title ||
-                                "Workout Session"}
+                                t("overview.workoutSessionDefault", "Workout Session")}
                             </div>
-                            <div className="text-[#6B7280] text-[11px] mt-0.5">
+                            <div className="text-[#6B7280] text-[11px] mt-0.5 font-mono">
                               ID: M-{session.id.slice(-4).toUpperCase()}
                             </div>
                           </td>
                           <td className="px-5 py-3.5 text-xs text-[#9CA3AF]">
                             {session.assignment?.trainer?.name
-                              ? `Coach ${session.assignment.trainer.name}`
-                              : "Self-Trained"}
+                              ? t("overview.coachPrefix", {
+                                  name: session.assignment.trainer.name,
+                                  defaultValue: "Coach {{name}}",
+                                })
+                              : t("overview.selfTrained", "Self-Trained")}
                           </td>
                           <td className="px-5 py-3.5 text-xs text-[#9CA3AF]">
                             <div className="font-medium text-[#F3F4F6]">
                               {new Date(session.startedAt).toLocaleTimeString(
-                                [],
+                                dateLocale,
                                 {
                                   hour: "2-digit",
                                   minute: "2-digit",
@@ -485,14 +507,17 @@ export default function WorkoutSessionsPage() {
                               )}
                             </div>
                             <div className="text-[11px] text-[#6B7280] mt-0.5">
-                              {session.duration ?? 0}m elapsed
+                              {t("overview.elapsedMinutes", {
+                                count: session.duration ?? 0,
+                                defaultValue: "{{count}}m elapsed",
+                              })}
                             </div>
                           </td>
                           <td className="px-5 py-3.5">
                             <div className="flex items-center gap-3">
                               <div className="w-24 bg-[#1E2329] h-1.5 rounded-full overflow-hidden">
                                 <div
-                                   className={`h-full rounded-full transition-all duration-500 ${
+                                  className={`h-full rounded-full transition-all duration-500 ${
                                     session.status === "COMPLETED"
                                       ? "bg-[#6B7280]"
                                       : session.status === "IN_PROGRESS"
@@ -502,7 +527,7 @@ export default function WorkoutSessionsPage() {
                                   style={{ width: `${session.progress ?? 0}%` }}
                                 />
                               </div>
-                              <span className="text-[11px] font-medium text-[#6B7280] w-8">
+                              <span className="text-[11px] font-medium text-[#6B7280] w-8 font-mono">
                                 {session.progress ?? 0}%
                               </span>
                             </div>
@@ -518,15 +543,17 @@ export default function WorkoutSessionsPage() {
                               }`}
                             >
                               {session.status === "IN_PROGRESS" && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#5BE584] mr-1.5 animate-pulse"></span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#5BE584] ltr:mr-1.5 rtl:ml-1.5 animate-pulse"></span>
                               )}
                               {session.status === "IN_PROGRESS"
-                                ? "In Progress"
-                                : session.status}
+                                ? t("overview.inProgress", "In Progress")
+                                : session.status === "COMPLETED"
+                                  ? t("overview.statusCompleted", "Completed")
+                                  : session.status}
                             </span>
                           </td>
                           <td
-                            className="px-5 py-3.5 text-right whitespace-nowrap"
+                            className="px-5 py-3.5 text-end whitespace-nowrap"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {session.status === "IN_PROGRESS" ? (
@@ -535,19 +562,22 @@ export default function WorkoutSessionsPage() {
                                 onClick={() => navigate("/sessions/active")}
                                 className="inline-flex items-center gap-1.5 rounded-lg bg-[#5BE584] px-3 py-1.5 text-xs font-bold text-[#090B0F] hover:bg-[#4ade80] transition-colors shadow-sm"
                               >
-                                <Play className="w-3 h-3 fill-current" />
-                                Resume
+                                <Play className="w-3 h-3 fill-current rtl:rotate-180" />
+                                {t("overview.resume", "Resume")}
                               </button>
                             ) : session.status === "COMPLETED" ? (
                               <div className="inline-flex items-center justify-end gap-2">
                                 <button
                                   type="button"
                                   onClick={() => handleRepeatSession(session)}
-                                  title="Repeat this workout in a new session without altering history"
+                                  title={t(
+                                    "overview.startAgainTitle",
+                                    "Repeat this workout in a new session without altering history",
+                                  )}
                                   className="inline-flex items-center gap-1.5 rounded-lg border border-[#23422E] bg-[#16291D] px-2.5 py-1.5 text-xs font-medium text-[#5BE584] hover:bg-[#1E3A28] transition-colors"
                                 >
                                   <RotateCcw className="w-3 h-3" />
-                                  Start Again
+                                  {t("overview.startAgain", "Start Again")}
                                 </button>
                                 <button
                                   type="button"
@@ -556,7 +586,7 @@ export default function WorkoutSessionsPage() {
                                   }
                                   className="inline-flex items-center gap-1 rounded-lg border border-[#1E2329] bg-[#101418] px-2.5 py-1.5 text-xs font-medium text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
                                 >
-                                  Summary
+                                  {t("overview.summary", "Summary")}
                                 </button>
                               </div>
                             ) : (
@@ -567,7 +597,7 @@ export default function WorkoutSessionsPage() {
                                 }
                                 className="inline-flex items-center gap-1 rounded-lg border border-[#1E2329] bg-[#101418] px-2.5 py-1.5 text-xs font-medium text-[#9CA3AF] hover:text-white transition-colors"
                               >
-                                Details
+                                {t("overview.details", "Details")}
                               </button>
                             )}
                           </td>
@@ -580,7 +610,11 @@ export default function WorkoutSessionsPage() {
                 {/* Pagination Footer */}
                 <div className="flex items-center justify-between px-5 py-4 border-t border-[#1E2329] text-xs text-[#9CA3AF] bg-[#101418]">
                   <div>
-                    Showing {filteredSessions.length} of {stats.total} sessions
+                    {t("overview.showingCount", {
+                      shown: filteredSessions.length,
+                      total: stats.total,
+                      defaultValue: "Showing {{shown}} of {{total}} sessions",
+                    })}
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -588,17 +622,20 @@ export default function WorkoutSessionsPage() {
                       onClick={() => setPage(page - 1)}
                       className="rounded border border-[#1E2329] bg-[#101418] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] hover:text-white hover:border-[#6B7280] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
-                      Previous
+                      {t("overview.previousPage", "Previous")}
                     </button>
                     <span className="px-3 py-1.5 rounded bg-[#1E2329]/50 text-[#F3F4F6] font-medium border border-[#1E2329]">
-                      Page {page}
+                      {t("overview.pageNumber", {
+                        page,
+                        defaultValue: "Page {{page}}",
+                      })}
                     </span>
                     <button
                       disabled={sessions.length < limit}
                       onClick={() => setPage(page + 1)}
                       className="rounded border border-[#1E2329] bg-[#101418] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] hover:text-white hover:border-[#6B7280] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
-                      Next
+                      {t("overview.nextPage", "Next")}
                     </button>
                   </div>
                 </div>

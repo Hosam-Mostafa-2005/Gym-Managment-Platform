@@ -12,6 +12,7 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { verifyEmail, resendVerification } from "../api/auth.api";
 import { tokenService } from "@/services/token.service";
 import { useAuthStore } from "@/store/auth.store";
@@ -19,6 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { resolveAuthRedirect } from "../utils/auth-redirect";
 
 export const VerifyEmailPage: React.FC = () => {
+  const { t } = useTranslation("auth");
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,12 +54,22 @@ export const VerifyEmailPage: React.FC = () => {
     const targetCode = code.trim().replace(/\D/g, "");
 
     if (!targetEmail || !targetCode) {
-      setErrorMessage("Please enter both your email address and 6-digit verification code.");
+      setErrorMessage(
+        t(
+          "verifyEmail.errorRequired",
+          "Please enter both your email address and 6-digit verification code.",
+        ),
+      );
       return;
     }
 
     if (targetCode.length !== 6) {
-      setErrorMessage("Verification code must be exactly 6 digits.");
+      setErrorMessage(
+        t(
+          "verifyEmail.errorDigits",
+          "Verification code must be exactly 6 digits.",
+        ),
+      );
       return;
     }
 
@@ -76,7 +88,10 @@ export const VerifyEmailPage: React.FC = () => {
         queryClient.setQueryData(["current-user"], response.data.user);
       }
 
-      toast.success(response.message || "Email verified successfully!");
+      toast.success(
+        response.message ||
+          t("verifyEmail.toastSuccess", "Email verified successfully!"),
+      );
 
       const searchParamsObj = new URLSearchParams(location.search);
       const returnUrl = searchParamsObj.get("returnTo");
@@ -91,7 +106,10 @@ export const VerifyEmailPage: React.FC = () => {
     } catch (err: any) {
       const msg =
         err.response?.data?.message ||
-        "Verification failed. Please check your code and try again.";
+        t(
+          "verifyEmail.errorFailedFallback",
+          "Verification failed. Please check your code and try again.",
+        );
       setErrorMessage(msg);
       toast.error(msg);
     } finally {
@@ -102,7 +120,12 @@ export const VerifyEmailPage: React.FC = () => {
   const handleResend = async () => {
     const targetEmail = email.trim().toLowerCase();
     if (!targetEmail) {
-      setErrorMessage("Please enter your email address to receive a verification code.");
+      setErrorMessage(
+        t(
+          "verifyEmail.errorResendEmailRequired",
+          "Please enter your email address to receive a verification code.",
+        ),
+      );
       return;
     }
 
@@ -110,11 +133,21 @@ export const VerifyEmailPage: React.FC = () => {
     setIsResending(true);
     try {
       const res = await resendVerification({ email: targetEmail });
-      toast.success(res.message || "A new verification code has been sent.");
+      toast.success(
+        res.message ||
+          t(
+            "verifyEmail.toastResendSuccess",
+            "A new verification code has been sent.",
+          ),
+      );
       setCooldown(30);
     } catch (err: any) {
       const msg =
-        err.response?.data?.message || "Failed to resend verification code. Please try again later.";
+        err.response?.data?.message ||
+        t(
+          "verifyEmail.errorResendFallback",
+          "Failed to resend verification code. Please try again later.",
+        );
       setErrorMessage(msg);
       toast.error(msg);
     } finally {
@@ -127,10 +160,10 @@ export const VerifyEmailPage: React.FC = () => {
       {/* Back Link */}
       <Link
         to="/login"
-        className="inline-flex items-center gap-1.5 text-xs text-[#91A0B5] hover:text-white transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-xs text-[#91A0B5] hover:text-white transition-colors mb-6 cursor-pointer"
       >
-        <ArrowLeft className="h-3.5 w-3.5" />
-        Back to Sign In
+        <ArrowLeft className="h-3.5 w-3.5 rtl:rotate-180" />
+        {t("verifyEmail.backToSignIn", "Back to Sign In")}
       </Link>
 
       {/* Header */}
@@ -139,11 +172,13 @@ export const VerifyEmailPage: React.FC = () => {
           <Mail className="h-6 w-6" />
         </div>
         <h2 className="text-3xl font-bold tracking-tight text-[#F5F6F8]">
-          Verify Your Email
+          {t("verifyEmail.title", "Verify Your Email")}
         </h2>
         <p className="mt-2 text-sm text-[#91A0B5] leading-relaxed">
-          We&apos;ve sent a 6-digit verification code to your email. Enter the code below to
-          complete registration and unlock your STREN account.
+          {t(
+            "verifyEmail.subtitle",
+            "We've sent a 6-digit verification code to your email. Enter the code below to complete registration and unlock your STREN account.",
+          )}
         </p>
       </div>
 
@@ -152,36 +187,37 @@ export const VerifyEmailPage: React.FC = () => {
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
             <span className="block text-[11px] font-medium uppercase tracking-wider text-[#91A0B5]">
-              Target Email Address
+              {t("verifyEmail.targetEmailLabel", "Target Email Address")}
             </span>
             {isEditingEmail ? (
               <input
                 type="email"
+                dir="ltr"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="athlete@example.com"
                 className="mt-1 w-full rounded-lg border border-[#2A313A] bg-[#161B22] px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
               />
             ) : (
-              <p className="mt-0.5 truncate text-sm font-semibold text-white">
-                {email || "(No email specified)"}
+              <p className="mt-0.5 truncate text-sm font-semibold text-white" dir="ltr">
+                {email || t("verifyEmail.noEmailSpecified", "(No email specified)")}
               </p>
             )}
           </div>
           <button
             type="button"
             onClick={() => setIsEditingEmail(!isEditingEmail)}
-            className="flex items-center gap-1 rounded-lg border border-[#252B33] bg-[#171B20] px-2.5 py-1.5 text-xs text-[#91A0B5] hover:text-white hover:border-[#374151] transition-colors"
+            className="flex items-center gap-1 rounded-lg border border-[#252B33] bg-[#171B20] px-2.5 py-1.5 text-xs text-[#91A0B5] hover:text-white hover:border-[#374151] transition-colors cursor-pointer"
           >
             {isEditingEmail ? (
               <>
                 <Check className="h-3 w-3 text-[#5BE584]" />
-                <span>Done</span>
+                <span>{t("verifyEmail.doneEmail", "Done")}</span>
               </>
             ) : (
               <>
                 <Edit2 className="h-3 w-3" />
-                <span>Change</span>
+                <span>{t("verifyEmail.changeEmail", "Change")}</span>
               </>
             )}
           </button>
@@ -193,7 +229,9 @@ export const VerifyEmailPage: React.FC = () => {
         <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-500/25 bg-red-500/10 p-4 text-xs text-red-200">
           <AlertCircle className="h-5 w-5 shrink-0 text-red-400 mt-0.5" />
           <div className="space-y-1">
-            <p className="font-semibold text-red-300">Verification Issue</p>
+            <p className="font-semibold text-red-300">
+              {t("verifyEmail.issueTitle", "Verification Issue")}
+            </p>
             <p className="text-red-200/90 leading-relaxed">{errorMessage}</p>
           </div>
         </div>
@@ -206,11 +244,12 @@ export const VerifyEmailPage: React.FC = () => {
             htmlFor="verification-code-input"
             className="block text-xs font-semibold text-[#CBD5E1] mb-1.5"
           >
-            6-Digit Verification Code
+            {t("verifyEmail.codeLabel", "6-Digit Verification Code")}
           </label>
           <input
             id="verification-code-input"
             type="text"
+            dir="ltr"
             inputMode="numeric"
             pattern="[0-9]*"
             maxLength={6}
@@ -222,7 +261,10 @@ export const VerifyEmailPage: React.FC = () => {
             className="w-full text-center tracking-[0.5em] text-2xl font-bold rounded-xl border border-[#1E2329] bg-[#0E1217] py-3 text-[#5BE584] placeholder-gray-600 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
           />
           <p className="mt-1.5 text-[11px] text-[#91A0B5]">
-            Code expires in 10 minutes. Check your spam or promotions folder if not received.
+            {t(
+              "verifyEmail.codeExpires",
+              "Code expires in 10 minutes. Check your spam or promotions folder if not received.",
+            )}
           </p>
         </div>
 
@@ -235,12 +277,12 @@ export const VerifyEmailPage: React.FC = () => {
           {isVerifying ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin text-[#0B0D10]" />
-              Verifying Code...
+              {t("verifyEmail.submittingButton", "Verifying Code...")}
             </>
           ) : (
             <>
               <CheckCircle2 className="h-4 w-4 text-[#0B0D10]" />
-              Verify & Activate Account
+              {t("verifyEmail.submitButton", "Verify & Activate Account")}
             </>
           )}
         </button>
@@ -248,15 +290,22 @@ export const VerifyEmailPage: React.FC = () => {
 
       {/* Resend Action */}
       <div className="mt-6 flex items-center justify-between border-t border-[#1E2329] pt-4 text-xs">
-        <span className="text-[#91A0B5]">Didn&apos;t receive the code?</span>
+        <span className="text-[#91A0B5]">
+          {t("verifyEmail.resendPrompt", "Didn't receive the code?")}
+        </span>
         <button
           type="button"
           onClick={handleResend}
           disabled={cooldown > 0 || isResending}
           className="inline-flex items-center gap-1.5 font-semibold text-[#5BE584] hover:text-[#49D472] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
-          <RotateCcw className={`h-3.5 w-3.5 ${isResending ? "animate-spin" : ""}`} />
-          {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
+          <RotateCcw className={`h-3.5 w-3.5 rtl:rotate-180 ${isResending ? "animate-spin" : ""}`} />
+          {cooldown > 0
+            ? t("verifyEmail.resendCooldown", {
+                seconds: cooldown,
+                defaultValue: "Resend code in {{seconds}}s",
+              })
+            : t("verifyEmail.resendAction", "Resend code")}
         </button>
       </div>
     </div>

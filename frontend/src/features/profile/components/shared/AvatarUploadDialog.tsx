@@ -3,11 +3,11 @@ import {
   Camera,
   Upload,
   Trash2,
-  X,
   Loader2,
   AlertCircle,
   Check,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,7 @@ export const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
   currentAvatarUrl,
   userName = "User",
 }) => {
+  const { t } = useTranslation(["profile"]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState(false);
@@ -53,14 +54,14 @@ export const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
 
     // Validate size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
-      setError("File size exceeds 5 MB. Please select a smaller image.");
+      setError(t("avatarDialog.errors.sizeExceeded"));
       return;
     }
 
     // Validate format
     const validTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
     if (!validTypes.includes(file.type.toLowerCase())) {
-      setError("Only JPG, PNG, and WEBP formats are supported.");
+      setError(t("avatarDialog.errors.unsupportedFormat"));
       return;
     }
 
@@ -95,12 +96,11 @@ export const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
       await queryClient.invalidateQueries({ queryKey: ["member-profile"] });
       await queryClient.invalidateQueries({ queryKey: ["coach-profile"] });
 
-      toast.success("Profile picture updated successfully!");
+      toast.success(t("avatarDialog.toasts.updateSuccess"));
       onClose();
     } catch (err: any) {
       setError(
-        err?.response?.data?.message ||
-          "Failed to upload profile picture. Please try again.",
+        err?.response?.data?.message || t("avatarDialog.errors.uploadFailed"),
       );
     } finally {
       setIsUploading(false);
@@ -126,14 +126,13 @@ export const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
       await queryClient.invalidateQueries({ queryKey: ["member-profile"] });
       await queryClient.invalidateQueries({ queryKey: ["coach-profile"] });
 
-      toast.success("Profile picture removed.");
+      toast.success(t("avatarDialog.toasts.removeSuccess"));
       setSelectedFile(null);
       setPreviewUrl(null);
       onClose();
     } catch (err: any) {
       setError(
-        err?.response?.data?.message ||
-          "Failed to delete profile picture. Please try again.",
+        err?.response?.data?.message || t("avatarDialog.errors.deleteFailed"),
       );
     } finally {
       setIsDeleting(false);
@@ -164,11 +163,11 @@ export const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
           <div className="flex items-center gap-2 text-[#5BE584]">
             <Camera className="h-5 w-5" />
             <DialogTitle className="text-lg font-bold text-white">
-              Profile Picture
+              {t("avatarDialog.title")}
             </DialogTitle>
           </div>
           <DialogDescription className="text-xs text-[#9CA3AF]">
-            Upload a custom avatar photo (JPG, PNG, or WEBP, max 5 MB).
+            {t("avatarDialog.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -198,10 +197,10 @@ export const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
 
           <p className="text-[11px] text-[#6B7280]">
             {selectedFile
-              ? `Selected: ${selectedFile.name}`
+              ? t("avatarDialog.selected", { fileName: selectedFile.name })
               : currentAvatarUrl
-                ? "Current profile picture"
-                : "No picture uploaded"}
+                ? t("avatarDialog.currentPicture")
+                : t("avatarDialog.noPicture")}
           </p>
         </div>
 
@@ -222,8 +221,10 @@ export const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
             onClick={() => fileInputRef.current?.click()}
             className="w-full border-[#2A3039] bg-[#141920] hover:bg-[#1E2329] text-white text-xs font-semibold"
           >
-            <Upload className="h-4 w-4 mr-1.5" />
-            {displayImage ? "Choose Different Photo" : "Select Photo from Device"}
+            <Upload className="h-4 w-4 mr-1.5 rtl:mr-0 rtl:ml-1.5" />
+            {displayImage
+              ? t("avatarDialog.chooseDifferent")
+              : t("avatarDialog.selectPhoto")}
           </Button>
 
           {selectedFile && (
@@ -235,13 +236,13 @@ export const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
             >
               {isUploading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-                  Uploading...
+                  <Loader2 className="h-4 w-4 animate-spin mr-1.5 rtl:mr-0 rtl:ml-1.5" />
+                  {t("avatarDialog.uploading")}
                 </>
               ) : (
                 <>
-                  <Check className="h-4 w-4 mr-1.5" />
-                  Save as Profile Picture
+                  <Check className="h-4 w-4 mr-1.5 rtl:mr-0 rtl:ml-1.5" />
+                  {t("avatarDialog.savePicture")}
                 </>
               )}
             </Button>
@@ -257,13 +258,13 @@ export const AvatarUploadDialog: React.FC<AvatarUploadDialogProps> = ({
             >
               {isDeleting ? (
                 <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
-                  Removing...
+                  <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5 rtl:mr-0 rtl:ml-1.5" />
+                  {t("avatarDialog.removing")}
                 </>
               ) : (
                 <>
-                  <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                  Remove Profile Picture
+                  <Trash2 className="h-3.5 w-3.5 mr-1.5 rtl:mr-0 rtl:ml-1.5" />
+                  {t("avatarDialog.removePicture")}
                 </>
               )}
             </Button>

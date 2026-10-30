@@ -1,6 +1,7 @@
 // src/features/scheduling/components/AppointmentDetailModal.tsx
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import {
   X,
   Calendar,
@@ -17,7 +18,6 @@ import {
 } from "lucide-react";
 import type {
   CoachingAppointment,
-  AppointmentType,
 } from "../types/scheduling.types";
 import {
   useCompleteAppointment,
@@ -32,22 +32,16 @@ interface AppointmentDetailModalProps {
   isCoachView?: boolean;
 }
 
-const TYPE_LABELS: Record<AppointmentType, string> = {
-  CHECK_IN: "Routine Check-In",
-  PROGRESS_REVIEW: "Progress & Metrics Review",
-  CONSULTATION: "1-on-1 Consultation",
-  ASSESSMENT: "Fitness Assessment",
-  FORM_ANALYSIS: "Technique & Form Analysis",
-  GOAL_SETTING: "Goal Setting & Strategy",
-  NUTRITION_SYNC: "Nutrition & Macro Sync",
-};
-
 export default function AppointmentDetailModal({
   appointment,
   isOpen,
   onClose,
   isCoachView = false,
 }: AppointmentDetailModalProps) {
+  const { t, i18n } = useTranslation(["trainingCalendar"]);
+  const isRtl = i18n.language === "ar";
+  const locale = isRtl ? "ar-EG" : "en-US";
+
   const [actionTab, setActionTab] = useState<"detail" | "complete" | "cancel">(
     "detail",
   );
@@ -82,7 +76,7 @@ export default function AppointmentDetailModal({
   };
 
   const handleMarkNoShow = () => {
-    if (window.confirm("Are you sure you want to mark this member as a no-show?")) {
+    if (window.confirm(t("appointmentModal.noShowConfirm"))) {
       markNoShow(
         { id: appointment.id },
         {
@@ -117,28 +111,28 @@ export default function AppointmentDetailModal({
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-[#5BE584] border border-[#5BE584]/20">
             <CheckCircle2 size={13} />
-            Completed
+            {t("status.completed")}
           </span>
         );
       case "NO_SHOW":
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
             <UserX size={13} />
-            No Show
+            {t("status.noShow")}
           </span>
         );
       case "CANCELLED":
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-500/10 text-gray-400 border border-gray-500/20">
             <X size={13} />
-            Cancelled
+            {t("status.cancelled")}
           </span>
         );
       case "RESCHEDULED":
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20">
             <RotateCcw size={13} />
-            Rescheduled
+            {t("status.rescheduled")}
           </span>
         );
       case "SCHEDULED":
@@ -146,11 +140,16 @@ export default function AppointmentDetailModal({
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
             <Clock size={13} />
-            Scheduled
+            {t("status.scheduled")}
           </span>
         );
     }
   };
+
+  const appointmentTypeLabel =
+    t(`appointmentModal.types.${appointment.type}`, {
+      defaultValue: appointment.type,
+    });
 
   return createPortal(
     <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/80 backdrop-blur-md">
@@ -169,7 +168,7 @@ export default function AppointmentDetailModal({
                 <div className="flex items-center gap-2 mt-1">
                   {getStatusBadge()}
                   <span className="text-xs text-purple-400 font-medium">
-                    • {TYPE_LABELS[appointment.type] || appointment.type}
+                    • {appointmentTypeLabel}
                   </span>
                 </div>
               </div>
@@ -190,13 +189,13 @@ export default function AppointmentDetailModal({
                 {/* Date & Time */}
                 <div className="grid grid-cols-2 gap-3 p-3.5 bg-[#12161D] border border-[#1E2329] rounded-xl text-sm">
                   <div className="flex items-center gap-2.5 text-gray-300">
-                    <Calendar className="h-4 w-4 text-purple-400" />
+                    <Calendar className="h-4 w-4 text-purple-400 shrink-0" />
                     <div>
                       <div className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">
-                        Date
+                        {t("appointmentModal.date")}
                       </div>
                       <div className="font-semibold text-white">
-                        {startDate.toLocaleDateString(undefined, {
+                        {startDate.toLocaleDateString(locale, {
                           weekday: "short",
                           month: "short",
                           day: "numeric",
@@ -206,18 +205,18 @@ export default function AppointmentDetailModal({
                   </div>
 
                   <div className="flex items-center gap-2.5 text-gray-300">
-                    <Clock className="h-4 w-4 text-purple-400" />
+                    <Clock className="h-4 w-4 text-purple-400 shrink-0" />
                     <div>
                       <div className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">
-                        Time Slot
+                        {t("appointmentModal.timeSlot")}
                       </div>
                       <div className="font-semibold text-white">
-                        {startDate.toLocaleTimeString([], {
+                        {startDate.toLocaleTimeString(locale, {
                           hour: "numeric",
                           minute: "2-digit",
                         })}{" "}
                         –{" "}
-                        {endDate.toLocaleTimeString([], {
+                        {endDate.toLocaleTimeString(locale, {
                           hour: "numeric",
                           minute: "2-digit",
                         })}
@@ -230,13 +229,13 @@ export default function AppointmentDetailModal({
                 <div className="space-y-2">
                   {appointment.trainer && !isCoachView && (
                     <div className="flex items-center gap-3 p-3 bg-[#12161D] border border-[#1E2329] rounded-xl text-xs">
-                      <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-[#5BE584]">
+                      <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-[#5BE584] shrink-0">
                         <User size={15} />
                       </div>
                       <div>
-                        <span className="text-gray-400">Coach:</span>{" "}
+                        <span className="text-gray-400">{t("appointmentModal.coachLabel")}</span>{" "}
                         <span className="font-semibold text-white">
-                          Coach {appointment.trainer.name}
+                          {t("appointmentModal.coachPrefix", { name: appointment.trainer.name })}
                         </span>
                       </div>
                     </div>
@@ -244,15 +243,15 @@ export default function AppointmentDetailModal({
 
                   {appointment.member && isCoachView && (
                     <div className="flex items-center gap-3 p-3 bg-[#12161D] border border-[#1E2329] rounded-xl text-xs">
-                      <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                      <div className="h-8 w-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
                         <User size={15} />
                       </div>
                       <div>
-                        <span className="text-gray-400">Athlete:</span>{" "}
+                        <span className="text-gray-400">{t("appointmentModal.athleteLabel")}</span>{" "}
                         <span className="font-semibold text-white">
                           {appointment.member.name}
                         </span>
-                        <span className="text-gray-500 ml-1">
+                        <span className="text-gray-500 mx-1">
                           ({appointment.member.email})
                         </span>
                       </div>
@@ -261,11 +260,11 @@ export default function AppointmentDetailModal({
 
                   {appointment.location && (
                     <div className="flex items-center gap-3 p-3 bg-[#12161D] border border-[#1E2329] rounded-xl text-xs">
-                      <div className="h-8 w-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                      <div className="h-8 w-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
                         <MapPin size={15} />
                       </div>
                       <div>
-                        <span className="text-gray-400">Location / Room:</span>{" "}
+                        <span className="text-gray-400">{t("appointmentModal.locationRoom")}</span>{" "}
                         <span className="font-semibold text-white">
                           {appointment.location}
                         </span>
@@ -278,8 +277,8 @@ export default function AppointmentDetailModal({
                 {appointment.memberNotes && (
                   <div className="p-3.5 bg-[#12161D] border border-[#1E2329] rounded-xl text-sm">
                     <div className="text-xs font-semibold text-gray-400 mb-1 flex items-center gap-1.5">
-                      <MessageSquare size={13} className="text-purple-400" />
-                      Member Focus & Questions
+                      <MessageSquare size={13} className="text-purple-400 shrink-0" />
+                      {t("appointmentModal.memberFocus")}
                     </div>
                     <p className="text-gray-300 text-xs leading-relaxed whitespace-pre-wrap">
                       {appointment.memberNotes}
@@ -291,8 +290,8 @@ export default function AppointmentDetailModal({
                 {isCoachView && appointment.coachNotes && (
                   <div className="p-3.5 bg-[#1A1824] border border-purple-500/30 rounded-xl text-sm">
                     <div className="text-xs font-semibold text-purple-300 mb-1 flex items-center gap-1.5">
-                      <Lock size={13} className="text-purple-400" />
-                      Coach Confidential Notes (Private to You)
+                      <Lock size={13} className="text-purple-400 shrink-0" />
+                      {t("appointmentModal.coachConfidential")}
                     </div>
                     <p className="text-purple-200 text-xs leading-relaxed whitespace-pre-wrap">
                       {appointment.coachNotes}
@@ -304,10 +303,10 @@ export default function AppointmentDetailModal({
                 {appointment.status === "CANCELLED" && (
                   <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-300">
                     <div className="font-semibold mb-1 flex items-center gap-1.5">
-                      <AlertTriangle size={13} />
-                      Cancellation Reason
+                      <AlertTriangle size={13} className="shrink-0" />
+                      {t("appointmentModal.cancellationReason")}
                     </div>
-                    <p>{appointment.cancellationReason || "No reason provided."}</p>
+                    <p>{appointment.cancellationReason || t("appointmentModal.noReasonProvided")}</p>
                   </div>
                 )}
               </>
@@ -317,17 +316,17 @@ export default function AppointmentDetailModal({
             {actionTab === "complete" && (
               <form onSubmit={handleComplete} className="space-y-4">
                 <div className="text-xs text-gray-400">
-                  Mark this coaching session as completed and save your private assessment or review notes for future reference.
+                  {t("appointmentModal.completeDesc")}
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                    Coach Session Notes & Observations
+                    {t("appointmentModal.completeNotesLabel")}
                   </label>
                   <textarea
                     rows={4}
                     value={completeNotes}
                     onChange={(e) => setCompleteNotes(e.target.value)}
-                    placeholder="Enter key findings, recommendations, or progression milestones..."
+                    placeholder={t("appointmentModal.completeNotesPlaceholder")}
                     className="w-full bg-[#12161D] border border-[#1E2329] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
                   />
                 </div>
@@ -337,14 +336,14 @@ export default function AppointmentDetailModal({
                     onClick={() => setActionTab("detail")}
                     className="px-3.5 py-2 rounded-xl text-xs text-gray-400 hover:text-white"
                   >
-                    Back
+                    {t("appointmentModal.back")}
                   </button>
                   <button
                     type="submit"
                     disabled={isCompleting}
                     className="px-4 py-2 rounded-xl text-xs font-bold bg-[#5BE584] hover:bg-[#4dd273] text-black disabled:opacity-50"
                   >
-                    {isCompleting ? "Saving..." : "Confirm Completion"}
+                    {isCompleting ? t("appointmentModal.saving") : t("appointmentModal.confirmCompletion")}
                   </button>
                 </div>
               </form>
@@ -354,18 +353,18 @@ export default function AppointmentDetailModal({
             {actionTab === "cancel" && (
               <form onSubmit={handleCancel} className="space-y-4">
                 <div className="text-xs text-gray-400">
-                  Please provide a clear reason for cancellation. The other party will receive an automated notification.
+                  {t("appointmentModal.cancelDesc")}
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-300 mb-1.5">
-                    Cancellation Reason *
+                    {t("appointmentModal.cancelReasonLabel")}
                   </label>
                   <textarea
                     rows={3}
                     required
                     value={cancelReason}
                     onChange={(e) => setCancelReason(e.target.value)}
-                    placeholder="e.g. Rescheduling required due to client schedule conflict..."
+                    placeholder={t("appointmentModal.cancelReasonPlaceholder")}
                     className="w-full bg-[#12161D] border border-[#1E2329] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-rose-500"
                   />
                 </div>
@@ -375,14 +374,14 @@ export default function AppointmentDetailModal({
                     onClick={() => setActionTab("detail")}
                     className="px-3.5 py-2 rounded-xl text-xs text-gray-400 hover:text-white"
                   >
-                    Back
+                    {t("appointmentModal.back")}
                   </button>
                   <button
                     type="submit"
                     disabled={isCancelling || !cancelReason.trim()}
                     className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white disabled:opacity-50"
                   >
-                    {isCancelling ? "Cancelling..." : "Confirm Cancellation"}
+                    {isCancelling ? t("appointmentModal.cancelling") : t("appointmentModal.confirmCancellation")}
                   </button>
                 </div>
               </form>
@@ -402,7 +401,7 @@ export default function AppointmentDetailModal({
                       onClick={() => setActionTab("cancel")}
                       className="px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors"
                     >
-                      Cancel
+                      {t("appointmentModal.cancel")}
                     </button>
                     {isCoachView && (
                       <button
@@ -411,7 +410,7 @@ export default function AppointmentDetailModal({
                         disabled={isMarkingNoShow}
                         className="px-3 py-1.5 rounded-xl text-xs font-semibold text-amber-400 hover:bg-amber-500/10 transition-colors disabled:opacity-50"
                       >
-                        {isMarkingNoShow ? "Marking..." : "No Show"}
+                        {isMarkingNoShow ? t("appointmentModal.marking") : t("appointmentModal.noShow")}
                       </button>
                     )}
                   </>
@@ -425,7 +424,7 @@ export default function AppointmentDetailModal({
                   onClick={onClose}
                   className="px-4 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  Close
+                  {t("appointmentModal.close")}
                 </button>
 
                 {isCoachView &&
@@ -437,7 +436,7 @@ export default function AppointmentDetailModal({
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/20 transition-all hover:scale-[1.02]"
                     >
                       <CheckCircle2 size={14} />
-                      Complete Session
+                      {t("appointmentModal.completeSession")}
                     </button>
                   )}
               </div>

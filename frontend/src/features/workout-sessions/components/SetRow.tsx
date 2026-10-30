@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Check, Loader2, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type {
   WorkoutSetLog,
   PreviousSetPerformance,
@@ -35,6 +36,8 @@ export const SetRow: React.FC<SetRowProps> = ({
   isChild = false,
   hasChildren = false,
 }) => {
+  const { t } = useTranslation(["workoutSessions", "common"]);
+
   const [weightInput, setWeightInput] = useState<string>(() => {
     if (set.weight > 0) return String(set.weight);
     if (previousSet?.weight) return String(previousSet.weight);
@@ -121,7 +124,10 @@ export const SetRow: React.FC<SetRowProps> = ({
                     : "text-[#9CA3AF] border-[#1E2329]"
               }`}
             >
-              Set {displaySetSeq}
+              {t("setRow.setSeq", {
+                seq: displaySetSeq,
+                defaultValue: `Set ${displaySetSeq}`,
+              })}
             </span>
 
             {stageBadge ? (
@@ -138,24 +144,30 @@ export const SetRow: React.FC<SetRowProps> = ({
               </span>
             ) : isSegment ? (
               <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
-                Break {set.segmentIndex}
+                {t("setRow.breakBadge", {
+                  index: set.segmentIndex,
+                  defaultValue: `Break ${set.segmentIndex}`,
+                })}
               </span>
             ) : hasChildren ? (
               <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                Parent
+                {t("setRow.parentBadge", "Parent")}
               </span>
             ) : set.setType && set.setType !== "NORMAL" ? (
               <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
                 {set.setType === "DROP_SET"
-                  ? "Drop"
+                  ? t("setRow.dropBadge", "Drop")
                   : set.setType === "REST_PAUSE"
-                    ? "RP"
-                    : "Warm"}
+                    ? t("setRow.rpBadge", "RP")
+                    : t("setRow.warmBadge", "Warm")}
               </span>
             ) : null}
 
             <span className="text-[11px] text-[#9CA3AF] font-mono whitespace-nowrap">
-              Target: <span className="font-semibold text-white">{set.targetReps || "10"}</span>
+              {t("setRow.target", "Target")}:{" "}
+              <span className="font-semibold text-white">
+                {set.targetReps || "10"}
+              </span>
             </span>
           </div>
 
@@ -163,7 +175,11 @@ export const SetRow: React.FC<SetRowProps> = ({
           {previousSet && (
             <div className="shrink-0">
               <span className="font-mono text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 whitespace-nowrap">
-                Prev: {previousSet.weight}kg × {previousSet.actualReps}
+                {t("setRow.prevWithValue", {
+                  weight: previousSet.weight,
+                  reps: previousSet.actualReps,
+                  defaultValue: `Prev: ${previousSet.weight}kg × ${previousSet.actualReps}`,
+                })}
               </span>
             </div>
           )}
@@ -180,7 +196,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           {/* Weight Field */}
           <div className="flex-1 min-w-0">
             <label className="block text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-1">
-              Weight (kg)
+              {t("setRow.weight", "Weight (kg)")}
             </label>
             <div className="relative">
               <input
@@ -198,7 +214,10 @@ export const SetRow: React.FC<SetRowProps> = ({
                 }}
                 placeholder="0"
                 disabled={isCompleted || isPending}
-                aria-label={`Set ${displaySetSeq} Weight in kg`}
+                aria-label={t("setRow.ariaWeight", {
+                  seq: displaySetSeq,
+                  defaultValue: `Set ${displaySetSeq} Weight in kg`,
+                })}
                 className="w-full bg-[#101418] border border-[#1E2329] rounded-xl h-10 px-2.5 text-center text-sm font-semibold font-mono text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
               />
             </div>
@@ -207,7 +226,7 @@ export const SetRow: React.FC<SetRowProps> = ({
           {/* Reps Field - Always fully visible, labeled, and editable */}
           <div className="flex-1 min-w-0">
             <label className="block text-[9px] font-bold uppercase tracking-wider text-[#9CA3AF] mb-1">
-              Reps
+              {t("setRow.reps", "Reps")}
             </label>
             <div className="relative">
               <input
@@ -224,7 +243,10 @@ export const SetRow: React.FC<SetRowProps> = ({
                 }}
                 placeholder="0"
                 disabled={isCompleted || isPending}
-                aria-label={`Set ${displaySetSeq} Reps`}
+                aria-label={t("setRow.ariaReps", {
+                  seq: displaySetSeq,
+                  defaultValue: `Set ${displaySetSeq} Reps`,
+                })}
                 className="w-full bg-[#101418] border border-[#1E2329] rounded-xl h-10 px-2.5 text-center text-sm font-semibold font-mono text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
               />
             </div>
@@ -239,12 +261,24 @@ export const SetRow: React.FC<SetRowProps> = ({
                 disabled={isDeletingActive}
                 title={
                   isSegment
-                    ? `Remove Break Set ${displaySetSeq}`
+                    ? t("setRow.removeBreakSetTitle", {
+                        seq: displaySetSeq,
+                        defaultValue: `Remove Break Set ${displaySetSeq}`,
+                      })
                     : hasChildren
-                      ? `Remove Set ${displaySetSeq} and its break sets`
-                      : `Remove Set ${displaySetSeq}`
+                      ? t("setRow.removeParentSetTitle", {
+                          seq: displaySetSeq,
+                          defaultValue: `Remove Set ${displaySetSeq} and its break sets`,
+                        })
+                      : t("setRow.removeSetTitle", {
+                          seq: displaySetSeq,
+                          defaultValue: `Remove Set ${displaySetSeq}`,
+                        })
                 }
-                aria-label={`Remove Set ${displaySetSeq}`}
+                aria-label={t("setRow.removeSetTitle", {
+                  seq: displaySetSeq,
+                  defaultValue: `Remove Set ${displaySetSeq}`,
+                })}
                 className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#101418] text-[#9CA3AF] border border-[#1E2329] hover:border-red-500/50 hover:text-red-400 hover:bg-red-500/5 transition-colors shrink-0"
               >
                 {isDeletingActive ? (
@@ -260,12 +294,20 @@ export const SetRow: React.FC<SetRowProps> = ({
               onClick={handleToggleComplete}
               disabled={isPending}
               title={
-                isCompleted ? "Click to uncheck or edit set" : "Mark set complete"
+                isCompleted
+                  ? t("setRow.markIncomplete", "Click to uncheck or edit set")
+                  : t("setRow.markComplete", "Mark set complete")
               }
               aria-label={
                 isCompleted
-                  ? `Mark Set ${displaySetSeq} incomplete`
-                  : `Mark Set ${displaySetSeq} complete`
+                  ? t("setRow.ariaIncomplete", {
+                      seq: displaySetSeq,
+                      defaultValue: `Mark Set ${displaySetSeq} incomplete`,
+                    })
+                  : t("setRow.ariaComplete", {
+                      seq: displaySetSeq,
+                      defaultValue: `Mark Set ${displaySetSeq} complete`,
+                    })
               }
               className={`h-10 w-10 flex items-center justify-center rounded-xl transition-all shrink-0 cursor-pointer ${
                 isCompleted
@@ -318,19 +360,22 @@ export const SetRow: React.FC<SetRowProps> = ({
               </span>
             ) : isSegment ? (
               <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30">
-                Break {set.segmentIndex}
+                {t("setRow.breakBadge", {
+                  index: set.segmentIndex,
+                  defaultValue: `Break ${set.segmentIndex}`,
+                })}
               </span>
             ) : hasChildren ? (
               <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                Parent
+                {t("setRow.parentBadge", "Parent")}
               </span>
             ) : set.setType && set.setType !== "NORMAL" ? (
               <span className="text-[9px] uppercase px-1 py-0.5 rounded font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
                 {set.setType === "DROP_SET"
-                  ? "Drop"
+                  ? t("setRow.dropBadge", "Drop")
                   : set.setType === "REST_PAUSE"
-                    ? "RP"
-                    : "Warm"}
+                    ? t("setRow.rpBadge", "RP")
+                    : t("setRow.warmBadge", "Warm")}
               </span>
             ) : null}
           </div>
@@ -348,7 +393,7 @@ export const SetRow: React.FC<SetRowProps> = ({
             {set.targetReps || "10"}
           </span>
           <span className="text-[9px] uppercase tracking-wider text-[#6B7280]">
-            Target
+            {t("setRow.target", "Target")}
           </span>
         </div>
 
@@ -357,10 +402,14 @@ export const SetRow: React.FC<SetRowProps> = ({
           {previousSet ? (
             <div className="flex flex-col">
               <span className="font-mono text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 inline-block w-fit">
-                {previousSet.weight} kg × {previousSet.actualReps}
+                {t("setRow.prevWithValue", {
+                  weight: previousSet.weight,
+                  reps: previousSet.actualReps,
+                  defaultValue: `${previousSet.weight} kg × ${previousSet.actualReps}`,
+                })}
               </span>
               <span className="text-[9px] text-[#6B7280] uppercase tracking-wider mt-0.5">
-                Previous
+                {t("setRow.previous", "Previous")}
               </span>
             </div>
           ) : (
@@ -386,11 +435,14 @@ export const SetRow: React.FC<SetRowProps> = ({
               }}
               placeholder="0"
               disabled={isCompleted || isPending}
-              aria-label={`Set ${displaySetSeq} Weight in kg`}
+              aria-label={t("setRow.ariaWeight", {
+                seq: displaySetSeq,
+                defaultValue: `Set ${displaySetSeq} Weight in kg`,
+              })}
               className="w-full min-w-0 bg-[#101418] border border-[#1E2329] rounded-xl py-2 px-3 text-center text-sm font-semibold font-mono text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
             />
-            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[#6B7280] font-mono uppercase pointer-events-none">
-              kg
+            <span className="absolute ltr:right-2.5 rtl:left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[#6B7280] font-mono uppercase pointer-events-none">
+              {t("setRow.kgUnit", "kg")}
             </span>
           </div>
         </div>
@@ -412,11 +464,14 @@ export const SetRow: React.FC<SetRowProps> = ({
               }}
               placeholder="0"
               disabled={isCompleted || isPending}
-              aria-label={`Set ${displaySetSeq} Reps`}
+              aria-label={t("setRow.ariaReps", {
+                seq: displaySetSeq,
+                defaultValue: `Set ${displaySetSeq} Reps`,
+              })}
               className="w-full min-w-0 bg-[#101418] border border-[#1E2329] rounded-xl py-2 px-3 text-center text-sm font-semibold font-mono text-white focus:outline-none focus:border-[#5BE584] disabled:opacity-75 disabled:cursor-not-allowed transition-colors"
             />
-            <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[#6B7280] font-mono uppercase pointer-events-none">
-              reps
+            <span className="absolute ltr:right-2.5 rtl:left-2.5 top-1/2 -translate-y-1/2 text-[10px] text-[#6B7280] font-mono uppercase pointer-events-none">
+              {t("setRow.repsUnit", "reps")}
             </span>
           </div>
 
@@ -427,12 +482,24 @@ export const SetRow: React.FC<SetRowProps> = ({
               disabled={isDeletingActive}
               title={
                 isSegment
-                  ? `Remove Break Set ${displaySetSeq}`
+                  ? t("setRow.removeBreakSetTitle", {
+                      seq: displaySetSeq,
+                      defaultValue: `Remove Break Set ${displaySetSeq}`,
+                    })
                   : hasChildren
-                    ? `Remove Set ${displaySetSeq} and its break sets`
-                    : `Remove Set ${displaySetSeq}`
+                    ? t("setRow.removeParentSetTitle", {
+                        seq: displaySetSeq,
+                        defaultValue: `Remove Set ${displaySetSeq} and its break sets`,
+                      })
+                    : t("setRow.removeSetTitle", {
+                        seq: displaySetSeq,
+                        defaultValue: `Remove Set ${displaySetSeq}`,
+                      })
               }
-              aria-label={`Remove Set ${displaySetSeq}`}
+              aria-label={t("setRow.removeSetTitle", {
+                seq: displaySetSeq,
+                defaultValue: `Remove Set ${displaySetSeq}`,
+              })}
               className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#101418] text-[#9CA3AF] border border-[#1E2329] hover:border-red-500/50 hover:text-red-400 hover:bg-red-500/5 transition-colors shrink-0"
             >
               {isDeletingActive ? (
@@ -448,12 +515,20 @@ export const SetRow: React.FC<SetRowProps> = ({
             onClick={handleToggleComplete}
             disabled={isPending}
             title={
-              isCompleted ? "Click to uncheck or edit set" : "Mark set complete"
+              isCompleted
+                ? t("setRow.markIncomplete", "Click to uncheck or edit set")
+                : t("setRow.markComplete", "Mark set complete")
             }
             aria-label={
               isCompleted
-                ? `Mark Set ${displaySetSeq} incomplete`
-                : `Mark Set ${displaySetSeq} complete`
+                ? t("setRow.ariaIncomplete", {
+                    seq: displaySetSeq,
+                    defaultValue: `Mark Set ${displaySetSeq} incomplete`,
+                  })
+                : t("setRow.ariaComplete", {
+                    seq: displaySetSeq,
+                    defaultValue: `Mark Set ${displaySetSeq} complete`,
+                  })
             }
             className={`h-10 w-10 flex items-center justify-center rounded-xl transition-all shrink-0 cursor-pointer ${
               isCompleted

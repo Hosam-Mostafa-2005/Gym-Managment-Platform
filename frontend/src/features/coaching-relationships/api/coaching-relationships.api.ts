@@ -64,3 +64,9 @@ export const terminateRelationship = async (
   const { data } = await api.delete(`/coaching-relationships/${id}`);
   return data.data.relationship;
 };
+
+export const terminateActiveMemberRelationship =
+  async (): Promise<CoachingRelationship> => {
+    const { data } = await api.delete("/coaching-relationships/member/active");
+    return data.data.relationship;
+  };

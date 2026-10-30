@@ -1,4 +1,5 @@
 import React, { useState, useMemo, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import {
   AlertTriangle,
   ArrowLeftRight,
@@ -56,6 +57,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   showConnector = false,
   children,
 }) => {
+  const { t } = useTranslation(["workoutSessions", "common"]);
   const [showInstructions, setShowInstructions] = useState(false);
   const [isSwapDialogOpen, setIsSwapDialogOpen] = useState(false);
   const [setPendingDelete, setSetPendingDelete] = useState<{
@@ -198,78 +200,60 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
       <section
         className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
           isExerciseDone
-            ? "border-[#23422E] bg-[#101418]/95 shadow-[0_0_25px_rgba(91,229,132,0.06)]"
+            ? "border-[#23422E] bg-[#101418]/90 shadow-md"
             : isFocused
-              ? "border-[#5BE584]/35 bg-[#101418] shadow-xl"
-              : "border-[#1E2329] bg-[#101418] shadow-lg"
+              ? "border-[#5BE584]/50 bg-[#101418] ring-1 ring-[#5BE584]/30 shadow-xl"
+              : "border-[#1E2329] bg-[#101418] hover:border-[#2A313A]"
         }`}
       >
         {/* =====================================================================
-            EXERCISE HEADER: Movement Details on Left, Clean White Image on Right
+            TOP EXERCISE HERO: Clean Left & Right Alignment
+            Left: Title, Targets, Badges, Previous Benchmark, Form guide, Swap
+            Right: White Framed High-Res Athletic Exercise Illustration
            ===================================================================== */}
-        <div className="p-4 sm:p-6 border-b border-[#1E2329]">
-          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
-            {/* LEFT: Exercise Identity, Target Sets/Reps, Muscles & Equipment */}
-            <div className="flex-1 min-w-0 space-y-3">
-              {/* Order Badge & Completion Status */}
-              <div className="flex flex-wrap items-center gap-2">
-                {typeof exercise.order === "number" && (
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-mono uppercase tracking-wider font-semibold ${
-                      isExerciseDone
-                        ? "bg-[#16291D] text-[#5BE584] border border-[#23422E]"
-                        : "bg-[#1E2329] text-[#9CA3AF]"
-                    }`}
-                  >
-                    Movement {exercise.order.toString().padStart(2, "0")}
-                  </span>
-                )}
-
-                <span className="inline-flex items-center rounded-md border border-[#262D36] bg-[#141920] px-2.5 py-0.5 text-[11px] font-mono font-semibold text-white">
-                  {completedParentSetsCount} / {totalParentSets} Sets Done
-                </span>
-
-                <span
-                  className={`inline-flex items-center gap-1 rounded-md border px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
-                    isExerciseDone
-                      ? "border-[#5BE584]/30 bg-[#5BE584]/10 text-[#5BE584]"
-                      : "border-[#1E2329] bg-[#090B0F] text-[#9CA3AF]"
-                  }`}
-                >
-                  {isExerciseDone ? (
-                    <CheckCircle2 className="h-3 w-3" />
-                  ) : (
-                    <Circle className="h-3 w-3" />
-                  )}
-                  {isExerciseDone ? "Completed" : "In Progress"}
-                </span>
-              </div>
-
-              {/* Exercise Name & Target Prescription */}
+        <div className="p-4 sm:p-6 border-b border-[#1E2329] bg-[#0E1216]">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-start justify-between gap-5">
+            {/* LEFT: Exercise Info & Telemetry */}
+            <div className="space-y-3 flex-1 min-w-0">
               <div>
-                <h2 className="text-lg sm:text-xl font-extrabold text-white tracking-tight leading-snug">
-                  {exercise.exerciseName}
-                </h2>
-                <div className="mt-1 text-xs sm:text-sm font-medium text-[#9CA3AF] flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                  <span className="flex items-center gap-1.5">
-                    <Dumbbell className="h-3.5 w-3.5 text-[#5BE584]" />
-                    <span>
-                      Target:{" "}
-                      <strong className="text-white font-semibold">
-                        {exercise.targetSets} Sets × {exercise.targetReps} Reps
-                      </strong>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#9CA3AF]">
+                    {exercise.order ? `#${exercise.order}` : "#"}
+                  </span>
+                  {isExerciseDone && (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#5BE584] bg-[#16291D] border border-[#23422E] px-2 py-0.5 rounded-md">
+                      <CheckCircle2 className="h-3 w-3 stroke-[3]" />
+                      {t("exerciseCard.movementDone", "Movement Completed")}
                     </span>
+                  )}
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight mt-1">
+                  {exercise.exerciseName}
+                </h3>
+
+                {/* Target Sets & Reps Pill */}
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#141920] border border-[#262D36] text-xs font-mono font-bold text-white">
+                    <Layers className="h-3.5 w-3.5 text-[#5BE584]" />
+                    {totalParentSets} Sets × {exercise.targetReps || "10"}
                   </span>
 
                   {exercise.targetWeight != null && exercise.targetWeight > 0 && (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#16291D] border border-[#23422E] text-[11px] font-mono text-[#5BE584] font-semibold">
-                      Target Load: {exercise.targetWeight} kg
+                      {t("exerciseCard.targetLoad", {
+                        weight: exercise.targetWeight,
+                        defaultValue: `Target Load: ${exercise.targetWeight} kg`,
+                      })}
                     </span>
                   )}
 
                   {exercise.targetRpe != null && exercise.targetRpe > 0 && (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#1E2329] text-[11px] font-mono text-[#E5E7EB] font-semibold">
-                      Target RPE {exercise.targetRpe}
+                      {t("exerciseCard.targetRpe", {
+                        rpe: exercise.targetRpe,
+                        defaultValue: `Target RPE ${exercise.targetRpe}`,
+                      })}
                     </span>
                   )}
                 </div>
@@ -279,14 +263,17 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                   <div className="mt-2.5 flex flex-wrap items-center gap-2 rounded-lg bg-[#141920] border border-[#262D36] px-3 py-1.5 text-xs text-[#9CA3AF]">
                     <ArrowLeftRight className="h-3.5 w-3.5 text-[#5BE584] shrink-0" />
                     <span>
-                      Replaced from:{" "}
-                      <strong className="text-white font-medium">
-                        {exercise.originalExercise?.name || "Original Movement"}
-                      </strong>
+                      {t("exerciseCard.replacedFrom", {
+                        name:
+                          exercise.originalExercise?.name || "Original Movement",
+                        defaultValue: `Replaced from: ${
+                          exercise.originalExercise?.name || "Original Movement"
+                        }`,
+                      })}
                     </span>
                     {exercise.swapReason && (
                       <>
-                        <span className="text-[#6B7280]">•</span>
+                        <span className="text-[#6B7280]">?</span>
                         <span className="text-[#5BE584]/90 font-medium">
                           {exercise.swapReason}
                         </span>
@@ -337,23 +324,30 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 {bestSet && bestSet.weight > 0 ? (
                   <div className="inline-flex items-center gap-1.5 rounded-xl border border-[#5BE584]/25 bg-[#16291D]/60 px-3 py-1.5 text-[11px] text-[#9CA3AF]">
                     <History className="h-3.5 w-3.5 text-[#5BE584] shrink-0" />
-                    <span>Best previous set:</span>
+                    <span>{t("exerciseCard.bestPreviousSet", "Best previous set:")}</span>
                     <span className="font-mono font-bold text-white">
-                      {bestSet.weight} kg × {bestSet.actualReps} reps
+                      {t("exerciseCard.bestPreviousValue", {
+                        weight: bestSet.weight,
+                        reps: bestSet.actualReps,
+                        defaultValue: `${bestSet.weight} kg × ${bestSet.actualReps} reps`,
+                      })}
                     </span>
                   </div>
                 ) : previousPerformance ? (
                   <div className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[11px] text-[#9CA3AF]">
                     <History className="h-3.5 w-3.5 text-[#5BE584] shrink-0" />
-                    <span>Last Session:</span>
+                    <span>{t("exerciseCard.lastSession", "Last Session:")}</span>
                     <span className="font-mono font-semibold text-white">
-                      {previousPerformance.maxWeight ?? 0} kg max •{" "}
-                      {previousPerformance.totalVolume ?? 0} kg vol
+                      {t("exerciseCard.lastSessionValue", {
+                        weight: previousPerformance.maxWeight ?? 0,
+                        volume: previousPerformance.totalVolume ?? 0,
+                        defaultValue: `${previousPerformance.maxWeight ?? 0} kg max • ${previousPerformance.totalVolume ?? 0} kg vol`,
+                      })}
                     </span>
                   </div>
                 ) : (
                   <div className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-2.5 py-1 text-[11px] text-[#6B7280]">
-                    <span>No previous performance yet</span>
+                    <span>{t("exerciseCard.noPrevious", "No previous performance yet")}</span>
                   </div>
                 )}
 
@@ -364,7 +358,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] hover:border-[#5BE584]/40 hover:text-white transition-colors"
                   >
                     <Info className="h-3.5 w-3.5 text-[#5BE584]" />
-                    <span>{showInstructions ? "Hide Cues" : "Form Guide"}</span>
+                    <span>
+                      {showInstructions
+                        ? t("exerciseCard.hideCues", "Hide Cues")
+                        : t("exerciseCard.formGuide", "Form Guide")}
+                    </span>
                     {showInstructions ? (
                       <ChevronUp className="h-3.5 w-3.5" />
                     ) : (
@@ -381,7 +379,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#5BE584] hover:bg-[#16291D] hover:border-[#23422E] transition-colors"
                   >
                     <PlayCircle className="h-3.5 w-3.5" />
-                    <span>Video Demo</span>
+                    <span>{t("exerciseCard.videoDemo", "Video Demo")}</span>
                     <ExternalLink className="h-3 w-3 opacity-70" />
                   </a>
                 )}
@@ -392,10 +390,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     type="button"
                     onClick={() => setIsSwapDialogOpen(true)}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] hover:border-[#5BE584]/40 hover:text-white transition-colors"
-                    title="Swap with another exercise"
+                    title={t("exerciseCard.swapExercise", "Swap Exercise")}
                   >
                     <ArrowLeftRight className="h-3.5 w-3.5 text-[#5BE584]" />
-                    <span>Swap Exercise</span>
+                    <span>{t("exerciseCard.swapExercise", "Swap Exercise")}</span>
                   </button>
                 )}
               </div>
@@ -419,7 +417,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               {instructions.length > 0 && (
                 <div>
                   <h4 className="font-semibold text-white uppercase tracking-wider text-[10px] mb-1.5">
-                    Step-by-Step Execution
+                    {t("exerciseCard.stepByStep", "Step-by-Step Execution")}
                   </h4>
                   <ol className="list-decimal list-inside space-y-1">
                     {instructions.map((step, i) => (
@@ -433,7 +431,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               {tips.length > 0 && (
                 <div>
                   <h4 className="font-semibold text-[#5BE584] uppercase tracking-wider text-[10px] mb-1">
-                    Pro Coaching Tips
+                    {t("exerciseCard.coachingTips", "Pro Coaching Tips")}
                   </h4>
                   <ul className="list-disc list-inside space-y-1">
                     {tips.map((tip, i) => (
@@ -455,21 +453,21 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           {children ? (
             <div>
               <div className="hidden sm:grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 pb-3 border-b border-white/5 text-xs font-semibold text-[#9CA3AF] uppercase tracking-wider">
-                <div className="col-span-2">Set</div>
-                <div className="col-span-2">Target</div>
-                <div className="col-span-3 text-center">kg</div>
-                <div className="col-span-5">Reps</div>
+                <div className="col-span-2">{t("exerciseCard.tableSet", "Set")}</div>
+                <div className="col-span-2">{t("exerciseCard.tableTarget", "Target")}</div>
+                <div className="col-span-3 text-center">{t("setRow.kgUnit", "kg")}</div>
+                <div className="col-span-5">{t("setRow.reps", "Reps")}</div>
               </div>
               <div className="mt-3 space-y-2">{children}</div>
             </div>
           ) : (
             <>
               <div className="hidden sm:grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 pb-2 border-b border-[#1E2329] text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                <div className="col-span-2 sm:col-span-2">Set & Stage</div>
-                <div className="col-span-2 sm:col-span-2">Target</div>
-                <div className="col-span-2 sm:col-span-3">Previous</div>
-                <div className="col-span-3 sm:col-span-2 text-center">Weight (kg)</div>
-                <div className="col-span-3 sm:col-span-3 text-right pr-11">Actual Reps</div>
+                <div className="col-span-2 sm:col-span-2">{t("exerciseCard.tableSetAndStage", "Set & Stage")}</div>
+                <div className="col-span-2 sm:col-span-2">{t("exerciseCard.tableTarget", "Target")}</div>
+                <div className="col-span-2 sm:col-span-3">{t("exerciseCard.tablePrevious", "Previous")}</div>
+                <div className="col-span-3 sm:col-span-2 text-center">{t("exerciseCard.tableWeight", "Weight (kg)")}</div>
+                <div className="col-span-3 sm:col-span-3 text-end ltr:pr-11 rtl:pl-11">{t("exerciseCard.tableActualReps", "Actual Reps")}</div>
               </div>
 
               <div className="space-y-3">
@@ -496,14 +494,14 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                         targetRestSeconds={exercise.restSeconds || 60}
                         stageLabel={
                           hasBreakSets
-                            ? "Prescribed Parent Set"
+                            ? t("setRow.parentLabel", "Prescribed Parent Set")
                             : parentSet.setType === "WARMUP"
-                              ? "Warmup Set"
+                              ? t("setRow.warmupLabel", "Warmup Set")
                               : undefined
                         }
                         stageBadge={
                           hasBreakSets
-                            ? "PARENT"
+                            ? t("setRow.parentBadge", "PARENT")
                             : parentSet.setType !== "NORMAL"
                               ? parentSet.setType
                               : undefined
@@ -525,7 +523,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
                       {/* If Break Sets exist, render indented children directly underneath */}
                       {hasBreakSets ? (
-                        <div className="ml-1.5 sm:ml-6 pl-2 sm:pl-4 border-l-2 border-amber-500/35 space-y-2 py-1 bg-amber-500/[0.02] rounded-r-xl">
+                        <div className="ltr:ml-1.5 sm:ltr:ml-6 ltr:pl-2 sm:ltr:pl-4 rtl:mr-1.5 sm:rtl:mr-6 rtl:pr-2 sm:rtl:pr-4 ltr:border-l-2 rtl:border-r-2 border-amber-500/35 space-y-2 py-1 bg-amber-500/[0.02] ltr:rounded-r-xl rtl:rounded-l-xl">
                           {childStages.map((child, cIdx) => {
                             const breakIndex =
                               child.segmentIndex ?? (cIdx + 1);
@@ -544,8 +542,15 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                                 targetRestSeconds={
                                   exercise.restSeconds || 60
                                 }
-                                stageLabel={`Break Set ${breakIndex} under Set ${setNum}.0 (No rest)`}
-                                stageBadge={`BREAK ${breakIndex}`}
+                                stageLabel={t("setRow.breakLabel", {
+                                  index: breakIndex,
+                                  parent: setNum,
+                                  defaultValue: `Break Set ${breakIndex} under Set ${setNum}.0 (No rest)`,
+                                })}
+                                stageBadge={t("setRow.breakBadge", {
+                                  index: breakIndex,
+                                  defaultValue: `BREAK ${breakIndex}`,
+                                })}
                                 onSetCompleted={onSetCompleted}
                                 onDelete={() =>
                                   handlePromptDelete(child, false, 0)
@@ -574,17 +579,17 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                               ) : (
                                 <Plus className="h-3 w-3" />
                               )}
-                              <span>Add Break Set</span>
+                              <span>{t("exerciseCard.addBreakSet", "Add Break Set")}</span>
                             </button>
 
                             <span className="text-[10px] text-amber-400/80 font-mono">
-                              Rest timer triggers after final break set
+                              {t("exerciseCard.breakSetNotice", "Rest timer triggers after final break set")}
                             </span>
                           </div>
                         </div>
                       ) : (
                         /* Action to add the first Break Set under this parent */
-                        <div className="flex justify-end pr-2 pt-0.5">
+                        <div className="flex justify-end ltr:pr-2 rtl:pl-2 pt-0.5">
                           <button
                             type="button"
                             onClick={() =>
@@ -592,10 +597,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                             }
                             disabled={isCreatingSet}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium text-[#9CA3AF] hover:text-amber-400 hover:bg-amber-500/10 transition-colors cursor-pointer"
-                            title={`Add a break set under Set ${setNum}.0`}
+                            title={t("exerciseCard.addBreakSet", "Add Break Set")}
                           >
                             <Plus className="h-3 w-3" />
-                            <span>Add Break Set</span>
+                            <span>{t("exerciseCard.addBreakSet", "Add Break Set")}</span>
                           </button>
                         </div>
                       )}
@@ -618,14 +623,14 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     ) : (
                       <Plus className="h-3.5 w-3.5" />
                     )}
-                    <span>Add Set</span>
+                    <span>{t("exerciseCard.addSet", "Add Set")}</span>
                   </button>
                 </div>
 
                 {isExerciseDone && (
                   <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5BE584]">
                     <CheckCircle2 className="h-4 w-4" />
-                    All Prescribed Sets Logged
+                    {t("exerciseCard.allSetsLogged", "All Prescribed Sets Logged")}
                   </span>
                 )}
               </div>
@@ -649,36 +654,51 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <AlertTriangle className="h-5 w-5 shrink-0" />
               <DialogTitle className="text-base font-bold text-white">
                 {setPendingDelete?.hasChildren
-                  ? `Remove Set ${setPendingDelete.set.setNumber}.0 and ${setPendingDelete.childrenCount} Break Set${setPendingDelete.childrenCount > 1 ? "s" : ""} ?`
-                  : `Remove Set ${setPendingDelete?.set.setNumber}.${setPendingDelete?.set.segmentIndex ?? 0}?`}
+                  ? setPendingDelete.childrenCount > 1
+                    ? t("exerciseCard.deleteDialogTitleWithChildrenPlural", {
+                        setNum: setPendingDelete.set.setNumber,
+                        count: setPendingDelete.childrenCount,
+                        defaultValue: `Remove Set ${setPendingDelete.set.setNumber}.0 and ${setPendingDelete.childrenCount} Break Sets?`,
+                      })
+                    : t("exerciseCard.deleteDialogTitleWithChildren", {
+                        setNum: setPendingDelete.set.setNumber,
+                        count: setPendingDelete.childrenCount,
+                        defaultValue: `Remove Set ${setPendingDelete.set.setNumber}.0 and 1 Break Set?`,
+                      })
+                  : t("exerciseCard.deleteDialogTitle", {
+                      setNum: setPendingDelete?.set.setNumber,
+                      segmentIndex: setPendingDelete?.set.segmentIndex ?? 0,
+                      defaultValue: `Remove Set ${setPendingDelete?.set.setNumber}.${setPendingDelete?.set.segmentIndex ?? 0}?`,
+                    })}
               </DialogTitle>
             </div>
             <DialogDescription className="text-xs text-[#9CA3AF] leading-relaxed">
               {setPendingDelete?.hasChildren ? (
-                <>
-                  This parent set contains{" "}
-                  <strong className="text-amber-400 font-semibold">
-                    {setPendingDelete.childrenCount} break set
-                    {setPendingDelete.childrenCount > 1 ? "s" : ""}
-                  </strong>
-                  . Removing Set {setPendingDelete.set.setNumber}.0 will also
-                  remove all of its child break sets. This action cannot be
-                  undone.
-                </>
+                setPendingDelete.childrenCount > 1 ? (
+                  t("exerciseCard.deleteDescWithChildrenPlural", {
+                    count: setPendingDelete.childrenCount,
+                    setNum: setPendingDelete.set.setNumber,
+                    defaultValue: `This parent set contains ${setPendingDelete.childrenCount} break sets. Removing Set ${setPendingDelete.set.setNumber}.0 will also remove all of its child break sets. This action cannot be undone.`,
+                  })
+                ) : (
+                  t("exerciseCard.deleteDescWithChildren", {
+                    count: setPendingDelete.childrenCount,
+                    setNum: setPendingDelete.set.setNumber,
+                    defaultValue: `This parent set contains 1 break set. Removing Set ${setPendingDelete.set.setNumber}.0 will also remove all of its child break sets. This action cannot be undone.`,
+                  })
+                )
               ) : setPendingDelete?.set.completed ? (
-                <>
-                  This set has already been completed and logged. Removing it
-                  will remove its weight ({setPendingDelete.set.weight} kg ×{" "}
-                  {setPendingDelete.set.actualReps} reps) from your session
-                  volume.
-                </>
+                t("exerciseCard.deleteDescCompleted", {
+                  weight: setPendingDelete.set.weight,
+                  reps: setPendingDelete.set.actualReps,
+                  defaultValue: `This set has already been completed and logged. Removing it will remove its weight (${setPendingDelete.set.weight} kg × ${setPendingDelete.set.actualReps} reps) from your session volume.`,
+                })
               ) : (
-                <>
-                  Are you sure you want to remove Set{" "}
-                  {setPendingDelete?.set.setNumber}.
-                  {setPendingDelete?.set.segmentIndex ?? 0} from this active
-                  workout session?
-                </>
+                t("exerciseCard.deleteDescDefault", {
+                  setNum: setPendingDelete?.set.setNumber,
+                  segmentIndex: setPendingDelete?.set.segmentIndex ?? 0,
+                  defaultValue: `Are you sure you want to remove Set ${setPendingDelete?.set.setNumber}.${setPendingDelete?.set.segmentIndex ?? 0} from this active workout session?`,
+                })
               )}
             </DialogDescription>
           </DialogHeader>
@@ -690,7 +710,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               onClick={() => setSetPendingDelete(null)}
               className="border-[#262D36] bg-[#141920] hover:bg-[#1E2329] text-white text-xs cursor-pointer"
             >
-              Cancel
+              {t("exerciseCard.cancel", "Cancel")}
             </Button>
             <Button
               type="button"
@@ -700,11 +720,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             >
               {isDeletingSet ? (
                 <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
-                  Removing...
+                  <Loader2 className="h-3.5 w-3.5 animate-spin ltr:mr-1.5 rtl:ml-1.5" />
+                  {t("exerciseCard.removing", "Removing...")}
                 </>
               ) : (
-                "Confirm Removal"
+                t("exerciseCard.confirmRemoval", "Confirm Removal")
               )}
             </Button>
           </div>

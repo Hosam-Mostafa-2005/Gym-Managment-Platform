@@ -16,6 +16,7 @@ import {
   Sparkles,
   Target,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Exercise } from "../types/exercise.types";
 import ExerciseImage from "./ExerciseImage";
 
@@ -28,6 +29,8 @@ export default function ViewExerciseDialog({
   exercise,
   onClose,
 }: ViewExerciseDialogProps) {
+  const { t } = useTranslation(["exercises"]);
+
   if (!exercise) return null;
 
   const exerciseId = exercise.id || exercise._id || "";
@@ -46,17 +49,21 @@ export default function ViewExerciseDialog({
                   variant="secondary"
                   className="capitalize border border-[#5BE584]/30 bg-[#5BE584]/10 text-[#5BE584]"
                 >
-                  {exercise.difficulty}
+                  {t(
+                    `difficulties.${exercise.difficulty?.toLowerCase()}`,
+                    exercise.difficulty,
+                  )}
                 </Badge>
                 {exercise.isCustom && (
                   <span className="inline-flex items-center gap-1 rounded-md border border-[#5BE584]/35 bg-[#5BE584]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#5BE584]">
                     <Sparkles className="h-2.5 w-2.5" />
-                    Custom
+                    {t("card.customBadge", "Custom")}
                   </span>
                 )}
               </div>
               <DialogDescription className="text-sm leading-relaxed text-[#9CA3AF]">
-                {exercise.description || "No description provided."}
+                {exercise.description ||
+                  t("viewDialog.noDescription", "No description provided.")}
               </DialogDescription>
             </div>
 
@@ -67,7 +74,7 @@ export default function ViewExerciseDialog({
                 className="inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-[#262D36] bg-[#141920] px-3 py-1.5 text-xs font-semibold text-[#F3F4F6] hover:border-[#5BE584]/50 hover:text-[#5BE584] transition-colors self-start"
               >
                 <ExternalLink className="h-3.5 w-3.5" />
-                Full Page
+                {t("viewDialog.fullPage", "Full Page")}
               </Link>
             )}
           </div>
@@ -81,7 +88,7 @@ export default function ViewExerciseDialog({
               <div className="space-y-2">
                 <h4 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">
                   <Target className="h-3.5 w-3.5 text-[#5BE584]" />
-                  Target Muscle Groups
+                  {t("viewDialog.targetMuscleGroups", "Target Muscle Groups")}
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {exercise.primaryMuscles?.map((m) => (
@@ -89,7 +96,7 @@ export default function ViewExerciseDialog({
                       key={`prim-${m}`}
                       className="inline-flex items-center rounded-lg border border-[#5BE584]/35 bg-[#5BE584]/15 px-2.5 py-1 text-xs font-semibold text-[#5BE584]"
                     >
-                      {m} (Primary)
+                      {t(`muscles.${m}`, m)} ({t("viewDialog.primary", "Primary")})
                     </span>
                   ))}
                   {exercise.secondaryMuscles?.map((m) => (
@@ -97,7 +104,7 @@ export default function ViewExerciseDialog({
                       key={`sec-${m}`}
                       className="inline-flex items-center rounded-lg border border-[#1E2329] bg-[#13181E] px-2.5 py-1 text-xs font-medium text-[#9CA3AF]"
                     >
-                      {m}
+                      {t(`muscles.${m}`, m)}
                     </span>
                   ))}
                 </div>
@@ -107,7 +114,7 @@ export default function ViewExerciseDialog({
               <div className="space-y-2">
                 <h4 className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#9CA3AF]">
                   <Dumbbell className="h-3.5 w-3.5 text-[#9CA3AF]" />
-                  Equipment Required
+                  {t("viewDialog.equipmentRequired", "Equipment Required")}
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {exercise.equipment?.length ? (
@@ -116,11 +123,13 @@ export default function ViewExerciseDialog({
                         key={eq}
                         className="inline-flex items-center rounded-lg border border-[#262D36] bg-[#141920] px-2.5 py-1 text-xs font-medium text-white"
                       >
-                        {eq}
+                        {t(`equipment.${eq}`, eq)}
                       </span>
                     ))
                   ) : (
-                    <span className="text-xs text-[#6B7280]">None specified</span>
+                    <span className="text-xs text-[#6B7280]">
+                      {t("viewDialog.noneSpecified", "None specified")}
+                    </span>
                   )}
                 </div>
               </div>
@@ -135,7 +144,10 @@ export default function ViewExerciseDialog({
                     className="inline-flex items-center gap-2 rounded-xl border border-[#5BE584]/30 bg-[#5BE584]/10 px-3.5 py-2 text-xs font-semibold text-[#5BE584] hover:bg-[#5BE584]/20 transition-colors"
                   >
                     <PlayCircle className="h-4 w-4" />
-                    Watch Video Demonstration
+                    {t(
+                      "viewDialog.watchVideo",
+                      "Watch Video Demonstration",
+                    )}
                   </a>
                 </div>
               )}
@@ -158,7 +170,7 @@ export default function ViewExerciseDialog({
           <div className="space-y-3">
             <h4 className="flex items-center gap-2 text-sm font-bold text-white">
               <CheckCircle2 className="h-4 w-4 text-[#5BE584]" />
-              Step-by-Step Execution
+              {t("viewDialog.stepByStep", "Step-by-Step Execution")}
             </h4>
             <ol className="space-y-2.5">
               {exercise.instructions?.map((inst, index) => (
@@ -180,7 +192,7 @@ export default function ViewExerciseDialog({
             <div className="space-y-2.5 rounded-2xl border border-amber-500/25 bg-amber-500/5 p-4">
               <h4 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400">
                 <Lightbulb className="h-4 w-4" />
-                Coaching Cues & Form Tips
+                {t("viewDialog.coachingCues", "Coaching Cues & Form Tips")}
               </h4>
               <ul className="space-y-1.5 text-xs sm:text-sm text-[#E5E7EB]">
                 {exercise.tips.map((tip, index) => (

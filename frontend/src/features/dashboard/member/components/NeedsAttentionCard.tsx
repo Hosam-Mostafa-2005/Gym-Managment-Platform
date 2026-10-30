@@ -1,6 +1,7 @@
 // src/features/dashboard/member/components/NeedsAttentionCard.tsx
-import React from "react";
+import React, { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   Bell,
   Mail,
@@ -11,8 +12,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useRespondInvitation } from "@/features/coaching-relationships/hooks/useRespondInvitation";
+import { ActiveCoachConflictDialog } from "@/features/coaching-relationships/components/ActiveCoachConflictDialog";
 import { toast } from "sonner";
 import type { NeedsAttention } from "../../types/dashboard.types";
+import type { CoachingRelationship } from "@/features/coaching-relationships/types/coaching-relationships.types";
 
 interface NeedsAttentionCardProps {
   needsAttention?: NeedsAttention;
@@ -21,8 +24,19 @@ interface NeedsAttentionCardProps {
 export const NeedsAttentionCard: React.FC<NeedsAttentionCardProps> = ({
   needsAttention,
 }) => {
+  const { t } = useTranslation(["dashboard"]);
   const queryClient = useQueryClient();
   const { mutate: respond, isPending } = useRespondInvitation();
+
+  const [conflictState, setConflictState] = useState<{
+    isOpen: boolean;
+    currentCoachName: string;
+    incomingInvitation: CoachingRelationship | null;
+  }>({
+    isOpen: false,
+    currentCoachName: "",
+    incomingInvitation: null,
+  });
 
   const invitation = needsAttention?.pendingInvitation;
   const unreadCount = needsAttention?.unreadNotificationsCount ?? 0;
@@ -37,15 +51,33 @@ export const NeedsAttentionCard: React.FC<NeedsAttentionCardProps> = ({
         onSuccess: () => {
           toast.success(
             action === "ACCEPT"
-              ? `You accepted ${invitation.trainer?.name || "Coach"}'s invitation!`
-              : "Coaching invitation declined.",
+              ? t("member.needsAttention.acceptedToast", {
+                  name: invitation.trainer?.name || "Coach",
+                })
+              : t("member.needsAttention.declinedToast"),
           );
           queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+          queryClient.invalidateQueries({ queryKey: ["coaching-relationships"] });
+          queryClient.invalidateQueries({ queryKey: ["member-profile"] });
         },
         onError: (err: any) => {
-          toast.error(
-            err?.response?.data?.message || "Failed to respond to invitation.",
-          );
+          const errorData = err?.response?.data;
+          if (
+            err?.response?.status === 409 ||
+            errorData?.data?.code === "ACTIVE_COACH_EXISTS"
+          ) {
+            const currentCoach = errorData?.data?.currentCoach;
+            setConflictState({
+              isOpen: true,
+              currentCoachName: currentCoach?.name || "Current Coach",
+              incomingInvitation: invitation as unknown as CoachingRelationship,
+            });
+          } else {
+            toast.error(
+              errorData?.message ||
+                t("member.needsAttention.failedResponseToast"),
+            );
+          }
         },
       },
     );
@@ -70,11 +102,13 @@ export const NeedsAttentionCard: React.FC<NeedsAttentionCardProps> = ({
             )}
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-white">Needs Attention</h2>
+            <h2 className="text-sm font-semibold text-white">
+              {t("member.needsAttention.title")}
+            </h2>
             <p className="text-xs text-gray-400">
               {hasItems
-                ? "Action items requiring your review"
-                : "Your status is up to date"}
+                ? t("member.needsAttention.actionItemsSubtitle")
+                : t("member.needsAttention.upToDateSubtitle")}
             </p>
           </div>
         </div>
@@ -96,13 +130,15 @@ export const NeedsAttentionCard: React.FC<NeedsAttentionCardProps> = ({
                 <Mail className="mt-0.5 h-4 w-4 text-amber-400 shrink-0" />
                 <div>
                   <h4 className="text-xs font-semibold text-white">
-                    Coaching Invitation from {invitation.trainer?.name}
+                    {t("member.needsAttention.invitationFrom", {
+                      name: invitation.trainer?.name,
+                    })}
                   </h4>
                   <p className="text-[11px] text-gray-400 mt-0.5">
                     {invitation.trainer?.email}
                   </p>
                   {invitation.notes && (
-                    <p className="mt-1.5 text-xs text-gray-300 italic border-l-2 border-amber-400/40 pl-2">
+                    <p className="mt-1.5 text-xs text-gray-300 italic border-l-2 rtl:border-l-0 rtl:border-r-2 border-amber-400/40 pl-2 rtl:pl-0 rtl:pr-2">
                       "{invitation.notes}"
                     </p>
                   )}
@@ -116,7 +152,8 @@ export const NeedsAttentionCard: React.FC<NeedsAttentionCardProps> = ({
                   disabled={isPending}
                   className="inline-flex items-center gap-1 rounded-md bg-[#5BE584] px-2.5 py-1 text-xs font-semibold text-black transition hover:bg-[#46c26d] disabled:opacity-50"
                 >
-                  <Check className="h-3.5 w-3.5" /> Accept
+                  <Check className="h-3.5 w-3.5" />
+                  <span>{t("member.needsAttention.accept")}</span>
                 </button>
                 <button
                   type="button"
@@ -124,7 +161,8 @@ export const NeedsAttentionCard: React.FC<NeedsAttentionCardProps> = ({
                   disabled={isPending}
                   className="inline-flex items-center gap-1 rounded-md border border-gray-700 bg-transparent px-2.5 py-1 text-xs font-semibold text-gray-300 transition hover:bg-gray-800 disabled:opacity-50"
                 >
-                  <XCircle className="h-3.5 w-3.5 text-red-400" /> Decline
+                  <XCircle className="h-3.5 w-3.5 text-red-400" />
+                  <span>{t("member.needsAttention.decline")}</span>
                 </button>
               </div>
             </div>
@@ -140,10 +178,12 @@ export const NeedsAttentionCard: React.FC<NeedsAttentionCardProps> = ({
               </div>
               <div>
                 <span className="text-xs font-medium text-white">
-                  {unreadCount} unread notification{unreadCount > 1 ? "s" : ""}
+                  {t("member.needsAttention.unreadNotifications", {
+                    count: unreadCount,
+                  })}
                 </span>
                 <p className="text-[11px] text-gray-400">
-                  Updates on assignments and sessions
+                  {t("member.needsAttention.unreadUpdates")}
                 </p>
               </div>
             </div>
@@ -158,14 +198,26 @@ export const NeedsAttentionCard: React.FC<NeedsAttentionCardProps> = ({
           <div className="flex items-center gap-3 rounded-lg border border-[#1E2329] bg-[#161B22]/50 p-4">
             <ShieldCheck className="h-5 w-5 text-emerald-400 shrink-0" />
             <div>
-              <h4 className="text-xs font-semibold text-white">All Caught Up</h4>
+              <h4 className="text-xs font-semibold text-white">
+                {t("member.needsAttention.allCaughtUp")}
+              </h4>
               <p className="text-[11px] text-gray-400 mt-0.5">
-                No pending coach invitations or urgent alerts requiring your review.
+                {t("member.needsAttention.allCaughtUpDesc")}
               </p>
             </div>
           </div>
         )}
       </div>
+
+      {/* Active Coach Conflict Modal */}
+      <ActiveCoachConflictDialog
+        isOpen={conflictState.isOpen}
+        onClose={() =>
+          setConflictState((prev) => ({ ...prev, isOpen: false }))
+        }
+        currentCoachName={conflictState.currentCoachName}
+        incomingInvitation={conflictState.incomingInvitation}
+      />
     </div>
   );
 };

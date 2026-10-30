@@ -1,6 +1,7 @@
 // src/features/coach-dashboard/components/priorities/PriorityCard.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { AlertCircle, ArrowRight, User } from "lucide-react";
 import type { DashboardPriority } from "@/features/coach-dashboard/types/coach-dashboard.types";
 
@@ -33,7 +34,13 @@ const getPriorityVisuals = (level: string) => {
 };
 
 export const PriorityCard: React.FC<PriorityCardProps> = ({ priority }) => {
+  const { t } = useTranslation(["coachDashboard"]);
   const visuals = getPriorityVisuals(priority.priority);
+  const normalizedLevel = priority.priority?.toLowerCase() || "";
+  const translatedLevel = t(`priorities.levels.${normalizedLevel}`, {
+    defaultValue: priority.priority,
+  });
+
   return (
     <div className="flex h-full flex-col justify-between rounded-lg border border-[#1e2329] bg-[#0d1014] p-5 transition-colors hover:border-[#2a313a]">
       <div className="flex flex-col gap-3">
@@ -43,9 +50,9 @@ export const PriorityCard: React.FC<PriorityCardProps> = ({ priority }) => {
             className={`inline-flex items-center gap-1.5 rounded border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${visuals.badge}`}
           >
             <AlertCircle className={`h-3 w-3 ${visuals.icon}`} />
-            {priority.priority}
+            {translatedLevel}
           </div>
-          <span className="text-[10px] font-medium uppercase tracking-wider text-gray-500 line-clamp-1 max-w-[120px] text-right">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-gray-500 line-clamp-1 max-w-[120px] text-right rtl:text-left">
             {priority.type.replace(/_/g, " ")}
           </span>
         </div>
@@ -65,7 +72,7 @@ export const PriorityCard: React.FC<PriorityCardProps> = ({ priority }) => {
           <div className="mt-1 flex flex-wrap gap-2">
             {priority.count && priority.count > 1 && (
               <span className="inline-flex rounded bg-[#13171d] border border-[#1e2329] px-1.5 py-0.5 text-[10px] font-medium text-gray-400">
-                Count: {priority.count}
+                {t("priorities.count", { count: priority.count })}
               </span>
             )}
             {priority.reasons?.map((reason, idx) => (
@@ -103,11 +110,11 @@ export const PriorityCard: React.FC<PriorityCardProps> = ({ priority }) => {
         {/* Action Button */}
         {priority.member ? (
           <Link
-            to={`/members/${priority.member._id}`}
+            to={`/members/${priority.member._id || (priority.member as any).id}`}
             className="group flex w-full items-center justify-center gap-2 rounded-md bg-[#13171d] border border-[#1e2329] py-2 text-xs font-medium text-gray-300 transition-colors hover:bg-white/[0.03] hover:text-white"
           >
-            Open Member
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            <span>{t("priorities.openMember")}</span>
+            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 rtl:rotate-180" />
           </Link>
         ) : (
           <button
@@ -115,7 +122,7 @@ export const PriorityCard: React.FC<PriorityCardProps> = ({ priority }) => {
             disabled
             className="flex w-full items-center justify-center gap-2 rounded-md bg-[#13171d] border border-[#1e2329] py-2 text-xs font-medium text-gray-500 opacity-50 cursor-not-allowed"
           >
-            Action Pending
+            {t("priorities.actionPending")}
           </button>
         )}
       </div>

@@ -1,6 +1,7 @@
 // src/features/dashboard/member/components/nav/DashboardNav.tsx
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   BarChart3,
@@ -11,6 +12,8 @@ import {
 } from "lucide-react";
 
 export const DashboardNav: React.FC = () => {
+  const { t } = useTranslation(["dashboard"]);
+
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-[#1E2329] pb-3">
       {/* Primary Subview Navigation Tabs */}
@@ -27,7 +30,7 @@ export const DashboardNav: React.FC = () => {
           }
         >
           <LayoutDashboard className="h-4 w-4" />
-          <span>Overview</span>
+          <span>{t("nav.overview")}</span>
         </NavLink>
 
         <NavLink
@@ -41,7 +44,7 @@ export const DashboardNav: React.FC = () => {
           }
         >
           <BarChart3 className="h-4 w-4" />
-          <span>Training Analytics</span>
+          <span>{t("nav.trainingAnalytics")}</span>
         </NavLink>
 
         <NavLink
@@ -55,7 +58,7 @@ export const DashboardNav: React.FC = () => {
           }
         >
           <Clock className="h-4 w-4" />
-          <span>Activity Log</span>
+          <span>{t("nav.activityLog")}</span>
         </NavLink>
       </div>
 
@@ -66,7 +69,7 @@ export const DashboardNav: React.FC = () => {
           className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#101418] px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white hover:border-[#2A313C] transition"
         >
           <History className="h-3.5 w-3.5 text-blue-400" />
-          <span>Workout History</span>
+          <span>{t("nav.workoutHistory")}</span>
         </NavLink>
 
         <NavLink
@@ -74,7 +77,7 @@ export const DashboardNav: React.FC = () => {
           className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#101418] px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white hover:border-[#2A313C] transition"
         >
           <Calendar className="h-3.5 w-3.5 text-[#5BE584]" />
-          <span>Schedule</span>
+          <span>{t("nav.schedule")}</span>
         </NavLink>
 
         <NavLink
@@ -82,7 +85,7 @@ export const DashboardNav: React.FC = () => {
           className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#101418] px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white hover:border-[#2A313C] transition"
         >
           <Scale className="h-3.5 w-3.5 text-emerald-400" />
-          <span>Measurements</span>
+          <span>{t("nav.measurements")}</span>
         </NavLink>
       </div>
     </div>

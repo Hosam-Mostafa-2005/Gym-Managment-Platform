@@ -1,6 +1,7 @@
 // src/features/profile/components/shared/ProfileHeader.tsx
 import React, { useState } from "react";
 import { ShieldCheck, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { AvatarUploadDialog } from "./AvatarUploadDialog";
 
@@ -25,13 +26,24 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   image,
   isActive = true,
   joinedDate,
-  location = "HQ Main Deck (Zone A)",
+  location,
   subtitle,
   editable = true,
   actions,
   children,
 }) => {
+  const { t } = useTranslation(["profile", "common"]);
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+
+  const displayLocation = location || t("header.defaultLocation");
+
+  const getRoleDisplay = (r: string) => {
+    const upper = r?.toUpperCase();
+    if (upper === "MEMBER") return t("roles.member", { ns: "common", defaultValue: "Member" });
+    if (upper === "TRAINER" || upper === "COACH") return t("roles.coach", { ns: "common", defaultValue: "Coach" });
+    if (upper === "ADMIN") return t("roles.admin", { ns: "common", defaultValue: "Admin" });
+    return r;
+  };
 
   return (
     <>
@@ -54,7 +66,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
                 </h1>
                 <span className="inline-flex items-center gap-1 rounded bg-[#16291d] border border-[#23422e] px-2 py-0.5 text-[10px] font-bold text-[#5BE584] uppercase tracking-wider">
                   <ShieldCheck className="h-3 w-3" />
-                  {role}
+                  {getRoleDisplay(role)}
                 </span>
               </div>
 
@@ -67,18 +79,18 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({
               <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
                 <span className="flex items-center gap-1 text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  {isActive ? "Active Account" : "Inactive"}
+                  {isActive ? t("header.activeAccount") : t("header.inactive")}
                 </span>
                 {joinedDate && (
                   <>
                     <span>•</span>
-                    <span>Joined {joinedDate}</span>
+                    <span>{t("header.joinedDate", { date: joinedDate })}</span>
                   </>
                 )}
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <MapPin className="h-3 w-3 text-gray-500" />
-                  {location}
+                  {displayLocation}
                 </span>
               </div>
             </div>

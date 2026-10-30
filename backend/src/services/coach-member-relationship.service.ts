@@ -244,6 +244,7 @@ class CoachMemberRelationshipService {
         status: RELATIONSHIP_STATUS.ACTIVE,
         isActive: true,
       },
+      orderBy: { startedAt: "desc" },
       include: {
         trainer: {
           select: {
@@ -265,6 +266,26 @@ class CoachMemberRelationshipService {
   }
 
   /**
+   * Member terminates their current active coaching relationship directly
+   */
+  async terminateActiveMemberRelationship(memberId: string) {
+    const active = await prisma.coachMemberRelationship.findFirst({
+      where: {
+        memberId,
+        status: RELATIONSHIP_STATUS.ACTIVE,
+        isActive: true,
+      },
+      orderBy: { startedAt: "desc" },
+    });
+
+    if (!active) {
+      throw new AppError("No active coaching relationship found.", 404);
+    }
+
+    return this.terminateRelationship(active.id, memberId, Roles.MEMBER);
+  }
+
+  /**
    * Member accepts or declines a coaching invitation
    */
   async respondInvitation(
@@ -272,37 +293,13 @@ class CoachMemberRelationshipService {
     memberId: string,
     dto: RespondInvitationDto,
   ) {
-    const invitation = await prisma.coachMemberRelationship.findFirst({
-      where: {
-        id: invitationId,
-        memberId,
-        status: RELATIONSHIP_STATUS.PENDING,
-        isActive: true,
-      },
-      include: {
-        trainer: { select: { id: true, name: true, email: true } },
-        member: { select: { id: true, name: true, email: true } },
-      },
-    });
-
-    if (!invitation) {
-      throw new AppError(
-        "Pending coaching invitation not found or already processed.",
-        404,
-      );
-    }
-
-    const now = new Date();
-
-    if (dto.action === "ACCEPT") {
-      const updated = await prisma.coachMemberRelationship.update({
-        where: { id: invitationId },
-        data: {
-          status: RELATIONSHIP_STATUS.ACTIVE,
-          startedAt: now,
-          respondedAt: now,
-          // History sharing starts as PENDING until explicit consent
-          historySharingConsent: HISTORY_SHARING_CONSENT.PENDING,
+    const execute = async (tx: any) => {
+      const invitation = await tx.coachMemberRelationship.findFirst({
+        where: {
+          id: invitationId,
+          memberId,
+          status: RELATIONSHIP_STATUS.PENDING,
+          isActive: true,
         },
         include: {
           trainer: { select: { id: true, name: true, email: true } },
@@ -310,50 +307,113 @@ class CoachMemberRelationshipService {
         },
       });
 
-      // Notify Coach that invitation was accepted
+      if (!invitation) {
+        throw new AppError(
+          "Pending coaching invitation not found or already processed.",
+          404,
+        );
+      }
+
+      const now = new Date();
+
+      if (dto.action === "ACCEPT") {
+        // Enforce: A member can have at most one active coach relationship at a time
+        const existingActive = await tx.coachMemberRelationship.findFirst({
+          where: {
+            memberId,
+            status: RELATIONSHIP_STATUS.ACTIVE,
+            isActive: true,
+          },
+          include: {
+            trainer: { select: { id: true, name: true, email: true } },
+          },
+        });
+
+        if (existingActive && existingActive.id !== invitationId) {
+          const currentCoachName = existingActive.trainer?.name || "a coach";
+          throw new AppError(
+            `You're already connected to a coach (${currentCoachName}). End your current coaching relationship before accepting a new coach.`,
+            409,
+            {
+              code: "ACTIVE_COACH_EXISTS",
+              currentCoach: {
+                id: existingActive.trainerId,
+                name: existingActive.trainer?.name,
+                email: existingActive.trainer?.email,
+                relationshipId: existingActive.id,
+              },
+            },
+          );
+        }
+
+        const updated = await tx.coachMemberRelationship.update({
+          where: { id: invitationId },
+          data: {
+            status: RELATIONSHIP_STATUS.ACTIVE,
+            startedAt: now,
+            respondedAt: now,
+            // History sharing starts as PENDING until explicit consent
+            historySharingConsent: HISTORY_SHARING_CONSENT.PENDING,
+          },
+          include: {
+            trainer: { select: { id: true, name: true, email: true } },
+            member: { select: { id: true, name: true, email: true } },
+          },
+        });
+
+        return updated;
+      } else {
+        const updated = await tx.coachMemberRelationship.update({
+          where: { id: invitationId },
+          data: {
+            status: RELATIONSHIP_STATUS.DECLINED,
+            respondedAt: now,
+          },
+          include: {
+            trainer: { select: { id: true, name: true, email: true } },
+            member: { select: { id: true, name: true, email: true } },
+          },
+        });
+
+        return updated;
+      }
+    };
+
+    const updated =
+      typeof (prisma as any).$transaction === "function"
+        ? await (prisma as any).$transaction(execute)
+        : await execute(prisma);
+
+    // Send notifications outside the transaction
+    if (dto.action === "ACCEPT") {
       await notificationService.create({
-        user: invitation.trainerId,
+        user: updated.trainerId,
         type: NOTIFICATION_TYPE.COACHING_INVITATION_ACCEPTED,
         title: "Coaching Invitation Accepted",
-        message: `${invitation.member.name} accepted your coaching invitation.`,
-        actionUrl: `/members/${invitation.memberId}`,
+        message: `${updated.member.name} accepted your coaching invitation.`,
+        actionUrl: `/members/${updated.memberId}`,
         metadata: {
           relationshipId: updated.id,
-          memberId: invitation.memberId,
-          memberName: invitation.member.name,
+          memberId: updated.memberId,
+          memberName: updated.member.name,
         },
       });
-
-      return mapCoachingRelationship(updated);
     } else {
-      const updated = await prisma.coachMemberRelationship.update({
-        where: { id: invitationId },
-        data: {
-          status: RELATIONSHIP_STATUS.DECLINED,
-          respondedAt: now,
-        },
-        include: {
-          trainer: { select: { id: true, name: true, email: true } },
-          member: { select: { id: true, name: true, email: true } },
-        },
-      });
-
-      // Notify Coach that invitation was declined
       await notificationService.create({
-        user: invitation.trainerId,
+        user: updated.trainerId,
         type: NOTIFICATION_TYPE.COACHING_INVITATION_DECLINED,
         title: "Coaching Invitation Declined",
-        message: `${invitation.member.name} declined your coaching invitation.`,
+        message: `${updated.member.name} declined your coaching invitation.`,
         actionUrl: "/members/all",
         metadata: {
           relationshipId: updated.id,
-          memberId: invitation.memberId,
-          memberName: invitation.member.name,
+          memberId: updated.memberId,
+          memberName: updated.member.name,
         },
       });
-
-      return mapCoachingRelationship(updated);
     }
+
+    return mapCoachingRelationship(updated);
   }
 
   /**

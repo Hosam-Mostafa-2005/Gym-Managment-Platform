@@ -75,6 +75,7 @@ export interface GamificationOverview {
   summary: GamificationSummary;
   achievements: AchievementWithStatus[];
   recentAchievements: UserAchievement[];
+  newlyUnlocked?: AchievementWithStatus[];
 }
 
 export interface CoachMemberGamification {

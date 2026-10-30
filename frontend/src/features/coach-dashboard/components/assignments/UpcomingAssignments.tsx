@@ -1,6 +1,7 @@
 // src/features/coach-dashboard/components/assignments/UpcomingAssignments.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ClipboardList,
   Calendar,
@@ -17,18 +18,20 @@ interface UpcomingAssignmentsProps {
 export const UpcomingAssignments: React.FC<UpcomingAssignmentsProps> = ({
   assignments = [],
 }) => {
+  const { t, i18n } = useTranslation(["coachDashboard"]);
   const hasAssignments = assignments && assignments.length > 0;
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   const formatDate = (dateValue: Date | string | null) => {
-    if (!dateValue) return "N/A";
+    if (!dateValue) return t("upcomingAssignments.notApplicable");
     try {
-      return new Intl.DateTimeFormat("en-US", {
+      return new Intl.DateTimeFormat(currentLang, {
         month: "short",
         day: "numeric",
         year: "numeric",
       }).format(new Date(dateValue));
     } catch {
-      return "Invalid date";
+      return t("upcomingAssignments.invalidDate");
     }
   };
 
@@ -36,18 +39,18 @@ export const UpcomingAssignments: React.FC<UpcomingAssignmentsProps> = ({
     if (daysRemaining !== undefined && daysRemaining <= 1) {
       return {
         badge: "text-red-400 bg-red-400/10 border-red-500/20",
-        text: "Ending very soon",
+        text: t("upcomingAssignments.endingVerySoon"),
       };
     }
     if (daysRemaining !== undefined && daysRemaining <= 3) {
       return {
         badge: "text-yellow-400 bg-yellow-400/10 border-yellow-500/20",
-        text: "Ending soon",
+        text: t("upcomingAssignments.endingSoon"),
       };
     }
     return {
       badge: "text-gray-400 bg-white/[0.02] border-[#1e2329]",
-      text: "Active cycle",
+      text: t("upcomingAssignments.activeCycle"),
     };
   };
 
@@ -58,12 +61,14 @@ export const UpcomingAssignments: React.FC<UpcomingAssignmentsProps> = ({
         <div className="flex items-center gap-2.5">
           <ClipboardList className="h-4 w-4 text-gray-400" />
           <h2 className="text-sm font-semibold text-gray-100">
-            Upcoming Assignments
+            {t("upcomingAssignments.title")}
           </h2>
         </div>
         {hasAssignments && (
           <span className="inline-flex rounded-full bg-[#16291d] px-2.5 py-0.5 text-[10px] font-bold text-[#5BE584] uppercase tracking-wider border border-[#23422e]">
-            {assignments.length} Tracking
+            {t("upcomingAssignments.tracking", {
+              count: assignments.length,
+            })}
           </span>
         )}
       </div>
@@ -71,31 +76,31 @@ export const UpcomingAssignments: React.FC<UpcomingAssignmentsProps> = ({
       {/* Content List */}
       {hasAssignments ? (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[540px] text-left text-xs text-gray-300">
+          <table className="w-full min-w-[540px] text-left rtl:text-right text-xs text-gray-300">
             <thead className="border-b border-[#1e2329] bg-[#13171d]/50 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
               <tr>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Athlete
+                  {t("upcomingAssignments.thAthlete")}
                 </th>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Workout Program
+                  {t("upcomingAssignments.thProgram")}
                 </th>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  End Date
+                  {t("upcomingAssignments.thEndDate")}
                 </th>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Time Remaining
+                  {t("upcomingAssignments.thTimeRemaining")}
                 </th>
-                <th scope="col" className="px-5 py-3 font-medium text-right">
-                  Action
+                <th scope="col" className="px-5 py-3 font-medium text-right rtl:text-left">
+                  {t("upcomingAssignments.thAction")}
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1e2329]">
               {assignments.map((item, index) => {
-                const memberId = item.member?.id || item.member?.id;
-                const memberName = item.member?.name || "Unknown Athlete";
-                const workoutTitle = item.workout?.title || "Custom Routine";
+                const memberId = item.member?.id;
+                const memberName = item.member?.name || t("upcomingAssignments.unknownAthlete");
+                const workoutTitle = item.workout?.title || t("upcomingAssignments.customRoutine");
                 const urgency = getUrgencyVisuals(item.daysRemaining);
 
                 return (
@@ -139,25 +144,29 @@ export const UpcomingAssignments: React.FC<UpcomingAssignmentsProps> = ({
                           className={`inline-flex items-center gap-1 rounded border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${urgency.badge}`}
                         >
                           <Clock className="h-3 w-3" />
-                          {item.daysRemaining !== undefined
-                            ? `${item.daysRemaining} days left`
-                            : urgency.text}
+                          <span>
+                            {item.daysRemaining !== undefined
+                              ? t("upcomingAssignments.daysRemaining", {
+                                  count: item.daysRemaining,
+                                })
+                              : urgency.text}
+                          </span>
                         </span>
                       </div>
                     </td>
 
                     {/* Action */}
-                    <td className="px-5 py-3.5 text-right whitespace-nowrap">
+                    <td className="px-5 py-3.5 text-right rtl:text-left whitespace-nowrap">
                       {memberId ? (
                         <Link
                           to={`/members/${memberId}`}
                           className="inline-flex items-center gap-1 rounded bg-[#13171d] border border-[#1e2329] px-2.5 py-1.5 text-[11px] font-medium text-gray-300 transition-colors hover:bg-white/[0.03] hover:text-white"
                         >
-                          Review
-                          <ArrowRight className="h-3 w-3" />
+                          <span>{t("upcomingAssignments.review")}</span>
+                          <ArrowRight className="h-3 w-3 rtl:rotate-180" />
                         </Link>
                       ) : (
-                        <span className="text-gray-600 text-[11px]">N/A</span>
+                        <span className="text-gray-600 text-[11px]">{t("upcomingAssignments.notApplicable")}</span>
                       )}
                     </td>
                   </tr>
@@ -173,10 +182,10 @@ export const UpcomingAssignments: React.FC<UpcomingAssignmentsProps> = ({
             <CheckCircle2 className="h-5 w-5 text-[#5BE584]" />
           </div>
           <p className="text-sm font-semibold text-gray-200">
-            No upcoming assignments requiring attention.
+            {t("upcomingAssignments.emptyTitle")}
           </p>
           <p className="text-xs text-gray-500 mt-0.5">
-            All active training cycles are running smoothly.
+            {t("upcomingAssignments.emptyDesc")}
           </p>
         </div>
       )}

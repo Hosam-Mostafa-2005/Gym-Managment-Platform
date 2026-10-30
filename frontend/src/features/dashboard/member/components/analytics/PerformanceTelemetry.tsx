@@ -1,5 +1,6 @@
 // src/features/dashboard/member/components/analytics/PerformanceTelemetry.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Zap, Heart, Crown, Clock, ArrowUpRight } from "lucide-react";
 
 interface PerformanceTelemetryProps {
@@ -9,11 +10,12 @@ interface PerformanceTelemetryProps {
 export const PerformanceTelemetry: React.FC<PerformanceTelemetryProps> = ({
   trends,
 }) => {
+  const { t } = useTranslation(["dashboard"]);
   if (!trends || Object.keys(trends).length === 0) return null;
 
   const cards = [
     {
-      label: "Strongest Exercise",
+      label: t("member.analyticsView.strongestExercise"),
       value: trends.strongestExercise?.name,
       subValue: trends.strongestExercise?.val
         ? `${trends.strongestExercise.val} kg`
@@ -21,31 +23,41 @@ export const PerformanceTelemetry: React.FC<PerformanceTelemetryProps> = ({
       icon: Crown,
     },
     {
-      label: "Favorite Workout",
+      label: t("member.analyticsView.favoriteWorkout"),
       value: trends.favoriteWorkout?.name,
       subValue: trends.favoriteWorkout?.timesCompleted
-        ? `${trends.favoriteWorkout.timesCompleted} completions`
+        ? t("member.analyticsView.completions", {
+            count: trends.favoriteWorkout.timesCompleted,
+          })
         : null,
       icon: Heart,
     },
     {
-      label: "Favorite Exercise",
+      label: t("member.analyticsView.favoriteExercise"),
       value: trends.favoriteExercise?.name,
       subValue: trends.favoriteExercise?.val
-        ? `${trends.favoriteExercise.val} sets`
+        ? t("member.analyticsView.setsCount", {
+            count: trends.favoriteExercise.val,
+          })
         : null,
       icon: Zap,
     },
     {
-      label: "Longest Workout",
-      value: trends.longestWorkout ? `${trends.longestWorkout} min` : null,
+      label: t("member.analyticsView.longestWorkout"),
+      value: trends.longestWorkout
+        ? t("member.analyticsView.minDuration", {
+            count: trends.longestWorkout,
+          })
+        : null,
       icon: Clock,
     },
     {
-      label: "Best Month",
+      label: t("member.analyticsView.bestMonth"),
       value: trends.bestMonth?.month,
       subValue: trends.bestMonth?.volume
-        ? `${trends.bestMonth.volume.toLocaleString()} kg volume`
+        ? t("member.analyticsView.volumeKg", {
+            count: trends.bestMonth.volume.toLocaleString(),
+          })
         : null,
       icon: ArrowUpRight,
     },
@@ -55,7 +67,9 @@ export const PerformanceTelemetry: React.FC<PerformanceTelemetryProps> = ({
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-[#1E2329] bg-[#0D1117] p-6">
-      <h2 className="text-sm font-semibold text-white">Insights & Trends</h2>
+      <h2 className="text-sm font-semibold text-white">
+        {t("member.analyticsView.insightsAndTrends")}
+      </h2>
       <div className="flex flex-col gap-3">
         {cards.map((card, idx) => {
           const Icon = card.icon;

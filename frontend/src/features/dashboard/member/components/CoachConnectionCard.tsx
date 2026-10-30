@@ -1,6 +1,7 @@
 // src/features/dashboard/member/components/CoachConnectionCard.tsx
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import {
   UserCheck,
   Shield,
@@ -22,6 +23,7 @@ interface CoachConnectionCardProps {
 export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
   coachConnection,
 }) => {
+  const { t, i18n } = useTranslation(["dashboard"]);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const hasCoach = Boolean(
     coachConnection?.hasActiveCoach && coachConnection?.coach,
@@ -29,31 +31,36 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
   const coach = coachConnection?.coach;
   const consent = coachConnection?.historySharingConsent;
 
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
+
   const getConsentBadge = (status?: string | null) => {
     switch (status) {
       case "GRANTED":
         return (
           <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400">
-            <Unlock className="h-3 w-3" /> History Shared
+            <Unlock className="h-3 w-3" />
+            <span>{t("member.coachConnection.historyShared")}</span>
           </span>
         );
       case "PENDING":
         return (
           <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-medium text-amber-400">
-            <Shield className="h-3 w-3" /> Consent Pending
+            <Shield className="h-3 w-3" />
+            <span>{t("member.coachConnection.consentPending")}</span>
           </span>
         );
       case "DECLINED":
       case "REVOKED":
         return (
           <span className="inline-flex items-center gap-1 rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-0.5 text-[11px] font-medium text-red-400">
-            <Lock className="h-3 w-3" /> History Private
+            <Lock className="h-3 w-3" />
+            <span>{t("member.coachConnection.historyPrivate")}</span>
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 rounded-full border border-gray-700 bg-gray-800 px-2 py-0.5 text-[11px] font-medium text-gray-400">
-            No Consent Set
+            {t("member.coachConnection.noConsentSet")}
           </span>
         );
     }
@@ -70,10 +77,10 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
             </div>
             <div>
               <h2 className="text-sm font-semibold text-white">
-                Coach Connection
+                {t("member.coachConnection.title")}
               </h2>
               <p className="text-xs text-gray-400">
-                Your professional coaching relationship
+                {t("member.coachConnection.subtitle")}
               </p>
             </div>
           </div>
@@ -85,7 +92,9 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
                 : "bg-gray-800 text-gray-400 border border-gray-700"
             }`}
           >
-            {hasCoach ? "Active" : "Independent"}
+            {hasCoach
+              ? t("member.coachConnection.statusActive")
+              : t("member.coachConnection.statusIndependent")}
           </span>
         </div>
 
@@ -127,29 +136,30 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
                   onClick={() => setShowProfileModal(true)}
                   className="inline-flex items-center gap-1 rounded-lg border border-[#1E2329] bg-[#161B22] px-2.5 py-1 text-xs font-medium text-[#9CA3AF] hover:border-[#5BE584]/40 hover:text-white transition-colors"
                 >
-                  <span>Profile</span>
+                  <span>{t("member.coachConnection.viewProfile")}</span>
                   <ExternalLink className="h-3 w-3" />
                 </button>
               </div>
 
               <div className="mt-1 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#1E2329] bg-[#161B22] p-3 text-xs">
                 <span className="text-gray-400">
-                  Historical Progress Sharing:
+                  {t("member.coachConnection.historicalProgressSharing")}
                 </span>
                 {getConsentBadge(consent)}
               </div>
 
               {coachConnection?.startedAt && (
                 <p className="text-[11px] text-gray-500">
-                  Coaching started on{" "}
-                  {new Date(coachConnection.startedAt).toLocaleDateString(
-                    undefined,
-                    {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    },
-                  )}
+                  {t("member.coachConnection.coachingStartedOn", {
+                    date: new Date(coachConnection.startedAt).toLocaleDateString(
+                      currentLang,
+                      {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      },
+                    ),
+                  })}
                 </p>
               )}
             </div>
@@ -161,11 +171,10 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
               </div>
               <div>
                 <h4 className="text-xs font-semibold text-white">
-                  Training Independently
+                  {t("member.coachConnection.trainingIndependently")}
                 </h4>
                 <p className="text-[11px] text-gray-400 mt-0.5">
-                  You are currently following your personal routine. When a coach
-                  invites you, you will be able to review their invitation here.
+                  {t("member.coachConnection.trainingIndependentlyDesc")}
                 </p>
               </div>
             </div>
@@ -199,7 +208,8 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
                         {coach.name}
                       </h3>
                       <p className="text-xs text-[#5BE584] font-medium">
-                        {coach.professionalTitle || "Certified Fitness Coach"}
+                        {coach.professionalTitle ||
+                          t("member.coachConnection.certifiedCoach")}
                       </p>
                     </div>
                   </div>
@@ -220,24 +230,26 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
                       <Briefcase className="h-4 w-4 text-[#5BE584] shrink-0" />
                       <div>
                         <span className="text-[10px] uppercase font-bold text-[#9CA3AF] block">
-                          Experience
+                          {t("member.coachConnection.experience")}
                         </span>
                         <span className="text-xs font-semibold text-white">
                           {coach.yearsOfExperience != null
-                            ? `${coach.yearsOfExperience} Years`
-                            : "Professional"}
+                            ? t("member.coachConnection.yearsExperience", {
+                                count: coach.yearsOfExperience,
+                              })
+                            : t("member.coachConnection.professional")}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2.5 border-l border-[#1E2329] pl-3">
+                    <div className="flex items-center gap-2.5 border-l rtl:border-l-0 rtl:border-r border-[#1E2329] pl-3 rtl:pl-0 rtl:pr-3">
                       <UserCheck className="h-4 w-4 text-[#5BE584] shrink-0" />
                       <div>
                         <span className="text-[10px] uppercase font-bold text-[#9CA3AF] block">
-                          Status
+                          {t("member.coachConnection.status")}
                         </span>
                         <span className="text-xs font-semibold text-white">
-                          Active Coach
+                          {t("member.coachConnection.activeCoach")}
                         </span>
                       </div>
                     </div>
@@ -247,7 +259,7 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
                   {coach.specialties && coach.specialties.length > 0 && (
                     <div className="space-y-2">
                       <span className="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF] block">
-                        Specialties & Expertise
+                        {t("member.coachConnection.specialties")}
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         {coach.specialties.map((spec) => (
@@ -267,7 +279,7 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
                     <div className="space-y-2">
                       <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#9CA3AF]">
                         <Award className="h-3.5 w-3.5 text-[#5BE584]" />
-                        <span>Credentials & Certifications</span>
+                        <span>{t("member.coachConnection.credentials")}</span>
                       </div>
                       <div className="space-y-1.5">
                         {coach.certifications.map((cert) => (
@@ -288,7 +300,7 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
                     <div className="space-y-2">
                       <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#9CA3AF]">
                         <BookOpen className="h-3.5 w-3.5 text-[#5BE584]" />
-                        <span>Coaching Philosophy</span>
+                        <span>{t("member.coachConnection.philosophy")}</span>
                       </div>
                       <blockquote className="rounded-xl border border-[#23422E] bg-[#16291D]/40 p-3.5 text-xs text-emerald-200/90 italic leading-relaxed">
                         "{coach.coachingPhilosophy}"
@@ -300,7 +312,7 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
                   {coach.bio && (
                     <div className="space-y-2">
                       <span className="text-xs font-semibold uppercase tracking-wider text-[#9CA3AF] block">
-                        About
+                        {t("member.coachConnection.about")}
                       </span>
                       <p className="text-xs text-[#9CA3AF] leading-relaxed">
                         {coach.bio}
@@ -316,7 +328,7 @@ export const CoachConnectionCard: React.FC<CoachConnectionCardProps> = ({
                     onClick={() => setShowProfileModal(false)}
                     className="px-4 py-2 text-xs font-medium rounded-xl border border-[#1E2329] text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
                   >
-                    Close
+                    {t("member.coachConnection.close")}
                   </button>
                 </div>
               </div>

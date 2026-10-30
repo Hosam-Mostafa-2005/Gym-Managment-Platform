@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // Hooks
 import { useAssignments } from "@/features/assignments/hooks/useAssignments";
@@ -51,10 +52,13 @@ import {
 import { AssignmentStatusBadge } from "@/features/assignments/components/AssignmentStatusBadge";
 
 export default function AssignmentsPage() {
+  const { t, i18n } = useTranslation(["assignments", "common"]);
   const navigate = useNavigate();
   const { data: user, isLoading: isUserLoading } = useCurrentUser();
   const isMember = user?.role === ROLES.MEMBER;
   const canManage = user?.role === ROLES.ADMIN || user?.role === ROLES.TRAINER;
+
+  const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   // Filter & Search State
   const [searchQuery, setSearchQuery] = useState("");
@@ -189,19 +193,27 @@ export default function AssignmentsPage() {
         <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2 text-[11px] font-medium tracking-wide text-[#6B7280] uppercase">
-              <span className="text-[#F3F4F6]">Assignments</span>
+              <span className="text-[#F3F4F6]">
+                {t("breadcrumb.assignments", "Assignments")}
+              </span>
               <span>/</span>
               <span className="hover:text-[#9CA3AF] cursor-pointer">
-                Overview
+                {t("breadcrumb.overview", "Overview")}
               </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mt-1">
-              Workout Assignments
+              {t("header.title", "Workout Assignments")}
             </h1>
             <p className="text-sm text-[#9CA3AF]">
               {canManage
-                ? "Assign workout routines to members and track their progress over time."
-                : "View your assigned workout routines and launch training sessions."}
+                ? t(
+                    "header.coachSubtitle",
+                    "Assign workout routines to members and track their progress over time.",
+                  )
+                : t(
+                    "header.memberSubtitle",
+                    "View your assigned workout routines and launch training sessions.",
+                  )}
             </p>
           </div>
 
@@ -211,7 +223,7 @@ export default function AssignmentsPage() {
               className="group flex items-center justify-center gap-2 rounded-[14px] bg-[#5BE584] px-5 py-2.5 text-sm font-semibold text-[#090B0F] transition-all hover:bg-[#49D472] focus:outline-none focus:ring-2 focus:ring-[#5BE584] focus:ring-offset-2 focus:ring-offset-[#0D1014]"
             >
               <Plus className="h-4 w-4 transition-transform group-hover:scale-110" />
-              New Assignment
+              {t("header.newAssignment", "New Assignment")}
             </button>
           )}
         </div>
@@ -223,7 +235,7 @@ export default function AssignmentsPage() {
         <section>
           <div className="mb-4">
             <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-              Overview
+              {t("stats.sectionTitle", "Overview")}
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -231,7 +243,7 @@ export default function AssignmentsPage() {
             <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
               <div>
                 <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                  Total Assignments
+                  {t("stats.total", "Total Assignments")}
                 </p>
                 <h3 className="text-2xl font-semibold text-white mt-2">
                   {isLoading ? "-" : stats.total}
@@ -246,14 +258,14 @@ export default function AssignmentsPage() {
             <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
               <div>
                 <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                  Active
+                  {t("stats.active", "Active")}
                 </p>
                 <div className="flex items-baseline gap-2 mt-2">
                   <h3 className="text-2xl font-semibold text-white">
                     {isLoading ? "-" : stats.active}
                   </h3>
                   <span className="text-[10px] font-medium text-[#5BE584]">
-                    ↗ Active
+                    {t("stats.activeIndicator", "↗ Active")}
                   </span>
                 </div>
               </div>
@@ -266,7 +278,7 @@ export default function AssignmentsPage() {
             <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
               <div>
                 <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                  Completed
+                  {t("stats.completed", "Completed")}
                 </p>
                 <h3 className="text-2xl font-semibold text-white mt-2">
                   {isLoading ? "-" : stats.completed}
@@ -281,7 +293,7 @@ export default function AssignmentsPage() {
             <div className="rounded-xl border border-[#1E2329] bg-[#101418] p-5 flex items-start justify-between transition-colors hover:border-[#2A313A]">
               <div>
                 <p className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
-                  Cancelled / Stopped
+                  {t("stats.cancelled", "Cancelled / Stopped")}
                 </p>
                 <div className="flex items-baseline gap-3 mt-2">
                   <h3 className="text-2xl font-semibold text-white">
@@ -292,9 +304,9 @@ export default function AssignmentsPage() {
                       setSelectedStatus("CANCELLED");
                       setPage(1);
                     }}
-                    className="text-[10px] font-medium text-red-400/80 hover:text-red-400 hover:underline transition-colors"
+                    className="text-[10px] font-medium text-red-400/80 hover:text-red-400 hover:underline transition-colors cursor-pointer"
                   >
-                    Filter
+                    {t("stats.filter", "Filter")}
                   </button>
                 </div>
               </div>
@@ -311,7 +323,7 @@ export default function AssignmentsPage() {
         <section>
           <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-              Assignment Records
+              {t("records.sectionTitle", "Assignment Records")}
             </h2>
           </div>
 
@@ -319,16 +331,23 @@ export default function AssignmentsPage() {
             {/* Filter & Search Bar */}
             <div className="p-4 border-b border-[#1E2329] flex flex-col md:flex-row items-center justify-between gap-4 bg-[#101418]">
               <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#1E2329]/40 border border-[#1E2329] text-xs font-medium text-[#9CA3AF]">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#1E2329]/40 border border-[#1E2329] text-xs font-medium text-[#9CA3AF] shrink-0">
                   <Filter className="w-3.5 h-3.5" />
-                  <span>Filter</span>
+                  <span>{t("records.filterLabel", "Filter")}</span>
                 </div>
 
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5 shrink-0">
                   {(
                     ["ACTIVE", "COMPLETED", "CANCELLED"] as AssignmentStatus[]
                   ).map((status) => {
                     const isSelected = selectedStatus === status;
+                    const statusLabel =
+                      status === "ACTIVE"
+                        ? t("status.active", "Active")
+                        : status === "COMPLETED"
+                          ? t("status.completed", "Completed")
+                          : t("status.cancelled", "Cancelled");
+
                     return (
                       <button
                         key={status}
@@ -336,30 +355,32 @@ export default function AssignmentsPage() {
                           setSelectedStatus(isSelected ? null : status);
                           setPage(1);
                         }}
-                        className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors duration-200 border ${
+                        className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors duration-200 border cursor-pointer ${
                           isSelected
                             ? "bg-[#16291D] border-[#23422E] text-[#5BE584]"
                             : "bg-[#101418] border-[#1E2329] text-[#9CA3AF] hover:border-[#6B7280] hover:text-[#F3F4F6]"
                         }`}
                       >
-                        {status.charAt(0) + status.slice(1).toLowerCase()}
+                        {statusLabel}
                       </button>
                     );
                   })}
                 </div>
 
-                <div className="h-6 w-px bg-[#1E2329] mx-1" />
+                <div className="h-6 w-px bg-[#1E2329] mx-1 shrink-0" />
 
-                <div className="relative">
+                <div className="relative shrink-0">
                   <select
                     value={selectedTrainer}
                     onChange={(e) => {
                       setSelectedTrainer(e.target.value);
                       setPage(1);
                     }}
-                    className="h-8 pl-3 pr-8 rounded-md bg-[#101418] text-xs font-medium border border-[#1E2329] text-[#F3F4F6] focus:outline-none focus:border-[#5BE584] focus:ring-1 focus:ring-[#5BE584] appearance-none cursor-pointer"
+                    className="h-8 ps-3 pe-8 rounded-md bg-[#101418] text-xs font-medium border border-[#1E2329] text-[#F3F4F6] focus:outline-none focus:border-[#5BE584] focus:ring-1 focus:ring-[#5BE584] appearance-none cursor-pointer"
                   >
-                    <option value="ALL">All Trainers</option>
+                    <option value="ALL">
+                      {t("records.allTrainers", "All Trainers")}
+                    </option>
                     {Array.from(
                       new Set(rawAssignments.map((a) => a.trainer?.id)),
                     )
@@ -375,21 +396,24 @@ export default function AssignmentsPage() {
                         );
                       })}
                   </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280] pointer-events-none" />
+                  <ChevronDown className="absolute end-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#6B7280] pointer-events-none" />
                 </div>
               </div>
 
               <div className="relative w-full md:w-72">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+                <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280] pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Search member, workout..."
+                  placeholder={t(
+                    "records.searchPlaceholder",
+                    "Search member, workout...",
+                  )}
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
                     setPage(1);
                   }}
-                  className="w-full h-9 pl-9 pr-4 rounded-md border border-[#1E2329] bg-[#101418] text-xs text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+                  className="w-full h-9 ps-9 pe-8 rounded-md border border-[#1E2329] bg-[#101418] text-xs text-[#F3F4F6] placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                 />
                 {searchQuery && (
                   <button
@@ -397,7 +421,8 @@ export default function AssignmentsPage() {
                       setSearchQuery("");
                       setPage(1);
                     }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#9CA3AF]"
+                    aria-label={t("records.clearSearch", "Clear search")}
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#9CA3AF] cursor-pointer"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -407,16 +432,30 @@ export default function AssignmentsPage() {
 
             {/* Table */}
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[720px] text-left border-collapse">
+              <table className="w-full min-w-[720px] text-start border-collapse">
                 <thead>
                   <tr className="border-b border-[#1E2329] text-[#6B7280] text-[10px] font-bold uppercase tracking-widest bg-[#101418]">
-                    <th className="py-4 px-5">Member</th>
-                    <th className="py-4 px-5">Assigned Workout</th>
-                    <th className="py-4 px-5">Trainer</th>
-                    <th className="py-4 px-5">Duration</th>
-                    <th className="py-4 px-5">Progress</th>
-                    <th className="py-4 px-5">Status</th>
-                    <th className="py-4 px-5 text-right">Actions</th>
+                    <th className="py-4 px-5 text-start">
+                      {t("records.columns.member", "Member")}
+                    </th>
+                    <th className="py-4 px-5 text-start">
+                      {t("records.columns.workout", "Assigned Workout")}
+                    </th>
+                    <th className="py-4 px-5 text-start">
+                      {t("records.columns.trainer", "Trainer")}
+                    </th>
+                    <th className="py-4 px-5 text-start">
+                      {t("records.columns.duration", "Duration")}
+                    </th>
+                    <th className="py-4 px-5 text-start">
+                      {t("records.columns.progress", "Progress")}
+                    </th>
+                    <th className="py-4 px-5 text-start">
+                      {t("records.columns.status", "Status")}
+                    </th>
+                    <th className="py-4 px-5 text-end">
+                      {t("records.columns.actions", "Actions")}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#1E2329] text-sm">
@@ -441,8 +480,8 @@ export default function AssignmentsPage() {
                         <td className="py-4 px-5">
                           <div className="h-6 w-16 bg-[#1E2329] rounded-full" />
                         </td>
-                        <td className="py-4 px-5 text-right">
-                          <div className="h-8 w-8 bg-[#1E2329] rounded ml-auto" />
+                        <td className="py-4 px-5 text-end">
+                          <div className="h-8 w-8 bg-[#1E2329] rounded ms-auto" />
                         </td>
                       </tr>
                     ))
@@ -458,17 +497,32 @@ export default function AssignmentsPage() {
                           </div>
                           <h2 className="text-base font-semibold text-white">
                             {isMember
-                              ? "No Coach Assignments Yet"
-                              : "No assignments found"}
+                              ? t(
+                                  "records.empty.memberTitle",
+                                  "No Coach Assignments Yet",
+                                )
+                              : t(
+                                  "records.empty.adminTitle",
+                                  "No assignments found",
+                                )}
                           </h2>
                           <p className="mt-2 text-xs text-[#9CA3AF] max-w-sm leading-relaxed">
                             {searchQuery ||
                             selectedStatus ||
                             selectedTrainer !== "ALL"
-                              ? "We couldn't find any assignments matching your current filters."
+                              ? t(
+                                  "records.empty.filteredDescription",
+                                  "We couldn't find any assignments matching your current filters.",
+                                )
                               : isMember
-                                ? "Workout assignments are personalized routines prescribed directly by your Coach. In the meantime, you can build and start your own personal workout routines anytime."
-                                : "You haven't assigned any workouts to members yet. Create an assignment to prescribe a routine to a member."}
+                                ? t(
+                                    "records.empty.memberDescription",
+                                    "Workout assignments are personalized routines prescribed directly by your Coach. In the meantime, you can build and start your own personal workout routines anytime.",
+                                  )
+                                : t(
+                                    "records.empty.adminDescription",
+                                    "You haven't assigned any workouts to members yet. Create an assignment to prescribe a routine to a member.",
+                                  )}
                           </p>
 
                           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -476,7 +530,7 @@ export default function AssignmentsPage() {
                             selectedStatus ||
                             selectedTrainer !== "ALL" ? (
                               <button
-                                className="rounded-lg border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white"
+                                className="rounded-lg border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] transition-colors hover:border-[#6B7280] hover:text-white cursor-pointer"
                                 onClick={() => {
                                   setSearchQuery("");
                                   setSelectedStatus(null);
@@ -484,32 +538,41 @@ export default function AssignmentsPage() {
                                   setPage(1);
                                 }}
                               >
-                                Clear Filters
+                                {t("records.empty.clearFilters", "Clear Filters")}
                               </button>
                             ) : isMember ? (
                               <>
                                 <button
                                   type="button"
                                   onClick={() => navigate("/sessions")}
-                                  className="rounded-lg bg-[#5BE584] px-4 py-2 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80]"
+                                  className="rounded-lg bg-[#5BE584] px-4 py-2 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80] cursor-pointer"
                                 >
-                                  Start a Personal Workout
+                                  {t(
+                                    "records.empty.startPersonal",
+                                    "Start a Personal Workout",
+                                  )}
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => navigate("/calendar")}
-                                  className="rounded-lg border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] hover:text-white hover:border-[#2A313A]"
+                                  className="rounded-lg border border-[#1E2329] bg-[#101418] px-4 py-2 text-xs font-medium text-[#9CA3AF] hover:text-white hover:border-[#2A313A] cursor-pointer"
                                 >
-                                  View Training Calendar
+                                  {t(
+                                    "records.empty.viewCalendar",
+                                    "View Training Calendar",
+                                  )}
                                 </button>
                               </>
                             ) : (
                               <button
                                 type="button"
                                 onClick={() => navigate("/assignments/new")}
-                                className="rounded-lg bg-[#5BE584] px-4 py-2 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80]"
+                                className="rounded-lg bg-[#5BE584] px-4 py-2 text-xs font-bold text-[#090B0F] transition-all hover:bg-[#4ade80] cursor-pointer"
                               >
-                                Create First Assignment
+                                {t(
+                                  "records.empty.createFirst",
+                                  "Create First Assignment",
+                                )}
                               </button>
                             )}
                           </div>
@@ -535,7 +598,9 @@ export default function AssignmentsPage() {
                               </div>
                               <div>
                                 <div className="text-sm font-medium text-[#F3F4F6]">
-                                  {item.member?.name || user?.name || "Member"}
+                                  {item.member?.name ||
+                                    user?.name ||
+                                    t("records.defaults.member", "Member")}
                                 </div>
                                 <div className="text-[11px] text-[#6B7280]">
                                   {item.member?.email || user?.email || ""}
@@ -547,7 +612,11 @@ export default function AssignmentsPage() {
                           {/* Workout */}
                           <td className="py-3.5 px-5 whitespace-nowrap">
                             <span className="inline-flex items-center rounded-sm bg-[#1E2329]/60 border border-[#1E2329] px-2 py-1 text-xs font-medium text-[#D1D5DB] max-w-[220px] truncate">
-                              {item.workout?.title || "General Routine"}
+                              {item.workout?.title ||
+                                t(
+                                  "records.defaults.workout",
+                                  "General Routine",
+                                )}
                             </span>
                           </td>
 
@@ -555,7 +624,13 @@ export default function AssignmentsPage() {
                           <td className="py-3.5 px-5 whitespace-nowrap">
                             <div className="flex items-center gap-2 text-xs text-[#9CA3AF]">
                               <UserCheck className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
-                              <span>{item.trainer?.name || "Assigned Coach"}</span>
+                              <span>
+                                {item.trainer?.name ||
+                                  t(
+                                    "records.defaults.trainer",
+                                    "Assigned Coach",
+                                  )}
+                              </span>
                             </div>
                           </td>
 
@@ -565,12 +640,12 @@ export default function AssignmentsPage() {
                               <Calendar className="w-3.5 h-3.5 text-[#6B7280] shrink-0" />
                               <span>
                                 {new Date(item.startDate).toLocaleDateString(
-                                  "en-US",
+                                  locale,
                                   { month: "short", day: "numeric" },
                                 )}
                                 <span className="text-[#6B7280] mx-1">→</span>
                                 {new Date(item.endDate).toLocaleDateString(
-                                  "en-US",
+                                  locale,
                                   {
                                     month: "short",
                                     day: "numeric",
@@ -602,12 +677,14 @@ export default function AssignmentsPage() {
                           </td>
 
                           {/* Actions Dropdown */}
-                          <td className="py-3.5 px-5 text-right whitespace-nowrap">
+                          <td className="py-3.5 px-5 text-end whitespace-nowrap">
                             <DropdownMenu>
                               <DropdownMenuTrigger>
-                                <button className="h-8 w-8 inline-flex items-center justify-center rounded text-[#6B7280] hover:bg-[#1E2329] hover:text-[#F3F4F6] transition-colors focus:outline-none focus:ring-1 focus:ring-[#5BE584]">
+                                <button className="h-8 w-8 inline-flex items-center justify-center rounded text-[#6B7280] hover:bg-[#1E2329] hover:text-[#F3F4F6] transition-colors focus:outline-none focus:ring-1 focus:ring-[#5BE584] cursor-pointer">
                                   <MoreVertical className="h-4 w-4" />
-                                  <span className="sr-only">Open menu</span>
+                                  <span className="sr-only">
+                                    {t("records.actions.openMenu", "Open menu")}
+                                  </span>
                                 </button>
                               </DropdownMenuTrigger>
 
@@ -623,8 +700,11 @@ export default function AssignmentsPage() {
                                       }
                                       className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
                                     >
-                                      <Eye className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
-                                      View Details
+                                      <Eye className="me-2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                                      {t(
+                                        "records.actions.viewDetails",
+                                        "View Details",
+                                      )}
                                     </DropdownMenuItem>
 
                                     <DropdownMenuItem
@@ -633,8 +713,11 @@ export default function AssignmentsPage() {
                                       }
                                       className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
                                     >
-                                      <Pencil className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
-                                      Edit Assignment
+                                      <Pencil className="me-2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                                      {t(
+                                        "records.actions.editAssignment",
+                                        "Edit Assignment",
+                                      )}
                                     </DropdownMenuItem>
 
                                     <DropdownMenuSeparator className="bg-[#1E2329]" />
@@ -643,13 +726,17 @@ export default function AssignmentsPage() {
                                       onClick={() =>
                                         handleDeleteClick(
                                           item.id,
-                                          item.member?.name || "this member",
+                                          item.member?.name ||
+                                            t(
+                                              "records.defaults.member",
+                                              "Member",
+                                            ),
                                         )
                                       }
                                       className="cursor-pointer text-xs font-medium text-red-400 focus:bg-red-950/30 focus:text-red-400"
                                     >
-                                      <Trash2 className="mr-2 h-3.5 w-3.5 text-red-400" />
-                                      Delete
+                                      <Trash2 className="me-2 h-3.5 w-3.5 text-red-400" />
+                                      {t("records.actions.delete", "Delete")}
                                     </DropdownMenuItem>
                                   </>
                                 ) : (
@@ -663,16 +750,22 @@ export default function AssignmentsPage() {
                                         }
                                         className="cursor-pointer text-xs font-medium hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-white"
                                       >
-                                        <Eye className="mr-2 h-3.5 w-3.5 text-[#9CA3AF]" />
-                                        View Routine
+                                        <Eye className="me-2 h-3.5 w-3.5 text-[#9CA3AF]" />
+                                        {t(
+                                          "records.actions.viewRoutine",
+                                          "View Routine",
+                                        )}
                                       </DropdownMenuItem>
                                     )}
                                     <DropdownMenuItem
                                       onClick={() => navigate("/sessions")}
                                       className="cursor-pointer text-xs font-medium text-[#5BE584] hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-[#5BE584]"
                                     >
-                                      <PlayCircle className="mr-2 h-3.5 w-3.5 text-[#5BE584]" />
-                                      Go to Sessions
+                                      <PlayCircle className="me-2 h-3.5 w-3.5 text-[#5BE584]" />
+                                      {t(
+                                        "records.actions.goToSessions",
+                                        "Go to Sessions",
+                                      )}
                                     </DropdownMenuItem>
                                   </>
                                 )}
@@ -690,28 +783,32 @@ export default function AssignmentsPage() {
             {/* Pagination Footer */}
             <div className="p-4 border-t border-[#1E2329] bg-[#101418] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#9CA3AF]">
               <div>
-                Showing{" "}
+                {t("records.pagination.showing", "Showing")}{" "}
                 <span className="font-medium text-[#F3F4F6]">
                   {showingFrom}
                 </span>{" "}
-                to{" "}
+                {t("records.pagination.to", "to")}{" "}
                 <span className="font-medium text-[#F3F4F6]">{showingTo}</span>{" "}
-                of{" "}
+                {t("records.pagination.of", "of")}{" "}
                 <span className="font-medium text-[#F3F4F6]">{totalItems}</span>{" "}
-                assignments
+                {t("records.pagination.assignments", "assignments")}
               </div>
 
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => setPage((old) => Math.max(old - 1, 1))}
                   disabled={page === 1 || isLoading || totalItems === 0}
-                  className="h-8 w-8 inline-flex items-center justify-center rounded border border-[#1E2329] bg-[#101418] text-[#9CA3AF] hover:text-white hover:border-[#6B7280] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  aria-label={t("records.pagination.previous", "Previous page")}
+                  className="h-8 w-8 inline-flex items-center justify-center rounded border border-[#1E2329] bg-[#101418] text-[#9CA3AF] hover:text-white hover:border-[#6B7280] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-3.5 h-3.5 rtl:rotate-180" />
                 </button>
 
                 <span className="px-3 py-1.5 rounded bg-[#1E2329]/50 text-[#F3F4F6] font-medium border border-[#1E2329]">
-                  Page {page} of {totalPages}
+                  {t("records.pagination.pageOf", "Page {{page}} of {{totalPages}}", {
+                    page,
+                    totalPages,
+                  })}
                 </span>
 
                 <button
@@ -719,9 +816,10 @@ export default function AssignmentsPage() {
                     setPage((old) => Math.min(old + 1, totalPages))
                   }
                   disabled={page >= totalPages || isLoading || totalItems === 0}
-                  className="h-8 w-8 inline-flex items-center justify-center rounded border border-[#1E2329] bg-[#101418] text-[#9CA3AF] hover:text-white hover:border-[#6B7280] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  aria-label={t("records.pagination.next", "Next page")}
+                  className="h-8 w-8 inline-flex items-center justify-center rounded border border-[#1E2329] bg-[#101418] text-[#9CA3AF] hover:text-white hover:border-[#6B7280] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                 >
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
                 </button>
               </div>
             </div>
@@ -737,21 +835,19 @@ export default function AssignmentsPage() {
         }
       >
         <DialogContent className="sm:max-w-[425px] border-[#1E2329] bg-[#101418] shadow-2xl p-6">
-          <DialogHeader className="gap-2 text-left">
+          <DialogHeader className="gap-2 text-start">
             <div className="flex h-10 w-10 items-center justify-center rounded bg-red-950/30 border border-red-900/50 text-red-400 mb-2">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <DialogTitle className="text-xl font-semibold tracking-tight text-white">
-              Delete Assignment?
+              {t("deleteModal.title", "Delete Assignment?")}
             </DialogTitle>
-            <DialogDescription className="text-sm text-[#9CA3AF]">
-              You are about to permanently delete the workout routine assigned
-              to{" "}
-              <span className="font-semibold text-[#F3F4F6]">
-                {deleteModal.memberName}
-              </span>
-              . This action cannot be undone and will remove all logged progress
-              for this routine.
+            <DialogDescription className="text-sm text-[#9CA3AF] text-start">
+              {t(
+                "deleteModal.description",
+                "You are about to permanently delete the workout routine assigned to {{memberName}}. This action cannot be undone and will remove all logged progress for this routine.",
+                { memberName: deleteModal.memberName },
+              )}
             </DialogDescription>
           </DialogHeader>
 
@@ -762,20 +858,20 @@ export default function AssignmentsPage() {
               onClick={() =>
                 setDeleteModal({ isOpen: false, id: "", memberName: "" })
               }
-              className="rounded-md px-4 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:bg-[#1E2329] hover:text-white disabled:opacity-50"
+              className="rounded-md px-4 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:bg-[#1E2329] hover:text-white disabled:opacity-50 cursor-pointer"
             >
-              Cancel
+              {t("deleteModal.cancel", "Cancel")}
             </button>
             <button
               type="button"
               disabled={isDeleting}
               onClick={confirmDelete}
-              className="inline-flex items-center justify-center rounded-md bg-red-500/90 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-[#101418] disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex items-center justify-center rounded-md bg-red-500/90 px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-[#101418] disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
             >
               {isDeleting ? (
                 <>
                   <svg
-                    className="mr-2 h-4 w-4 animate-spin text-white"
+                    className="me-2 h-4 w-4 animate-spin text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -794,12 +890,12 @@ export default function AssignmentsPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Deleting...
+                  {t("deleteModal.deleting", "Deleting...")}
                 </>
               ) : (
                 <>
-                  <Trash2 className="mr-2 h-3.5 w-3.5" />
-                  Delete Assignment
+                  <Trash2 className="me-2 h-3.5 w-3.5" />
+                  {t("deleteModal.confirm", "Delete Assignment")}
                 </>
               )}
             </button>

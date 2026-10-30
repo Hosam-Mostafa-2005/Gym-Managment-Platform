@@ -1,5 +1,6 @@
 // src/features/coach-dashboard/components/performance/AssignmentsChart.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   ResponsiveContainer,
   BarChart,
@@ -19,6 +20,7 @@ interface AssignmentsChartProps {
 export const AssignmentsChart: React.FC<AssignmentsChartProps> = ({
   data = [],
 }) => {
+  const { t } = useTranslation(["coachDashboard"]);
   const hasData = data && data.length > 0;
 
   return (
@@ -27,19 +29,19 @@ export const AssignmentsChart: React.FC<AssignmentsChartProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-semibold text-gray-100">
-              Assignments Velocity
+              {t("analyticsView.assignmentsVelocity")}
             </h3>
             <InfoTooltip
-              title="Daily Assignment Creation Velocity"
-              description="Number of new workout assignments dispatched to members each day."
-              calculation="COUNT(assignments WHERE createdAt = date) per day"
-              unit="assignments / day"
-              dateRange="Past 30 rolling days"
-              limitations="Tracks assignment creation volume; does not measure active assignment duration."
+              title={t("analyticsView.tooltips.velocityTitle")}
+              description={t("analyticsView.tooltips.velocityDesc")}
+              calculation={t("analyticsView.tooltips.velocityCalc")}
+              unit={t("analyticsView.tooltips.velocityUnit")}
+              dateRange={t("analyticsView.tooltips.velocityRange")}
+              limitations={t("analyticsView.tooltips.velocityLimit")}
             />
           </div>
           <p className="text-xs text-gray-500 mt-0.5">
-            Last 30 Days Creation Volume
+            {t("analyticsView.assignmentsVelocitySub")}
           </p>
         </div>
       </div>
@@ -87,7 +89,10 @@ export const AssignmentsChart: React.FC<AssignmentsChartProps> = ({
                   color: "#f3f4f6",
                 }}
                 itemStyle={{ color: "#5BE584" }}
-                formatter={(value: any) => [value, "Assignments Created"]}
+                formatter={(value: any) => [
+                  value,
+                  t("analyticsView.assignmentsCreated"),
+                ]}
                 labelStyle={{ color: "#9ca3af", marginBottom: "4px" }}
               />
               <Bar
@@ -100,7 +105,7 @@ export const AssignmentsChart: React.FC<AssignmentsChartProps> = ({
           </ResponsiveContainer>
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-gray-500">
-            No assignments created in the last 30 days.
+            {t("analyticsView.noSessionTelemetry")}
           </div>
         )}
       </div>

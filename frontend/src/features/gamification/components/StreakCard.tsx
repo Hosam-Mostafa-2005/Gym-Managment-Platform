@@ -1,6 +1,7 @@
 // src/features/gamification/components/StreakCard.tsx
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Flame, Trophy, CalendarCheck } from "lucide-react";
 import type { StreakInfo } from "../types/gamification.types";
 
@@ -9,6 +10,7 @@ interface StreakCardProps {
 }
 
 export const StreakCard: React.FC<StreakCardProps> = ({ streak }) => {
+  const { t, i18n } = useTranslation(["achievements"]);
   const { currentStreak, longestStreak, isActiveStreak, lastWorkoutDate } = streak;
 
   return (
@@ -22,8 +24,8 @@ export const StreakCard: React.FC<StreakCardProps> = ({ streak }) => {
             <Flame className="h-5 w-5 fill-orange-500/20" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-100">Daily Streak</h3>
-            <p className="text-[11px] text-gray-400">Consecutive active days</p>
+            <h3 className="text-sm font-semibold text-gray-100">{t("kpi.streak.title")}</h3>
+            <p className="text-[11px] text-gray-400">{t("kpi.streak.subtitle")}</p>
           </div>
         </div>
 
@@ -34,7 +36,7 @@ export const StreakCard: React.FC<StreakCardProps> = ({ streak }) => {
               : "border-gray-700 bg-gray-800 text-gray-400"
           }`}
         >
-          {isActiveStreak ? "Active Streak" : "Inactive"}
+          {isActiveStreak ? t("kpi.streak.active") : t("kpi.streak.inactive")}
         </span>
       </div>
 
@@ -45,27 +47,36 @@ export const StreakCard: React.FC<StreakCardProps> = ({ streak }) => {
               {currentStreak}
             </span>
             <span className="text-xs font-semibold text-gray-400">
-              {currentStreak === 1 ? "day" : "days"}
+              {currentStreak === 1 ? t("kpi.streak.day") : t("kpi.streak.days")}
             </span>
           </div>
           <p className="mt-1 text-xs text-gray-400">
             {isActiveStreak
               ? currentStreak > 0
-                ? "You're on fire! Keep going!"
-                : "Complete a workout today to start your streak."
-              : "Log a workout today to reignite your streak."}
+                ? t("kpi.streak.onFire")
+                : t("kpi.streak.startStreak")
+              : t("kpi.streak.reigniteStreak")}
           </p>
         </div>
 
-        <div className="flex flex-col items-end text-right">
+        <div className="flex flex-col items-end rtl:items-start text-right rtl:text-left">
           <div className="flex items-center gap-1 text-xs font-medium text-amber-400">
             <Trophy className="h-3.5 w-3.5" />
-            <span>Best: {longestStreak} {longestStreak === 1 ? "day" : "days"}</span>
+            <span>
+              {t("kpi.streak.bestStreak", {
+                count: longestStreak,
+                unit: longestStreak === 1 ? t("kpi.streak.day") : t("kpi.streak.days"),
+              })}
+            </span>
           </div>
           {lastWorkoutDate && (
             <div className="mt-1 flex items-center gap-1 text-[11px] text-gray-500">
               <CalendarCheck className="h-3 w-3" />
-              <span>Last: {new Date(lastWorkoutDate).toLocaleDateString()}</span>
+              <span>
+                {t("kpi.streak.lastWorkout", {
+                  date: new Date(lastWorkoutDate).toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US"),
+                })}
+              </span>
             </div>
           )}
         </div>

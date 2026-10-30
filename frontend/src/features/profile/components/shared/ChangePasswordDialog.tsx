@@ -4,16 +4,15 @@ import {
   X,
   Lock,
   Mail,
-  KeyRound,
   CheckCircle2,
   Loader2,
-  ShieldAlert,
   Send,
   Eye,
   EyeOff,
   AlertCircle,
   Info,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import {
   updatePassword,
@@ -41,6 +40,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
   hasPassword = true,
   googleLinked = false,
 }) => {
+  const { t } = useTranslation(["profile"]);
   const setUser = useAuthStore((state) => state.setUser);
   const currentUser = useAuthStore((state) => state.user);
 
@@ -73,17 +73,17 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
     e.preventDefault();
 
     if (!currentPassword) {
-      toast.error("Please enter your current password.");
+      toast.error(t("passwordDialog.errors.enterCurrent"));
       return;
     }
 
     if (methodANewPassword.length < 8) {
-      toast.error("New password must be at least 8 characters long.");
+      toast.error(t("passwordDialog.errors.min8Chars"));
       return;
     }
 
     if (methodANewPassword !== methodAConfirmPassword) {
-      toast.error("New passwords do not match.");
+      toast.error(t("passwordDialog.errors.passwordsMismatch"));
       return;
     }
 
@@ -99,11 +99,11 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
         setUser({ ...currentUser, ...res.data.user, hasPassword: true });
       }
 
-      toast.success(res.message || "Password updated successfully!");
+      toast.success(res.message || t("passwordDialog.toasts.updateSuccess"));
       onClose();
     } catch (err: any) {
       const msg =
-        err.response?.data?.message || "Failed to update password.";
+        err.response?.data?.message || t("passwordDialog.errors.failedUpdate");
       toast.error(msg);
     } finally {
       setIsSubmittingA(false);
@@ -121,7 +121,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
       }
       setEmailStep("verify");
     } catch (err: any) {
-      const msg = err.response?.data?.message || "Failed to send code.";
+      const msg = err.response?.data?.message || t("passwordDialog.errors.failedSendCode");
       toast.error(msg);
     } finally {
       setIsSendingOtp(false);
@@ -133,17 +133,17 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
     e.preventDefault();
 
     if (!otpCode || otpCode.length !== 6) {
-      toast.error("Verification code must be 6 digits.");
+      toast.error(t("passwordDialog.errors.codeMustBe6Digits"));
       return;
     }
 
     if (methodBNewPassword.length < 8) {
-      toast.error("New password must be at least 8 characters long.");
+      toast.error(t("passwordDialog.errors.min8Chars"));
       return;
     }
 
     if (methodBNewPassword !== methodBConfirmPassword) {
-      toast.error("New passwords do not match.");
+      toast.error(t("passwordDialog.errors.passwordsMismatch"));
       return;
     }
 
@@ -168,11 +168,11 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
         setUser({ ...currentUser, ...res.data.user, hasPassword: true });
       }
 
-      toast.success(res.message || "Password updated successfully!");
+      toast.success(res.message || t("passwordDialog.toasts.updateSuccess"));
       onClose();
     } catch (err: any) {
       const msg =
-        err.response?.data?.message || "Failed to update password with code.";
+        err.response?.data?.message || t("passwordDialog.errors.failedUpdateWithCode");
       toast.error(msg);
     } finally {
       setIsSubmittingB(false);
@@ -187,8 +187,8 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
       >
         <button
           onClick={onClose}
-          aria-label="Close"
-          className="absolute right-4 top-4 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-[#1E2329] hover:text-white"
+          aria-label={t("member.editDialog.cancel")}
+          className="absolute right-4 rtl:right-auto rtl:left-4 top-4 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-[#1E2329] hover:text-white"
         >
           <X className="h-5 w-5" />
         </button>
@@ -200,10 +200,12 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
           </div>
           <div>
             <h3 className="text-base font-bold text-white">
-              {hasPassword ? "Change Password" : "Set Local Password"}
+              {hasPassword
+                ? t("passwordDialog.titleChange")
+                : t("passwordDialog.titleSet")}
             </h3>
             <p className="text-xs text-gray-400">
-              Manage your credentials and security access.
+              {t("passwordDialog.subtitle")}
             </p>
           </div>
         </div>
@@ -212,7 +214,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
         {googleLinked && (
           <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-blue-500/20 bg-blue-500/10 p-3 text-xs text-blue-300">
             <GoogleIcon className="h-4 w-4 shrink-0" />
-            <span>Google Account Linked ({userEmail})</span>
+            <span>{t("passwordDialog.googleLinked", { email: userEmail })}</span>
           </div>
         )}
 
@@ -228,7 +230,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              Current Password
+              {t("passwordDialog.tabs.currentPassword")}
             </button>
             <button
               type="button"
@@ -239,7 +241,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              Email Verification
+              {t("passwordDialog.tabs.emailVerification")}
             </button>
           </div>
         )}
@@ -252,7 +254,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                 htmlFor="dialog-current-password"
                 className="block text-xs font-semibold text-gray-300 mb-1"
               >
-                Current Password
+                {t("passwordDialog.fields.currentPassword")}
               </label>
               <div className="relative">
                 <input
@@ -272,7 +274,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                 htmlFor="dialog-new-password-a"
                 className="block text-xs font-semibold text-gray-300 mb-1"
               >
-                New Password
+                {t("passwordDialog.fields.newPassword")}
               </label>
               <input
                 id="dialog-new-password-a"
@@ -281,7 +283,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                 onChange={(e) => setMethodANewPassword(e.target.value)}
                 required
                 minLength={8}
-                placeholder="Minimum 8 characters"
+                placeholder={t("passwordDialog.fields.minChars")}
                 className="w-full rounded-xl border border-[#1E2329] bg-[#090B0F] px-3.5 py-2 text-xs text-white placeholder-gray-600 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
               />
             </div>
@@ -291,7 +293,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                 htmlFor="dialog-confirm-password-a"
                 className="block text-xs font-semibold text-gray-300 mb-1"
               >
-                Confirm New Password
+                {t("passwordDialog.fields.confirmNewPassword")}
               </label>
               <input
                 id="dialog-confirm-password-a"
@@ -300,7 +302,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                 onChange={(e) => setMethodAConfirmPassword(e.target.value)}
                 required
                 minLength={8}
-                placeholder="Re-enter new password"
+                placeholder={t("passwordDialog.fields.reenterNew")}
                 className="w-full rounded-xl border border-[#1E2329] bg-[#090B0F] px-3.5 py-2 text-xs text-white placeholder-gray-600 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
               />
             </div>
@@ -316,7 +318,11 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                 ) : (
                   <Eye className="h-3.5 w-3.5" />
                 )}
-                <span>{showPasswords ? "Hide Passwords" : "Show Passwords"}</span>
+                <span>
+                  {showPasswords
+                    ? t("passwordDialog.actions.hidePasswords")
+                    : t("passwordDialog.actions.showPasswords")}
+                </span>
               </button>
 
               <button
@@ -324,7 +330,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                 onClick={() => setActiveTab("email")}
                 className="text-xs text-[#5BE584] hover:underline"
               >
-                Forgot current password?
+                {t("passwordDialog.actions.forgotCurrent")}
               </button>
             </div>
 
@@ -336,12 +342,12 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
               {isSubmittingA ? (
                 <>
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  Updating Password...
+                  {t("passwordDialog.actions.updating")}
                 </>
               ) : (
                 <>
                   <CheckCircle2 className="h-3.5 w-3.5" />
-                  Update Password
+                  {t("passwordDialog.actions.updatePassword")}
                 </>
               )}
             </button>
@@ -358,12 +364,10 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                 </div>
                 <div>
                   <h4 className="text-sm font-semibold text-white">
-                    Send Verification Code
+                    {t("passwordDialog.emailStep.title")}
                   </h4>
                   <p className="mt-1 text-xs text-gray-400 max-w-xs mx-auto">
-                    We will send a 6-digit confirmation code to{" "}
-                    <strong className="text-white">{userEmail}</strong> to verify
-                    your identity.
+                    {t("passwordDialog.emailStep.description", { email: userEmail })}
                   </p>
                 </div>
 
@@ -376,12 +380,12 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                   {isSendingOtp ? (
                     <>
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      Sending Code...
+                      {t("passwordDialog.actions.sendingCode")}
                     </>
                   ) : (
                     <>
-                      <Send className="h-3.5 w-3.5" />
-                      Send 6-Digit Code
+                      <Send className="h-3.5 w-3.5 rtl:scale-x-[-1]" />
+                      {t("passwordDialog.actions.sendCode")}
                     </>
                   )}
                 </button>
@@ -393,10 +397,12 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                   <div className="flex items-start gap-2.5 rounded-xl border border-red-500/25 bg-red-500/10 p-3 text-xs text-red-200">
                     <AlertCircle className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-red-300">Delivery Issue</p>
+                      <p className="font-semibold text-red-300">
+                        {t("passwordDialog.delivery.issue")}
+                      </p>
                       <p className="text-red-200/90 text-[11px] leading-relaxed">
                         {delivery.errorMessage ||
-                          "Could not deliver email. Please check your settings or try resending."}
+                          t("passwordDialog.delivery.issueDefault")}
                       </p>
                     </div>
                   </div>
@@ -406,10 +412,14 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                   <div className="flex items-start gap-2.5 rounded-xl border border-green-500/25 bg-green-500/10 p-3 text-xs text-green-200">
                     <CheckCircle2 className="h-4 w-4 shrink-0 text-green-400 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-green-300">Code Dispatched</p>
+                      <p className="font-semibold text-green-300">
+                        {t("passwordDialog.delivery.dispatched")}
+                      </p>
                       <p className="text-green-200/90 text-[11px] leading-relaxed">
-                        Accepted by {delivery.provider.toUpperCase()}
-                        {delivery.messageId ? ` (${delivery.messageId.slice(0, 8)}...)` : ""}. Check your inbox.
+                        {t("passwordDialog.delivery.dispatchedDesc", {
+                          provider: delivery.provider.toUpperCase(),
+                          details: delivery.messageId ? ` (${delivery.messageId.slice(0, 8)}...)` : "",
+                        })}
                       </p>
                     </div>
                   </div>
@@ -419,9 +429,11 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                   <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/25 bg-amber-500/10 p-3 text-xs text-amber-200">
                     <Info className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-amber-300">Dev Notice</p>
+                      <p className="font-semibold text-amber-300">
+                        {t("passwordDialog.delivery.devNotice")}
+                      </p>
                       <p className="text-amber-200/90 text-[11px] leading-relaxed">
-                        Real email delivery is disabled (console mock active).
+                        {t("passwordDialog.delivery.devNoticeDesc")}
                       </p>
                     </div>
                   </div>
@@ -432,7 +444,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                     htmlFor="dialog-otp-code"
                     className="block text-xs font-semibold text-gray-300 mb-1"
                   >
-                    6-Digit Verification Code
+                    {t("passwordDialog.fields.verificationCode")}
                   </label>
                   <input
                     id="dialog-otp-code"
@@ -444,14 +456,14 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                     placeholder="• • • • • •"
                     className="w-full text-center tracking-[0.4em] font-bold text-base rounded-xl border border-[#1E2329] bg-[#090B0F] py-2 text-[#5BE584] placeholder-gray-600 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                   />
-                  <div className="flex justify-end mt-1">
+                  <div className="flex justify-end rtl:justify-start mt-1">
                     <button
                       type="button"
                       onClick={handleRequestCode}
                       disabled={isSendingOtp}
                       className="text-[11px] text-[#5BE584] hover:underline"
                     >
-                      Resend code
+                      {t("passwordDialog.actions.resendCode")}
                     </button>
                   </div>
                 </div>
@@ -461,7 +473,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                     htmlFor="dialog-new-password-b"
                     className="block text-xs font-semibold text-gray-300 mb-1"
                   >
-                    New Password
+                    {t("passwordDialog.fields.newPassword")}
                   </label>
                   <input
                     id="dialog-new-password-b"
@@ -470,7 +482,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                     onChange={(e) => setMethodBNewPassword(e.target.value)}
                     required
                     minLength={8}
-                    placeholder="Minimum 8 characters"
+                    placeholder={t("passwordDialog.fields.minChars")}
                     className="w-full rounded-xl border border-[#1E2329] bg-[#090B0F] px-3.5 py-2 text-xs text-white placeholder-gray-600 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                   />
                 </div>
@@ -480,7 +492,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                     htmlFor="dialog-confirm-password-b"
                     className="block text-xs font-semibold text-gray-300 mb-1"
                   >
-                    Confirm New Password
+                    {t("passwordDialog.fields.confirmNewPassword")}
                   </label>
                   <input
                     id="dialog-confirm-password-b"
@@ -489,7 +501,7 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                     onChange={(e) => setMethodBConfirmPassword(e.target.value)}
                     required
                     minLength={8}
-                    placeholder="Re-enter new password"
+                    placeholder={t("passwordDialog.fields.reenterNew")}
                     className="w-full rounded-xl border border-[#1E2329] bg-[#090B0F] px-3.5 py-2 text-xs text-white placeholder-gray-600 focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                   />
                 </div>
@@ -505,7 +517,11 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                     ) : (
                       <Eye className="h-3.5 w-3.5" />
                     )}
-                    <span>{showPasswords ? "Hide" : "Show"} Passwords</span>
+                    <span>
+                      {showPasswords
+                        ? t("passwordDialog.actions.hidePasswords")
+                        : t("passwordDialog.actions.showPasswords")}
+                    </span>
                   </button>
                 </div>
 
@@ -522,12 +538,12 @@ export const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
                   {isSubmittingB ? (
                     <>
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      Verifying & Saving...
+                      {t("passwordDialog.actions.verifyingAndSaving")}
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="h-3.5 w-3.5" />
-                      Confirm & Save Password
+                      {t("passwordDialog.actions.confirmAndSave")}
                     </>
                   )}
                 </button>

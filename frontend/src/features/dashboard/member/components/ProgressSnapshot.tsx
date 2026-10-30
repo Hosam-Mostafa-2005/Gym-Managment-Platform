@@ -1,6 +1,7 @@
 // src/features/dashboard/member/components/ProgressSnapshot.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   ResponsiveContainer,
   BarChart,
@@ -29,6 +30,7 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
   volumeLast12Months = [],
   onOpenAnalytics,
 }) => {
+  const { t } = useTranslation(["dashboard"]);
   const navigate = useNavigate();
   const [range, setRange] = useState<"30D" | "12M">("30D");
 
@@ -46,9 +48,11 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
             <TrendingUp className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-white">Progress Snapshot</h2>
+            <h2 className="text-sm font-semibold text-white">
+              {t("member.progressSnapshot.title")}
+            </h2>
             <p className="text-xs text-gray-400">
-              Training volume and consistency trajectory
+              {t("member.progressSnapshot.subtitle")}
             </p>
           </div>
         </div>
@@ -64,7 +68,7 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              30 Days
+              {t("member.progressSnapshot.range30D")}
             </button>
             <button
               type="button"
@@ -75,7 +79,7 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              12 Months
+              {t("member.progressSnapshot.range12M")}
             </button>
           </div>
 
@@ -85,7 +89,7 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
             className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#161B22] px-3 py-1.5 text-xs font-medium text-gray-300 transition hover:border-gray-500 hover:text-white"
           >
             <Scale className="h-3.5 w-3.5 text-emerald-400" />
-            Measurements
+            <span>{t("member.progressSnapshot.measurements")}</span>
           </button>
 
           <button
@@ -94,7 +98,7 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
             className="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#161B22] px-3 py-1.5 text-xs font-medium text-gray-300 transition hover:border-gray-500 hover:text-white"
           >
             <History className="h-3.5 w-3.5 text-blue-400" />
-            History
+            <span>{t("member.progressSnapshot.history")}</span>
           </button>
         </div>
       </div>
@@ -132,49 +136,60 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
                       fontSize: "12px",
                       color: "#fff",
                     }}
-                    formatter={(value: any) => [`${Number(value).toLocaleString()} kg`, "Volume"]}
+                    formatter={(value: any) => [
+                      `${Number(value).toLocaleString()} kg`,
+                      t("member.progressSnapshot.volumeTooltip"),
+                    ]}
                   />
                   <Bar dataKey="volume" fill="#5BE584" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
               <div className="flex h-full items-center justify-center text-xs text-gray-500">
-                No volume data available for this range
+                {t("member.progressSnapshot.noVolumeData")}
               </div>
             )}
           </div>
         </div>
 
         {/* Supporting KPI Metrics Sidecar */}
-        <div className="flex flex-col justify-between gap-3 border-t border-[#1E2329] pt-4 lg:border-t-0 lg:border-l lg:pl-6 lg:pt-0">
+        <div className="flex flex-col justify-between gap-3 border-t border-[#1E2329] pt-4 lg:border-t-0 lg:border-l lg:pl-6 lg:pt-0 rtl:lg:border-l-0 rtl:lg:border-r rtl:lg:pl-0 rtl:lg:pr-6">
           <div>
             <span className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">
-              Average Duration
+              {t("member.progressSnapshot.avgDuration")}
             </span>
             <div className="mt-1 text-lg font-bold text-white">
-              {overview.averageWorkoutDuration ?? 0} mins
+              {t("member.progressSnapshot.mins", {
+                count: overview.averageWorkoutDuration ?? 0,
+              })}
             </div>
-            <p className="text-[11px] text-gray-500">Per completed session</p>
+            <p className="text-[11px] text-gray-500">
+              {t("member.progressSnapshot.avgDurationSubtitle")}
+            </p>
           </div>
 
           <div>
             <span className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">
-              Average Volume
+              {t("member.progressSnapshot.avgVolume")}
             </span>
             <div className="mt-1 text-lg font-bold text-white">
               {overview.averageVolumePerWorkout?.toLocaleString() ?? 0} kg
             </div>
-            <p className="text-[11px] text-gray-500">Tonnage per session</p>
+            <p className="text-[11px] text-gray-500">
+              {t("member.progressSnapshot.avgVolumeSubtitle")}
+            </p>
           </div>
 
           <div>
             <span className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">
-              Completion Rate
+              {t("member.progressSnapshot.completionRate")}
             </span>
             <div className="mt-1 text-lg font-bold text-[#5BE584]">
               {overview.completionRate ?? 0}%
             </div>
-            <p className="text-[11px] text-gray-500">Completed vs started</p>
+            <p className="text-[11px] text-gray-500">
+              {t("member.progressSnapshot.completionRateSubtitle")}
+            </p>
           </div>
 
           <div className="pt-2">
@@ -189,8 +204,8 @@ export const ProgressSnapshot: React.FC<ProgressSnapshotProps> = ({
               }}
               className="inline-flex w-full items-center justify-between rounded-lg border border-[#1E2329] bg-[#161B22] px-3 py-2 text-xs font-medium text-gray-300 hover:border-[#5BE584]/40 hover:text-white transition"
             >
-              <span>View Full Analytics</span>
-              <ArrowRight className="h-3.5 w-3.5 text-[#5BE584]" />
+              <span>{t("member.progressSnapshot.viewFullAnalytics")}</span>
+              <ArrowRight className="h-3.5 w-3.5 text-[#5BE584] rtl:rotate-180" />
             </button>
           </div>
         </div>

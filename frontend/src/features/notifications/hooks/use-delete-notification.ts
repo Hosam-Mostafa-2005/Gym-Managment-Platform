@@ -2,19 +2,21 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteNotification } from "../api/notifications.api";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export const useDeleteNotification = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation("notifications");
 
   return useMutation({
     mutationFn: deleteNotification,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      toast.success("Notification deleted");
+      toast.success(t("toasts.deleted"));
     },
     onError: () => {
-      toast.error("Failed to delete notification");
+      toast.error(t("toasts.deleteFailed"));
     },
   });
 };

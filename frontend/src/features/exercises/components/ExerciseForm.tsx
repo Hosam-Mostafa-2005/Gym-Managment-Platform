@@ -4,6 +4,7 @@ import type { FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import DynamicInputList from "./DynamicInputList";
 import ExerciseImageUploader from "./ExerciseImageUploader";
 
@@ -44,6 +45,7 @@ const ExerciseForm = ({
   onSubmit,
   isPending,
 }: ExerciseFormProps) => {
+  const { t } = useTranslation(["exercises"]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const resolvedExerciseId =
     exerciseId ?? (initialValues as Partial<Exercise> | undefined)?.id;
@@ -136,7 +138,10 @@ const ExerciseForm = ({
       const message =
         errorObj?.message ||
         (errorObj as any)?.root?.message ||
-        `Please check the ${String(firstKey)} field.`;
+        t("create.validation.checkField", {
+          field: String(firstKey),
+          defaultValue: `Please check the ${String(firstKey)} field.`,
+        });
       toast.error(message);
 
       const el =
@@ -157,10 +162,13 @@ const ExerciseForm = ({
       <section className="space-y-4 rounded-2xl border border-border bg-card/50 p-4 sm:p-6 shadow-sm">
         <div className="border-b border-border/60 pb-3">
           <h3 className="text-base sm:text-lg font-semibold tracking-tight text-foreground">
-            Basic Information
+            {t("create.basicInfo.title", "Basic Information")}
           </h3>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Provide the general details and overview of the exercise.
+            {t(
+              "create.basicInfo.overviewSubtitle",
+              "Provide the general details and overview of the exercise.",
+            )}
           </p>
         </div>
 
@@ -168,11 +176,15 @@ const ExerciseForm = ({
           {/* FIELD: Exercise Name */}
           <div className="space-y-2">
             <Label htmlFor="name" className="text-xs sm:text-sm font-medium">
-              Exercise Name <span className="text-destructive">*</span>
+              {t("create.basicInfo.nameLabel", "Exercise Name")}{" "}
+              <span className="text-destructive">*</span>
             </Label>
             <Input
               id="name"
-              placeholder="e.g., Barbell Bench Press"
+              placeholder={t(
+                "create.basicInfo.namePlaceholder",
+                "e.g., Barbell Bench Press",
+              )}
               {...register("name")}
               className="bg-background text-sm"
             />
@@ -189,12 +201,16 @@ const ExerciseForm = ({
               htmlFor="description"
               className="text-xs sm:text-sm font-medium"
             >
-              Description <span className="text-destructive">*</span>
+              {t("create.basicInfo.descLabel", "Description")}{" "}
+              <span className="text-destructive">*</span>
             </Label>
             <Textarea
               id="description"
               rows={4}
-              placeholder="Briefly describe what this exercise does and its main benefits..."
+              placeholder={t(
+                "create.basicInfo.overviewPlaceholder",
+                "Briefly describe what this exercise does and its main benefits...",
+              )}
               {...register("description")}
               className="resize-none bg-background leading-relaxed text-sm"
             />
@@ -211,10 +227,13 @@ const ExerciseForm = ({
       <section className="space-y-4 rounded-2xl border border-border bg-card/50 p-4 sm:p-6 shadow-sm">
         <div className="border-b border-border/60 pb-3">
           <h3 className="text-base sm:text-lg font-semibold tracking-tight text-foreground">
-            Classification
+            {t("create.classification.title", "Classification")}
           </h3>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Set the experience level required for this exercise.
+            {t(
+              "create.classification.experienceSubtitle",
+              "Set the experience level required for this exercise.",
+            )}
           </p>
         </div>
 
@@ -225,11 +244,19 @@ const ExerciseForm = ({
             render={({ field }) => (
               <div className="space-y-2">
                 <Label className="text-xs sm:text-sm font-medium">
-                  Difficulty Level
+                  {t(
+                    "create.classification.difficultyLabel",
+                    "Difficulty Level",
+                  )}
                 </Label>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger className="w-full sm:w-1/2 bg-background capitalize">
-                    <SelectValue placeholder="Select difficulty" />
+                    <SelectValue
+                      placeholder={t(
+                        "create.classification.selectDifficulty",
+                        "Select difficulty",
+                      )}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     {DIFFICULTY_OPTIONS.map((difficulty) => (
@@ -238,7 +265,7 @@ const ExerciseForm = ({
                         value={difficulty}
                         className="capitalize"
                       >
-                        {difficulty}
+                        {t(`difficulties.${difficulty}`, difficulty)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -258,11 +285,13 @@ const ExerciseForm = ({
       <section className="space-y-6 rounded-2xl border border-border bg-card/50 p-4 sm:p-6 shadow-sm">
         <div className="border-b border-border/60 pb-3">
           <h3 className="text-base sm:text-lg font-semibold tracking-tight text-foreground">
-            Media & Resources
+            {t("create.media.title", "Media & Resources")}
           </h3>
           <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-            Add visual references (image banner and video tutorial) to help
-            users perform the exercise with optimal technique.
+            {t(
+              "create.media.subtitle",
+              "Add visual references (image banner and video tutorial) to help users perform the exercise with optimal technique.",
+            )}
           </p>
         </div>
 
@@ -285,15 +314,18 @@ const ExerciseForm = ({
           {/* FIELD: Video URL */}
           <div className="space-y-3">
             <Label htmlFor="videoUrl" className="text-xs sm:text-sm font-medium">
-              Video Tutorial URL{" "}
+              {t("create.basicInfo.videoUrlTutorialLabel", "Video Tutorial URL")}{" "}
               <span className="text-xs text-muted-foreground font-normal">
-                (Optional)
+                {t("create.basicInfo.optional", "(Optional)")}
               </span>
             </Label>
             <Input
               id="videoUrl"
               type="url"
-              placeholder="https://youtube.com/watch?v=..."
+              placeholder={t(
+                "create.basicInfo.videoUrlYoutubePlaceholder",
+                "https://youtube.com/watch?v=...",
+              )}
               {...register("videoUrl")}
               className="bg-background text-sm"
             />
@@ -304,8 +336,10 @@ const ExerciseForm = ({
               </p>
             )}
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Link a YouTube or Vimeo video demonstration showing proper range
-              of motion and pacing.
+              {t(
+                "create.basicInfo.videoUrlHelper",
+                "Link a YouTube or Vimeo video demonstration showing proper range of motion and pacing.",
+              )}
             </p>
           </div>
         </div>
@@ -318,12 +352,16 @@ const ExerciseForm = ({
           name="equipment"
           render={({ field }) => (
             <CheckboxGroup
-              title="Equipment"
-              description="Select the equipment required for this exercise."
+              title={t("create.classification.equipmentLabel", "Equipment")}
+              description={t(
+                "create.classification.equipmentSubtitle",
+                "Select the equipment required for this exercise.",
+              )}
               options={EQUIPMENT_OPTIONS}
               value={field.value}
               onChange={field.onChange}
               error={errors.equipment?.message}
+              translationPrefix="equipment"
             />
           )}
         />
@@ -333,12 +371,16 @@ const ExerciseForm = ({
           name="primaryMuscles"
           render={({ field }) => (
             <CheckboxGroup
-              title="Primary Muscles"
-              description="Select the main muscles targeted."
+              title={t("create.muscles.primaryLabel", "Primary Muscles")}
+              description={t(
+                "create.muscles.primarySubtitle",
+                "Select the main muscles targeted.",
+              )}
               options={MUSCLE_OPTIONS}
               value={field.value}
               onChange={field.onChange}
               error={errors.primaryMuscles?.message}
+              translationPrefix="muscles"
             />
           )}
         />
@@ -348,12 +390,16 @@ const ExerciseForm = ({
           name="secondaryMuscles"
           render={({ field }) => (
             <CheckboxGroup
-              title="Secondary Muscles"
-              description="Select any supporting muscles."
+              title={t("create.muscles.secondaryLabel", "Secondary Muscles")}
+              description={t(
+                "create.muscles.secondarySubtitle",
+                "Select any supporting muscles.",
+              )}
               options={MUSCLE_OPTIONS}
               value={field.value}
               onChange={field.onChange}
               error={errors.secondaryMuscles?.message}
+              translationPrefix="muscles"
             />
           )}
         />
@@ -361,25 +407,44 @@ const ExerciseForm = ({
 
       {/* SECTION 6: INSTRUCTIONS & TIPS */}
       <DynamicInputList
-        title="Instructions"
-        description="Add the exercise steps in order."
+        title={t("create.instructions.title", "Instructions")}
+        description={t(
+          "create.instructions.orderSubtitle",
+          "Add the exercise steps in order.",
+        )}
         fields={instructionFields}
         register={register}
         name="instructions"
         append={appendInstruction}
         remove={removeInstruction}
         error={errors.instructions?.message}
+        addButtonLabel={t(
+          "create.instructions.addInstructionButton",
+          "Add Instruction",
+        )}
+        placeholder={t(
+          "create.instructions.enterStepPlaceholder",
+          "Enter instructions step...",
+        )}
       />
 
       <DynamicInputList
-        title="Tips"
-        description="Optional tips for better execution."
+        title={t("create.tips.title", "Tips")}
+        description={t(
+          "create.tips.optionalSubtitle",
+          "Optional tips for better execution.",
+        )}
         fields={tipFields}
         register={register}
         name="tips"
         append={appendTip}
         remove={removeTip}
         error={errors.tips?.message}
+        addButtonLabel={t("create.tips.addTipButton", "Add Tip")}
+        placeholder={t(
+          "create.tips.enterTipPlaceholder",
+          "Enter tips step...",
+        )}
       />
 
       {/* SECTION 7: FORM ACTIONS */}
@@ -390,10 +455,10 @@ const ExerciseForm = ({
           className="w-full sm:w-auto min-w-[140px] h-10 font-semibold"
         >
           {isUploadingImage
-            ? "Uploading Image..."
+            ? t("create.actions.uploadingImage", "Uploading Image...")
             : isPending
-              ? "Saving..."
-              : "Save Exercise"}
+              ? t("create.actions.saving", "Saving...")
+              : t("create.actions.saveExercise", "Save Exercise")}
         </Button>
       </div>
     </form>

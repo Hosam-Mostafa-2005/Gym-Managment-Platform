@@ -1,6 +1,7 @@
 // src/features/profile/components/coach/Achievements.tsx
 import React from "react";
 import { Award, CheckCircle2, Lock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ProfileSection } from "../shared/ProfileSection";
 import type { CoachAchievement } from "../../types/profile.types";
 
@@ -11,8 +12,10 @@ interface AchievementsProps {
 export const Achievements: React.FC<AchievementsProps> = ({
   achievements = [],
 }) => {
+  const { t } = useTranslation(["profile"]);
+
   return (
-    <ProfileSection title="Achievements & Accreditations" icon={Award}>
+    <ProfileSection title={t("coach.achievements.title")} icon={Award}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {achievements?.map((ach, idx) => {
           const isEarned = Boolean(ach.earned);
@@ -33,7 +36,7 @@ export const Achievements: React.FC<AchievementsProps> = ({
                   ) : (
                     <Lock className="h-2.5 w-2.5" />
                   )}
-                  {isEarned ? "Earned" : "Locked"}
+                  {isEarned ? t("coach.achievements.earned") : t("coach.achievements.locked")}
                 </span>
               </div>
               <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-3">
@@ -46,3 +49,5 @@ export const Achievements: React.FC<AchievementsProps> = ({
     </ProfileSection>
   );
 };
+
+export default Achievements;

@@ -1,0 +1,426 @@
+{
+  "header": {
+    "activeAccount": "Active Account",
+    "inactive": "Inactive",
+    "verifiedActiveMember": "Verified Active Member",
+    "joinedDate": "Joined {{date}}",
+    "memberSince": "Member since {{date}}",
+    "coachingSince": "Coaching since {{date}}",
+    "defaultLocation": "HQ Main Deck (Zone A)",
+    "defaultCoachTitle": "Senior Head Coach",
+    "defaultMemberRole": "Member",
+    "defaultCoachBio": "Specialized in biomechanics, hypertrophy microcycles, and high-intensity conditioning protocols.",
+    "actions": {
+      "editProfile": "Edit Profile",
+      "security": "Security",
+      "managePlan": "Manage Plan",
+      "insights": "Insights",
+      "measurements": "Measurements",
+      "demoAccount": "Demo Account"
+    }
+  },
+  "avatarDialog": {
+    "title": "Profile Picture",
+    "description": "Upload a custom avatar photo (JPG, PNG, or WEBP, max 5 MB).",
+    "selected": "Selected: {{fileName}}",
+    "currentPicture": "Current profile picture",
+    "noPicture": "No picture uploaded",
+    "chooseDifferent": "Choose Different Photo",
+    "selectPhoto": "Select Photo from Device",
+    "savePicture": "Save as Profile Picture",
+    "uploading": "Uploading...",
+    "removePicture": "Remove Profile Picture",
+    "removing": "Removing...",
+    "clickToChange": "Click to change profile picture",
+    "changePicture": "Change profile picture",
+    "errors": {
+      "sizeExceeded": "File size exceeds 5 MB. Please select a smaller image.",
+      "unsupportedFormat": "Only JPG, PNG, and WEBP formats are supported.",
+      "uploadFailed": "Failed to upload profile picture. Please try again.",
+      "deleteFailed": "Failed to delete profile picture. Please try again."
+    },
+    "toasts": {
+      "updateSuccess": "Profile picture updated successfully!",
+      "removeSuccess": "Profile picture removed."
+    }
+  },
+  "passwordDialog": {
+    "titleChange": "Change Password",
+    "titleSet": "Set Local Password",
+    "subtitle": "Manage your credentials and security access.",
+    "googleLinked": "Google Account Linked ({{email}})",
+    "tabs": {
+      "currentPassword": "Current Password",
+      "emailVerification": "Email Verification"
+    },
+    "fields": {
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "verificationCode": "6-Digit Verification Code",
+      "minChars": "Minimum 8 characters",
+      "reenterNew": "Re-enter new password"
+    },
+    "actions": {
+      "showPasswords": "Show Passwords",
+      "hidePasswords": "Hide Passwords",
+      "show": "Show",
+      "hide": "Hide",
+      "passwordsSuffix": "Passwords",
+      "forgotCurrent": "Forgot current password?",
+      "updatePassword": "Update Password",
+      "updating": "Updating Password...",
+      "sendCode": "Send 6-Digit Code",
+      "sendingCode": "Sending Code...",
+      "resendCode": "Resend code",
+      "confirmAndSave": "Confirm & Save Password",
+      "verifyingAndSaving": "Verifying & Saving..."
+    },
+    "emailStep": {
+      "title": "Send Verification Code",
+      "description": "We will send a 6-digit confirmation code to {{email}} to verify your identity."
+    },
+    "delivery": {
+      "issue": "Delivery Issue",
+      "issueDefault": "Could not deliver email. Please check your settings or try resending.",
+      "dispatched": "Code Dispatched",
+      "dispatchedDesc": "Accepted by {{provider}}{{details}}. Check your inbox.",
+      "devNotice": "Dev Notice",
+      "devNoticeDesc": "Real email delivery is disabled (console mock active)."
+    },
+    "errors": {
+      "enterCurrent": "Please enter your current password.",
+      "min8Chars": "New password must be at least 8 characters long.",
+      "passwordsMismatch": "New passwords do not match.",
+      "codeMustBe6Digits": "Verification code must be 6 digits.",
+      "failedUpdate": "Failed to update password.",
+      "failedSendCode": "Failed to send code.",
+      "failedUpdateWithCode": "Failed to update password with code."
+    },
+    "toasts": {
+      "updateSuccess": "Password updated successfully!"
+    }
+  },
+  "member": {
+    "overview": {
+      "totalSessions": "Total Sessions",
+      "completed": "Completed",
+      "completionRate": "Completion Rate",
+      "avgDuration": "Avg Duration",
+      "totalVolume": "Total Volume",
+      "min": "min",
+      "kg": "kg",
+      "cm": "cm",
+      "percent": "%"
+    },
+    "headerStats": {
+      "currentWeight": "Current Weight",
+      "bodyFat": "Body Fat %",
+      "standingHeight": "Standing Height",
+      "activeRoutine": "Active Routine",
+      "noActiveProgram": "No active program"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "subtitle": "Basic identification & baseline records",
+      "fullName": "Full Legal Name",
+      "email": "Primary Email Address",
+      "phone": "Phone Number",
+      "accountStatus": "Account Status",
+      "fitnessGoal": "Primary Fitness Goal",
+      "experienceLevel": "Experience Level",
+      "bio": "Bio / Training Focus",
+      "notSpecified": "Not specified"
+    },
+    "goals": {
+      "STRENGTH_HYPERTROPHY": "Strength & Muscle Building",
+      "FAT_LOSS_LEANING": "Fat Loss & Conditioning",
+      "ATHLETIC_PERFORMANCE": "Athletic Performance",
+      "HEALTH_LONGEVITY": "General Fitness & Health"
+    },
+    "experience": {
+      "BEGINNER": "Beginner (< 1 yr)",
+      "INTERMEDIATE": "Intermediate (1–3 yrs)",
+      "ADVANCED": "Advanced (3+ yrs)"
+    },
+    "security": {
+      "title": "Account Security",
+      "passwordAuth": "Password & Authentication",
+      "googleConnected": "Google account connected",
+      "securedViaBcrypt": "Encrypted & secured via SHA-256 / bcrypt",
+      "setPassword": "Set Password",
+      "changePassword": "Change Password"
+    },
+    "currentAssignment": {
+      "title": "Current Active Assignment",
+      "subtitle": "Currently prescribed routine and supervisory coach",
+      "customProgram": "Custom Assigned Workout Program",
+      "assignedCoach": "Assigned Coach: {{coach}}",
+      "independent": "Independent",
+      "start": "Start: {{date}}",
+      "targetEnd": "Target End: {{date}}",
+      "active": "Active",
+      "noActiveTitle": "No active assignment found.",
+      "noActiveDesc": "Contact your assigned coach to receive a new routine."
+    },
+    "measurementHistory": {
+      "title": "Biometric Measurement History",
+      "subtitle": "Chronological record of physiological assessments",
+      "recordedDate": "Recorded Date",
+      "weight": "Weight",
+      "bodyFat": "Body Fat %",
+      "height": "Height",
+      "notes": "Notes",
+      "empty": "No past biometric measurements recorded.",
+      "colDate": "Date",
+      "colWeight": "Weight (kg)",
+      "colHeight": "Height (cm)",
+      "colBodyFat": "Body Fat (%)",
+      "colNotes": "Notes",
+      "unspecified": "—"
+    },
+    "recentSessions": {
+      "title": "Recent Training Sessions",
+      "subtitle": "Latest workouts logged by athlete",
+      "independentSession": "Independent Training Session",
+      "duration": "{{count}} mins",
+      "empty": "No workout sessions logged yet.",
+      "colWorkout": "Workout",
+      "colStatus": "Status",
+      "colStarted": "Started",
+      "colEnded": "Ended",
+      "colDuration": "Duration (min)",
+      "statusCompleted": "Completed",
+      "statusInProgress": "In Progress",
+      "statusCancelled": "Cancelled",
+      "unspecified": "—"
+    },
+    "assignmentHistory": {
+      "title": "Assignment History",
+      "subtitle": "Past training programs and routines",
+      "customRoutine": "Custom Routine",
+      "trainer": "Trainer: {{trainer}}",
+      "empty": "No past assignment history available.",
+      "colWorkout": "Workout",
+      "colTrainer": "Trainer",
+      "colStatus": "Status",
+      "colStartDate": "Start Date",
+      "colEndDate": "End Date",
+      "statusCompleted": "Completed",
+      "statusCancelled": "Cancelled",
+      "unspecified": "—"
+    },
+    "timeline": {
+      "title": "Account & Training Timeline",
+      "subtitle": "Chronological milestones and activities",
+      "empty": "No timeline events recorded yet."
+    },
+    "editDialog": {
+      "title": "Edit Profile",
+      "subtitle": "Update your display name, contact phone, fitness goals, and bio.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "e.g. Alex Morgan",
+      "phone": "Phone Number",
+      "phonePlaceholder": "e.g. +1 (555) 012-3456",
+      "fitnessGoal": "Primary Fitness Goal",
+      "selectGoal": "Select your fitness goal",
+      "experienceLevel": "Experience Level",
+      "selectExperience": "Select your experience level",
+      "bio": "Bio / Athlete Notes",
+      "bioPlaceholder": "Tell your coach or track your personal fitness background...",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "nameRequired": "Name cannot be empty.",
+      "updateFailed": "Failed to update profile."
+    }
+  },
+  "coach": {
+    "headerStats": {
+      "coreSpecialties": "Core Specialties",
+      "certifications": "Certifications",
+      "languages": "Languages"
+    },
+    "overview": {
+      "activeMembers": "Active Members",
+      "activeAssignments": "Active Assignments",
+      "workoutsCreated": "Workouts Created",
+      "sessionsFinished": "Sessions Finished",
+      "adherenceRate": "Adherence Rate",
+      "biomarkersLogged": "Biomarkers Logged"
+    },
+    "memberStats": {
+      "title": "Roster Member Metrics",
+      "subtitle": "Active athlete demographics and cohort distribution",
+      "activeRoster": "Active Roster",
+      "inactiveDormant": "Inactive / Dormant",
+      "newThisMonth": "New This Month",
+      "completedPrograms": "Completed Programs"
+    },
+    "workoutStats": {
+      "authoringMatrix": "Authoring Matrix",
+      "totalProtocols": "Total Protocols",
+      "templateSyndication": "Template Syndication",
+      "published": "Published",
+      "draft": "Draft",
+      "archived": "Archived",
+      "mostAssignedFlagship": "Most Assigned Flagship",
+      "assignedTimes": "Assigned {{count}} times",
+      "noFlagship": "No predominant flagship routine recorded."
+    },
+    "charts": {
+      "sessions30D": "Workout Sessions (30D)",
+      "sessions30DSubtitle": "Volume throughput trajectory",
+      "memberGrowth6M": "Member Growth (6M)",
+      "memberGrowth6MSubtitle": "Roster capacity trajectory",
+      "completionWeekly": "Completion Rate (Weekly)",
+      "completionWeeklySubtitle": "Execution fidelity benchmarks",
+      "noData": "No data available",
+      "completion": "Completion"
+    },
+    "achievements": {
+      "title": "Achievements & Accreditations",
+      "earned": "Earned",
+      "locked": "Locked"
+    },
+    "recentActivity": {
+      "title": "Live Activity Feed",
+      "athlete": "Athlete:",
+      "systemAthlete": "System Athlete",
+      "empty": "No recent coach activity recorded."
+    },
+    "upcomingTasks": {
+      "title": "Upcoming Tasks & Roster Actions",
+      "priority": "{{priority}} Priority",
+      "generalTask": "General Task",
+      "review": "Review",
+      "athlete": "Athlete: {{name}}",
+      "empty": "No pending coach tasks or upcoming actions."
+    },
+    "editDialog": {
+      "title": "Edit Coach Profile",
+      "subtitle": "Update your professional credentials, coaching bio, and specialty areas.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Coach full name",
+      "professionalTitle": "Professional Title",
+      "professionalTitlePlaceholder": "e.g. Senior Strength & Conditioning Specialist",
+      "yearsOfExperience": "Years of Experience",
+      "experiencePlaceholder": "e.g. 5",
+      "phone": "Phone Number",
+      "phonePlaceholder": "e.g. +1 (555) 012-3456",
+      "bio": "Coach Biography",
+      "bioPlaceholder": "Highlight your coaching experience, client success stories, and training method...",
+      "philosophy": "Coaching Philosophy",
+      "philosophyPlaceholder": "e.g. Evidence-based periodization with long-term joint health and biomechanics at the core.",
+      "specialties": "Core Specialties",
+      "specialtyPlaceholder": "Add custom specialty (press Enter)...",
+      "certifications": "Certifications & Credentials",
+      "certPlaceholder": "Add certification (e.g. CSCS, NASM-CPT)...",
+      "languages": "Languages Spoken",
+      "langPlaceholder": "Add language...",
+      "optional": "optional",
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "nameRequired": "Full name cannot be empty.",
+      "updateFailed": "Failed to update coach profile."
+    }
+  },
+  "states": {
+    "loadingAria": "Loading Profile",
+    "errorTitle": "Failed to load profile telemetry",
+    "errorDefault": "An unexpected error occurred while communicating with backend profile services.",
+    "retryConnection": "Retry Connection",
+    "memberErrorDefault": "Unable to retrieve member profile information.",
+    "coachErrorDefault": "Unable to retrieve coach profile telemetry."
+  },
+  "rosterMemberView": {
+    "overview": "Overview",
+    "active": "Active",
+    "inactive": "Inactive",
+    "noMeasurements": "No measurements",
+    "noMeasurementsDesc": "No physical measurements recorded yet.",
+    "latestBodyStats": "Latest Body Stats",
+    "weight": "Weight",
+    "currentAssignment": {
+      "noActive": "No active assignment",
+      "noActiveDesc": "This member currently has no active workout assignment.",
+      "activeSplitAssignments": "Active Split Assignments",
+      "currentAssignment": "Current Assignment",
+      "routinesCount": "{{count}} Routines",
+      "routineN": "Routine {{number}}",
+      "workoutPlan": "Workout Plan",
+      "trainer": "Trainer",
+      "timeline": "Timeline",
+      "unknown": "UNKNOWN",
+      "unspecified": "—"
+    },
+    "workoutStats": {
+      "performance": "Workout Performance",
+      "totalSessions": "Total Sessions",
+      "completed": "Completed",
+      "completion": "Completion",
+      "avgDuration": "Avg Duration",
+      "totalVolume": "Total Volume",
+      "kgUnit": "kg"
+    },
+    "coachingBanner": {
+      "title": "Active Coaching Relationship",
+      "subtitle": "Direct member engagement",
+      "since": "Coaching since {{date}}",
+      "accessGranted": "History Access Granted",
+      "accessPending": "History Access Pending",
+      "accessNotGranted": "History Access Not Granted"
+    },
+    "progressSeparation": {
+      "currentTitle": "Progress With Current Coach",
+      "currentSubtitle": "Metrics and sessions recorded since coaching relationship began ({{date}})",
+      "badge": "Current Coaching",
+      "sessionsCompleted": "Sessions Completed",
+      "outOfTotal": "Out of {{total}} total started",
+      "volumeLifted": "Volume Lifted",
+      "underCurrentCoach": "Under current coach",
+      "weightTrend": "Weight Trend Under Coach",
+      "preCoachHistory": "Pre-Coach History",
+      "historyPrivate": "Athlete History Is Private",
+      "historyPrivateDesc": "The athlete has not granted permission to view pre-coaching workout sessions and biometric history.",
+      "requestConsent": "Request Access",
+      "initialBaseline": "Initial baseline: {{weight}} kg",
+      "awaitingBaseline": "Awaiting baseline weight",
+      "workoutsUnderCoach": "Workouts Under Current Coach ({{count}})",
+      "activeBadge": "Active",
+      "sessionDefault": "Workout Session",
+      "noWorkoutsUnderCoach": "No workouts completed yet under this coach.",
+      "measurementsUnderCoach": "Measurements Under Current Coach ({{count}})",
+      "noWeightRecorded": "No weight recorded",
+      "bodyFatShort": "BF",
+      "coachedPeriod": "Coached Period",
+      "noMeasurementsUnderCoach": "No body measurements logged yet under this coach.",
+      "preCoachTitle": "Pre-Coach Historical Progress",
+      "preCoachSubtitle": "Historical records prior to the start of this coaching relationship",
+      "historicalReference": "Historical Reference",
+      "private": "Private",
+      "recordsGuidance": "These records represent the member's training activity prior to your coaching engagement. They provide reference baseline strength and volume, and are not counted toward your coaching metrics.",
+      "preCoachSessions": "Pre-Coach Completed Sessions",
+      "completedBefore": "Completed before {{date}}",
+      "preCoachVolume": "Pre-Coach Volume",
+      "baselineVolume": "Baseline training volume",
+      "preCoachWorkouts": "Pre-Coach Workouts ({{count}})",
+      "historicalBadge": "Historical",
+      "preCoachBadge": "Pre-Coach",
+      "noPreCoachWorkouts": "No pre-coach workouts found.",
+      "preCoachMeasurements": "Pre-Coach Measurements ({{count}})",
+      "noPreCoachMeasurements": "No pre-coach measurements found.",
+      "historyPrivateTitle": "Historical Records Kept Private",
+      "historyPrivateNotice": "This member has opted not to share workout and measurement logs recorded before this coaching relationship. To ensure privacy, earlier records are strictly isolated."
+    },
+    "states": {
+      "emptyTitle": "Member Not Found",
+      "emptyDesc": "The requested athlete profile could not be located in your roster.",
+      "backToMembers": "Back to Members Roster",
+      "errorTitle": "Failed to load athlete profile",
+      "errorDefault": "Unable to retrieve athlete details from database.",
+      "retry": "Retry"
+    }
+  }
+}

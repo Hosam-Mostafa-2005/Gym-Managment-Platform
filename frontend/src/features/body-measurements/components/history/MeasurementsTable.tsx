@@ -1,5 +1,6 @@
 // src/features/body-measurements/components/history/MeasurementsTable.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { BodyMeasurement } from "../../types/body-measurements.types";
 import { MeasurementRow } from "./MeasurementRow";
 import { MeasurementsEmpty } from "../states/MeasurementsEmpty";
@@ -15,6 +16,8 @@ export const MeasurementsTable: React.FC<MeasurementsTableProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const { t } = useTranslation("bodyMeasurements");
+
   if (measurements.length === 0) {
     return <MeasurementsEmpty />;
   }
@@ -22,20 +25,20 @@ export const MeasurementsTable: React.FC<MeasurementsTableProps> = ({
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold text-gray-100">
-        Measurement History
+        {t("history.title")}
       </h2>
       <div className="rounded-xl border border-[#1E2329] bg-[#0D1117] overflow-hidden overflow-x-auto">
-        <table className="w-full min-w-[700px] text-left text-sm">
+        <table className="w-full min-w-[700px] text-left rtl:text-right text-sm">
           <thead className="bg-[#090B0F] text-[10px] font-semibold uppercase tracking-wider text-gray-500 border-b border-[#1E2329]">
             <tr>
-              <th className="px-4 py-3">Date</th>
-              <th className="px-4 py-3">Weight (kg)</th>
-              <th className="px-4 py-3">Height (cm)</th>
-              <th className="px-4 py-3">Body Fat (%)</th>
-              <th className="px-4 py-3">Chest (cm)</th>
-              <th className="px-4 py-3">Waist (cm)</th>
-              <th className="px-4 py-3">Notes</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className="px-4 py-3">{t("history.colDate")}</th>
+              <th className="px-4 py-3">{t("history.colWeight")}</th>
+              <th className="px-4 py-3">{t("history.colHeight")}</th>
+              <th className="px-4 py-3">{t("history.colBodyFat")}</th>
+              <th className="px-4 py-3">{t("history.colChest")}</th>
+              <th className="px-4 py-3">{t("history.colWaist")}</th>
+              <th className="px-4 py-3">{t("history.colNotes")}</th>
+              <th className="px-4 py-3 text-right rtl:text-left">{t("history.colActions")}</th>
             </tr>
           </thead>
           <tbody>

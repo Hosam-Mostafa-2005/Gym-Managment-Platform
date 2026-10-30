@@ -1,6 +1,7 @@
 // src/features/profile/components/member/MeasurementHistory.tsx
 import React from "react";
 import { Ruler, Calendar } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ProfileSection } from "../shared/ProfileSection";
 import type { MemberMeasurement } from "../../types/profile.types";
 
@@ -11,10 +12,13 @@ interface MeasurementHistoryProps {
 export const MeasurementHistory: React.FC<MeasurementHistoryProps> = ({
   measurements = [],
 }) => {
+  const { t, i18n } = useTranslation(["profile"]);
+
   const formatDate = (dateStr?: string | null) => {
-    if (!dateStr) return "N/A";
+    if (!dateStr) return "—";
     try {
-      return new Intl.DateTimeFormat("en-US", {
+      const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
+      return new Intl.DateTimeFormat(locale, {
         month: "short",
         day: "numeric",
         year: "numeric",
@@ -26,29 +30,29 @@ export const MeasurementHistory: React.FC<MeasurementHistoryProps> = ({
 
   return (
     <ProfileSection
-      title="Biometric Measurement History"
-      subtitle="Chronological record of physiological assessments"
+      title={t("member.measurementHistory.title")}
+      subtitle={t("member.measurementHistory.subtitle")}
       icon={Ruler}
     >
       {measurements?.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[500px] text-left text-xs text-gray-300">
+          <table className="w-full min-w-[500px] text-start text-xs text-gray-300">
             <thead className="border-b border-[#1e2329] bg-[#13171d]/50 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
               <tr>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Recorded Date
+                <th scope="col" className="px-4 py-3 font-medium text-start">
+                  {t("member.measurementHistory.recordedDate")}
                 </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Weight
+                <th scope="col" className="px-4 py-3 font-medium text-start">
+                  {t("member.measurementHistory.weight")}
                 </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Body Fat %
+                <th scope="col" className="px-4 py-3 font-medium text-start">
+                  {t("member.measurementHistory.bodyFat")}
                 </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Height
+                <th scope="col" className="px-4 py-3 font-medium text-start">
+                  {t("member.measurementHistory.height")}
                 </th>
-                <th scope="col" className="px-4 py-3 font-medium text-right">
-                  Notes
+                <th scope="col" className="px-4 py-3 font-medium text-end">
+                  {t("member.measurementHistory.notes")}
                 </th>
               </tr>
             </thead>
@@ -68,7 +72,7 @@ export const MeasurementHistory: React.FC<MeasurementHistoryProps> = ({
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap font-mono text-gray-200">
                     {item.weight !== null && item.weight !== undefined
-                      ? `${item.weight} kg`
+                      ? `${item.weight} ${t("member.overview.kg")}`
                       : "—"}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap font-mono text-gray-200">
@@ -78,10 +82,10 @@ export const MeasurementHistory: React.FC<MeasurementHistoryProps> = ({
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap font-mono text-gray-200">
                     {item.height !== null && item.height !== undefined
-                      ? `${item.height} cm`
+                      ? `${item.height} ${t("member.overview.cm")}`
                       : "—"}
                   </td>
-                  <td className="px-4 py-3 text-right text-gray-400 truncate max-w-[200px]">
+                  <td className="px-4 py-3 text-end text-gray-400 truncate max-w-[200px]">
                     {item.notes || "—"}
                   </td>
                 </tr>
@@ -91,9 +95,11 @@ export const MeasurementHistory: React.FC<MeasurementHistoryProps> = ({
         </div>
       ) : (
         <div className="py-8 text-center text-xs text-gray-500">
-          No past biometric measurements recorded.
+          {t("member.measurementHistory.empty")}
         </div>
       )}
     </ProfileSection>
   );
 };
+
+export default MeasurementHistory;

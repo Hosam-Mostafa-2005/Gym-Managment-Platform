@@ -1,6 +1,7 @@
 // src/features/nutrition/pages/NutritionOnboardingPage.tsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Sparkles,
   ArrowRight,
@@ -8,10 +9,6 @@ import {
   Check,
   Scale,
   ShieldCheck,
-  Flame,
-  Activity,
-  HeartHandshake,
-  UtensilsCrossed,
   Info,
   Loader2,
 } from "lucide-react";
@@ -23,17 +20,20 @@ import type {
   TargetPace,
   DietaryPreference,
 } from "../types/nutrition.types";
+
 const ALLERGEN_OPTIONS = [
-  { id: "dairy", label: "Dairy / Lactose" },
-  { id: "eggs", label: "Eggs" },
-  { id: "peanuts", label: "Peanuts" },
-  { id: "tree_nuts", label: "Tree Nuts (Almonds, Walnuts)" },
-  { id: "fish", label: "Fish" },
-  { id: "shellfish", label: "Shellfish" },
-  { id: "gluten", label: "Wheat / Gluten" },
-  { id: "soy", label: "Soy" },
-];
+  { id: "dairy", key: "dairy" },
+  { id: "eggs", key: "eggs" },
+  { id: "peanuts", key: "peanuts" },
+  { id: "tree_nuts", key: "tree_nuts" },
+  { id: "fish", key: "fish" },
+  { id: "shellfish", key: "shellfish" },
+  { id: "gluten", key: "gluten" },
+  { id: "soy", key: "soy" },
+] as const;
+
 export const NutritionOnboardingPage: React.FC = () => {
+  const { t } = useTranslation(["nutrition"]);
   const navigate = useNavigate();
   const { data: profileData, isLoading: isLoadingProfile } = useNutritionProfile();
   const { mutate: completeOnboardingMutation, isPending: isSaving } = useCompleteOnboarding();
@@ -53,6 +53,7 @@ export const NutritionOnboardingPage: React.FC = () => {
   const [allergies, setAllergies] = useState<string[]>([]);
   const [hasMedicalClearance, setHasMedicalClearance] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   // Auto pre-populate from profile or latest measurement
   useEffect(() => {
     if (profileData) {
@@ -78,6 +79,7 @@ export const NutritionOnboardingPage: React.FC = () => {
       }
     }
   }, [profileData]);
+
   const toggleAllergen = (allergenId: string) => {
     setAllergies((prev) =>
       prev.includes(allergenId)
@@ -85,6 +87,7 @@ export const NutritionOnboardingPage: React.FC = () => {
         : [...prev, allergenId],
     );
   };
+
   // Live Scientific Target Preview (Mifflin–St Jeor)
   const calculationPreview = useMemo(() => {
     if (!currentWeightKg || !heightCm || !age) {
@@ -94,6 +97,7 @@ export const NutritionOnboardingPage: React.FC = () => {
       gender === "MALE"
         ? Math.round(10 * currentWeightKg + 6.25 * heightCm - 5 * age + 5)
         : Math.round(10 * currentWeightKg + 6.25 * heightCm - 5 * age - 161);
+
     const multipliers: Record<ActivityLevel, number> = {
       SEDENTARY: 1.2,
       LIGHTLY_ACTIVE: 1.375,
@@ -102,6 +106,7 @@ export const NutritionOnboardingPage: React.FC = () => {
       EXTREMELY_ACTIVE: 1.9,
     };
     const tdee = Math.round(bmr * multipliers[activityLevel]);
+
     let adjustmentPct = 0;
     if (goal === "FAT_LOSS") {
       adjustmentPct = targetPace === "CONSERVATIVE" ? -0.15 : targetPace === "AGGRESSIVE" ? -0.25 : -0.2;
@@ -110,6 +115,7 @@ export const NutritionOnboardingPage: React.FC = () => {
     } else if (goal === "SPORTS_PERFORMANCE") {
       adjustmentPct = 0.05;
     }
+
     let targetCalories = Math.round(tdee * (1 + adjustmentPct));
     const floor = gender === "MALE" ? 1500 : 1200;
     let floorApplied = false;
@@ -117,9 +123,11 @@ export const NutritionOnboardingPage: React.FC = () => {
       targetCalories = floor;
       floorApplied = true;
     }
+
     const proteinG = Math.round(currentWeightKg * (goal === "FAT_LOSS" || goal === "MUSCLE_GAIN" ? 2.0 : 1.8));
     const fatG = Math.round((targetCalories * 0.25) / 9);
     const carbsG = Math.max(50, Math.round((targetCalories - (proteinG * 4 + fatG * 9)) / 4));
+
     return {
       bmr,
       tdee,
@@ -131,28 +139,31 @@ export const NutritionOnboardingPage: React.FC = () => {
       fatG,
     };
   }, [age, gender, heightCm, currentWeightKg, activityLevel, goal, targetPace]);
+
   const handleNext = () => {
     setErrorMsg(null);
     if (currentStep === 1) {
       if (!age || age < 12 || age > 120) {
-        setErrorMsg("Please enter an age between 12 and 120.");
+        setErrorMsg(t("assessment.errAge"));
         return;
       }
       if (!heightCm || heightCm < 50 || heightCm > 300) {
-        setErrorMsg("Please enter a valid height in cm.");
+        setErrorMsg(t("assessment.errHeight"));
         return;
       }
       if (!currentWeightKg || currentWeightKg < 25 || currentWeightKg > 400) {
-        setErrorMsg("Please enter a valid weight in kg.");
+        setErrorMsg(t("assessment.errWeight"));
         return;
       }
     }
     setCurrentStep((prev) => Math.min(5, prev + 1));
   };
+
   const handleBack = () => {
     setErrorMsg(null);
     setCurrentStep((prev) => Math.max(1, prev - 1));
   };
+
   const handleComplete = () => {
     setErrorMsg(null);
     completeOnboardingMutation(
@@ -177,11 +188,12 @@ export const NutritionOnboardingPage: React.FC = () => {
           navigate("/nutrition");
         },
         onError: (err: any) => {
-          setErrorMsg(err.response?.data?.message || err.message || "Failed to generate nutrition plan.");
+          setErrorMsg(err.response?.data?.message || err.message || t("assessment.errFailed"));
         },
       },
     );
   };
+
   if (isLoadingProfile) {
     return (
       <div className="flex min-h-[60vh] w-full items-center justify-center bg-[#090B0F]">
@@ -189,32 +201,36 @@ export const NutritionOnboardingPage: React.FC = () => {
       </div>
     );
   }
+
   const suggested = profileData?.suggestedMeasurement;
+
   return (
     <div className="min-h-full w-full bg-[#090B0F] p-4 md:p-6 lg:p-8 pb-24 text-zinc-100">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <NutritionNavTabs onboardingCompleted={profileData?.profile?.onboardingCompleted} />
+
         {/* Wizard Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[#5BE584]/15 border border-[#5BE584]/30 px-3 py-1 text-xs font-semibold text-[#5BE584]">
             <Sparkles className="h-3.5 w-3.5" />
-            <span>Deterministic Energy Assessment</span>
+            <span>{t("assessment.badge")}</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-zinc-100">
-            Personalized Nutrition Calculator
+            {t("assessment.title")}
           </h1>
           <p className="text-xs md:text-sm text-zinc-400 max-w-lg mx-auto">
-            Science-backed Mifflin–St Jeor energy expenditure, optimal macro distributions, and tailored meal planning.
+            {t("assessment.subtitle")}
           </p>
         </div>
+
         {/* Step Indicator Progress */}
         <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
           {[
-            { num: 1, label: "Metrics" },
-            { num: 2, label: "Activity" },
-            { num: 3, label: "Goal" },
-            { num: 4, label: "Diet & Allergies" },
-            { num: 5, label: "Review & Activate" },
+            { num: 1, label: t("assessment.steps.metrics") },
+            { num: 2, label: t("assessment.steps.activity") },
+            { num: 3, label: t("assessment.steps.goal") },
+            { num: 4, label: t("assessment.steps.dietAndAllergies") },
+            { num: 5, label: t("assessment.steps.reviewAndActivate") },
           ].map((s) => (
             <div key={s.num} className="flex flex-col items-center gap-1.5 flex-1">
               <div
@@ -238,11 +254,13 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           ))}
         </div>
+
         {errorMsg && (
           <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3.5 text-xs text-red-300">
             {errorMsg}
           </div>
         )}
+
         {/* Step 1: Body Metrics */}
         {currentStep === 1 && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
@@ -252,21 +270,25 @@ export const NutritionOnboardingPage: React.FC = () => {
                   <Scale className="h-5 w-5 text-[#5BE584] shrink-0 mt-0.5" />
                   <div>
                     <h4 className="text-sm font-semibold text-[#5BE584]">
-                      Pre-filled from Recent Body Measurement
+                      {t("assessment.prefilledBannerTitle")}
                     </h4>
                     <p className="text-xs text-zinc-300 mt-0.5">
-                      Found {suggested.weightKg} kg {suggested.heightCm ? `• ${suggested.heightCm} cm` : ""}{" "}
-                      recorded {suggested.daysOld === 0 ? "today" : `${suggested.daysOld} days ago`}. You can edit below if needed.
+                      {t("assessment.prefilledBannerDesc", {
+                        weight: suggested.weightKg,
+                        height: suggested.heightCm ? ` • ${suggested.heightCm} cm` : "",
+                        daysAgo: suggested.daysOld === 0 ? t("assessment.today") : t("assessment.daysAgo", { count: suggested.daysOld }),
+                      })}
                     </p>
                   </div>
                 </div>
               </div>
             )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               {/* Gender */}
               <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
-                  Biological Gender (Required for BMR Equation)
+                  {t("assessment.genderLabel")}
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {(["MALE", "FEMALE"] as const).map((g) => (
@@ -280,15 +302,16 @@ export const NutritionOnboardingPage: React.FC = () => {
                           : "bg-[#161B22] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200"
                       }`}
                     >
-                      {g === "MALE" ? "Male (+5 kcal constant)" : "Female (-161 kcal constant)"}
+                      {g === "MALE" ? t("assessment.genderMale") : t("assessment.genderFemale")}
                     </button>
                   ))}
                 </div>
               </div>
+
               {/* Age */}
               <div>
                 <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                  Age (Years)
+                  {t("assessment.ageLabel")}
                 </label>
                 <input
                   type="number"
@@ -299,10 +322,11 @@ export const NutritionOnboardingPage: React.FC = () => {
                   className="w-full rounded-xl border border-zinc-800 bg-[#161B22] px-4 py-2.5 text-sm text-zinc-100 font-semibold focus:border-[#5BE584] focus:outline-none"
                 />
               </div>
+
               {/* Height */}
               <div>
                 <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                  Height (cm)
+                  {t("assessment.heightLabel")}
                 </label>
                 <input
                   type="number"
@@ -313,10 +337,11 @@ export const NutritionOnboardingPage: React.FC = () => {
                   className="w-full rounded-xl border border-zinc-800 bg-[#161B22] px-4 py-2.5 text-sm text-zinc-100 font-semibold focus:border-[#5BE584] focus:outline-none"
                 />
               </div>
+
               {/* Weight */}
               <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-1.5">
-                  Current Body Weight (kg)
+                  {t("assessment.weightLabel")}
                 </label>
                 <input
                   type="number"
@@ -331,46 +356,47 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           </div>
         )}
+
         {/* Step 2: Activity & Training */}
         {currentStep === 2 && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-3">
-                Daily Non-Exercise Activity Level (NEAT)
+                {t("assessment.activityHeading")}
               </label>
               <div className="space-y-2.5">
                 {[
                   {
                     level: "SEDENTARY" as ActivityLevel,
-                    label: "Sedentary (1.2x)",
-                    desc: "Desk job, little to no intentional daily movement",
+                    label: t("assessment.activityLevels.sedentaryLabel"),
+                    desc: t("assessment.activityLevels.sedentaryDesc"),
                   },
                   {
                     level: "LIGHTLY_ACTIVE" as ActivityLevel,
-                    label: "Lightly Active (1.375x)",
-                    desc: "Light daily walking, light physical tasks 1–3 days/wk",
+                    label: t("assessment.activityLevels.lightlyActiveLabel"),
+                    desc: t("assessment.activityLevels.lightlyActiveDesc"),
                   },
                   {
                     level: "MODERATELY_ACTIVE" as ActivityLevel,
-                    label: "Moderately Active (1.55x)",
-                    desc: "Moderate exercise or active job 3–5 days/wk (Recommended for gym lifters)",
+                    label: t("assessment.activityLevels.moderatelyActiveLabel"),
+                    desc: t("assessment.activityLevels.moderatelyActiveDesc"),
                   },
                   {
                     level: "VERY_ACTIVE" as ActivityLevel,
-                    label: "Very Active (1.725x)",
-                    desc: "Hard training, high physical output 6–7 days/wk",
+                    label: t("assessment.activityLevels.veryActiveLabel"),
+                    desc: t("assessment.activityLevels.veryActiveDesc"),
                   },
                   {
                     level: "EXTREMELY_ACTIVE" as ActivityLevel,
-                    label: "Extremely Active (1.9x)",
-                    desc: "Daily heavy manual labor or competitive two-a-day athletics",
+                    label: t("assessment.activityLevels.extremelyActiveLabel"),
+                    desc: t("assessment.activityLevels.extremelyActiveDesc"),
                   },
                 ].map((item) => (
                   <button
                     type="button"
                     key={item.level}
                     onClick={() => setActivityLevel(item.level)}
-                    className={`w-full text-left rounded-xl p-3.5 border transition-all ${
+                    className={`w-full text-left rtl:text-right rounded-xl p-3.5 border transition-all ${
                       activityLevel === item.level
                         ? "bg-[#5BE584]/15 border-[#5BE584] text-zinc-100"
                         : "bg-[#161B22] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
@@ -382,10 +408,11 @@ export const NutritionOnboardingPage: React.FC = () => {
                 ))}
               </div>
             </div>
+
             {/* Training Frequency */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
-                Gym Training Days Per Week
+                {t("assessment.trainingFrequencyHeading")}
               </label>
               <div className="flex gap-2">
                 {[0, 1, 2, 3, 4, 5, 6, 7].map((days) => (
@@ -406,41 +433,42 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           </div>
         )}
+
         {/* Step 3: Goal & Pace */}
         {currentStep === 3 && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-3">
-                Primary Nutritional Objective
+                {t("assessment.goalHeading")}
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   {
                     key: "FAT_LOSS" as NutritionGoal,
-                    title: "Fat Loss (Caloric Deficit)",
-                    desc: "Reduce body fat while preserving lean muscle mass",
+                    title: t("assessment.goals.fatLossTitle"),
+                    desc: t("assessment.goals.fatLossDesc"),
                   },
                   {
                     key: "MAINTENANCE" as NutritionGoal,
-                    title: "Maintenance (Equilibrium)",
-                    desc: "Maintain body composition and optimize daily energy",
+                    title: t("assessment.goals.maintenanceTitle"),
+                    desc: t("assessment.goals.maintenanceDesc"),
                   },
                   {
                     key: "MUSCLE_GAIN" as NutritionGoal,
-                    title: "Muscle Gain (Caloric Surplus)",
-                    desc: "Fuel progressive overload and hypertrophy with controlled surplus",
+                    title: t("assessment.goals.muscleGainTitle"),
+                    desc: t("assessment.goals.muscleGainDesc"),
                   },
                   {
                     key: "SPORTS_PERFORMANCE" as NutritionGoal,
-                    title: "Sports Performance",
-                    desc: "High glycogen replenishment for intense athletic demands",
+                    title: t("assessment.goals.sportsPerformanceTitle"),
+                    desc: t("assessment.goals.sportsPerformanceDesc"),
                   },
                 ].map((item) => (
                   <button
                     type="button"
                     key={item.key}
                     onClick={() => setGoal(item.key)}
-                    className={`text-left rounded-xl p-4 border transition-all ${
+                    className={`text-left rtl:text-right rounded-xl p-4 border transition-all ${
                       goal === item.key
                         ? "bg-[#5BE584]/15 border-[#5BE584] text-zinc-100"
                         : "bg-[#161B22] border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
@@ -452,16 +480,17 @@ export const NutritionOnboardingPage: React.FC = () => {
                 ))}
               </div>
             </div>
+
             {/* Target Pace */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
-                Adjustment Pace & Aggressiveness
+                {t("assessment.paceHeading")}
               </label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { pace: "CONSERVATIVE" as TargetPace, label: "Conservative", delta: "±10–15%" },
-                  { pace: "MODERATE" as TargetPace, label: "Moderate (Recommended)", delta: "±20%" },
-                  { pace: "AGGRESSIVE" as TargetPace, label: "Aggressive", delta: "±25%" },
+                  { pace: "CONSERVATIVE" as TargetPace, label: t("assessment.paces.conservativeLabel"), delta: t("assessment.paces.conservativeDelta") },
+                  { pace: "MODERATE" as TargetPace, label: t("assessment.paces.moderateLabel"), delta: t("assessment.paces.moderateDelta") },
+                  { pace: "AGGRESSIVE" as TargetPace, label: t("assessment.paces.aggressiveLabel"), delta: t("assessment.paces.aggressiveDelta") },
                 ].map((p) => (
                   <button
                     type="button"
@@ -481,13 +510,14 @@ export const NutritionOnboardingPage: React.FC = () => {
             </div>
           </div>
         )}
+
         {/* Step 4: Dietary Preference & Allergies */}
         {currentStep === 4 && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
             {/* Preferred Meals Count */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
-                Preferred Meals Per Day
+                {t("assessment.mealsPerDayHeading")}
               </label>
               <div className="grid grid-cols-3 gap-3">
                 {[3, 4, 5].map((cnt) => (
@@ -501,15 +531,19 @@ export const NutritionOnboardingPage: React.FC = () => {
                         : "bg-[#161B22] text-zinc-300 border-zinc-800 hover:border-zinc-700"
                     }`}
                   >
-                    {cnt} Meals {cnt === 3 ? "(Standard)" : cnt === 4 ? "(+ 1 Snack)" : "(+ 2 Snacks)"}
+                    {t("assessment.mealsCountOption", {
+                      count: cnt,
+                      sub: cnt === 3 ? t("assessment.mealsCountStandard") : cnt === 4 ? t("assessment.mealsCount1Snack") : t("assessment.mealsCount2Snacks"),
+                    })}
                   </button>
                 ))}
               </div>
             </div>
+
             {/* Dietary Preference */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
-                Dietary Preference
+                {t("assessment.dietaryPreferenceHeading")}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 {(
@@ -532,15 +566,16 @@ export const NutritionOnboardingPage: React.FC = () => {
                         : "bg-[#161B22] text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200"
                     }`}
                   >
-                    {pref}
+                    {t(`assessment.dietaryPreferences.${pref}` as any)}
                   </button>
                 ))}
               </div>
             </div>
+
             {/* Common Allergens to Exclude */}
             <div>
               <label className="block text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-2">
-                Allergies & Excluded Ingredients
+                {t("assessment.allergensHeading")}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {ALLERGEN_OPTIONS.map((item) => {
@@ -556,12 +591,13 @@ export const NutritionOnboardingPage: React.FC = () => {
                           : "bg-[#161B22] text-zinc-400 border-zinc-800 hover:border-zinc-700"
                       }`}
                     >
-                      {item.label}
+                      {t(`assessment.allergens.${item.key}` as any)}
                     </button>
                   );
                 })}
               </div>
             </div>
+
             {/* Health Disclaimer Check */}
             <div className="rounded-xl border border-zinc-800 bg-[#161B22] p-4 flex items-center gap-3">
               <input
@@ -571,80 +607,88 @@ export const NutritionOnboardingPage: React.FC = () => {
                 onChange={(e) => setHasMedicalClearance(e.target.checked)}
                 className="h-4 w-4 rounded border-zinc-700 text-[#5BE584] focus:ring-[#5BE584]"
               />
-              <label htmlFor="clearanceCheck" className="text-xs text-zinc-300">
-                I confirm that I am medically cleared for physical training and nutritional adjustments.
+              <label htmlFor="clearanceCheck" className="text-xs text-zinc-300 cursor-pointer">
+                {t("assessment.clearanceCheckbox")}
               </label>
             </div>
           </div>
         )}
+
         {/* Step 5: Review & Activate */}
         {currentStep === 5 && calculationPreview && (
           <div className="rounded-2xl border border-zinc-800 bg-[#101418] p-6 space-y-6 shadow-xl">
             <div className="flex items-center gap-2 text-[#5BE584] text-xs font-semibold uppercase tracking-wider">
               <ShieldCheck className="h-4 w-4" />
-              <span>Calculated Target Summary</span>
+              <span>{t("assessment.summaryBadge")}</span>
             </div>
+
             {/* Macro Cards Preview */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="rounded-xl bg-[#161B22] p-4 text-center border border-zinc-800">
-                <div className="text-xs text-zinc-400">Target Calories</div>
+                <div className="text-xs text-zinc-400">{t("assessment.targetCaloriesLabel")}</div>
                 <div className="text-2xl font-black text-amber-400 mt-1">
                   {calculationPreview.targetCalories}
                 </div>
-                <div className="text-[10px] text-zinc-500">kcal / day</div>
+                <div className="text-[10px] text-zinc-500">{t("assessment.kcalPerDay")}</div>
               </div>
               <div className="rounded-xl bg-[#161B22] p-4 text-center border border-zinc-800">
-                <div className="text-xs text-zinc-400">Protein</div>
+                <div className="text-xs text-zinc-400">{t("assessment.proteinLabel")}</div>
                 <div className="text-2xl font-black text-emerald-400 mt-1">
                   {calculationPreview.proteinG}g
                 </div>
-                <div className="text-[10px] text-zinc-500">~2.0 g/kg bodyweight</div>
+                <div className="text-[10px] text-zinc-500">{t("assessment.proteinPerKg")}</div>
               </div>
               <div className="rounded-xl bg-[#161B22] p-4 text-center border border-zinc-800">
-                <div className="text-xs text-zinc-400">Carbohydrates</div>
+                <div className="text-xs text-zinc-400">{t("assessment.carbsLabel")}</div>
                 <div className="text-2xl font-black text-blue-400 mt-1">
                   {calculationPreview.carbsG}g
                 </div>
-                <div className="text-[10px] text-zinc-500">Energy & glycogen</div>
+                <div className="text-[10px] text-zinc-500">{t("assessment.carbsPerKg")}</div>
               </div>
               <div className="rounded-xl bg-[#161B22] p-4 text-center border border-zinc-800">
-                <div className="text-xs text-zinc-400">Dietary Fat</div>
+                <div className="text-xs text-zinc-400">{t("assessment.fatLabel")}</div>
                 <div className="text-2xl font-black text-purple-400 mt-1">
                   {calculationPreview.fatG}g
                 </div>
-                <div className="text-[10px] text-zinc-500">~25% of energy</div>
+                <div className="text-[10px] text-zinc-500">{t("assessment.fatPerKg")}</div>
               </div>
             </div>
+
             {/* Scientific Breakdown Details */}
             <div className="rounded-xl bg-[#161B22] p-4 border border-zinc-800/80 space-y-2 text-xs text-zinc-300">
               <div className="flex justify-between">
-                <span className="text-zinc-400">Basal Metabolic Rate (BMR):</span>
+                <span className="text-zinc-400">{t("assessment.bmrLabel")}</span>
                 <span className="font-semibold text-zinc-200">{calculationPreview.bmr} kcal</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-400">Total Daily Energy Expenditure (TDEE):</span>
+                <span className="text-zinc-400">{t("assessment.tdeeLabel")}</span>
                 <span className="font-semibold text-zinc-200">{calculationPreview.tdee} kcal</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-400">Meal Structure:</span>
-                <span className="font-semibold text-zinc-200">{preferredMealsCount} meals/day • {dietaryPreference}</span>
+                <span className="text-zinc-400">{t("assessment.mealStructureLabel")}</span>
+                <span className="font-semibold text-zinc-200">
+                  {t("assessment.mealStructureVal", {
+                    count: preferredMealsCount,
+                    preference: t(`assessment.dietaryPreferences.${dietaryPreference}` as any),
+                  })}
+                </span>
               </div>
               {calculationPreview.floorApplied && (
                 <div className="text-amber-400 text-xs mt-2 pt-2 border-t border-zinc-800">
-                  Note: Safe caloric floor ({calculationPreview.floor} kcal) applied to preserve hormonal health.
+                  {t("assessment.floorNote", { floor: calculationPreview.floor })}
                 </div>
               )}
             </div>
+
             <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/50 p-3.5 text-[11px] text-zinc-400 flex items-start gap-2.5">
               <Info className="h-4 w-4 text-zinc-500 shrink-0 mt-0.5" />
               <span>
-                Standardized equations provide deterministic estimates. Individual metabolic adaptation and
-                daily physical expenditure may vary. Always consult with a qualified sports dietitian for
-                medical nutrition therapy.
+                {t("assessment.scientificDisclaimer")}
               </span>
             </div>
           </div>
         )}
+
         {/* Wizard Controls */}
         <div className="flex items-center justify-between pt-2">
           {currentStep > 1 ? (
@@ -654,20 +698,21 @@ export const NutritionOnboardingPage: React.FC = () => {
               disabled={isSaving}
               className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-[#101418] px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-800"
             >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back</span>
+              <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
+              <span>{t("assessment.back")}</span>
             </button>
           ) : (
             <div />
           )}
+
           {currentStep < 5 ? (
             <button
               type="button"
               onClick={handleNext}
               className="flex items-center gap-2 rounded-xl bg-[#5BE584] px-5 py-2.5 text-sm font-bold text-zinc-950 hover:bg-[#4dd374] transition-all shadow-md shadow-[#5BE584]/15"
             >
-              <span>Next Step</span>
-              <ArrowRight className="h-4 w-4" />
+              <span>{t("assessment.nextStep")}</span>
+              <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </button>
           ) : (
             <button
@@ -679,12 +724,12 @@ export const NutritionOnboardingPage: React.FC = () => {
               {isSaving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Generating Meal Plan...</span>
+                  <span>{t("assessment.generating")}</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4" />
-                  <span>Generate & Activate My Plan</span>
+                  <span>{t("assessment.generateBtn")}</span>
                 </>
               )}
             </button>
@@ -694,4 +739,5 @@ export const NutritionOnboardingPage: React.FC = () => {
     </div>
   );
 };
+
 export default NutritionOnboardingPage;

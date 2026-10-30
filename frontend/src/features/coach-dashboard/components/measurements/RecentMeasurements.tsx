@@ -1,6 +1,7 @@
 // src/features/coach-dashboard/components/measurements/RecentMeasurements.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Ruler, Calendar, CheckCircle2, User } from "lucide-react";
 import type { RecentMeasurement } from "@/features/coach-dashboard/types/coach-dashboard.types";
 
@@ -11,18 +12,20 @@ interface RecentMeasurementsProps {
 export const RecentMeasurements: React.FC<RecentMeasurementsProps> = ({
   measurements = [],
 }) => {
+  const { t, i18n } = useTranslation(["coachDashboard"]);
   const hasMeasurements = measurements && measurements.length > 0;
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   const formatDate = (dateValue: string | Date | null) => {
-    if (!dateValue) return "No record";
+    if (!dateValue) return t("measurements.noRecord");
     try {
-      return new Intl.DateTimeFormat("en-US", {
+      return new Intl.DateTimeFormat(currentLang, {
         month: "short",
         day: "numeric",
         year: "numeric",
       }).format(new Date(dateValue));
     } catch {
-      return "Invalid date";
+      return t("measurements.noRecord");
     }
   };
 
@@ -33,12 +36,12 @@ export const RecentMeasurements: React.FC<RecentMeasurementsProps> = ({
         <div className="flex items-center gap-2.5">
           <Ruler className="h-4 w-4 text-gray-400" />
           <h2 className="text-sm font-semibold text-gray-100">
-            Recent Measurements
+            {t("measurements.title")}
           </h2>
         </div>
         {hasMeasurements && (
           <span className="inline-flex rounded-full bg-[#16291d] px-2.5 py-0.5 text-[10px] font-bold text-[#5BE584] uppercase tracking-wider border border-[#23422e]">
-            {measurements.length} Recorded
+            {t("measurements.recorded", { count: measurements.length })}
           </span>
         )}
       </div>
@@ -46,27 +49,27 @@ export const RecentMeasurements: React.FC<RecentMeasurementsProps> = ({
       {/* Measurements List / Table */}
       {hasMeasurements ? (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[440px] text-left text-xs text-gray-300">
+          <table className="w-full min-w-[440px] text-left rtl:text-right text-xs text-gray-300">
             <thead className="border-b border-[#1e2329] bg-[#13171d]/50 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
               <tr>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Member
+                  {t("measurements.thMember")}
                 </th>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Weight
+                  {t("measurements.thWeight")}
                 </th>
                 <th scope="col" className="px-5 py-3 font-medium">
-                  Body Fat
+                  {t("measurements.thBodyFat")}
                 </th>
-                <th scope="col" className="px-5 py-3 font-medium text-right">
-                  Date
+                <th scope="col" className="px-5 py-3 font-medium text-right rtl:text-left">
+                  {t("measurements.thDate")}
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1e2329]">
               {measurements.map((item, index) => {
                 const memberId = item.member?.id;
-                const memberName = item.member?.name || "Unknown Member";
+                const memberName = item.member?.name || t("measurements.unknownMember");
 
                 const weightDisplay =
                   item.weight !== null && item.weight !== undefined
@@ -100,19 +103,19 @@ export const RecentMeasurements: React.FC<RecentMeasurementsProps> = ({
                     </td>
 
                     {/* Weight Column */}
-                    <td className="px-5 py-3.5 whitespace-nowrap font-mono text-gray-300">
+                    <td className="px-5 py-3.5 whitespace-nowrap font-medium text-gray-200 font-mono">
                       {weightDisplay}
                     </td>
 
                     {/* Body Fat Column */}
-                    <td className="px-5 py-3.5 whitespace-nowrap font-mono text-gray-300">
+                    <td className="px-5 py-3.5 whitespace-nowrap text-gray-400 font-mono">
                       {bodyFatDisplay}
                     </td>
 
                     {/* Date Column */}
-                    <td className="px-5 py-3.5 whitespace-nowrap text-right text-gray-400">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Calendar className="h-3 w-3 text-gray-500" />
+                    <td className="px-5 py-3.5 whitespace-nowrap text-right rtl:text-left text-gray-500">
+                      <div className="flex items-center justify-end rtl:justify-start gap-1.5">
+                        <Calendar className="h-3 w-3 text-gray-600" />
                         <span>{formatDate(item.measuredAt)}</span>
                       </div>
                     </td>
@@ -129,10 +132,10 @@ export const RecentMeasurements: React.FC<RecentMeasurementsProps> = ({
             <CheckCircle2 className="h-5 w-5 text-[#5BE584]" />
           </div>
           <p className="text-sm font-semibold text-gray-200">
-            No recent measurements
+            {t("measurements.emptyTitle")}
           </p>
           <p className="text-xs text-gray-500 mt-0.5">
-            New body measurements will appear here when recorded.
+            {t("measurements.emptyDesc")}
           </p>
         </div>
       )}

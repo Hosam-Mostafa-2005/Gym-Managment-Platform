@@ -1,6 +1,7 @@
 // src/features/nutrition/components/NutritionNavTabs.tsx
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Utensils, CalendarDays, History, Sparkles } from "lucide-react";
 
 interface NutritionNavTabsProps {
@@ -10,25 +11,29 @@ interface NutritionNavTabsProps {
 export const NutritionNavTabs: React.FC<NutritionNavTabsProps> = ({
   onboardingCompleted = true,
 }) => {
+  const { t } = useTranslation(["nutrition"]);
+
   const tabs = [
     {
-      name: "Daily Tracking",
+      name: t("nav.dailyTracking"),
       path: "/nutrition",
       icon: Utensils,
       exact: true,
     },
     {
-      name: "Meal Plan",
+      name: t("nav.mealPlan"),
       path: "/nutrition/plan",
       icon: CalendarDays,
     },
     {
-      name: "30-Day History",
+      name: t("nav.history30Days"),
       path: "/nutrition/history",
       icon: History,
     },
     {
-      name: onboardingCompleted ? "Recalculate Targets" : "Get Started",
+      name: onboardingCompleted
+        ? t("nav.recalculateTargets")
+        : t("nav.getStarted"),
       path: "/nutrition/onboarding",
       icon: Sparkles,
       highlight: !onboardingCompleted,

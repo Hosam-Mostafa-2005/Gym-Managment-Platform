@@ -1,4 +1,3 @@
-// 1. إضافة كلمة 'type' وحل مشكلة verbatimModuleSyntax
 import type {
   UseFormRegister,
   FieldArrayWithId,
@@ -11,10 +10,8 @@ import type {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// شلنا الـ Label عشان نلغي الخط الأصفر
 import { Plus, Trash2 } from "lucide-react";
 
-// 2. استخدام FieldValues و ArrayPath بدلاً من any لإرضاء ESLint
 interface DynamicInputListProps<T extends FieldValues> {
   title: string;
   description?: string;
@@ -24,6 +21,8 @@ interface DynamicInputListProps<T extends FieldValues> {
   append: UseFieldArrayAppend<T, ArrayPath<T>>;
   remove: UseFieldArrayRemove;
   error?: string;
+  addButtonLabel?: string;
+  placeholder?: string;
 }
 
 const DynamicInputList = <T extends FieldValues>({
@@ -35,6 +34,8 @@ const DynamicInputList = <T extends FieldValues>({
   append,
   remove,
   error,
+  addButtonLabel,
+  placeholder,
 }: DynamicInputListProps<T>) => {
   return (
     <div className="space-y-4 rounded-2xl border border-border bg-card/50 p-6 shadow-sm">
@@ -48,7 +49,6 @@ const DynamicInputList = <T extends FieldValues>({
           )}
         </div>
 
-        {/* 3. إرسال أوبجيكت بدون أي استخدام لـ any */}
         <Button
           type="button"
           variant="outline"
@@ -59,7 +59,7 @@ const DynamicInputList = <T extends FieldValues>({
           className="flex items-center gap-1.5"
         >
           <Plus className="h-4 w-4" />
-          <span>Add {title.slice(0, -1)}</span>
+          <span>{addButtonLabel || `Add ${title.slice(0, -1)}`}</span>
         </Button>
       </div>
 
@@ -70,9 +70,10 @@ const DynamicInputList = <T extends FieldValues>({
               {index + 1}
             </span>
 
-            {/* 4. ربط مسار الإدخال بطريقة شرعية 100% */}
             <Input
-              placeholder={`Enter ${title.toLowerCase()} step...`}
+              placeholder={
+                placeholder || `Enter ${title.toLowerCase()} step...`
+              }
               {...register(`${name}.${index}.value` as Path<T>)}
               className="bg-background"
             />

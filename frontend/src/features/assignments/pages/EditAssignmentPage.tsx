@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // Components & Hooks
 import { AssignmentForm } from "@/features/assignments/components/AssignmentForm";
@@ -10,6 +11,7 @@ import { useUpdateAssignment } from "@/features/assignments/hooks/useUpdateAssig
 import type { AssignmentFormValues } from "@/features/assignments/schemas/assignment.schema";
 
 export default function EditAssignmentPage() {
+  const { t } = useTranslation(["assignments", "common"]);
   const navigate = useNavigate();
 
   const { assignmentId } = useParams<{
@@ -90,24 +92,29 @@ export default function EditAssignmentPage() {
                 className="hover:text-[#9CA3AF] cursor-pointer transition-colors"
                 onClick={() => navigate("/assignments")}
               >
-                Assignments
+                {t("breadcrumb.assignments", "Assignments")}
               </span>
               <span>/</span>
-              <span className="text-[#F3F4F6]">Edit</span>
+              <span className="text-[#F3F4F6]">
+                {t("breadcrumb.edit", "Edit")}
+              </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-white mt-1">
-              Edit Workout Assignment
+              {t("form.editTitle", "Edit Workout Assignment")}
             </h1>
             <p className="text-sm text-[#9CA3AF]">
-              Update routine schedule, trainer assignment, or guidelines.
+              {t(
+                "form.editSubtitle",
+                "Update schedule, notes, or status for this workout assignment.",
+              )}
             </p>
           </div>
           <button
             onClick={() => navigate("/assignments")}
-            className="group hidden md:flex items-center gap-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white"
+            className="group hidden md:flex items-center gap-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white cursor-pointer"
           >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Back to Assignments
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1 rtl:group-hover:translate-x-1 rtl:rotate-180" />
+            {t("form.backToAssignments", "Back to Assignments")}
           </button>
         </div>
       </header>
@@ -119,7 +126,7 @@ export default function EditAssignmentPage() {
           <div className="flex flex-col items-center justify-center py-24 text-[#6B7280]">
             <Loader2 className="h-8 w-8 animate-spin text-[#5BE584]" />
             <p className="mt-4 text-sm font-medium">
-              Loading assignment details...
+              {t("details.loading", "Loading assignment details...")}
             </p>
           </div>
         )}
@@ -129,17 +136,19 @@ export default function EditAssignmentPage() {
           <div className="rounded-xl border border-red-900/50 bg-red-950/20 p-10 flex flex-col items-center justify-center text-center gap-3 backdrop-blur-sm">
             <AlertCircle className="w-10 h-10 text-red-400" />
             <h3 className="text-base font-semibold text-white">
-              Failed to load assignment
+              {t("details.errorTitle", "Failed to load details")}
             </h3>
             <p className="text-xs text-[#9CA3AF] max-w-sm">
-              We couldn't retrieve this assignment. It may have been deleted or
-              there is a network problem.
+              {t(
+                "details.errorDescription",
+                "We couldn't retrieve the details for this assignment. It might have been deleted or there is a network issue.",
+              )}
             </p>
             <button
               onClick={() => navigate("/assignments")}
-              className="mt-4 rounded-md border border-[#1E2329] bg-[#101418] px-5 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white hover:border-[#6B7280]"
+              className="mt-4 rounded-md border border-[#1E2329] bg-[#101418] px-5 py-2 text-sm font-medium text-[#9CA3AF] transition-colors hover:text-white hover:border-[#6B7280] cursor-pointer"
             >
-              Back to Assignments
+              {t("details.backToAssignments", "Back to Assignments")}
             </button>
           </div>
         )}
@@ -149,10 +158,13 @@ export default function EditAssignmentPage() {
           <div className="rounded-xl border border-[#1E2329] bg-[#101418]/80 backdrop-blur-sm p-6 sm:p-10 shadow-2xl">
             <div className="mb-8 border-b border-[#1E2329] pb-4">
               <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
-                Assignment Details
+                {t("form.sectionTitle", "Assignment Details")}
               </h2>
               <p className="text-xs text-[#6B7280] mt-1">
-                Modify the configuration for this routine assignment.
+                {t(
+                  "form.sectionSubtitle",
+                  "Select the member and routine duration.",
+                )}
               </p>
             </div>
 
@@ -160,7 +172,7 @@ export default function EditAssignmentPage() {
               initialValues={initialValues}
               onSubmit={handleUpdate}
               isLoading={isUpdating}
-              submitLabel="Update Assignment"
+              submitLabel={t("form.saveButton", "Save Changes")}
             />
           </div>
         )}

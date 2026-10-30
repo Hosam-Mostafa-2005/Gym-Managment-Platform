@@ -1,5 +1,6 @@
 // src/features/dashboard/member/components/recent-activity/ActivityItem.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ClipboardList, CheckCircle2, Info } from "lucide-react";
 
 interface ActivityItemProps {
@@ -7,6 +8,9 @@ interface ActivityItemProps {
 }
 
 export const ActivityItem: React.FC<ActivityItemProps> = ({ activity }) => {
+  const { i18n } = useTranslation();
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
+
   const getIcon = () => {
     switch (activity.type) {
       case "ASSIGNMENT_RECEIVED":
@@ -18,7 +22,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity }) => {
     }
   };
 
-  const formattedDate = new Date(activity.date).toLocaleDateString(undefined, {
+  const formattedDate = new Date(activity.date).toLocaleDateString(currentLang, {
     month: "short",
     day: "numeric",
     hour: "numeric",
@@ -35,7 +39,7 @@ export const ActivityItem: React.FC<ActivityItemProps> = ({ activity }) => {
       </div>
       <div className="flex flex-col pb-6 pt-1">
         <p className="text-sm font-medium text-gray-200">{activity.message}</p>
-        <span className="mt-1 text-xs text-gray-500">{formattedDate}</span>
+        <span className="mt-1 text-xs text-gray-500 font-mono">{formattedDate}</span>
       </div>
     </div>
   );

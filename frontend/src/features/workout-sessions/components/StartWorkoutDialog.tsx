@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import {
   X,
   Search,
@@ -60,6 +61,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { t, i18n } = useTranslation(["workoutSessions", "common"]);
   const navigate = useNavigate();
   const { data: userFromQuery } = useCurrentUser();
   const userFromStore = useAuthStore((state) => state.user);
@@ -72,11 +74,26 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
 
   // Queries
   const { data: currentSessionData } = useCurrentWorkoutSession();
-  const { data: workouts = [], isLoading: isLoadingWorkouts } = useWorkouts();
-  const { data: assignments = [], isLoading: isLoadingAssignments } =
-    useMyAssignments();
+  const {
+    data: workouts = [],
+    isLoading: isLoadingWorkouts,
+    refetch: refetchWorkouts,
+  } = useWorkouts();
+  const {
+    data: assignments = [],
+    isLoading: isLoadingAssignments,
+    refetch: refetchAssignments,
+  } = useMyAssignments();
   const { data: sessionHistoryData, isLoading: isLoadingSessions } =
     useWorkoutSessions(1, 50);
+
+  // Automatically refetch workouts and assignments upon opening to guarantee fresh personal routines
+  React.useEffect(() => {
+    if (isOpen) {
+      refetchWorkouts();
+      refetchAssignments();
+    }
+  }, [isOpen, refetchWorkouts, refetchAssignments]);
 
   const { mutate: startWorkout } = useStartWorkoutSession();
 
@@ -101,7 +118,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
   const activeWorkoutTitle =
     activeSession?.workout?.title ||
     activeSession?.assignment?.workout?.title ||
-    "Active Workout";
+    t("overview.workoutSessionDefault", "Active Workout");
 
   // Build eligible workout lists
   const eligibleItems = useMemo<EligibleWorkoutItem[]>(() => {
@@ -133,8 +150,11 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
           null,
         sourceType: "assigned",
         sourceLabel: a.trainer?.name
-          ? `Coach Assigned (${a.trainer.name})`
-          : "Coach Assigned",
+          ? t("startDialog.badgeAssigned", {
+              trainer: a.trainer.name,
+              defaultValue: `Coach Assigned (${a.trainer.name})`,
+            })
+          : t("startDialog.badgeAssignedDefault", "Coach Assigned"),
         trainerName: a.trainer?.name,
       });
     }
@@ -174,7 +194,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
           exerciseCount: w.exerciseCount || w.exercises?.length || 0,
           imageUrl: w.imageUrl || null,
           sourceType: "template",
-          sourceLabel: "Platform Template",
+          sourceLabel: t("startDialog.badgeTemplate", "Platform Template"),
         });
       } else {
         // It's a personal routine: either current user is owner, or it's a personal routine returned for this member that's not a coach assignment
@@ -191,7 +211,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
             exerciseCount: w.exerciseCount || w.exercises?.length || 0,
             imageUrl: w.imageUrl || null,
             sourceType: "personal",
-            sourceLabel: "Personal Routine",
+            sourceLabel: t("startDialog.badgePersonal", "Personal Routine"),
           });
         }
       }
@@ -213,7 +233,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
       const title =
         s.workout?.title ||
         s.assignment?.workout?.title ||
-        "Historical Workout";
+        t("overview.workoutSessionDefault", "Historical Workout");
       const description =
         s.workout?.description || s.assignment?.workout?.description;
       const category =
@@ -242,7 +262,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
         exerciseCount,
         imageUrl,
         sourceType: "repeat",
-        sourceLabel: "Completed Workout",
+        sourceLabel: t("startDialog.badgeRepeat", "Completed Workout"),
         lastCompletedDate: s.endedAt || s.startedAt,
         lastVolume: s.totalVolume,
         lastDuration: s.duration,
@@ -250,7 +270,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
     }
 
     return items;
-  }, [assignments, workouts, sessionHistoryData, currentUserId]);
+  }, [assignments, workouts, sessionHistoryData, currentUserId, t]);
 
   // Filtered items based on activeTab and searchQuery
   const filteredItems = useMemo(() => {
@@ -342,7 +362,10 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
 
       if (activeWorkoutId === item.workoutId) {
         toast.success(
-          "You already have this workout in progress. Resuming your session.",
+          t(
+            "startDialog.alreadyInProgressResume",
+            "You already have this workout in progress. Resuming your session.",
+          ),
         );
         onClose();
         navigate("/sessions/active");
@@ -381,19 +404,25 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
             isOpen: true,
             activeSessionId: conflictData.activeSessionId,
             activeWorkoutTitle:
-              conflictData.activeWorkoutTitle || "Active Workout",
+              conflictData.activeWorkoutTitle || activeWorkoutTitle,
             requestedWorkoutId: item.workoutId,
             requestedWorkoutTitle: item.title,
             requestedAssignmentId: item.assignmentId,
           });
         } else {
           toast.error(
-            err?.response?.data?.message || "Failed to start workout session.",
+            err?.response?.data?.message ||
+              t(
+                "startDialog.failedToStartSession",
+                "Failed to start workout session.",
+              ),
           );
         }
       },
     });
   };
+
+  const dateLocale = i18n.language === "ar" ? "ar-EG" : "en-US";
 
   if (!isOpen) return null;
 
@@ -411,14 +440,16 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
               <div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-[#5BE584] uppercase tracking-wider mb-1">
                   <Flame className="w-4 h-4" />
-                  <span>Choose Your Workout</span>
+                  <span>{t("startDialog.chooseYourWorkout", "Choose Your Workout")}</span>
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                  Start Workout Session
+                  {t("startDialog.title", "Start Workout Session")}
                 </h2>
                 <p className="text-xs text-[#9CA3AF] mt-1">
-                  Select an assigned program, personal routine, platform template,
-                  or repeat a completed session from your history.
+                  {t(
+                    "startDialog.subtitle",
+                    "Select an assigned program, personal routine, platform template, or repeat a completed session from your history.",
+                  )}
                 </p>
               </div>
 
@@ -426,7 +457,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                 type="button"
                 onClick={onClose}
                 className="rounded-xl border border-[#1E2329] bg-[#090B0F] p-2 text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
-                title="Close"
+                title={t("startDialog.close", "Close")}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -439,9 +470,11 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                   <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
                   <p className="text-xs text-amber-300">
                     <span className="font-semibold text-white">
-                      Active Workout in Progress:
-                    </span>{" "}
-                    {activeWorkoutTitle}
+                      {t("startDialog.activeWarning", {
+                        title: activeWorkoutTitle,
+                        defaultValue: `Active Workout in Progress: ${activeWorkoutTitle}`,
+                      })}
+                    </span>
                   </p>
                 </div>
                 <button
@@ -453,7 +486,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                   className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#5BE584] text-[#090B0F] text-xs font-bold hover:bg-[#4ade80] transition-colors"
                 >
                   <Activity className="h-3.5 w-3.5" />
-                  <span>Resume Live</span>
+                  <span>{t("startDialog.resumeLive", "Resume Live")}</span>
                 </button>
               </div>
             )}
@@ -462,13 +495,16 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
             <div className="p-6 pb-3 space-y-4 border-b border-[#1E2329]/60">
               {/* Search Input */}
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
+                <Search className="absolute ltr:left-3.5 rtl:right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B7280]" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search workouts by name, category, or coach..."
-                  className="w-full bg-[#101418] border border-[#1E2329] rounded-xl h-10 pl-10 pr-4 text-xs text-white placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
+                  placeholder={t(
+                    "startDialog.searchPlaceholder",
+                    "Search workouts by name, category, or coach...",
+                  )}
+                  className="w-full bg-[#101418] border border-[#1E2329] rounded-xl h-10 ltr:pl-10 ltr:pr-4 rtl:pr-10 rtl:pl-4 text-xs text-white placeholder-[#6B7280] transition-colors focus:border-[#5BE584] focus:outline-none focus:ring-1 focus:ring-[#5BE584]"
                 />
               </div>
 
@@ -483,9 +519,9 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                       : "bg-[#101418] text-[#9CA3AF] border-[#1E2329] hover:text-white hover:border-[#2A313A]"
                   }`}
                 >
-                  <span>All Eligible</span>
+                  <span>{t("startDialog.tabAll", "All Eligible")}</span>
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                    className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
                       activeTab === "all"
                         ? "bg-[#090B0F]/20 text-[#090B0F]"
                         : "bg-[#1E2329] text-[#9CA3AF]"
@@ -505,9 +541,9 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                   }`}
                 >
                   <UserCheck className="h-3.5 w-3.5" />
-                  <span>Coach Assigned</span>
+                  <span>{t("startDialog.tabAssigned", "Coach Assigned")}</span>
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                    className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
                       activeTab === "assigned"
                         ? "bg-[#090B0F]/20 text-[#090B0F]"
                         : "bg-[#1E2329] text-[#9CA3AF]"
@@ -527,9 +563,9 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                   }`}
                 >
                   <Dumbbell className="h-3.5 w-3.5" />
-                  <span>Personal Routines</span>
+                  <span>{t("startDialog.tabPersonal", "Personal Routines")}</span>
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                    className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
                       activeTab === "personal"
                         ? "bg-[#090B0F]/20 text-[#090B0F]"
                         : "bg-[#1E2329] text-[#9CA3AF]"
@@ -549,9 +585,9 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                   }`}
                 >
                   <Bookmark className="h-3.5 w-3.5" />
-                  <span>Templates</span>
+                  <span>{t("startDialog.tabTemplates", "Templates")}</span>
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                    className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
                       activeTab === "templates"
                         ? "bg-[#090B0F]/20 text-[#090B0F]"
                         : "bg-[#1E2329] text-[#9CA3AF]"
@@ -571,9 +607,9 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                   }`}
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
-                  <span>Repeat Previous</span>
+                  <span>{t("startDialog.tabRepeat", "Repeat Previous")}</span>
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                    className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
                       activeTab === "repeat"
                         ? "bg-[#090B0F]/20 text-[#090B0F]"
                         : "bg-[#1E2329] text-[#9CA3AF]"
@@ -589,7 +625,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
             <div className="flex-1 overflow-y-auto p-6 space-y-3.5 max-h-[58vh]">
               {isLoadingWorkouts || isLoadingAssignments || isLoadingSessions ? (
                 <div className="py-16 text-center text-xs text-[#9CA3AF]">
-                  Loading eligible workouts...
+                  {t("startDialog.loadingEligible", "Loading eligible workouts...")}
                 </div>
               ) : filteredItems.length === 0 ? (
                 <div className="py-12 sm:py-16 flex flex-col items-center justify-center text-center px-4">
@@ -597,18 +633,35 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                     <Dumbbell className="h-8 w-8" />
                   </div>
                   <h4 className="text-sm sm:text-base font-bold text-white tracking-tight">
-                    {searchQuery ? "No matching workouts found" : "No workouts available"}
+                    {searchQuery
+                      ? t("startDialog.noMatchesFound", "No matching workouts found")
+                      : t("startDialog.noWorkoutsAvailable", "No workouts available")}
                   </h4>
                   <p className="text-xs text-[#9CA3AF] mt-1.5 max-w-md leading-relaxed">
                     {searchQuery
-                      ? `No workouts match "${searchQuery}". Try adjusting your keywords or clearing the active filter.`
+                      ? t("startDialog.noMatchesDesc", {
+                          query: searchQuery,
+                          defaultValue: `No workouts match "${searchQuery}". Try adjusting your keywords or clearing the active filter.`,
+                        })
                       : activeTab === "assigned"
-                        ? "You do not have any coach-assigned workouts at this time. You can build your own custom training routine or ask your coach for a program."
+                        ? t(
+                            "startDialog.emptyAssigned",
+                            "You do not have any coach-assigned workouts at this time. You can build your own custom training routine or ask your coach for a program.",
+                          )
                         : activeTab === "personal"
-                          ? "You haven't built any personal routines yet. Create your first custom workout to start training independently."
+                          ? t(
+                              "startDialog.emptyPersonal",
+                              "You haven't built any personal routines yet. Create your first custom workout to start training independently.",
+                            )
                           : activeTab === "repeat"
-                            ? "You have not completed any workout sessions yet to replay."
-                            : "No workout routines are currently available in this category."}
+                            ? t(
+                                "startDialog.emptyRepeat",
+                                "You have not completed any workout sessions yet to replay.",
+                              )
+                            : t(
+                                "startDialog.emptyDefault",
+                                "No workout routines are currently available in this category.",
+                              )}
                   </p>
 
                   <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -621,7 +674,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                       className="inline-flex items-center gap-2 rounded-xl bg-[#5BE584] px-5 py-2.5 text-xs font-bold text-[#090B0F] shadow-[0_0_20px_rgba(91,229,132,0.22)] hover:bg-[#49D472] transition-all"
                     >
                       <Plus className="h-4 w-4 stroke-[2.5]" />
-                      <span>Create Workout</span>
+                      <span>{t("startDialog.createWorkout", "Create Workout")}</span>
                     </button>
 
                     {(searchQuery || activeTab !== "all") && (
@@ -634,7 +687,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                         className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#101418] px-4 py-2.5 text-xs font-semibold text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
                       >
                         <RotateCcw className="h-3.5 w-3.5" />
-                        <span>Clear Filters</span>
+                        <span>{t("startDialog.clearFilters", "Clear Filters")}</span>
                       </button>
                     )}
                   </div>
@@ -724,7 +777,10 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                             {item.exerciseCount > 0 && (
                               <span className="flex items-center gap-1 font-mono">
                                 <Layers className="h-3 w-3 text-[#5BE584]" />
-                                {item.exerciseCount} Exercises
+                                {t("startDialog.exercisesCount", {
+                                  count: item.exerciseCount,
+                                  defaultValue: "{{count}} Exercises",
+                                })}
                               </span>
                             )}
 
@@ -737,14 +793,20 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                             {isRepeat && item.lastCompletedDate && (
                               <span className="flex items-center gap-1 text-purple-400 font-mono text-[11px] bg-purple-500/5 px-2 py-0.5 rounded border border-purple-500/15">
                                 <RotateCcw className="h-3 w-3" />
-                                Last done:{" "}
-                                {new Date(item.lastCompletedDate).toLocaleDateString(
-                                  "en-US",
-                                  {
+                                {t("startDialog.lastDone", {
+                                  date: new Date(
+                                    item.lastCompletedDate,
+                                  ).toLocaleDateString(dateLocale, {
                                     month: "short",
                                     day: "numeric",
-                                  },
-                                )}
+                                  }),
+                                  defaultValue: `Last done: ${new Date(
+                                    item.lastCompletedDate,
+                                  ).toLocaleDateString(dateLocale, {
+                                    month: "short",
+                                    day: "numeric",
+                                  })}`,
+                                })}
                                 {item.lastVolume
                                   ? ` • ${item.lastVolume} kg`
                                   : ""}
@@ -767,16 +829,16 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                           }`}
                         >
                           {isStarting ? (
-                            <span>Starting...</span>
+                            <span>{t("startDialog.starting", "Starting...")}</span>
                           ) : isRepeat ? (
                             <>
                               <RotateCcw className="h-3.5 w-3.5" />
-                              <span>Repeat Workout</span>
+                              <span>{t("startDialog.repeatWorkout", "Repeat Workout")}</span>
                             </>
                           ) : (
                             <>
-                              <Play className="h-3.5 w-3.5 fill-current" />
-                              <span>Start Workout</span>
+                              <Play className="h-3.5 w-3.5 fill-current rtl:rotate-180" />
+                              <span>{t("startDialog.startWorkout", "Start Workout")}</span>
                             </>
                           )}
                         </button>
@@ -790,8 +852,11 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
             {/* Modal Footer */}
             <div className="p-4 px-6 border-t border-[#1E2329] bg-[#090B0F] flex items-center justify-between text-xs text-[#9CA3AF]">
               <span>
-                Showing {filteredItems.length} of {eligibleItems.length} eligible
-                workouts
+                {t("startDialog.showingEligible", {
+                  shown: filteredItems.length,
+                  total: eligibleItems.length,
+                  defaultValue: `Showing ${filteredItems.length} of ${eligibleItems.length} eligible workouts`,
+                })}
               </span>
 
               <button
@@ -799,7 +864,7 @@ export const StartWorkoutDialog: React.FC<StartWorkoutDialogProps> = ({
                 onClick={onClose}
                 className="px-4 py-2 rounded-xl border border-[#1E2329] bg-[#101418] text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
               >
-                Close
+                {t("startDialog.close", "Close")}
               </button>
             </div>
           </div>

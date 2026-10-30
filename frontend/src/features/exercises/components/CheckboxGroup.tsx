@@ -1,5 +1,6 @@
 import { CheckIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 interface CheckboxGroupProps {
   title: string;
@@ -8,6 +9,7 @@ interface CheckboxGroupProps {
   value: string[];
   onChange: (value: string[]) => void;
   error?: string;
+  translationPrefix?: "equipment" | "muscles";
 }
 
 const CheckboxGroup = ({
@@ -17,7 +19,10 @@ const CheckboxGroup = ({
   value,
   onChange,
   error,
+  translationPrefix,
 }: CheckboxGroupProps) => {
+  const { t } = useTranslation(["exercises"]);
+
   const toggleOption = (option: string) => {
     if (value.includes(option)) {
       onChange(value.filter((item) => item !== option));
@@ -44,6 +49,10 @@ const CheckboxGroup = ({
       <div className="grid grid-cols-1 min-[420px]:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
         {options.map((option) => {
           const isSelected = value.includes(option);
+          const displayLabel = translationPrefix
+            ? t(`${translationPrefix}.${option}`, option)
+            : option;
+
           return (
             <div
               key={option}
@@ -61,7 +70,7 @@ const CheckboxGroup = ({
                 "group flex min-h-[48px] cursor-pointer items-center gap-3 rounded-xl border p-3 sm:p-3.5 transition-all select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.99]",
                 isSelected
                   ? "border-[#5BE584] bg-[#5BE584]/10 text-white font-medium ring-1 ring-[#5BE584]/40 shadow-xs"
-                  : "border-border bg-background/60 hover:border-primary/40 hover:bg-accent text-muted-foreground hover:text-foreground"
+                  : "border-border bg-background/60 hover:border-primary/40 hover:bg-accent text-muted-foreground hover:text-foreground",
               )}
             >
               <div
@@ -69,14 +78,14 @@ const CheckboxGroup = ({
                   "flex size-5 shrink-0 items-center justify-center rounded-[5px] border transition-colors",
                   isSelected
                     ? "border-[#5BE584] bg-[#5BE584] text-[#090B0F]"
-                    : "border-input bg-background/40 group-hover:border-primary/50"
+                    : "border-input bg-background/40 group-hover:border-primary/50",
                 )}
               >
                 {isSelected && <CheckIcon className="size-3.5 stroke-[3]" />}
               </div>
 
               <span className="text-xs sm:text-sm font-medium leading-tight">
-                {option}
+                {displayLabel}
               </span>
             </div>
           );

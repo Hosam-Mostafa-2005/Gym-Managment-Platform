@@ -8,6 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useTranslation } from "react-i18next";
 import { useDeleteExercise } from "../hooks/useDeleteExercise";
 import type { Exercise } from "../types/exercise.types";
 import { AlertTriangle, Archive } from "lucide-react";
@@ -23,6 +24,7 @@ const DeleteExerciseDialog: React.FC<DeleteExerciseDialogProps> = ({
   onOpenChange,
   exercise,
 }) => {
+  const { t } = useTranslation(["exercises"]);
   const { mutate, isPending } = useDeleteExercise();
 
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -43,7 +45,7 @@ const DeleteExerciseDialog: React.FC<DeleteExerciseDialogProps> = ({
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent className="max-w-md overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-2xl sm:p-8">
-        <AlertDialogHeader className="space-y-4 text-left">
+        <AlertDialogHeader className="space-y-4 text-start">
           {/* Header with Glowing Warning Icon */}
           <div className="flex items-center gap-3.5">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-amber-500/20 bg-amber-500/10 text-amber-500 dark:bg-amber-500/15">
@@ -51,7 +53,7 @@ const DeleteExerciseDialog: React.FC<DeleteExerciseDialogProps> = ({
             </div>
             <div>
               <AlertDialogTitle className="text-2xl font-extrabold tracking-tight text-foreground">
-                Archive Exercise
+                {t("deleteDialog.title", "Archive Exercise")}
               </AlertDialogTitle>
             </div>
           </div>
@@ -59,7 +61,7 @@ const DeleteExerciseDialog: React.FC<DeleteExerciseDialogProps> = ({
           {/* Description Body */}
           <AlertDialogDescription className="space-y-3 pt-1 text-base leading-relaxed text-muted-foreground">
             <p>
-              Are you sure you want to archive{" "}
+              {t("deleteDialog.prompt", "Are you sure you want to archive")}{" "}
               <span className="font-semibold text-foreground underline decoration-amber-500/60 underline-offset-4">
                 "{exercise.name}"
               </span>
@@ -70,8 +72,10 @@ const DeleteExerciseDialog: React.FC<DeleteExerciseDialogProps> = ({
             <div className="flex items-start gap-2.5 rounded-2xl border border-border/60 bg-muted/40 p-3.5 text-sm text-muted-foreground">
               <Archive className="mt-0.5 h-4 w-4 shrink-0 text-amber-500/80" />
               <span>
-                This exercise will no longer appear in the active exercises
-                list, but it can be restored later.
+                {t(
+                  "deleteDialog.warning",
+                  "This exercise will no longer appear in the active exercises list, but it can be restored later.",
+                )}
               </span>
             </div>
           </AlertDialogDescription>
@@ -83,7 +87,7 @@ const DeleteExerciseDialog: React.FC<DeleteExerciseDialogProps> = ({
             disabled={isPending}
             className="rounded-xl border-border bg-transparent font-medium hover:bg-muted"
           >
-            Cancel
+            {t("deleteDialog.cancel", "Cancel")}
           </AlertDialogCancel>
 
           <AlertDialogAction
@@ -91,7 +95,9 @@ const DeleteExerciseDialog: React.FC<DeleteExerciseDialogProps> = ({
             disabled={isPending}
             className="rounded-xl bg-amber-600 font-medium text-white transition-all hover:bg-amber-700 dark:bg-amber-500 dark:text-zinc-950 dark:hover:bg-amber-400"
           >
-            {isPending ? "Archiving..." : "Archive"}
+            {isPending
+              ? t("deleteDialog.archiving", "Archiving...")
+              : t("deleteDialog.archive", "Archive")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

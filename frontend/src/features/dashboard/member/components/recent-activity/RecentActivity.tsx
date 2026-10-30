@@ -1,6 +1,7 @@
 // src/features/dashboard/member/components/recent-activity/RecentActivity.tsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { History, ChevronRight, ArrowRight } from "lucide-react";
 import { ActivityItem } from "./ActivityItem";
 
@@ -11,6 +12,7 @@ interface RecentActivityProps {
 export const RecentActivity: React.FC<RecentActivityProps> = ({
   activities = [],
 }) => {
+  const { t } = useTranslation(["dashboard"]);
   if (activities.length === 0) return null;
 
   const displayedActivities = activities.slice(0, 5);
@@ -20,15 +22,17 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <History className="h-5 w-5 text-gray-400" />
-          <h2 className="text-sm font-semibold text-white">Recent Activity</h2>
+          <h2 className="text-sm font-semibold text-white">
+            {t("member.recentActivity.title")}
+          </h2>
         </div>
 
         <Link
           to="/dashboard/activity"
           className="flex items-center gap-1 text-xs font-medium text-[#5BE584] hover:underline"
         >
-          <span>View Full Log</span>
-          <ChevronRight className="h-3.5 w-3.5" />
+          <span>{t("member.recentActivity.viewFullLog")}</span>
+          <ChevronRight className="h-3.5 w-3.5 rtl:rotate-180" />
         </Link>
       </div>
 
@@ -44,8 +48,12 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
             to="/dashboard/activity"
             className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white transition"
           >
-            <span>View all {activities.length} activity records</span>
-            <ArrowRight className="h-3.5 w-3.5 text-[#5BE584]" />
+            <span>
+              {t("member.recentActivity.viewAllRecords", {
+                count: activities.length,
+              })}
+            </span>
+            <ArrowRight className="h-3.5 w-3.5 text-[#5BE584] rtl:rotate-180" />
           </Link>
         </div>
       )}

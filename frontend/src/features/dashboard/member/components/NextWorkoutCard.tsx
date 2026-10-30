@@ -1,6 +1,7 @@
 // src/features/dashboard/member/components/NextWorkoutCard.tsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Play,
   Calendar,
@@ -36,6 +37,7 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
   workout,
   upcomingWorkouts = [],
 }) => {
+  const { t, i18n } = useTranslation(["dashboard"]);
   const navigate = useNavigate();
   const { mutate: startSession, isPending: isStartingSession } =
     useStartWorkoutSession();
@@ -70,17 +72,12 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
   const effectiveAssignment =
     assignmentsList[selectedSplitIdx] || assignmentsList[0] || assignment;
 
-  // Determine the next relevant actionable workout:
-  // 1. Earliest upcoming scheduled workout (ready to perform today or upcoming)
-  // 2. Active assignment workout (assigned program ready to perform)
-  // 3. Personal custom workout routine
   const nextSchedule =
     upcomingWorkouts.length > 0 ? upcomingWorkouts[0] : null;
   const isScheduled = Boolean(nextSchedule);
   const targetWorkout =
     nextSchedule?.workout || effectiveAssignment?.workout || workout;
 
-  // Determine whether the active assignment is the same as the scheduled workout
   const isAssigned = Boolean(effectiveAssignment);
   const isAssignedAndScheduled = Boolean(
     isScheduled &&
@@ -98,13 +95,15 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
     effectiveAssignment?.id || (effectiveAssignment as any)?._id;
   const reqWorkoutTitle = targetWorkout?.title || "Workout Session";
 
+  const currentLang = i18n.language === "ar" ? "ar-EG" : "en-US";
+
   const handleStartWorkout = () => {
     const active = currentSessionData?.session;
 
     if (active && active.status === "IN_PROGRESS") {
       const activeWorkoutId = active.workout?.id || (active as any).workoutId;
       if (activeWorkoutId === reqWorkoutId) {
-        toast.success("Resuming your active workout session.");
+        toast.success(t("member.nextWorkout.resumingWorkoutToast"));
         navigate("/sessions/active");
         return;
       }
@@ -139,7 +138,7 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
           } else {
             toast.error(
               err?.response?.data?.message ||
-                "Failed to start scheduled workout.",
+                t("member.nextWorkout.failedToStartScheduledToast"),
             );
           }
         },
@@ -171,7 +170,7 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
             } else {
               toast.error(
                 err?.response?.data?.message ||
-                  "Failed to start workout session.",
+                  t("member.nextWorkout.failedToStartSessionToast"),
               );
             }
           },
@@ -203,7 +202,7 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
             } else {
               toast.error(
                 err?.response?.data?.message ||
-                  "Failed to start workout session.",
+                  t("member.nextWorkout.failedToStartSessionToast"),
               );
             }
           },
@@ -224,15 +223,17 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
               <Dumbbell className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-white">Next Workout</h2>
+              <h2 className="text-sm font-semibold text-white">
+                {t("member.nextWorkout.title")}
+              </h2>
               <p className="text-xs text-gray-400">
                 {isAssignedAndScheduled
-                  ? "Assigned routine scheduled on your calendar"
+                  ? t("member.nextWorkout.assignedScheduled")
                   : isScheduled
-                    ? "Scheduled session on your calendar"
+                    ? t("member.nextWorkout.scheduledOnly")
                     : isAssigned
-                      ? "Active workout program assignment"
-                      : "Up next in your routine"}
+                      ? t("member.nextWorkout.assignedOnly")
+                      : t("member.nextWorkout.routineUpNext")}
               </p>
             </div>
           </div>
@@ -250,12 +251,12 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
               }`}
             >
               {isAssignedAndScheduled
-                ? "Scheduled Assignment"
+                ? t("member.nextWorkout.badgeScheduledAssignment")
                 : isScheduled
-                  ? "Scheduled"
+                  ? t("member.nextWorkout.badgeScheduled")
                   : isAssigned
-                    ? "Assigned Program"
-                    : "Personal Routine"}
+                    ? t("member.nextWorkout.badgeAssignedProgram")
+                    : t("member.nextWorkout.badgePersonalRoutine")}
             </span>
           )}
         </div>
@@ -266,7 +267,7 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
             <div className="flex items-center gap-1.5 text-xs text-[#9CA3AF]">
               <Layers className="h-3.5 w-3.5 text-[#5BE584]" />
               <span className="font-semibold uppercase tracking-wider text-[10px]">
-                Assigned Split:
+                {t("member.nextWorkout.assignedSplit")}
               </span>
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -283,7 +284,10 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
                         : "bg-[#161B22] border border-[#1E2329] text-[#9CA3AF] hover:text-white hover:border-[#2A313C]"
                     }`}
                   >
-                    {a.workout?.title || `Routine ${idx + 1}`}
+                    {a.workout?.title ||
+                      t("member.nextWorkout.routineNumber", {
+                        number: idx + 1,
+                      })}
                   </button>
                 );
               })}
@@ -306,7 +310,9 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
                 {targetWorkout.estimatedDuration && (
                   <span className="inline-flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5 text-gray-400" />
-                    {targetWorkout.estimatedDuration} mins
+                    {t("member.nextWorkout.mins", {
+                      count: targetWorkout.estimatedDuration,
+                    })}
                   </span>
                 )}
                 {targetWorkout.difficulty && (
@@ -323,7 +329,7 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
                   <span className="inline-flex items-center gap-1 text-blue-400 font-medium">
                     <Calendar className="h-3.5 w-3.5" />
                     {new Date(nextSchedule.scheduledAt).toLocaleDateString(
-                      undefined,
+                      currentLang,
                       {
                         weekday: "short",
                         month: "short",
@@ -337,7 +343,7 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
                 {!isScheduled && isAssigned && (
                   <span className="inline-flex items-center gap-1 text-[#5BE584] font-medium">
                     <UserCheck className="h-3.5 w-3.5" />
-                    Ready to perform
+                    {t("member.nextWorkout.readyToPerform")}
                   </span>
                 )}
               </div>
@@ -351,7 +357,9 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
                 className="inline-flex items-center gap-2 rounded-lg bg-[#5BE584] px-4 py-2.5 text-sm font-semibold text-black shadow-sm transition hover:bg-[#46c26d] active:scale-95 disabled:opacity-50"
               >
                 <Play className="h-4 w-4 fill-black" />
-                {isPending ? "Starting..." : "Start Workout"}
+                {isPending
+                  ? t("member.nextWorkout.starting")
+                  : t("member.nextWorkout.startWorkout")}
               </button>
             </div>
           </div>
@@ -362,11 +370,10 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
               <Sparkles className="h-6 w-6 text-[#5BE584]" />
             </div>
             <h3 className="mt-3 text-sm font-semibold text-white">
-              No Workouts Queued
+              {t("member.nextWorkout.noWorkoutsQueuedTitle")}
             </h3>
             <p className="mt-1 max-w-sm text-xs text-gray-400">
-              You don't have any scheduled sessions or assigned programs right
-              now. Explore workouts or plan sessions on your calendar.
+              {t("member.nextWorkout.noWorkoutsQueuedDesc")}
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
               <button
@@ -374,7 +381,8 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
                 onClick={() => navigate("/workout-builder/all")}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-[#5BE584] px-3.5 py-2 text-xs font-semibold text-black shadow-sm transition hover:bg-[#46c26d]"
               >
-                Browse Workouts <ArrowRight className="h-3.5 w-3.5" />
+                <span>{t("member.nextWorkout.browseWorkouts")}</span>
+                <ArrowRight className="h-3.5 w-3.5 rtl:rotate-180" />
               </button>
 
               <button
@@ -383,7 +391,7 @@ export const NextWorkoutCard: React.FC<NextWorkoutCardProps> = ({
                 className="inline-flex items-center gap-1.5 rounded-lg border border-[#1E2329] bg-[#161B22] px-3.5 py-2 text-xs font-semibold text-gray-300 transition hover:bg-[#20262F] hover:text-white"
               >
                 <CalendarDays className="h-3.5 w-3.5 text-[#5BE584]" />
-                Training Calendar
+                <span>{t("member.nextWorkout.trainingCalendar")}</span>
               </button>
             </div>
           </div>

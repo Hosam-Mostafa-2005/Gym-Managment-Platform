@@ -261,7 +261,7 @@ export class GamificationService {
    */
   public async getUserGamificationOverview(userId: string) {
     await this.seedSystemAchievements();
-    await this.evaluateUserAchievements(userId);
+    const newlyAwarded = await this.evaluateUserAchievements(userId);
 
     const [allAchievements, userAchievements, completedSessions, foodLogs, bodyMeasurementsCount] =
       await Promise.all([
@@ -430,6 +430,24 @@ export class GamificationService {
         earnedAt: ua.earnedAt,
       })),
       achievements: mappedAchievements,
+      newlyUnlocked: newlyAwarded.map((ua) => ({
+        id: ua.achievement.id,
+        code: ua.achievement.code,
+        title: ua.achievement.title,
+        name: ua.achievement.title,
+        description: ua.achievement.description,
+        category: ua.achievement.category,
+        tier: ua.achievement.tier,
+        badgeIcon: ua.achievement.badgeIcon,
+        points: ua.achievement.points,
+        earnedAt: ua.earnedAt,
+        isEarned: true,
+        currentProgress: (ua.achievement.criteria as any)?.target || 0,
+        targetProgress: (ua.achievement.criteria as any)?.target || 0,
+        criteriaTarget: (ua.achievement.criteria as any)?.target || 0,
+        progressPercent: 100,
+        progressPct: 100,
+      })),
     };
   }
 
