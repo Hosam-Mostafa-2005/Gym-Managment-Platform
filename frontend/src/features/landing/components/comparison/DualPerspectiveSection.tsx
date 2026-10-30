@@ -53,7 +53,10 @@ export const DualPerspectiveSection: React.FC = () => {
   ];
 
   return (
-    <section className="relative overflow-hidden border-b border-[#2A3039] bg-[#090B0F] py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+    <section
+      id="perspectives"
+      className="scroll-mt-20 sm:scroll-mt-24 relative overflow-hidden border-b border-[#2A3039] bg-[#090B0F] py-16 sm:py-24 px-4 sm:px-6 lg:px-8"
+    >
       {/* Center ambient glow */}
       <div
         aria-hidden="true"

@@ -25,6 +25,10 @@
     "mobile": {
       "platformNavigation": "Platform Navigation",
       "toggleMenu": "Toggle navigation menu"
+    },
+    "floating": {
+      "backToTop": "Scroll to top",
+      "currentSection": "Current Section"
     }
   },
   "hero": {

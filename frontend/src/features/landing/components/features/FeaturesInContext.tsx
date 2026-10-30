@@ -19,7 +19,7 @@ export const FeaturesInContext: React.FC = () => {
   return (
     <section
       id="features"
-      className="relative overflow-hidden border-b border-[#2A3039] bg-[linear-gradient(180deg,#090B0F_0%,#0C1016_50%,#090B0F_100%)] py-16 sm:py-24 px-4 sm:px-6 lg:px-8"
+      className="scroll-mt-20 sm:scroll-mt-24 relative overflow-hidden border-b border-[#2A3039] bg-[linear-gradient(180deg,#090B0F_0%,#0C1016_50%,#090B0F_100%)] py-16 sm:py-24 px-4 sm:px-6 lg:px-8"
     >
       {/* Background illumination */}
       <div

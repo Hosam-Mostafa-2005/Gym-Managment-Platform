@@ -25,6 +25,10 @@
     "mobile": {
       "platformNavigation": "تصفح المنصة",
       "toggleMenu": "تبديل قائمة التنقل"
+    },
+    "floating": {
+      "backToTop": "العودة للأعلى",
+      "currentSection": "القسم الحالي"
     }
   },
   "hero": {

@@ -17,7 +17,10 @@ export const FinalCTA: React.FC = () => {
     : t("cta.actions.openMemberDashboard");
 
   return (
-    <section className="relative overflow-hidden border-b border-[#2A3039] bg-[#090B0F] py-18 sm:py-28 px-4 sm:px-6 lg:px-8">
+    <section
+      id="cta"
+      className="scroll-mt-20 sm:scroll-mt-24 relative overflow-hidden border-b border-[#2A3039] bg-[#090B0F] py-18 sm:py-28 px-4 sm:px-6 lg:px-8"
+    >
       {/* Ambient radial glow behind CTA card */}
       <div
         aria-hidden="true"

@@ -20,7 +20,10 @@ export const HeroSection: React.FC = () => {
     : t("hero.actions.openMemberDashboard");
 
   return (
-    <section className="relative overflow-hidden border-b border-[#2A3039] bg-[#090B0F] bg-[radial-gradient(ellipse_at_top_right,rgba(91,229,132,0.11),transparent_48%),radial-gradient(ellipse_at_bottom_left,rgba(91,229,132,0.06),transparent_45%)] py-14 sm:py-20 lg:py-24">
+    <section
+      id="hero"
+      className="scroll-mt-20 sm:scroll-mt-24 relative overflow-hidden border-b border-[#2A3039] bg-[#090B0F] bg-[radial-gradient(ellipse_at_top_right,rgba(91,229,132,0.11),transparent_48%),radial-gradient(ellipse_at_bottom_left,rgba(91,229,132,0.06),transparent_45%)] py-14 sm:py-20 lg:py-24"
+    >
       {/* Architectural grid overlay */}
       <div
         aria-hidden="true"

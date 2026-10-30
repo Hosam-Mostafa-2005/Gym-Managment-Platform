@@ -1,6 +1,7 @@
 // src/features/landing/pages/LandingPage.tsx
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { LandingNavbar } from "../components/navigation/LandingNavbar";
+import { FloatingSectionNav } from "../components/navigation/FloatingSectionNav";
 import { HeroSection } from "../components/hero/HeroSection";
 import { PlatformOverview } from "../components/overview/PlatformOverview";
 import { CoachExperienceSection } from "../components/coaches/CoachExperienceSection";
@@ -16,7 +17,7 @@ import { LandingFooter } from "../components/footer/LandingFooter";
  * STREN Public & Platform Landing Page
  *
  * Fully redesigned, production-grade landing experience comprising 11 narrative sections:
- * - Section A: LandingNavbar (Sticky, responsive, role-aware, accessible drawer)
+ * - Section A: LandingNavbar (Sticky, responsive, role-aware, accessible drawer, active highlight)
  * - Section B: HeroSection (Editorial messaging, dual CTAs, live badge, HeroProductPreview)
  * - Section C: PlatformOverview (The Closed Coaching Loop architecture)
  * - Section D: CoachExperienceSection (Programming engine, roster management, targets)
@@ -27,10 +28,17 @@ import { LandingFooter } from "../components/footer/LandingFooter";
  * - Section I: ProductShowcase (Interactive authentic UI preview with 4 tabs)
  * - Section J: FinalCTA (High-impact closing call to action)
  * - Section K: LandingFooter (Semantic links, valid routes, branding)
+ * - Floating Section Nav: Intelligent right-aligned section indicator with back-to-top button
  */
 export default function LandingPage() {
+  const [activeSection, setActiveSection] = useState<string>("hero");
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    const main = document.querySelector("main.overflow-y-auto");
+    if (main) {
+      main.scrollTo(0, 0);
+    }
   }, []);
 
   return (
@@ -42,7 +50,7 @@ export default function LandingPage() {
       />
 
       {/* Section A: Navigation */}
-      <LandingNavbar />
+      <LandingNavbar activeSection={activeSection} />
 
       {/* Main Narrative Flow */}
       <main className="relative z-10 flex w-full flex-col">
@@ -73,6 +81,12 @@ export default function LandingPage() {
         {/* Section J: Final Call to Action */}
         <FinalCTA />
       </main>
+
+      {/* Floating Section & Scroll Navigation Pill */}
+      <FloatingSectionNav
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+      />
 
       {/* Section K: Semantic Footer */}
       <LandingFooter />
