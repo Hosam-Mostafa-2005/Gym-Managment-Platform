@@ -25,6 +25,11 @@ const AppLayout = () => {
     setCollapsed(true);
   };
 
+  const isFullBleed =
+    location.pathname.endsWith("/active") ||
+    location.pathname.includes("/sessions/active") ||
+    location.pathname.includes("/workout-sessions/active");
+
   return (
     <AchievementCelebrationProvider>
       <div className="flex h-[100dvh] overflow-hidden bg-[#090B0F] text-[#F8FAFC]">
@@ -33,7 +38,11 @@ const AppLayout = () => {
         <div className="flex flex-1 flex-col overflow-hidden h-[100dvh] min-w-0 relative z-10">
           <Header collapsed={collapsed} onToggle={handleToggle} />
 
-          <main className="flex-1 overflow-y-auto px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
+          <main
+            className={`flex-1 overflow-y-auto ${
+              isFullBleed ? "p-0" : "px-3 py-4 sm:px-6 sm:py-6 lg:px-8"
+            }`}
+          >
             <Outlet />
           </main>
         </div>

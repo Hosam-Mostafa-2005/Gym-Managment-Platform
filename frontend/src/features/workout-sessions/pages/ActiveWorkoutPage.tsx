@@ -162,8 +162,8 @@ export default function ActiveWorkoutPage() {
       </div>
 
       {/* Sticky Header Bar */}
-      <header className="sticky top-0 z-30 border-b border-[#1E2329] bg-[#0D1014]/90 backdrop-blur-md px-4 sm:px-8 py-4">
-        <div className="mx-auto max-w-5xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <header className="sticky top-0 z-30 border-b border-[#1E2329] bg-[#0D1014]/90 backdrop-blur-md px-3 sm:px-8 py-2.5 sm:py-4">
+        <div className="mx-auto max-w-5xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
           <div className="flex items-center gap-3">
             <Link
               to="/sessions"
@@ -220,7 +220,7 @@ export default function ActiveWorkoutPage() {
       </header>
 
       {/* Main Training Space */}
-      <main className="relative z-10 mx-auto max-w-5xl px-4 sm:px-8 py-6 space-y-6 animate-in fade-in duration-300">
+      <div className="relative z-10 mx-auto max-w-5xl px-3 sm:px-8 py-3.5 sm:py-6 space-y-4 sm:space-y-6 animate-in fade-in duration-300">
         {/* Workout & Client/Trainer Summary Card */}
         <WorkoutHeader session={session} />
 
@@ -398,7 +398,7 @@ export default function ActiveWorkoutPage() {
             </div>
           )}
         </section>
-      </main>
+      </div>
 
       {/* Rest Countdown Floating Timer */}
       <RestTimer

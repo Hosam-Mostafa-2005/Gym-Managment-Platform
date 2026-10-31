@@ -170,6 +170,12 @@ export interface PreviousExercisePerformance {
   maxWeight?: number;
   totalReps?: number;
   bestSet?: { weight: number; actualReps: number } | null;
+  highestPerformance?: {
+    weight: number;
+    actualReps: number;
+    sessionId?: string;
+    sessionDate?: string | Date | null;
+  } | null;
   sets: PreviousSetPerformance[];
 }
 

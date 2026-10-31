@@ -1144,6 +1144,12 @@ class WorkoutSessionService {
         maxWeight: number;
         totalReps: number;
         bestSet?: { weight: number; actualReps: number } | null;
+        highestPerformance?: {
+          weight: number;
+          actualReps: number;
+          sessionId: string;
+          sessionDate: Date | null;
+        } | null;
         sets: Array<{
           setNumber: number;
           actualReps: number;
@@ -1158,44 +1164,109 @@ class WorkoutSessionService {
       performanceMap[id] = null;
     }
 
+    // Helper: evaluate if candidate set outperforms current best historical set
+    // Rule 1: Highest weight takes priority when weight > 0
+    // Rule 2: If weights equal, higher completed reps takes priority
+    // Rule 3: If bodyweight (weight == 0), compare completed reps
+    // Rule 4: Weighted set (weight > 0) beats bodyweight set (weight == 0)
+    const isBetterSet = (
+      candidate: { weight: number; actualReps: number },
+      current: { weight: number; actualReps: number } | null,
+    ): boolean => {
+      if (!current) return true;
+      const cWeight = candidate.weight || 0;
+      const bWeight = current.weight || 0;
+      const cReps = candidate.actualReps || 0;
+      const bReps = current.actualReps || 0;
+
+      if (cWeight > 0 || bWeight > 0) {
+        if (cWeight !== bWeight) {
+          return cWeight > bWeight;
+        }
+        return cReps > bReps;
+      }
+
+      return cReps > bReps;
+    };
+
+    // Track highest performance across ALL completed logs per exerciseId
+    const highestMap: Record<
+      string,
+      {
+        weight: number;
+        actualReps: number;
+        sessionId: string;
+        sessionDate: Date | null;
+      } | null
+    > = {};
+
+    for (const id of exerciseIds) {
+      highestMap[id] = null;
+    }
+
     for (const log of logs) {
       if (!log.exerciseId) continue;
-      if (!performanceMap[log.exerciseId]) {
+
+      // Extract valid completed sets for this log
+      const completedSets = log.sets
+        .filter((s) => s.completed && ((s.weight || 0) > 0 || (s.actualReps || 0) > 0))
+        .map((s) => ({
+          setNumber: s.setNumber,
+          actualReps: s.actualReps || 0,
+          weight: s.weight || 0,
+          restDuration: s.restDuration,
+          completed: s.completed,
+        }));
+
+      // Evaluate sets for highest historical PR across all sessions for this exact exercise
+      for (const set of completedSets) {
+        if (isBetterSet(set, highestMap[log.exerciseId])) {
+          highestMap[log.exerciseId] = {
+            weight: set.weight,
+            actualReps: set.actualReps,
+            sessionId: log.session.id,
+            sessionDate: log.session.endedAt || log.session.startedAt || null,
+          };
+        }
+      }
+
+      // Populate most recent completed session (Prev) if not yet populated and has completed sets
+      if (!performanceMap[log.exerciseId] && completedSets.length > 0) {
         const workoutTitle =
           log.session.workout?.title ||
           log.session.assignment?.workout?.title ||
           "Completed Session";
 
-        const completedSets = log.sets
+        const allLoggedSets = log.sets
           .filter((s) => s.completed)
           .map((s) => ({
             setNumber: s.setNumber,
-            actualReps: s.actualReps,
-            weight: s.weight,
+            actualReps: s.actualReps || 0,
+            weight: s.weight || 0,
             restDuration: s.restDuration,
             completed: s.completed,
           }));
 
-        const totalVolume = completedSets.reduce(
+        const totalVolume = allLoggedSets.reduce(
           (sum, s) => sum + (s.weight || 0) * (s.actualReps || 0),
           0,
         );
-        const maxWeight = completedSets.reduce(
+        const maxWeight = allLoggedSets.reduce(
           (max, s) => Math.max(max, s.weight || 0),
           0,
         );
-        const totalReps = completedSets.reduce(
+        const totalReps = allLoggedSets.reduce(
           (sum, s) => sum + (s.actualReps || 0),
           0,
         );
 
         let bestSet: { weight: number; actualReps: number } | null = null;
-        if (completedSets.length > 0) {
-          const sorted = [...completedSets].sort((a, b) => {
+        if (allLoggedSets.length > 0) {
+          const sorted = [...allLoggedSets].sort((a, b) => {
             if (b.weight !== a.weight) return b.weight - a.weight;
             return b.actualReps - a.actualReps;
           });
-          if (sorted[0].weight > 0) {
+          if (sorted[0].weight > 0 || sorted[0].actualReps > 0) {
             bestSet = { weight: sorted[0].weight, actualReps: sorted[0].actualReps };
           }
         }
@@ -1208,8 +1279,15 @@ class WorkoutSessionService {
           maxWeight,
           totalReps,
           bestSet,
-          sets: completedSets,
+          sets: allLoggedSets,
         };
+      }
+    }
+
+    // Attach computed highest historical performance for each exercise
+    for (const id of exerciseIds) {
+      if (performanceMap[id]) {
+        performanceMap[id]!.highestPerformance = highestMap[id];
       }
     }
 

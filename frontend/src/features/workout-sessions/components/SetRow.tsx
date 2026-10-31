@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Check, Loader2, Trash2 } from "lucide-react";
+import { Check, Loader2, Trash2, Trophy } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type {
   WorkoutSetLog,
@@ -10,6 +10,7 @@ import { useUpdateWorkoutSet } from "../hooks/useUpdateWorkoutSet";
 interface SetRowProps {
   set: WorkoutSetLog;
   previousSet?: PreviousSetPerformance;
+  highestPerformance?: { weight: number; actualReps: number } | null;
   targetRestSeconds?: number;
   stageLabel?: string;
   stageBadge?: string;
@@ -25,6 +26,7 @@ interface SetRowProps {
 export const SetRow: React.FC<SetRowProps> = ({
   set,
   previousSet,
+  highestPerformance,
   targetRestSeconds = 60,
   stageLabel,
   stageBadge,
@@ -112,8 +114,8 @@ export const SetRow: React.FC<SetRowProps> = ({
           Prevents horizontal compression and guarantees Reps is 100% visible & editable.
          ======================================================================= */}
       <div className="flex flex-col gap-2 p-2.5 sm:hidden">
-        {/* Row 1: Set Number, Badges, Target, & Previous Performance */}
-        <div className="flex items-center justify-between gap-1.5 min-w-0">
+        {/* Row 1: Set Number, Badges, Target, & Previous / Highest Performance */}
+        <div className="flex items-center justify-between gap-1.5 flex-wrap min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap min-w-0">
             <span
               className={`font-mono text-xs font-bold px-1.5 py-0.5 rounded bg-[#101418] border ${
@@ -171,16 +173,39 @@ export const SetRow: React.FC<SetRowProps> = ({
             </span>
           </div>
 
-          {/* Previous Performance: compact pill if available, omitted if not (NO "First time" text) */}
-          {previousSet && (
-            <div className="shrink-0">
-              <span className="font-mono text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 whitespace-nowrap">
-                {t("setRow.prevWithValue", {
-                  weight: previousSet.weight,
-                  reps: previousSet.actualReps,
-                  defaultValue: `Prev: ${previousSet.weight}kg × ${previousSet.actualReps}`,
-                })}
-              </span>
+          {/* Performance Badges: Prev & Highest (Omitted cleanly if not available) */}
+          {(previousSet || highestPerformance) && (
+            <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+              {previousSet && (
+                <span className="font-mono text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 whitespace-nowrap inline-flex items-center gap-1">
+                  {previousSet.weight > 0
+                    ? t("setRow.prevWithValue", {
+                        weight: previousSet.weight,
+                        reps: previousSet.actualReps,
+                        defaultValue: `Prev: ${previousSet.weight}kg × ${previousSet.actualReps}`,
+                      })
+                    : t("setRow.prevRepsOnly", {
+                        reps: previousSet.actualReps,
+                        defaultValue: `Prev: ${previousSet.actualReps} reps`,
+                      })}
+                </span>
+              )}
+
+              {highestPerformance && (
+                <span className="font-mono text-[10px] font-semibold text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 whitespace-nowrap inline-flex items-center gap-1">
+                  <Trophy className="h-2.5 w-2.5 text-amber-400 shrink-0" />
+                  {highestPerformance.weight > 0
+                    ? t("setRow.highestWithValue", {
+                        weight: highestPerformance.weight,
+                        reps: highestPerformance.actualReps,
+                        defaultValue: `Highest: ${highestPerformance.weight}kg × ${highestPerformance.actualReps}`,
+                      })
+                    : t("setRow.highestRepsOnly", {
+                        reps: highestPerformance.actualReps,
+                        defaultValue: `Highest: ${highestPerformance.actualReps} reps`,
+                      })}
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -397,20 +422,49 @@ export const SetRow: React.FC<SetRowProps> = ({
           </span>
         </div>
 
-        {/* Previous Performance (NO "First time" text) */}
+        {/* Previous Performance & Highest PR */}
         <div className="col-span-3">
-          {previousSet ? (
-            <div className="flex flex-col">
-              <span className="font-mono text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 inline-block w-fit">
-                {t("setRow.prevWithValue", {
-                  weight: previousSet.weight,
-                  reps: previousSet.actualReps,
-                  defaultValue: `${previousSet.weight} kg × ${previousSet.actualReps}`,
-                })}
-              </span>
-              <span className="text-[9px] text-[#6B7280] uppercase tracking-wider mt-0.5">
-                {t("setRow.previous", "Previous")}
-              </span>
+          {previousSet || highestPerformance ? (
+            <div className="flex flex-col gap-1">
+              {previousSet && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-mono text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 inline-flex items-center gap-1">
+                    {previousSet.weight > 0
+                      ? t("setRow.prevWithValue", {
+                          weight: previousSet.weight,
+                          reps: previousSet.actualReps,
+                          defaultValue: `${previousSet.weight} kg × ${previousSet.actualReps}`,
+                        })
+                      : t("setRow.prevRepsOnly", {
+                          reps: previousSet.actualReps,
+                          defaultValue: `${previousSet.actualReps} reps`,
+                        })}
+                  </span>
+                  <span className="text-[9px] text-[#6B7280] uppercase tracking-wider">
+                    {t("setRow.previous", "Previous")}
+                  </span>
+                </div>
+              )}
+              {highestPerformance && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-mono text-xs font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 inline-flex items-center gap-1">
+                    <Trophy className="h-2.5 w-2.5 text-amber-400 shrink-0" />
+                    {highestPerformance.weight > 0
+                      ? t("setRow.highestWithValue", {
+                          weight: highestPerformance.weight,
+                          reps: highestPerformance.actualReps,
+                          defaultValue: `${highestPerformance.weight} kg × ${highestPerformance.actualReps}`,
+                        })
+                      : t("setRow.highestRepsOnly", {
+                          reps: highestPerformance.actualReps,
+                          defaultValue: `${highestPerformance.actualReps} reps`,
+                        })}
+                  </span>
+                  <span className="text-[9px] text-amber-500/70 uppercase tracking-wider">
+                    {t("setRow.highest", "Highest")}
+                  </span>
+                </div>
+              )}
             </div>
           ) : (
             <span className="text-xs text-[#6B7280] font-mono">—</span>

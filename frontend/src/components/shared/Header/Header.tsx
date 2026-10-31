@@ -123,40 +123,6 @@ const Breadcrumb = () => {
   );
 };
 
-// Helper for relative timestamps
-const formatTimeAgo = (
-  dateString: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: (key: any, options?: any) => string,
-  lang: string,
-) => {
-  const date = new Date(dateString);
-  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-  if (seconds < 60) return t("header.timeAgo.justNow", { defaultValue: "Just now" });
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60)
-    return t("header.timeAgo.minutesAgo", {
-      count: minutes,
-      defaultValue: `${minutes}m ago`,
-    });
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24)
-    return t("header.timeAgo.hoursAgo", {
-      count: hours,
-      defaultValue: `${hours}h ago`,
-    });
-  const days = Math.floor(hours / 24);
-  if (days < 7)
-    return t("header.timeAgo.daysAgo", {
-      count: days,
-      defaultValue: `${days}d ago`,
-    });
-  return new Intl.DateTimeFormat(lang === "ar" ? "ar-EG" : "en-US", {
-    month: "short",
-    day: "numeric",
-  }).format(date);
-};
-
 // Helper to map notification type to an icon and color
 const getNotificationStyles = (type: string, category?: string) => {
   const normType = type?.toUpperCase() || "";
@@ -264,13 +230,13 @@ const NotificationMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute end-0 mt-2 w-[calc(100vw-2rem)] max-w-80 origin-top-right rtl:origin-top-left rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-30 flex flex-col overflow-hidden">
+        <div className="fixed sm:absolute top-[68px] sm:top-full mt-0 sm:mt-2 end-3 sm:end-0 w-[min(400px,calc(100vw-24px))] sm:w-80 max-w-[400px] sm:max-w-80 origin-top sm:origin-top-right rtl:sm:origin-top-left rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 flex flex-col overflow-hidden max-h-[calc(100dvh-5.5rem)] sm:max-h-[520px] box-border animate-in fade-in-0 zoom-in-95 duration-150">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-[#2A3039] px-4 py-3 shrink-0">
-            <h3 className="text-sm font-semibold text-[#F8FAFC] flex items-center gap-2">
-              {t("notifications:dropdown.title")}
+          <div className="flex items-center justify-between border-b border-[#2A3039] px-4 py-3 shrink-0 gap-2">
+            <h3 className="text-sm font-semibold text-[#F8FAFC] flex items-center gap-2 min-w-0">
+              <span className="truncate">{t("notifications:dropdown.title")}</span>
               {unreadCount > 0 && (
-                <span className="rounded-full bg-[#5BE584]/15 border border-[#5BE584]/30 px-2 py-0.5 text-[10px] font-bold text-[#5BE584]">
+                <span className="shrink-0 rounded-full bg-[#5BE584]/15 border border-[#5BE584]/30 px-2 py-0.5 text-[10px] font-bold text-[#5BE584]">
                   {unreadCount}
                 </span>
               )}
@@ -279,15 +245,15 @@ const NotificationMenu = () => {
               type="button"
               onClick={handleMarkAllRead}
               disabled={unreadCount === 0 || isMarkingAll}
-              className="cursor-pointer text-xs font-medium text-[#5BE584] hover:text-[#49D472] transition-colors flex items-center gap-1 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cursor-pointer text-xs font-medium text-[#5BE584] hover:text-[#49D472] transition-colors flex items-center gap-1 focus-visible:outline-none disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
             >
-              <CheckCircle2 className="h-3.5 w-3.5" />{" "}
-              {t("notifications:dropdown.markAllRead")}
+              <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />{" "}
+              <span className="whitespace-nowrap">{t("notifications:dropdown.markAllRead")}</span>
             </button>
           </div>
 
           {/* List Area */}
-          <div className="max-h-[320px] overflow-y-auto">
+          <div className="flex-1 overflow-y-auto min-h-0 divide-y divide-[#2A3039]">
             {isLoading ? (
               <div className="p-4 flex flex-col gap-3 animate-pulse">
                 {[...Array(3)].map((_, i) => (
@@ -322,14 +288,14 @@ const NotificationMenu = () => {
                 const localized = localizeNotification(
                   notif,
                   t,
-                  i18n.language
+                  i18n.language,
                 );
 
                 return (
                   <div
                     key={notif.id}
                     onClick={() => handleNotificationClick(notif)}
-                    className={`relative flex items-start gap-3 border-b border-[#2A3039] p-4 transition-colors cursor-pointer ${
+                    className={`relative flex items-start gap-3 p-3.5 sm:p-4 transition-colors cursor-pointer ${
                       isUnread
                         ? "bg-[#1B2028]/50 hover:bg-[#1B2028]"
                         : "hover:bg-[#1B2028]/40"
@@ -343,9 +309,9 @@ const NotificationMenu = () => {
                     >
                       <Icon className="h-4 w-4" />
                     </div>
-                    <div className="flex flex-col gap-1 pe-2 min-w-0">
+                    <div className="flex flex-col gap-1 pe-2 min-w-0 flex-1">
                       <p
-                        className={`text-sm ${
+                        className={`text-sm break-words line-clamp-2 ${
                           isUnread
                             ? "font-semibold text-[#F8FAFC]"
                             : "font-medium text-[#F8FAFC]/80"
@@ -353,14 +319,14 @@ const NotificationMenu = () => {
                       >
                         {localized.title}
                       </p>
-                      <p className="text-xs text-[#94A3B8] line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-[#94A3B8] line-clamp-2 leading-relaxed break-words">
                         {localized.message}
                       </p>
                       <span className="text-[11px] font-medium text-[#94A3B8]/70 mt-0.5">
                         {formatNotificationTimeAgo(
                           notif.createdAt,
                           t,
-                          i18n.language
+                          i18n.language,
                         )}
                       </span>
                     </div>
@@ -378,7 +344,7 @@ const NotificationMenu = () => {
                 navigate("/notifications");
                 setIsOpen(false);
               }}
-              className="w-full cursor-pointer rounded-[12px] py-2 text-xs font-semibold text-[#94A3B8] transition-colors hover:bg-[#13171D] hover:text-[#F8FAFC]"
+              className="w-full cursor-pointer rounded-[12px] py-2 text-xs font-semibold text-[#94A3B8] transition-colors hover:bg-[#13171D] hover:text-[#F8FAFC] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#5BE584]"
             >
               {t("notifications:dropdown.viewAll")}
             </button>
@@ -471,14 +437,14 @@ const QuickActionsMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute end-0 mt-2 w-[calc(100vw-2rem)] max-w-72 origin-top-right rtl:origin-top-left rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 flex flex-col overflow-hidden">
+        <div className="fixed sm:absolute top-[68px] sm:top-full mt-0 sm:mt-2 end-3 sm:end-0 w-[min(360px,calc(100vw-24px))] sm:w-72 max-w-[360px] sm:max-w-72 origin-top sm:origin-top-right rtl:sm:origin-top-left rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 flex flex-col overflow-hidden max-h-[calc(100dvh-5.5rem)] sm:max-h-[480px] box-border animate-in fade-in-0 zoom-in-95 duration-150">
           <div className="flex items-center border-b border-[#2A3039] px-4 py-3 shrink-0">
             <h3 className="text-sm font-semibold text-[#F8FAFC]">
               {t("header.quickActions", "Quick Actions")}
             </h3>
           </div>
 
-          <div className="p-2 flex flex-col gap-1">
+          <div className="p-2 flex flex-col gap-1 overflow-y-auto min-h-0 flex-1">
             {actions.map((action, index) => (
               <button
                 key={index}
@@ -492,11 +458,11 @@ const QuickActionsMenu = () => {
                 <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-[#2A3039] bg-[#090B0F] text-[#5BE584] transition-colors group-hover:bg-[#5BE584] group-hover:text-[#090B0F]">
                   <action.icon className="h-4 w-4" />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-[#F8FAFC]">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-sm font-semibold text-[#F8FAFC] truncate">
                     {action.title}
                   </span>
-                  <span className="text-xs text-[#94A3B8]">
+                  <span className="text-xs text-[#94A3B8] line-clamp-1">
                     {action.description}
                   </span>
                 </div>
@@ -513,6 +479,7 @@ const ProfileMenu = () => {
   const { t } = useTranslation(["common"]);
   const [isOpen, setIsOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
+  const [prevAvatarUrl, setPrevAvatarUrl] = useState<string | undefined>(undefined);
 
   const ref = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -520,9 +487,10 @@ const ProfileMenu = () => {
   const { mutate: logoutUser, isPending } = useLogout();
   const { user, isLoading } = useAuth();
 
-  useEffect(() => {
+  if (user?.avatarUrl !== prevAvatarUrl) {
+    setPrevAvatarUrl(user?.avatarUrl);
     setAvatarError(false);
-  }, [user?.avatarUrl]);
+  }
 
   useOnClickOutside(ref, () => setIsOpen(false));
 
@@ -596,7 +564,7 @@ const ProfileMenu = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute end-0 mt-2 w-[calc(100vw-2rem)] max-w-56 origin-top-right rtl:origin-top-left rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-30 overflow-hidden">
+        <div className="absolute end-0 mt-2 w-[calc(100vw-2rem)] max-w-56 origin-top-right rtl:origin-top-left rounded-[20px] border border-[#2A3039] bg-[#13171D] shadow-[0_12px_40px_rgba(0,0,0,0.35)] focus:outline-none z-50 overflow-hidden box-border">
           <div className="border-b border-[#2A3039] px-4 py-3">
             <p className="truncate text-sm font-semibold text-[#F8FAFC]">
               {displayName}
@@ -643,7 +611,7 @@ export default function Header({ collapsed, onToggle }: HeaderProps) {
   const { t } = useTranslation(["common"]);
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#2A3039] bg-[#090B0F]/95 px-4 sm:px-6 backdrop-blur-md">
+    <header className="sticky top-0 z-40 flex h-16 w-full shrink-0 items-center justify-between border-b border-[#2A3039] bg-[#090B0F]/95 px-4 sm:px-6 backdrop-blur-md">
       <div className="flex items-center gap-3 sm:gap-4 min-w-0">
         <button
           onClick={onToggle}

@@ -6,10 +6,8 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
-  Circle,
   Dumbbell,
   ExternalLink,
-  Flame,
   History,
   Info,
   Layers,
@@ -17,6 +15,7 @@ import {
   PlayCircle,
   Plus,
   Target,
+  Trophy,
 } from "lucide-react";
 import {
   Dialog,
@@ -121,6 +120,8 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const instructions = exerciseDetails?.instructions || [];
   const tips = exerciseDetails?.tips || [];
   const videoUrl = exerciseDetails?.videoUrl;
+
+  const highestPerformance = previousPerformance?.highestPerformance;
 
   const bestSet =
     exercise.previousBestSet ||
@@ -321,7 +322,24 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
               {/* Previous Session Benchmark + Form Guide / Video Controls */}
               <div className="flex flex-wrap items-center gap-2 pt-1">
-                {bestSet && bestSet.weight > 0 ? (
+                {highestPerformance ? (
+                  <div className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-1.5 text-[11px] text-[#9CA3AF]">
+                    <Trophy className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                    <span>{t("exerciseCard.highestBest", "All-Time Best:")}</span>
+                    <span className="font-mono font-bold text-white">
+                      {highestPerformance.weight > 0
+                        ? t("exerciseCard.highestBestValue", {
+                            weight: highestPerformance.weight,
+                            reps: highestPerformance.actualReps,
+                            defaultValue: `${highestPerformance.weight} kg × ${highestPerformance.actualReps} reps`,
+                          })
+                        : t("setRow.highestRepsOnly", {
+                            reps: highestPerformance.actualReps,
+                            defaultValue: `${highestPerformance.actualReps} reps`,
+                          })}
+                    </span>
+                  </div>
+                ) : bestSet && (bestSet.weight > 0 || bestSet.actualReps > 0) ? (
                   <div className="inline-flex items-center gap-1.5 rounded-xl border border-[#5BE584]/25 bg-[#16291D]/60 px-3 py-1.5 text-[11px] text-[#9CA3AF]">
                     <History className="h-3.5 w-3.5 text-[#5BE584] shrink-0" />
                     <span>{t("exerciseCard.bestPreviousSet", "Best previous set:")}</span>
@@ -465,7 +483,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               <div className="hidden sm:grid grid-cols-12 gap-2 sm:gap-4 px-3 sm:px-4 pb-2 border-b border-[#1E2329] text-[10px] font-bold text-[#6B7280] uppercase tracking-wider">
                 <div className="col-span-2 sm:col-span-2">{t("exerciseCard.tableSetAndStage", "Set & Stage")}</div>
                 <div className="col-span-2 sm:col-span-2">{t("exerciseCard.tableTarget", "Target")}</div>
-                <div className="col-span-2 sm:col-span-3">{t("exerciseCard.tablePrevious", "Previous")}</div>
+                <div className="col-span-2 sm:col-span-3">{t("exerciseCard.tablePerformance", "Prev / Highest")}</div>
                 <div className="col-span-3 sm:col-span-2 text-center">{t("exerciseCard.tableWeight", "Weight (kg)")}</div>
                 <div className="col-span-3 sm:col-span-3 text-end ltr:pr-11 rtl:pl-11">{t("exerciseCard.tableActualReps", "Actual Reps")}</div>
               </div>
@@ -491,6 +509,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                       <SetRow
                         set={parentSet}
                         previousSet={prevSetParent}
+                        highestPerformance={highestPerformance}
                         targetRestSeconds={exercise.restSeconds || 60}
                         stageLabel={
                           hasBreakSets
@@ -539,6 +558,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                                 key={child.id}
                                 set={child}
                                 previousSet={prevSetChild}
+                                highestPerformance={highestPerformance}
                                 targetRestSeconds={
                                   exercise.restSeconds || 60
                                 }
