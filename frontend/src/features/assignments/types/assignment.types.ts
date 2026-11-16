@@ -28,6 +28,9 @@ export interface Assignment {
 
   status: AssignmentStatus;
 
+  isArchived?: boolean;
+  archivedAt?: string | null;
+
   completedAt?: string;
   cancelledAt?: string;
   cancelReason?: string;

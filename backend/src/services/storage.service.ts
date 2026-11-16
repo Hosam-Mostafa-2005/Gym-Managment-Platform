@@ -385,7 +385,7 @@ class StorageService {
   }
 
   /**
-   * Deletes a managed asset ONLY if no other exercise in the database references the same imageUrl.
+   * Deletes a managed asset ONLY if no exercise and no user in the database references the same imageUrl.
    */
   async deleteIfUnused(
     imageUrl: string | null | undefined,
@@ -396,14 +396,21 @@ class StorageService {
     if (!parsed) return false;
 
     try {
-      const referenceCount = await prisma.exercise.count({
-        where: {
-          imageUrl,
-          ...(excludeExerciseId ? { id: { not: excludeExerciseId } } : {}),
-        },
-      });
+      const [exerciseCount, userAvatarCount] = await Promise.all([
+        prisma.exercise.count({
+          where: {
+            imageUrl,
+            ...(excludeExerciseId ? { id: { not: excludeExerciseId } } : {}),
+          },
+        }),
+        prisma.user.count({
+          where: {
+            avatarUrl: imageUrl,
+          },
+        }),
+      ]);
 
-      if (referenceCount > 0) {
+      if (exerciseCount > 0 || userAvatarCount > 0) {
         return false;
       }
 

@@ -320,6 +320,8 @@ model Assignment {
   cancelledAt  DateTime?
   cancelReason String?
   notes        String?
+  isArchived   Boolean          @default(false)
+  archivedAt   DateTime?
   isActive     Boolean          @default(true)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -333,6 +335,7 @@ model Assignment {
 
   @@index([trainerId, isActive])
   @@index([memberId, isActive])
+  @@index([memberId, isArchived, isActive])
   @@index([memberId, status, isActive])
   @@index([status])
   @@index([createdAt(sort: Desc)])
@@ -397,6 +400,7 @@ model WorkoutExerciseLog {
   setsDetail         Json?
   order              Int
   completed    Boolean          @default(false)
+  isRemoved    Boolean          @default(false)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
@@ -407,6 +411,7 @@ model WorkoutExerciseLog {
 
   @@unique([sessionId, order])
   @@index([sessionId, completed])
+  @@index([sessionId, isRemoved])
   @@index([sessionId])
   @@map("workout_exercise_logs")
 }

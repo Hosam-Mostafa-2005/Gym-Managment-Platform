@@ -390,11 +390,19 @@ class AssignmentService {
     });
   }
 
-  async getMyAssignments(memberId: string) {
+  async getMyAssignments(memberId: string, query?: Record<string, any>) {
+    const isArchivedFilter =
+      query?.archived === "true"
+        ? true
+        : query?.archived === "all"
+          ? undefined
+          : false;
+
     const assignments = await prisma.assignment.findMany({
       where: {
         memberId,
         isActive: true,
+        ...(isArchivedFilter !== undefined && { isArchived: isArchivedFilter }),
       },
       orderBy: { createdAt: "desc" },
       include: {
@@ -676,6 +684,120 @@ class AssignmentService {
       where: { id },
       data: { isActive: false },
     });
+  }
+
+  async archive(id: string, userId: string, role: Role) {
+    const assignment = await prisma.assignment.findFirst({
+      where: {
+        id,
+        isActive: true,
+      },
+      include: {
+        trainer: { select: { id: true, name: true, email: true } },
+        workout: {
+          include: {
+            exercises: {
+              include: { exercise: true },
+              orderBy: { order: "asc" },
+            },
+          },
+        },
+      },
+    });
+
+    if (!assignment) {
+      throw new AppError("Assignment not found.", 404);
+    }
+
+    if (role === Roles.MEMBER && assignment.memberId !== userId) {
+      throw new AppError("You can only archive your own assignments.", 403);
+    }
+
+    if (role === Roles.TRAINER && assignment.memberId !== userId) {
+      throw new AppError("Coaches cannot archive assignments on behalf of members.", 403);
+    }
+
+    if (assignment.isArchived) {
+      return mapAssignment(assignment);
+    }
+
+    const updated = await prisma.assignment.update({
+      where: { id },
+      data: {
+        isArchived: true,
+        archivedAt: new Date(),
+      },
+      include: {
+        trainer: { select: { id: true, name: true, email: true } },
+        workout: {
+          include: {
+            exercises: {
+              include: { exercise: true },
+              orderBy: { order: "asc" },
+            },
+          },
+        },
+      },
+    });
+
+    return mapAssignment(updated);
+  }
+
+  async unarchive(id: string, userId: string, role: Role) {
+    const assignment = await prisma.assignment.findFirst({
+      where: {
+        id,
+        isActive: true,
+      },
+      include: {
+        trainer: { select: { id: true, name: true, email: true } },
+        workout: {
+          include: {
+            exercises: {
+              include: { exercise: true },
+              orderBy: { order: "asc" },
+            },
+          },
+        },
+      },
+    });
+
+    if (!assignment) {
+      throw new AppError("Assignment not found.", 404);
+    }
+
+    if (role === Roles.MEMBER && assignment.memberId !== userId) {
+      throw new AppError("You can only unarchive your own assignments.", 403);
+    }
+
+    if (role === Roles.TRAINER && assignment.memberId !== userId) {
+      throw new AppError("Coaches cannot unarchive assignments on behalf of members.", 403);
+    }
+
+    if (!assignment.isArchived) {
+      return mapAssignment(assignment);
+    }
+
+    const updated = await prisma.assignment.update({
+      where: { id },
+      data: {
+        isArchived: false,
+        archivedAt: null,
+      },
+      include: {
+        trainer: { select: { id: true, name: true, email: true } },
+        workout: {
+          include: {
+            exercises: {
+              include: { exercise: true },
+              orderBy: { order: "asc" },
+            },
+          },
+        },
+      },
+    });
+
+    return mapAssignment(updated);
   }
 }
 

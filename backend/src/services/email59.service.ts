@@ -181,21 +181,25 @@ export class Email59Service {
     }
 
     if (!this.apiKey) {
-      if (env.NODE_ENV === "production") {
-        throw new AppError(
-          "Email verification provider is not configured. Missing EMAIL59_KEY.",
-          500,
-        );
+      const isExplicitDevBypassAllowed =
+        env.NODE_ENV === "development" &&
+        process.env.ALLOW_DEV_OTP === "true";
+
+      if (isExplicitDevBypassAllowed) {
+        if (sanitizedCode === "123456") {
+          return {
+            valid: true,
+            status: "approved",
+            id: "vrf_dev_approved",
+          };
+        }
+        throw new AppError("Incorrect verification code.", 400);
       }
 
-      if (sanitizedCode === "123456") {
-        return {
-          valid: true,
-          status: "approved",
-          id: "vrf_dev_approved",
-        };
-      }
-      throw new AppError("Incorrect verification code.", 400);
+      throw new AppError(
+        "Email verification provider is not configured. Missing EMAIL59_KEY.",
+        500,
+      );
     }
 
     try {

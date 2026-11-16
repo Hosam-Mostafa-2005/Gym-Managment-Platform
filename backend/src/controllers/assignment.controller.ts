@@ -60,7 +60,10 @@ export const getById: RequestHandler = catchAsync(async (req, res) => {
 });
 
 export const getMyAssignments: RequestHandler = catchAsync(async (req, res) => {
-  const assignments = await assignmentService.getMyAssignments(req.user!.id);
+  const assignments = await assignmentService.getMyAssignments(
+    req.user!.id,
+    req.query as any,
+  );
 
   res.status(200).json({
     status: "success",
@@ -97,5 +100,35 @@ export const remove: RequestHandler = catchAsync(async (req, res) => {
   res.status(204).json({
     status: "success",
     data: null,
+  });
+});
+
+export const archive: RequestHandler = catchAsync(async (req, res) => {
+  const assignment = await assignmentService.archive(
+    req.params.id as string,
+    req.user!.id,
+    req.user!.role,
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      assignment,
+    },
+  });
+});
+
+export const unarchive: RequestHandler = catchAsync(async (req, res) => {
+  const assignment = await assignmentService.unarchive(
+    req.params.id as string,
+    req.user!.id,
+    req.user!.role,
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      assignment,
+    },
   });
 });

@@ -46,7 +46,8 @@ export default function WorkoutSessionsPage() {
     activeWorkoutTitle: "",
   });
 
-  const { data: assignments = [] } = useMyAssignments();
+  const isMember = user?.role?.toUpperCase() === "MEMBER";
+  const { data: assignments = [] } = useMyAssignments({ enabled: isMember });
   const { data: currentSessionData } = useCurrentWorkoutSession();
   const { mutate: startWorkout, isPending: isStarting } =
     useStartWorkoutSession();
@@ -140,7 +141,7 @@ export default function WorkoutSessionsPage() {
     }
 
     if (status === "COMPLETED") {
-      navigate(`/sessions/${id}/summary`);
+      navigate(isMember ? `/sessions/${id}/summary` : `/sessions/${id}`);
       return;
     }
 
@@ -567,26 +568,34 @@ export default function WorkoutSessionsPage() {
                               </button>
                             ) : session.status === "COMPLETED" ? (
                               <div className="inline-flex items-center justify-end gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => handleRepeatSession(session)}
-                                  title={t(
-                                    "overview.startAgainTitle",
-                                    "Repeat this workout in a new session without altering history",
-                                  )}
-                                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#23422E] bg-[#16291D] px-2.5 py-1.5 text-xs font-medium text-[#5BE584] hover:bg-[#1E3A28] transition-colors"
-                                >
-                                  <RotateCcw className="w-3 h-3" />
-                                  {t("overview.startAgain", "Start Again")}
-                                </button>
+                                {isMember && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRepeatSession(session)}
+                                    title={t(
+                                      "overview.startAgainTitle",
+                                      "Repeat this workout in a new session without altering history",
+                                    )}
+                                    className="inline-flex items-center gap-1.5 rounded-lg border border-[#23422E] bg-[#16291D] px-2.5 py-1.5 text-xs font-medium text-[#5BE584] hover:bg-[#1E3A28] transition-colors"
+                                  >
+                                    <RotateCcw className="w-3 h-3" />
+                                    {t("overview.startAgain", "Start Again")}
+                                  </button>
+                                )}
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    navigate(`/sessions/${session.id}/summary`)
+                                    navigate(
+                                      isMember
+                                        ? `/sessions/${session.id}/summary`
+                                        : `/sessions/${session.id}`,
+                                    )
                                   }
                                   className="inline-flex items-center gap-1 rounded-lg border border-[#1E2329] bg-[#101418] px-2.5 py-1.5 text-xs font-medium text-[#9CA3AF] hover:text-white hover:border-[#2A313A] transition-colors"
                                 >
-                                  {t("overview.summary", "Summary")}
+                                  {isMember
+                                    ? t("overview.summary", "Summary")
+                                    : t("overview.review", "Review / Details")}
                                 </button>
                               </div>
                             ) : (

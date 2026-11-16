@@ -60,7 +60,7 @@ class AuthService {
     });
 
     if (existingUser) {
-      if (existingUser.isEmailVerified) {
+      if (existingUser.isEmailVerified || existingUser.role !== Roles.MEMBER) {
         throw new AppError(
           "An account with this email already exists. Please sign in or use forgot password.",
           409,
@@ -129,14 +129,14 @@ class AuthService {
     });
 
     if (existingUser) {
-      if (existingUser.isEmailVerified) {
+      if (existingUser.isEmailVerified || existingUser.role !== Roles.TRAINER) {
         throw new AppError(
           "An account with this email already exists. Please sign in or use forgot password.",
           409,
         );
       }
 
-      // Existing unverified account: update user details to coach and restart verification
+      // Existing unverified coach registration: update credentials and restart verification
       const hashedPassword = await bcrypt.hash(userData.password, 12);
       const updatedUser = await prisma.user.update({
         where: { id: existingUser.id },
@@ -200,13 +200,12 @@ class AuthService {
       throw new AppError("No account found for this email address.", 404);
     }
 
+    if (!user.isActive) {
+      throw new AppError("This user account has been deactivated.", 403);
+    }
+
     if (user.isEmailVerified) {
-      const token = generateToken(user.id);
-      return {
-        user: mapUser(user),
-        token,
-        message: "Email is already verified.",
-      };
+      throw new AppError("Email is already verified. Please sign in.", 400);
     }
 
     // Verify OTP with email59 check endpoint
@@ -416,13 +415,18 @@ class AuthService {
     }
 
     // 3. New Google user registration
+    const initialRole =
+      data.intendedRole === Roles.TRAINER ? Roles.TRAINER : Roles.MEMBER;
+
     user = await prisma.user.create({
       data: {
-        name: payload.name?.trim() || "Member",
+        name:
+          payload.name?.trim() ||
+          (initialRole === Roles.TRAINER ? "Coach" : "Member"),
         email: normalizedEmail,
         password: null,
         googleId: payload.sub,
-        role: "member",
+        role: initialRole,
         isEmailVerified: true,
         emailVerifiedAt: new Date(),
         onboardingCompleted: false,
@@ -877,6 +881,9 @@ class AuthService {
       throw new AppError("User not found.", 404);
     }
 
+    const isTrainerOrAdmin =
+      existing.role === Roles.TRAINER || existing.role === Roles.ADMIN;
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -893,22 +900,22 @@ class AuthService {
         ...(data.experienceLevel !== undefined && {
           experienceLevel: data.experienceLevel ? data.experienceLevel.trim() : null,
         }),
-        ...(data.professionalTitle !== undefined && {
+        ...(isTrainerOrAdmin && data.professionalTitle !== undefined && {
           professionalTitle: data.professionalTitle ? data.professionalTitle.trim() : null,
         }),
-        ...(data.coachingPhilosophy !== undefined && {
+        ...(isTrainerOrAdmin && data.coachingPhilosophy !== undefined && {
           coachingPhilosophy: data.coachingPhilosophy ? data.coachingPhilosophy.trim() : null,
         }),
-        ...(data.languagesSpoken !== undefined && {
+        ...(isTrainerOrAdmin && data.languagesSpoken !== undefined && {
           languagesSpoken: data.languagesSpoken,
         }),
-        ...(data.specialties !== undefined && {
+        ...(isTrainerOrAdmin && data.specialties !== undefined && {
           specialties: data.specialties,
         }),
-        ...(data.certifications !== undefined && {
+        ...(isTrainerOrAdmin && data.certifications !== undefined && {
           certifications: data.certifications,
         }),
-        ...(data.yearsOfExperience !== undefined && {
+        ...(isTrainerOrAdmin && data.yearsOfExperience !== undefined && {
           yearsOfExperience: data.yearsOfExperience,
         }),
       },

@@ -24,6 +24,7 @@ export interface ResendVerificationDto {
 
 export interface GoogleAuthDto {
   idToken: string;
+  intendedRole?: string;
 }
 
 export interface ForgotPasswordDto {

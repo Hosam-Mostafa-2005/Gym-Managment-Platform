@@ -20,6 +20,7 @@ import notificationService from "./notification.service.js";
 import { NOTIFICATION_TYPE } from "../constants/notification.js";
 import gamificationService from "./gamification.service.js";
 import coachAccessService from "./coach-access.service.js";
+import workoutSetService from "./workout-set.service.js";
 
 class WorkoutSessionService {
   async start(
@@ -327,6 +328,7 @@ class WorkoutSessionService {
     const exerciseLogs = await prisma.workoutExerciseLog.findMany({
       where: {
         sessionId: session.id,
+        isRemoved: false,
       },
       include: {
         exercise: true,
@@ -765,6 +767,7 @@ class WorkoutSessionService {
     const exerciseLogs = await prisma.workoutExerciseLog.findMany({
       where: {
         sessionId: session.id,
+        isRemoved: false,
       },
       include: {
         exercise: true,
@@ -1010,10 +1013,11 @@ class WorkoutSessionService {
       throw new AppError("Exercise not found.", 404);
     }
 
-    const existingLogsCount = await prisma.workoutExerciseLog.count({
-      where: { sessionId: session.id },
+    const lastActiveLog = await prisma.workoutExerciseLog.findFirst({
+      where: { sessionId: session.id, isRemoved: false },
+      orderBy: { order: "desc" },
     });
-    const nextOrder = existingLogsCount + 1;
+    const nextOrder = (lastActiveLog?.order ?? 0) + 1;
 
     const targetSets = data.targetSets ?? 3;
     const targetRepsNum = typeof data.targetReps === "number" ? data.targetReps : 10;
@@ -1055,7 +1059,113 @@ class WorkoutSessionService {
       });
     });
 
+    await workoutSetService.updateSessionStats(session.id);
+
     return this.getCurrent(userId);
+  }
+
+  async removeExercise(
+    sessionId: string,
+    exerciseLogId: string,
+    memberId: string,
+  ) {
+    const session = await prisma.workoutSession.findFirst({
+      where: {
+        id: sessionId,
+        memberId,
+        status: WORKOUT_SESSION_STATUS.IN_PROGRESS,
+        isActive: true,
+      },
+    });
+
+    if (!session) {
+      throw new AppError(
+        "Active workout session not found or you are not authorized to modify it.",
+        404,
+      );
+    }
+
+    const exerciseLog = await prisma.workoutExerciseLog.findFirst({
+      where: {
+        id: exerciseLogId,
+        sessionId: session.id,
+        isRemoved: false,
+      },
+      include: {
+        sets: true,
+      },
+    });
+
+    if (!exerciseLog) {
+      throw new AppError("Exercise log not found in this session.", 404);
+    }
+
+    const hasCompletedSets = exerciseLog.sets.some((s) => s.completed);
+
+    await prisma.$transaction(
+      async (tx) => {
+        if (hasCompletedSets) {
+          // Soft-removal: delete incomplete sets only, mark exerciseLog as removed
+          await tx.workoutSetLog.deleteMany({
+            where: {
+              exerciseLogId: exerciseLog.id,
+              completed: false,
+            },
+          });
+
+          // Shift order to large negative value to avoid @@unique([sessionId, order]) conflict
+          await tx.workoutExerciseLog.update({
+            where: { id: exerciseLog.id },
+            data: {
+              isRemoved: true,
+              order: -(exerciseLog.order + 10000),
+            },
+          });
+        } else {
+          // Hard-removal: delete all sets and exercise log entirely
+          await tx.workoutSetLog.deleteMany({
+            where: {
+              exerciseLogId: exerciseLog.id,
+            },
+          });
+
+          await tx.workoutExerciseLog.delete({
+            where: { id: exerciseLog.id },
+          });
+        }
+
+        // Fetch remaining active exercises and renumber orders to continuous 1..N
+        const remainingLogs = await tx.workoutExerciseLog.findMany({
+          where: {
+            sessionId: session.id,
+            isRemoved: false,
+          },
+          orderBy: { order: "asc" },
+        });
+
+        // Step 1: Assign negative intermediate orders to prevent any unique constraint collisions
+        for (let i = 0; i < remainingLogs.length; i++) {
+          await tx.workoutExerciseLog.update({
+            where: { id: remainingLogs[i].id },
+            data: { order: -(i + 1) },
+          });
+        }
+
+        // Step 2: Assign final continuous positive orders (1, 2, 3...)
+        for (let i = 0; i < remainingLogs.length; i++) {
+          await tx.workoutExerciseLog.update({
+            where: { id: remainingLogs[i].id },
+            data: { order: i + 1 },
+          });
+        }
+      },
+      { timeout: 30000, maxWait: 10000 },
+    );
+
+    // Recalculate authoritative session stats (planned sets, completed sets, volume, progress)
+    await workoutSetService.updateSessionStats(session.id);
+
+    return this.getCurrent(memberId);
   }
 
   async getPreviousPerformanceForSession(
@@ -1070,6 +1180,7 @@ class WorkoutSessionService {
       },
       include: {
         exerciseLogs: {
+          where: { isRemoved: false },
           select: {
             exerciseId: true,
           },

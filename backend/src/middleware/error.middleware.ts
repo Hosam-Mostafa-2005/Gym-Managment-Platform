@@ -23,27 +23,42 @@ const globalErrorHandler: ErrorRequestHandler = (err, req: Request, res: Respons
     });
   }
 
-  // Mongo Duplicate Key
-  if (err.code === 11000) {
+  // Prisma Unique Constraint
+  if (err.code === "P2002") {
     return res.status(409).json({
       status: "fail",
-      message: "Duplicate field value.",
+      message: "A record with this unique value already exists.",
     });
   }
 
-  // Mongo Validation
-  if (err.name === "ValidationError") {
-    return res.status(400).json({
+  // Prisma Record Not Found
+  if (err.code === "P2025") {
+    return res.status(404).json({
       status: "fail",
-      message: err.message,
+      message: "The requested resource was not found.",
     });
   }
 
-  // Mongo Cast Error
-  if (err.name === "CastError") {
+  // Prisma Foreign Key Constraint
+  if (err.code === "P2003") {
     return res.status(400).json({
       status: "fail",
-      message: "Invalid ID format.",
+      message: "Referenced related record does not exist or cannot be modified.",
+    });
+  }
+
+  // JWT Errors
+  if (err.name === "JsonWebTokenError") {
+    return res.status(401).json({
+      status: "fail",
+      message: "Invalid token. Please log in again.",
+    });
+  }
+
+  if (err.name === "TokenExpiredError") {
+    return res.status(401).json({
+      status: "fail",
+      message: "Your session token has expired. Please log in again.",
     });
   }
 

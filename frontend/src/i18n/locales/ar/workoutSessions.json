@@ -216,7 +216,13 @@
     "deleteDescDefault": "هل أنت متأكد من رغبتك في إزالة المجموعة {{setNum}}.{{segmentIndex}} من جلسة التمرين النشطة؟",
     "cancel": "إلغاء",
     "confirmRemoval": "تأكيد الإزالة",
-    "removing": "جاري الإزالة..."
+    "removing": "جاري الإزالة...",
+    "removeExercise": "حذف التمرين",
+    "removeExerciseTitle": "حذف التمرين من الجلسة",
+    "removeExerciseDesc": "هل أنت متأكد من رغبتك في حذف \"{{name}}\" من جلسة التمرين الحالية؟",
+    "removeExerciseTemplateNote": "ملاحظة: يؤثر هذا الإجراء فقط على جلسة التمرين الحالية، ولن يتم تعديل خطة التمرين الأصلية المخصصة لك.",
+    "removeExerciseCompletedNote": "سيتم الاحتفاظ بالمجموعات المكتملة بالفعل لهذا التمرين في سجلك التدريبي وحجم التدريب. بينما ستُحذف المجموعات غير المكتملة من إجمالي المستهدف المتبقي للجلسة.",
+    "confirmRemoveExercise": "تأكيد حذف التمرين"
   },
   "exerciseNavigator": {
     "exerciseSequence": "تسلسل التمارين",

@@ -12,13 +12,57 @@ export interface UploadExerciseImageResponse {
   provider: string;
 }
 
-export const getExercises = async (page = 1, limit = 10) => {
-  const { data } = await api.get("/exercises", {
-    params: { page, limit },
-  });
+export interface ExerciseQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  difficulty?: string;
+  equipment?: string;
+  primaryMuscles?: string;
+  isCustom?: boolean;
+  sort?: string;
+}
+
+export const getExercises = async (
+  pageOrParams: number | ExerciseQueryParams = 1,
+  limit = 10,
+  search?: string,
+) => {
+  let params: Record<string, any> = {};
+
+  if (typeof pageOrParams === "object") {
+    params = {
+      page: pageOrParams.page ?? 1,
+      limit: pageOrParams.limit ?? 10,
+      search: pageOrParams.search || undefined,
+      difficulty:
+        pageOrParams.difficulty && pageOrParams.difficulty !== "all"
+          ? pageOrParams.difficulty
+          : undefined,
+      equipment:
+        pageOrParams.equipment && pageOrParams.equipment !== "all"
+          ? pageOrParams.equipment
+          : undefined,
+      primaryMuscles:
+        pageOrParams.primaryMuscles && pageOrParams.primaryMuscles !== "all"
+          ? pageOrParams.primaryMuscles
+          : undefined,
+      isCustom: pageOrParams.isCustom,
+      sort: pageOrParams.sort,
+    };
+  } else {
+    params = {
+      page: pageOrParams,
+      limit,
+      search: search || undefined,
+    };
+  }
+
+  const { data } = await api.get("/exercises", { params });
   return {
     exercises: data.data.exercises,
     results: data.results,
+    pagination: data.pagination,
   };
 };
 

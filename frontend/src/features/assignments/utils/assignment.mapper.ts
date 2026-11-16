@@ -36,6 +36,9 @@ export const mapAssignment = (assignment: any): Assignment => ({
 
   status: assignment.status,
 
+  isArchived: Boolean(assignment.isArchived),
+  archivedAt: assignment.archivedAt ?? null,
+
   completedAt: assignment.completedAt,
   cancelledAt: assignment.cancelledAt,
   cancelReason: assignment.cancelReason,

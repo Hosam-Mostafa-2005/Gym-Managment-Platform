@@ -171,7 +171,6 @@ class BodyMeasurementService {
 
     if (isCoachViewing && !canAccessHistory) {
       if (relationshipStartDate) {
-        where.measuredAt = { gte: relationshipStartDate };
         // If consent is not granted, restrict to coach's own measurements or relationship period
         where.OR = [
           { trainerId: userId },
@@ -218,7 +217,6 @@ class BodyMeasurementService {
 
     if (isCoachViewing && !canAccessHistory) {
       if (relationshipStartDate) {
-        where.measuredAt = { gte: relationshipStartDate };
         // If consent is not granted, restrict to coach's own measurements or relationship period
         where.OR = [
           { trainerId: userId },
@@ -267,10 +265,10 @@ class BodyMeasurementService {
     if (role === Roles.TRAINER) {
       const relationship = await this.checkTrainerAccess(userId, measurement.memberId);
       if (measurement.trainerId !== userId) {
-        if (
-          !relationship ||
-          relationship.historySharingConsent !== HISTORY_SHARING_CONSENT.GRANTED
-        ) {
+        const canAccess =
+          relationship?.historySharingConsent === HISTORY_SHARING_CONSENT.GRANTED ||
+          (relationship?.startedAt && measurement.measuredAt >= relationship.startedAt);
+        if (!canAccess) {
           throw new AppError("Access denied to this measurement.", 403);
         }
       }
@@ -301,14 +299,9 @@ class BodyMeasurementService {
     }
 
     if (role === Roles.TRAINER) {
-      const relationship = await this.checkTrainerAccess(userId, measurement.memberId);
+      await this.checkTrainerAccess(userId, measurement.memberId);
       if (measurement.trainerId !== userId) {
-        if (
-          !relationship ||
-          relationship.historySharingConsent !== HISTORY_SHARING_CONSENT.GRANTED
-        ) {
-          throw new AppError("Access denied to this measurement.", 403);
-        }
+        throw new AppError("You can only modify measurements you recorded.", 403);
       }
     }
 
@@ -363,14 +356,9 @@ class BodyMeasurementService {
     }
 
     if (role === Roles.TRAINER) {
-      const relationship = await this.checkTrainerAccess(userId, measurement.memberId);
+      await this.checkTrainerAccess(userId, measurement.memberId);
       if (measurement.trainerId !== userId) {
-        if (
-          !relationship ||
-          relationship.historySharingConsent !== HISTORY_SHARING_CONSENT.GRANTED
-        ) {
-          throw new AppError("Access denied to this measurement.", 403);
-        }
+        throw new AppError("You can only delete measurements you recorded.", 403);
       }
     }
 

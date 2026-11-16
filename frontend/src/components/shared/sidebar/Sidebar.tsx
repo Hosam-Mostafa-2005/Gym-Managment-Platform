@@ -192,6 +192,7 @@ const navGroups: NavGroup[] = [
         defaultName: "Training Calendar",
         icon: Calendar,
         path: "/calendar",
+        roles: ["MEMBER"],
       },
       {
         id: "measurements",

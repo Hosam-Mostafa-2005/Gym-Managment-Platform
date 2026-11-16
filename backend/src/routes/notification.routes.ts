@@ -17,6 +17,11 @@ router.patch(
   validate(updateNotificationPreferencesSchema),
   notificationController.updatePreferences,
 );
+router.put(
+  "/preferences",
+  validate(updateNotificationPreferencesSchema),
+  notificationController.updatePreferences,
+);
 
 router.get("/", notificationController.getMyNotifications);
 router.patch("/read-all", notificationController.markAllAsRead);

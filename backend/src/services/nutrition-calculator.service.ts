@@ -14,6 +14,7 @@ export const ACTIVITY_MULTIPLIERS: Record<ActivityLevel, number> = {
   MODERATELY_ACTIVE: 1.55,
   VERY_ACTIVE: 1.725,
   EXTRA_ACTIVE: 1.9,
+  EXTREMELY_ACTIVE: 1.9,
 };
 
 export const MIN_CALORIE_FLOORS = {

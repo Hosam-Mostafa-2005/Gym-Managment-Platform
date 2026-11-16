@@ -51,6 +51,18 @@ router.patch(
   assignmentController.update,
 );
 
+router.patch(
+  "/:id/archive",
+  restrictTo(Roles.ADMIN, Roles.MEMBER),
+  assignmentController.archive,
+);
+
+router.patch(
+  "/:id/unarchive",
+  restrictTo(Roles.ADMIN, Roles.MEMBER),
+  assignmentController.unarchive,
+);
+
 router.delete(
   "/:id",
   restrictTo(Roles.ADMIN, Roles.TRAINER),

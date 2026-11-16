@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import { describe, it, after } from "node:test";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
 
@@ -287,7 +287,7 @@ describe("STREN — Parent/Child Break Sets and In-Session Set Removal Test Suit
     assert.equal(remainingSets[1].segmentIndex, 0);
   });
 
-  it("8. Completion guard: deleting sets does NOT cause an incomplete exercise to be falsely marked completed", async () => {
+  it("8. Dynamic set reduction: deleting uncompleted sets updates targetSets and marks completed if all remaining sets are done", async () => {
     // Currently, 2 unlogged sets remain (Set 1.0 and Set 2.0).
     // Complete Set 1.0 only
     const sets = await prisma.workoutSetLog.findMany({
@@ -304,12 +304,13 @@ describe("STREN — Parent/Child Break Sets and In-Session Set Removal Test Suit
     await workoutSetService.delete(sets[1].id, athleteId);
 
     // Now only 1 set exists (Set 1.0, completed).
-    // BUT the original prescribed targetSets was 3!
-    // The exercise MUST NOT be marked completed because the athlete did not complete the prescribed 3 sets!
+    // Dynamic set reduction: targetSets has been authoritatively updated to 1,
+    // and since the 1 remaining set is completed, the exercise is marked completed.
     const exLog = await prisma.workoutExerciseLog.findUnique({
       where: { id: exerciseLogId },
     });
-    assert.equal(exLog?.completed, false);
+    assert.equal(exLog?.targetSets, 1);
+    assert.equal(exLog?.completed, true);
   });
 
   it("9. Completing minimum targetSets marks exercise completed", async () => {
@@ -349,5 +350,45 @@ describe("STREN — Parent/Child Break Sets and In-Session Set Removal Test Suit
       where: { id: exerciseLogId },
     });
     assert.equal(exLog?.completed, true);
+  });
+
+  after(async () => {
+    try {
+      if (athleteId) {
+        await prisma.workoutSetLog.deleteMany({
+          where: { exerciseLog: { session: { memberId: athleteId } } },
+        });
+        await prisma.workoutExerciseLog.deleteMany({
+          where: { session: { memberId: athleteId } },
+        });
+        await prisma.workoutSession.deleteMany({
+          where: { memberId: athleteId },
+        });
+        await prisma.workoutExercise.deleteMany({
+          where: { workout: { createdBy: athleteId } },
+        });
+        await prisma.workout.deleteMany({
+          where: { createdBy: athleteId },
+        });
+      }
+      if (exerciseId) {
+        await prisma.workoutExercise.deleteMany({
+          where: { exerciseId },
+        });
+        await prisma.workoutExerciseLog.deleteMany({
+          where: { exerciseId },
+        });
+        await prisma.exercise.deleteMany({
+          where: { id: exerciseId },
+        });
+      }
+      if (athleteId) {
+        await prisma.user.deleteMany({
+          where: { id: athleteId },
+        });
+      }
+    } catch (e) {
+      console.error("Cleanup error in break-sets test:", e);
+    }
   });
 });

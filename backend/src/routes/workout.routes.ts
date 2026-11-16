@@ -13,6 +13,7 @@ import {
 } from "../validators/workout.validator.js";
 
 import { Roles } from "../constants/roles.js";
+import { sharePreviewLimiter } from "../middleware/rateLimit.middleware.js";
 
 const router = Router();
 
@@ -21,8 +22,8 @@ const router = Router();
 | Public / Unauthenticated Share Preview
 |--------------------------------------------------------------------------
 */
-router.get("/share/preview", workoutShareController.getSharePreview);
-router.get("/share/preview/:identifier", workoutShareController.getSharePreview);
+router.get("/share/preview", sharePreviewLimiter, workoutShareController.getSharePreview);
+router.get("/share/preview/:identifier", sharePreviewLimiter, workoutShareController.getSharePreview);
 
 /*
 |--------------------------------------------------------------------------

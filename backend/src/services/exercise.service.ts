@@ -67,6 +67,10 @@ class ExerciseService {
 
   async deleteStagedImage(imageUrl: string | undefined | null) {
     if (!imageUrl) return false;
+    const parsed = storageService.parseManagedAsset(imageUrl);
+    if (!parsed || parsed.key.includes("avatars")) {
+      return false;
+    }
     return storageService.deleteIfUnused(imageUrl);
   }
 
@@ -200,10 +204,6 @@ class ExerciseService {
       delete normalizedQuery.isCustom;
     }
 
-    const totalResults = await prisma.exercise.count({
-      where: baseWhere,
-    });
-
     const features = new ApiFeatures(baseWhere, normalizedQuery)
       .filter([
         "equipment",
@@ -215,15 +215,20 @@ class ExerciseService {
       .sort()
       .paginate();
 
-    const exercises = await prisma.exercise.findMany({
-      where: features.prismaWhere,
-      orderBy: features.prismaOrderBy,
-      skip: features.prismaSkip,
-      take: features.prismaTake,
-      include: {
-        alternatives: true,
-      },
-    });
+    const [totalResults, exercises] = await Promise.all([
+      prisma.exercise.count({
+        where: features.prismaWhere,
+      }),
+      prisma.exercise.findMany({
+        where: features.prismaWhere,
+        orderBy: features.prismaOrderBy,
+        skip: features.prismaSkip,
+        take: features.prismaTake,
+        include: {
+          alternatives: true,
+        },
+      }),
+    ]);
 
     return {
       exercises: exercises.map(mapExercise),
@@ -460,10 +465,9 @@ class ExerciseService {
       }
     } else if (
       role === Roles.TRAINER &&
-      exercise.isCustom &&
-      exercise.createdById !== userId
+      (!exercise.isCustom || exercise.createdById !== userId)
     ) {
-      throw new AppError("You can only delete your own exercises.", 403);
+      throw new AppError("You can only delete your own custom exercises.", 403);
     }
 
     const usedInWorkout = await prisma.workoutExercise.findFirst({

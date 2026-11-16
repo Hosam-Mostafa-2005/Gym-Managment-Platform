@@ -144,8 +144,11 @@ export const resetPassword: RequestHandler = catchAsync(async (req, res) => {
 });
 
 export const logout: RequestHandler = catchAsync(async (req, res) => {
+  const isProduction = process.env.NODE_ENV === "production";
   res.cookie("jwt", "", {
     httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     expires: new Date(Date.now() + 1000),
   });
 

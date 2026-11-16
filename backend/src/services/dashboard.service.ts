@@ -584,6 +584,7 @@ class DashboardService {
           memberId,
           status: ASSIGNMENT_STATUS.ACTIVE,
           isActive: true,
+          isArchived: false,
         },
         orderBy: [{ startDate: "desc" }, { createdAt: "desc" }],
         include: {

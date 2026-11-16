@@ -41,9 +41,12 @@ export const AchievementCelebrationProvider: React.FC<{
 }> = ({ children }) => {
   const { data: user } = useCurrentUser();
   const userId = user?.id || (user as any)?._id;
+  const isMember = user?.role?.toUpperCase() === "MEMBER";
 
-  // Poll or react to gamification updates for current user
-  const { data: gamificationData } = useMyGamification();
+  // Poll or react to gamification updates for current user (members only)
+  const { data: gamificationData } = useMyGamification({
+    enabled: Boolean(userId && isMember),
+  });
 
   const [queue, setQueue] = useState<AchievementWithStatus[]>([]);
   const [isOpen, setIsOpen] = useState(false);

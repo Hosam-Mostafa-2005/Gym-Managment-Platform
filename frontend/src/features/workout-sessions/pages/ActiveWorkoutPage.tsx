@@ -14,6 +14,7 @@ import {
 import WorkoutHeader from "../components/WorkoutHeader";
 import ExerciseCard from "../components/ExerciseCard";
 import FinishWorkoutDialog from "../components/FinishWorkoutDialog";
+import CancelWorkoutDialog from "../components/CancelWorkoutDialog";
 import WorkoutTimer from "../components/WorkoutTimer";
 import RestTimer from "../components/RestTimer";
 import ExerciseProgress from "../components/ExerciseProgress";
@@ -151,7 +152,11 @@ export default function ActiveWorkoutPage() {
     setIsRestTimerOpen(true);
   };
 
-  const currentLog = exerciseLogs[currentExerciseIndex] || exerciseLogs[0];
+  const safeExerciseIndex = Math.min(
+    currentExerciseIndex,
+    Math.max(0, exerciseLogs.length - 1),
+  );
+  const currentLog = exerciseLogs[safeExerciseIndex];
 
   return (
     <div className="relative min-h-screen w-full bg-[#0D1014] text-[#F3F4F6] font-sans selection:bg-[#5BE584]/30 pb-40 sm:pb-48">
@@ -202,6 +207,9 @@ export default function ActiveWorkoutPage() {
 
             {/* Live Elapsed Timer */}
             <WorkoutTimer startedAt={session.startedAt} />
+
+            {/* Cancel Workout CTA */}
+            <CancelWorkoutDialog sessionId={session.id} />
 
             {/* Finish Workout CTA */}
             <FinishWorkoutDialog

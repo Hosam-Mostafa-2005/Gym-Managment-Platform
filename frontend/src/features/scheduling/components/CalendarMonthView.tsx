@@ -11,6 +11,7 @@ import {
   Coffee,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { formatLocalDateKey } from "@/utils/formatDate";
 import type {
   ScheduledWorkout,
   CoachingAppointment,
@@ -68,13 +69,13 @@ export default function CalendarMonthView({
       isToday: boolean;
     }> = [];
 
-    const todayStr = new Date().toISOString().split("T")[0];
+    const todayStr = formatLocalDateKey(new Date());
 
     // Previous month padding
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     for (let i = startDayOfWeek - 1; i >= 0; i--) {
       const d = new Date(year, month - 1, prevMonthLastDay - i);
-      const dateKey = d.toISOString().split("T")[0];
+      const dateKey = formatLocalDateKey(d);
       cells.push({
         date: d,
         dateKey,
@@ -86,7 +87,7 @@ export default function CalendarMonthView({
     // Current month days
     for (let i = 1; i <= totalDaysInMonth; i++) {
       const d = new Date(year, month, i);
-      const dateKey = d.toISOString().split("T")[0];
+      const dateKey = formatLocalDateKey(d);
       cells.push({
         date: d,
         dateKey,
@@ -100,7 +101,7 @@ export default function CalendarMonthView({
     if (remaining < 7) {
       for (let i = 1; i <= remaining; i++) {
         const d = new Date(year, month + 1, i);
-        const dateKey = d.toISOString().split("T")[0];
+        const dateKey = formatLocalDateKey(d);
         cells.push({
           date: d,
           dateKey,
@@ -124,13 +125,13 @@ export default function CalendarMonthView({
     >();
 
     for (const sw of scheduledWorkouts) {
-      const key = new Date(sw.scheduledAt).toISOString().split("T")[0];
+      const key = formatLocalDateKey(sw.scheduledAt);
       if (!map.has(key)) map.set(key, { workouts: [], appointments: [] });
       map.get(key)!.workouts.push(sw);
     }
 
     for (const appt of coachingAppointments) {
-      const key = new Date(appt.startTime).toISOString().split("T")[0];
+      const key = formatLocalDateKey(appt.startTime);
       if (!map.has(key)) map.set(key, { workouts: [], appointments: [] });
       map.get(key)!.appointments.push(appt);
     }

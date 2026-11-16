@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
     "start": "node dist/server.js",
     "seed": "tsx src/scripts/seed.ts",
     "sync:exercise-images": "tsx src/scripts/sync-exercise-images.ts",

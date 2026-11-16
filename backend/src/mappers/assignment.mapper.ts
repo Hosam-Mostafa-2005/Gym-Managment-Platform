@@ -75,6 +75,10 @@ const mapAssignment = (assignment: any) => {
 
     notes: assignment.notes,
 
+    isArchived: Boolean(assignment.isArchived),
+
+    archivedAt: assignment.archivedAt ?? null,
+
     createdAt: assignment.createdAt,
 
     updatedAt: assignment.updatedAt,

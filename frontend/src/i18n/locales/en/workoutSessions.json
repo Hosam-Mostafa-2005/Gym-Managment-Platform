@@ -216,7 +216,13 @@
     "deleteDescDefault": "Are you sure you want to remove Set {{setNum}}.{{segmentIndex}} from this active workout session?",
     "cancel": "Cancel",
     "confirmRemoval": "Confirm Removal",
-    "removing": "Removing..."
+    "removing": "Removing...",
+    "removeExercise": "Remove Exercise",
+    "removeExerciseTitle": "Remove Exercise from Session",
+    "removeExerciseDesc": "Are you sure you want to remove \"{{name}}\" from this workout session?",
+    "removeExerciseTemplateNote": "Note: This only affects your current active session. Your original assigned workout template remains untouched.",
+    "removeExerciseCompletedNote": "Completed sets from this exercise are preserved in your training history and volume. Uncompleted sets will be removed from your remaining session target.",
+    "confirmRemoveExercise": "Remove Exercise"
   },
   "exerciseNavigator": {
     "exerciseSequence": "Exercise Sequence",

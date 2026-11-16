@@ -44,21 +44,24 @@ import {
   forgotPasswordLimiter,
   verifyResetCodeLimiter,
   resetPasswordLimiter,
+  authLimiter,
+  verificationLimiter,
 } from "../middleware/rateLimit.middleware.js";
 
 const router = Router();
 
 // ================= Public Routes =================
-router.post("/register", validate(registerSchema), register);
-router.post("/register-coach", validate(registerSchema), registerCoach);
-router.post("/verify-email", validate(verifyEmailSchema), verifyEmail);
+router.post("/register", authLimiter, validate(registerSchema), register);
+router.post("/register-coach", authLimiter, validate(registerSchema), registerCoach);
+router.post("/verify-email", verificationLimiter, validate(verifyEmailSchema), verifyEmail);
 router.post(
   "/resend-verification",
+  verificationLimiter,
   validate(resendVerificationSchema),
   resendVerificationCode,
 );
-router.post("/login", validate(loginSchema), login);
-router.post("/google", validate(googleAuthSchema), googleAuth);
+router.post("/login", authLimiter, validate(loginSchema), login);
+router.post("/google", authLimiter, validate(googleAuthSchema), googleAuth);
 router.post(
   "/forgot-password",
   forgotPasswordLimiter,

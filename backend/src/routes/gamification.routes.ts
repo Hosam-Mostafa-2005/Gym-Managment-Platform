@@ -17,9 +17,20 @@ router.get(
   restrictTo(Roles.TRAINER, Roles.ADMIN),
   gamificationController.getMemberGamification,
 );
+router.get(
+  "/member/:memberId",
+  restrictTo(Roles.TRAINER, Roles.ADMIN),
+  gamificationController.getMemberGamification,
+);
 
 router.post(
   "/members/:memberId/encourage",
+  restrictTo(Roles.TRAINER, Roles.ADMIN),
+  validate(sendEncouragementSchema),
+  gamificationController.sendEncouragement,
+);
+router.post(
+  "/coach/encourage/:memberId",
   restrictTo(Roles.TRAINER, Roles.ADMIN),
   validate(sendEncouragementSchema),
   gamificationController.sendEncouragement,

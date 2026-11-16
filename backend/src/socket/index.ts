@@ -7,20 +7,31 @@ let io: Server;
 
 interface JwtPayload {
   id: string;
+  iat?: number;
 }
+
+const isAllowedOrigin = (origin: string | undefined): boolean => {
+  if (!origin) return true;
+  if (
+    origin === process.env.CLIENT_URL ||
+    origin === "http://localhost:5173" ||
+    origin === "http://localhost:4173" ||
+    origin === "http://localhost:3000" ||
+    origin === "https://gym-managment-platform-seven.vercel.app" ||
+    origin === "https://gym-managment-platform-54rwrqapc-hosso1.vercel.app" ||
+    (origin.startsWith("https://gym-managment-platform-") &&
+      origin.endsWith(".vercel.app"))
+  ) {
+    return true;
+  }
+  return false;
+};
 
 export const initSocket = (httpServer: HttpServer) => {
   io = new Server(httpServer, {
     cors: {
       origin: (origin, callback) => {
-        if (
-          !origin ||
-          origin === process.env.CLIENT_URL ||
-          origin === "http://localhost:5173" ||
-          origin === "http://localhost:4173" ||
-          origin === "http://localhost:3000" ||
-          origin.endsWith(".vercel.app")
-        ) {
+        if (isAllowedOrigin(origin)) {
           callback(null, true);
         } else {
           callback(new Error("Not allowed by CORS"));
@@ -41,11 +52,22 @@ export const initSocket = (httpServer: HttpServer) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
       const currentUser = await prisma.user.findUnique({
         where: { id: decoded.id },
-        select: { isActive: true },
+        select: { id: true, isActive: true, passwordChangedAt: true },
       });
 
       if (!currentUser || !currentUser.isActive) {
         return next(new Error("This user account is not active."));
+      }
+
+      if (currentUser.passwordChangedAt && decoded.iat) {
+        const changedTimestamp = Math.floor(
+          currentUser.passwordChangedAt.getTime() / 1000,
+        );
+        if (decoded.iat < changedTimestamp) {
+          return next(
+            new Error("Password changed recently. Please log in again."),
+          );
+        }
       }
 
       socket.data.userId = decoded.id;

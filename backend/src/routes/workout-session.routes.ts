@@ -58,6 +58,13 @@ router.patch(
   workoutSessionController.swapExercise,
 );
 
+// Remove Exercise (Member / Admin)
+router.delete(
+  "/:id/exercises/:exerciseLogId",
+  restrictTo(Roles.ADMIN, Roles.MEMBER),
+  workoutSessionController.removeExercise,
+);
+
 // Add Exercise (Member / Admin)
 router.post(
   "/:id/exercises",

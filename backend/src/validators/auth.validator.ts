@@ -34,6 +34,7 @@ export const resendVerificationSchema = z.object({
 export const googleAuthSchema = z.object({
   body: z.object({
     idToken: z.string().min(1, "Google ID token is required"),
+    intendedRole: z.enum([Roles.MEMBER, Roles.TRAINER]).optional(),
   }),
 });
 

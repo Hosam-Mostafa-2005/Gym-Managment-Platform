@@ -13,7 +13,8 @@ export type ActivityLevel =
   | "LIGHTLY_ACTIVE"
   | "MODERATELY_ACTIVE"
   | "VERY_ACTIVE"
-  | "EXTRA_ACTIVE";
+  | "EXTRA_ACTIVE"
+  | "EXTREMELY_ACTIVE";
 
 export type PlanSource = "SELF_GUIDED" | "COACH_ASSIGNED";
 

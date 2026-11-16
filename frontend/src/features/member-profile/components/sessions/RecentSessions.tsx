@@ -1,7 +1,9 @@
 // src/features/member-profile/components/sessions/RecentSessions.tsx
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ChevronRight } from "lucide-react";
 import type { MemberSession } from "../../types/member-profile.types";
 
 interface RecentSessionsProps {
@@ -9,6 +11,7 @@ interface RecentSessionsProps {
 }
 
 export const RecentSessions: React.FC<RecentSessionsProps> = ({ sessions }) => {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation("profile");
   const currentLang = i18n.language.startsWith("ar") ? "ar" : "en";
 
@@ -88,15 +91,19 @@ export const RecentSessions: React.FC<RecentSessionsProps> = ({ sessions }) => {
                   <th className="px-6 py-4 font-medium">
                     {t("member.recentSessions.colDuration")}
                   </th>
+                  <th className="px-6 py-4 font-medium text-right">
+                    <span className="sr-only">Actions</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1E2329]">
                 {sessions.map((session) => (
                   <tr
                     key={session.id}
-                    className="transition-colors hover:bg-[#1E2329]/30"
+                    onClick={() => navigate(`/sessions/${session.id}`)}
+                    className="cursor-pointer transition-colors hover:bg-[#1E2329]/60 group"
                   >
-                    <td className="px-6 py-4 font-medium text-gray-100 whitespace-nowrap">
+                    <td className="px-6 py-4 font-medium text-gray-100 whitespace-nowrap group-hover:text-[#5BE584] transition-colors">
                       {session.workout?.title ??
                         t("member.recentSessions.unspecified")}
                     </td>
@@ -114,6 +121,9 @@ export const RecentSessions: React.FC<RecentSessionsProps> = ({ sessions }) => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {session.duration ??
                         t("member.recentSessions.unspecified")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <ChevronRight className="w-4 h-4 text-[#6B7280] group-hover:text-[#5BE584] transition-colors inline-block rtl:rotate-180" />
                     </td>
                   </tr>
                 ))}

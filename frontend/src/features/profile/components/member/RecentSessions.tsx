@@ -1,5 +1,6 @@
 // src/features/profile/components/member/RecentSessions.tsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Activity, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ProfileSection } from "../shared/ProfileSection";
@@ -12,6 +13,7 @@ interface RecentSessionsProps {
 export const RecentSessions: React.FC<RecentSessionsProps> = ({
   sessions = [],
 }) => {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation(["profile"]);
 
   const formatDate = (dateStr?: string | null) => {
@@ -39,10 +41,11 @@ export const RecentSessions: React.FC<RecentSessionsProps> = ({
           {sessions.map((session) => (
             <div
               key={session.id}
-              className="py-3 first:pt-0 last:pb-0 flex items-center justify-between"
+              onClick={() => navigate(`/sessions/${session.id}`)}
+              className="py-3 first:pt-0 last:pb-0 flex items-center justify-between cursor-pointer hover:bg-white/[0.02] px-2 rounded-lg transition-colors group"
             >
               <div className="flex flex-col gap-0.5">
-                <span className="font-semibold text-gray-200">
+                <span className="font-semibold text-gray-200 group-hover:text-[#5BE584] transition-colors">
                   {session.workout?.title || t("member.recentSessions.independentSession")}
                 </span>
                 <span className="text-[10px] text-gray-500 flex items-center gap-1">

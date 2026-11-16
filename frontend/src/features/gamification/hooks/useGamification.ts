@@ -8,11 +8,12 @@ import {
 } from "../api/gamification.api";
 import type { SendEncouragementPayload } from "../types/gamification.types";
 
-export const useMyGamification = () => {
+export const useMyGamification = (options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["gamification", "me"],
     queryFn: getMyGamification,
     staleTime: 1000 * 60 * 2, // 2 minutes
+    enabled: options?.enabled ?? true,
   });
 };
 

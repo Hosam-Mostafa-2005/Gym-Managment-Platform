@@ -421,7 +421,7 @@ export const generateWorkoutsData = (
           order: 5,
         },
         {
-          exercise: findEx("Hammer Curls"),
+          exercise: findEx("Hammer Curl"),
           sets: 3,
           reps: "12",
           restSeconds: 60,

@@ -15,6 +15,7 @@ import {
   PlayCircle,
   Plus,
   Target,
+  Trash2,
   Trophy,
 } from "lucide-react";
 import {
@@ -33,6 +34,7 @@ import type {
 import { SetRow } from "./SetRow";
 import { useCreateWorkoutSet } from "../hooks/useCreateWorkoutSet";
 import { useDeleteWorkoutSet } from "../hooks/useDeleteWorkoutSet";
+import { useRemoveExerciseFromSession } from "../hooks/useRemoveExerciseFromSession";
 import { useCurrentWorkoutSession } from "../hooks/useCurrentWorkoutSession";
 import ExerciseImage from "@/features/exercises/components/ExerciseImage";
 import SwapExerciseDialog from "./SwapExerciseDialog";
@@ -59,6 +61,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const { t } = useTranslation(["workoutSessions", "common"]);
   const [showInstructions, setShowInstructions] = useState(false);
   const [isSwapDialogOpen, setIsSwapDialogOpen] = useState(false);
+  const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
   const [setPendingDelete, setSetPendingDelete] = useState<{
     set: WorkoutSetLog;
     hasChildren: boolean;
@@ -68,6 +71,23 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   const effectiveSessionId = sessionId || currentSessionData?.session?.id || "";
   const { mutate: createSet, isPending: isCreatingSet } = useCreateWorkoutSet();
   const { mutate: deleteSet, isPending: isDeletingSet } = useDeleteWorkoutSet();
+  const { mutate: removeExercise, isPending: isRemovingExercise } =
+    useRemoveExerciseFromSession();
+
+  const handleConfirmRemoveExercise = () => {
+    if (!effectiveSessionId || !exercise.id) return;
+    removeExercise(
+      {
+        sessionId: effectiveSessionId,
+        exerciseLogId: exercise.id,
+      },
+      {
+        onSuccess: () => {
+          setIsRemoveDialogOpen(false);
+        },
+      },
+    );
+  };
 
   const sets = exercise.sets || [];
 
@@ -414,6 +434,19 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                     <span>{t("exerciseCard.swapExercise", "Swap Exercise")}</span>
                   </button>
                 )}
+
+                {/* In-Session Exercise Removal Action */}
+                {!isExerciseDone && effectiveSessionId && (
+                  <button
+                    type="button"
+                    onClick={() => setIsRemoveDialogOpen(true)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-[#1E2329] bg-[#090B0F] px-3 py-1.5 text-xs font-medium text-[#9CA3AF] hover:border-red-500/40 hover:text-red-400 transition-colors"
+                    title={t("exerciseCard.removeExercise", "Remove Exercise")}
+                  >
+                    <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                    <span>{t("exerciseCard.removeExercise", "Remove Exercise")}</span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -745,6 +778,79 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                 </>
               ) : (
                 t("exerciseCard.confirmRemoval", "Confirm Removal")
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Remove Exercise Confirmation Dialog Modal */}
+      <Dialog
+        open={isRemoveDialogOpen}
+        onOpenChange={(open) =>
+          !isRemovingExercise && setIsRemoveDialogOpen(open)
+        }
+      >
+        <DialogContent className="max-w-md border-[#1E2329] bg-[#101418] text-white">
+          <DialogHeader>
+            <div className="flex items-center gap-2.5 text-red-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 border border-red-500/20">
+                <Trash2 className="h-4 w-4 text-red-400" />
+              </div>
+              <DialogTitle className="text-base font-bold text-white">
+                {t(
+                  "exerciseCard.removeExerciseTitle",
+                  "Remove Exercise from Session",
+                )}
+              </DialogTitle>
+            </div>
+            <DialogDescription className="text-xs text-[#9CA3AF] pt-2 space-y-2">
+              <p>
+                {t("exerciseCard.removeExerciseDesc", {
+                  name: exercise.exerciseName,
+                  defaultValue: `Are you sure you want to remove "${exercise.exerciseName}" from this workout session?`,
+                })}
+              </p>
+              <p className="text-[11px] text-[#5BE584]/90 bg-[#5BE584]/5 border border-[#5BE584]/20 rounded-lg p-2">
+                {t(
+                  "exerciseCard.removeExerciseTemplateNote",
+                  "Note: This only affects your current active session. Your original assigned workout template remains untouched.",
+                )}
+              </p>
+              {exercise.sets.some((s) => s.completed) && (
+                <p className="text-[11px] text-amber-400/90 bg-amber-400/5 border border-amber-400/20 rounded-lg p-2">
+                  {t(
+                    "exerciseCard.removeExerciseCompletedNote",
+                    "Completed sets from this exercise are preserved in your training history and volume. Uncompleted sets will be removed from your remaining session target.",
+                  )}
+                </p>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-end gap-2.5 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isRemovingExercise}
+              onClick={() => setIsRemoveDialogOpen(false)}
+              className="border-[#262D36] bg-[#141920] hover:bg-[#1E2329] text-white text-xs cursor-pointer"
+            >
+              {t("exerciseCard.cancel", "Cancel")}
+            </Button>
+            <Button
+              type="button"
+              onClick={handleConfirmRemoveExercise}
+              disabled={isRemovingExercise}
+              className="bg-red-500 hover:bg-red-600 text-white text-xs font-semibold cursor-pointer"
+            >
+              {isRemovingExercise ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin ltr:mr-1.5 rtl:ml-1.5" />
+                  {t("exerciseCard.removing", "Removing...")}
+                </>
+              ) : (
+                t("exerciseCard.confirmRemoveExercise", "Remove Exercise")
               )}
             </Button>
           </div>

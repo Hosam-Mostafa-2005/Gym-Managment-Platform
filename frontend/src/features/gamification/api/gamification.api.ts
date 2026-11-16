@@ -22,7 +22,7 @@ export const getMemberGamification = async (
   memberId: string,
 ): Promise<CoachMemberGamification> => {
   const response = await api.get<ApiResponse<CoachMemberGamification>>(
-    `/gamification/member/${memberId}`,
+    `/gamification/members/${memberId}`,
   );
   return response.data.data;
 };
@@ -32,7 +32,7 @@ export const sendEncouragement = async (
   payload: SendEncouragementPayload,
 ): Promise<{ message: string }> => {
   const response = await api.post<ApiResponse<{ message: string }>>(
-    `/gamification/coach/encourage/${memberId}`,
+    `/gamification/members/${memberId}/encourage`,
     payload,
   );
   return response.data.data;

@@ -24,10 +24,6 @@ export const createRateLimiter = (options: RateLimitOptions): RequestHandler => 
     max,
     message = "Too many requests. Please try again later.",
     keyGenerator = (req: Request) => {
-      const forwarded = req.headers["x-forwarded-for"];
-      if (typeof forwarded === "string") {
-        return forwarded.split(",")[0].trim();
-      }
       return req.ip || req.socket.remoteAddress || "unknown-ip";
     },
     skip = (req: Request) => {
@@ -120,4 +116,31 @@ export const resetPasswordLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
   max: 5,
   message: "Too many password reset attempts from this address. Please try again after 15 minutes.",
+});
+
+/**
+ * 20 authentication attempts (login/register) per 15 minutes per IP
+ */
+export const authLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: "Too many authentication requests from this IP. Please try again after 15 minutes.",
+});
+
+/**
+ * 15 email verification attempts per 15 minutes per IP
+ */
+export const verificationLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  message: "Too many verification requests from this IP. Please try again after 15 minutes.",
+});
+
+/**
+ * 60 workout share preview requests per 15 minutes per IP
+ */
+export const sharePreviewLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  message: "Too many share preview requests. Please try again later.",
 });

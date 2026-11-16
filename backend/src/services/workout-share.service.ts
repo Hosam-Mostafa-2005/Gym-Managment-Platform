@@ -189,6 +189,7 @@ export class WorkoutShareService {
           restSeconds: e.restSeconds,
           isRestOverridden: e.isRestOverridden,
           notes: e.notes,
+          setsDetail: e.setsDetail,
           exercise: {
             id: e.exercise.id,
             name: e.exercise.name,
@@ -248,6 +249,7 @@ export class WorkoutShareService {
               isRestOverridden: e.isRestOverridden,
               notes: e.notes,
               order: e.order,
+              setsDetail: e.setsDetail ?? undefined,
             })),
           },
         },

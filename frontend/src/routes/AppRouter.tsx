@@ -559,7 +559,7 @@ const router = createBrowserRouter([
                 element: <Navigate to="/measurements" replace />,
               },
               {
-                path: ":id",
+                path: ":memberId",
                 element: <BodyMeasurementsPage />,
               },
             ],

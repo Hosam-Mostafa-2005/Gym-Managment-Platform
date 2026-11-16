@@ -75,7 +75,7 @@ export const getNotificationPreferences = async (): Promise<NotificationPreferen
 export const updateNotificationPreferences = async (
   preferences: Partial<NotificationPreference>,
 ): Promise<NotificationPreference> => {
-  const response = await api.put<ApiResponse<{ preferences: NotificationPreference }>>(
+  const response = await api.patch<ApiResponse<{ preferences: NotificationPreference }>>(
     "/notifications/preferences",
     preferences,
   );

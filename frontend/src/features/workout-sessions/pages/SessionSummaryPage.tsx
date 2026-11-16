@@ -19,6 +19,7 @@ import {
 import { useWorkoutSession } from "../hooks/useWorkoutSession";
 import { usePreviousPerformance } from "../hooks/usePreviousPerformance";
 import ExerciseImage from "@/features/exercises/components/ExerciseImage";
+import CoachReviewCard from "../components/CoachReviewCard";
 
 export default function SessionSummaryPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -376,6 +377,9 @@ export default function SessionSummaryPage() {
             })}
           </div>
         </section>
+
+        {/* Coach Review & Feedback Card */}
+        <CoachReviewCard session={session} />
 
         {/* Navigation CTAs */}
         <section className="pt-6 border-t border-[#1E2329] flex flex-wrap items-center justify-between gap-4">

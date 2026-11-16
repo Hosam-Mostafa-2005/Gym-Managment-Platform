@@ -24,8 +24,10 @@ export const getAssignment = async (id: string): Promise<Assignment> => {
   return mapAssignment(data.data.assignment);
 };
 
-export const getMyAssignments = async (): Promise<Assignment[]> => {
-  const { data } = await api.get("/assignments/me");
+export const getMyAssignments = async (params?: {
+  archived?: boolean | "all";
+}): Promise<Assignment[]> => {
+  const { data } = await api.get("/assignments/me", { params });
 
   return data.data.assignments.map(mapAssignment);
 };
@@ -49,6 +51,12 @@ export const deleteAssignment = async (id: string): Promise<void> => {
   await api.delete(`/assignments/${id}`);
 };
 
-export const archiveAssignment = async (id: string): Promise<void> => {
-  await api.patch(`/assignments/${id}/archive`);
+export const archiveAssignment = async (id: string): Promise<Assignment> => {
+  const { data } = await api.patch(`/assignments/${id}/archive`);
+  return mapAssignment(data.data.assignment);
+};
+
+export const unarchiveAssignment = async (id: string): Promise<Assignment> => {
+  const { data } = await api.patch(`/assignments/${id}/unarchive`);
+  return mapAssignment(data.data.assignment);
 };

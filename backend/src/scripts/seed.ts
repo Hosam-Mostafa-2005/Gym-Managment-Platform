@@ -118,21 +118,30 @@ const seedDatabase = async (): Promise<void> => {
     const createdExercises: any[] = [];
     for (const exData of exercisesData) {
       const video = exerciseVideoMap[exData.name] || exData.videoUrl || null;
-      const ex = await prisma.exercise.create({
-        data: {
-          name: exData.name,
-          description: (exData as any).description || "",
-          difficulty: exData.difficulty.toLowerCase() as any,
-          equipment: exData.equipment || [],
-          primaryMuscles: exData.primaryMuscles || [],
-          secondaryMuscles: exData.secondaryMuscles || [],
-          instructions: exData.instructions || [],
-          tips: exData.tips || [],
-          imageUrl: (exData as any).imageUrl || null,
-          videoUrl: video,
-          isActive: (exData as any).isActive ?? true,
-        },
+      const existingEx = await prisma.exercise.findFirst({
+        where: { name: exData.name, isCustom: false },
       });
+      const exDataPayload = {
+        name: exData.name,
+        description: (exData as any).description || "",
+        difficulty: exData.difficulty.toLowerCase() as any,
+        equipment: exData.equipment || [],
+        primaryMuscles: exData.primaryMuscles || [],
+        secondaryMuscles: exData.secondaryMuscles || [],
+        instructions: exData.instructions || [],
+        tips: exData.tips || [],
+        imageUrl: (exData as any).imageUrl || null,
+        videoUrl: video,
+        isActive: (exData as any).isActive ?? true,
+      };
+      const ex = existingEx
+        ? await prisma.exercise.update({
+            where: { id: existingEx.id },
+            data: exDataPayload,
+          })
+        : await prisma.exercise.create({
+            data: exDataPayload,
+          });
       createdExercises.push({ ...ex, _id: ex.id });
     }
     console.log(`✅ Inserted ${createdExercises.length} foundational exercises with video tutorials.\n`);

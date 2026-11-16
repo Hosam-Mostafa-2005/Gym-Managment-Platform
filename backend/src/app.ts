@@ -11,6 +11,8 @@ import { env } from "./config/env.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:4173",
@@ -20,17 +22,25 @@ const allowedOrigins = [
   "https://gym-managment-platform-54rwrqapc-hosso1.vercel.app",
 ].filter(Boolean);
 
+const isAllowedOrigin = (origin: string | undefined): boolean => {
+  if (!origin) return true;
+  if (
+    allowedOrigins.includes(origin) ||
+    (origin.startsWith("https://gym-managment-platform-") &&
+      origin.endsWith(".vercel.app"))
+  ) {
+    return true;
+  }
+  return false;
+};
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        origin.endsWith(".vercel.app")
-      ) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));

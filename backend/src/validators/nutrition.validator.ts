@@ -18,13 +18,16 @@ const NutritionGoalEnum = z.enum([
   "SPORTS_PERFORMANCE",
 ]);
 
-const ActivityLevelEnum = z.enum([
-  "SEDENTARY",
-  "LIGHTLY_ACTIVE",
-  "MODERATELY_ACTIVE",
-  "VERY_ACTIVE",
-  "EXTREMELY_ACTIVE",
-]);
+const ActivityLevelEnum = z
+  .enum([
+    "SEDENTARY",
+    "LIGHTLY_ACTIVE",
+    "MODERATELY_ACTIVE",
+    "VERY_ACTIVE",
+    "EXTRA_ACTIVE",
+    "EXTREMELY_ACTIVE",
+  ])
+  .transform((val) => (val === "EXTREMELY_ACTIVE" ? "EXTRA_ACTIVE" : val));
 
 const DietaryPreferenceEnum = z.enum([
   "STANDARD",

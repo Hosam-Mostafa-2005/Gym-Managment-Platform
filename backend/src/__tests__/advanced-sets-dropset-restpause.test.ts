@@ -1,4 +1,4 @@
-import { describe, it } from "node:test";
+import { describe, it, after } from "node:test";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
 
@@ -608,5 +608,52 @@ describe("STREN — Advanced Sets (Drop Sets & Rest-Pause) Test Suite", () => {
       // Cleanup
       await workoutSessionService.finish(session.id, testMemberId, {});
     });
+  });
+
+  after(async () => {
+    try {
+      if (testMemberId) {
+        await prisma.workoutSetLog.deleteMany({
+          where: { exerciseLog: { session: { memberId: testMemberId } } },
+        });
+        await prisma.workoutExerciseLog.deleteMany({
+          where: { session: { memberId: testMemberId } },
+        });
+        await prisma.workoutSession.deleteMany({
+          where: { memberId: testMemberId },
+        });
+        await prisma.assignment.deleteMany({
+          where: { memberId: testMemberId },
+        });
+      }
+      const userIds = [testTrainerId, testMemberId].filter(Boolean);
+      if (userIds.length > 0) {
+        await prisma.workoutExercise.deleteMany({
+          where: { workout: { createdBy: { in: userIds } } },
+        });
+        await prisma.workout.deleteMany({
+          where: { createdBy: { in: userIds } },
+        });
+      }
+      if (testExerciseId) {
+        await prisma.workoutExercise.deleteMany({
+          where: { exerciseId: testExerciseId },
+        });
+        await prisma.workoutExerciseLog.deleteMany({
+          where: { exerciseId: testExerciseId },
+        });
+        await prisma.exercise.deleteMany({
+          where: { id: testExerciseId },
+        });
+      }
+      if (testMemberId) {
+        await prisma.user.deleteMany({ where: { id: testMemberId } });
+      }
+      if (testTrainerId) {
+        await prisma.user.deleteMany({ where: { id: testTrainerId } });
+      }
+    } catch (e) {
+      console.error("Cleanup error in advanced-sets test:", e);
+    }
   });
 });

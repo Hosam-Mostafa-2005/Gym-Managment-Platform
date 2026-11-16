@@ -17,11 +17,23 @@ export const ExerciseProgress: React.FC<ExerciseProgressProps> = ({
   let currentVolume = 0;
 
   for (const ex of exerciseLogs) {
-    totalSets += ex.targetSets || ex.sets.length;
+    const setsByNum = new Map<number, boolean[]>();
     for (const s of ex.sets) {
+      if (!setsByNum.has(s.setNumber)) {
+        setsByNum.set(s.setNumber, []);
+      }
+      setsByNum.get(s.setNumber)!.push(s.completed);
       if (s.completed) {
-        completedSets += 1;
         currentVolume += (s.weight || 0) * (s.actualReps || 0);
+      }
+    }
+
+    const uniqueSetCount = setsByNum.size;
+    totalSets += Math.max(uniqueSetCount, ex.targetSets || 0);
+
+    for (const stageStates of setsByNum.values()) {
+      if (stageStates.length > 0 && stageStates.every((c) => c === true)) {
+        completedSets += 1;
       }
     }
   }

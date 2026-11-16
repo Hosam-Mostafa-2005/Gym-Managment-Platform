@@ -87,6 +87,14 @@ export const optionalProtect: RequestHandler = catchAsync(
       });
 
       if (currentUser && currentUser.isActive) {
+        if (currentUser.passwordChangedAt && decoded.iat) {
+          const changedTimestamp = Math.floor(
+            currentUser.passwordChangedAt.getTime() / 1000,
+          );
+          if (decoded.iat < changedTimestamp) {
+            return next();
+          }
+        }
         req.user = currentUser;
       }
     } catch {

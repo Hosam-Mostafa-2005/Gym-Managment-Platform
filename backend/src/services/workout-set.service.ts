@@ -8,8 +8,9 @@ class WorkoutSetService {
   private async evaluateExerciseCompletion(
     exerciseLogId: string,
     targetSets: number,
+    client: any = prisma,
   ): Promise<boolean> {
-    const allSets = await prisma.workoutSetLog.findMany({
+    const allSets = await client.workoutSetLog.findMany({
       where: { exerciseLogId },
       select: { setNumber: true, completed: true },
     });
@@ -36,81 +37,78 @@ class WorkoutSetService {
     const totalParentSetsCount = setsByNumber.size;
 
     // Exercise is completed ONLY when:
-    // 1. All existing sets currently in the exercise are completed (no uncompleted sets remain)
-    // 2. AND total completed sets satisfies the prescribed targetSets requirement.
-    // Deleting incomplete sets will NEVER cause an incomplete exercise to be falsely marked completed!
+    // 1. There is at least 1 set
+    // 2. All parent sets currently in the exercise are completed (all segments completed)
+    // 3. AND completedParentSets >= targetSets
     return (
+      totalParentSetsCount > 0 &&
       totalParentSetsCount >= targetSets &&
       completedParentSets === totalParentSetsCount
     );
   }
 
-  private async updateSessionStats(sessionId: string) {
-    const session = await prisma.workoutSession.findUnique({
+  public async updateSessionStats(sessionId: string, client: any = prisma) {
+    const session = await client.workoutSession.findUnique({
       where: { id: sessionId },
     });
 
     if (!session) return;
 
-    const exerciseLogs = await prisma.workoutExerciseLog.findMany({
-      where: { sessionId: session.id },
-      select: { id: true, completed: true, targetSets: true },
+    // Only query active, non-removed exercise logs for session calculations
+    const exerciseLogs = await client.workoutExerciseLog.findMany({
+      where: { sessionId: session.id, isRemoved: false },
+      include: {
+        sets: {
+          select: {
+            id: true,
+            setNumber: true,
+            segmentIndex: true,
+            completed: true,
+            weight: true,
+            actualReps: true,
+            restDuration: true,
+          },
+        },
+      },
     });
 
-    const exerciseLogIds = exerciseLogs.map((e) => e.id);
     const totalExercises = exerciseLogs.length;
-    const completedExercises = exerciseLogs.filter((e) => e.completed).length;
+    const completedExercises = exerciseLogs.filter((e: any) => e.completed).length;
 
-    const allSets = await prisma.workoutSetLog.findMany({
-      where: {
-        exerciseLogId: { in: exerciseLogIds },
-      },
-      select: {
-        exerciseLogId: true,
-        setNumber: true,
-        completed: true,
-        weight: true,
-        actualReps: true,
-        restDuration: true,
-      },
-    });
-
-    const completedSetLogs = allSets.filter((s) => s.completed);
-
-    // Sum total volume across all completed stages
-    const totalVolume = completedSetLogs.reduce(
-      (sum, s) => sum + (s.weight ?? 0) * (s.actualReps ?? 0),
-      0,
-    );
-
-    const totalRestTime = completedSetLogs.reduce(
-      (sum, s) => sum + (s.restDuration ?? 0),
-      0,
-    );
-
-    // Count completed parent sets without double-counting stages
-    const parentSets = new Map<string, boolean[]>();
-    for (const s of allSets) {
-      const key = `${s.exerciseLogId}_${s.setNumber}`;
-      if (!parentSets.has(key)) {
-        parentSets.set(key, []);
-      }
-      parentSets.get(key)!.push(s.completed);
-    }
-
+    let totalPlannedSets = 0;
     let setsCompleted = 0;
-    for (const stages of parentSets.values()) {
-      if (stages.length > 0 && stages.every((c) => c === true)) {
-        setsCompleted++;
+    let totalVolume = 0;
+    let totalRestTime = 0;
+
+    for (const ex of exerciseLogs) {
+      const setsByNumber = new Map<number, boolean[]>();
+      for (const s of ex.sets) {
+        if (!setsByNumber.has(s.setNumber)) {
+          setsByNumber.set(s.setNumber, []);
+        }
+        setsByNumber.get(s.setNumber)!.push(s.completed);
+        if (s.completed) {
+          totalVolume += (s.weight ?? 0) * (s.actualReps ?? 0);
+          totalRestTime += s.restDuration ?? 0;
+        }
+      }
+
+      const uniqueSetCount = setsByNumber.size;
+      totalPlannedSets += Math.max(uniqueSetCount, ex.targetSets || 0);
+
+      for (const stages of setsByNumber.values()) {
+        if (stages.length > 0 && stages.every((c: any) => c === true)) {
+          setsCompleted++;
+        }
       }
     }
 
     const progress =
-      totalExercises > 0
-        ? Math.round((completedExercises / totalExercises) * 100)
+      totalPlannedSets > 0
+        ? Math.round((setsCompleted / totalPlannedSets) * 100)
         : 0;
 
-    await prisma.workoutSession.update({
+    await client.workoutSession.update({
       where: { id: sessionId },
       data: {
         totalVolume,
@@ -146,6 +144,10 @@ class WorkoutSetService {
       throw new AppError("Workout session already finished.", 400);
     }
 
+    if (exerciseLog.isRemoved) {
+      throw new AppError("Cannot add sets to a removed exercise.", 400);
+    }
+
     const segmentIndex = data.segmentIndex ?? 0;
 
     const existingSet = await prisma.workoutSetLog.findFirst({
@@ -160,53 +162,68 @@ class WorkoutSetService {
       throw new AppError("This set segment already exists.", 409);
     }
 
-    // If adding a subsequent stage to an existing set (e.g. segmentIndex > 0),
-    // ensure previous stages of this set are marked intermediate and inherit advanced setType
-    if (segmentIndex > 0) {
-      await prisma.workoutSetLog.updateMany({
-        where: {
-          exerciseLogId: exerciseLog.id,
-          setNumber: data.setNumber,
-          segmentIndex: { lt: segmentIndex },
-        },
+    const setLog = await prisma.$transaction(async (tx) => {
+      // If adding a subsequent stage to an existing set (e.g. segmentIndex > 0),
+      // ensure previous stages of this set are marked intermediate and inherit advanced setType
+      if (segmentIndex > 0) {
+        await tx.workoutSetLog.updateMany({
+          where: {
+            exerciseLogId: exerciseLog.id,
+            setNumber: data.setNumber,
+            segmentIndex: { lt: segmentIndex },
+          },
+          data: {
+            isIntermediateSegment: true,
+            isFinalSegment: false,
+            setType: (data.setType as any) ?? "DROP_SET",
+          },
+        });
+      }
+
+      // If adding a new parent set, update exerciseLog.targetSets to reflect the new set number
+      let effectiveTargetSets = exerciseLog.targetSets;
+      if (segmentIndex === 0 && data.setNumber > exerciseLog.targetSets) {
+        effectiveTargetSets = data.setNumber;
+        await tx.workoutExerciseLog.update({
+          where: { id: exerciseLog.id },
+          data: { targetSets: effectiveTargetSets },
+        });
+      }
+
+      const isCompleted = data.completed ?? false;
+
+      const created = await tx.workoutSetLog.create({
         data: {
-          isIntermediateSegment: true,
-          isFinalSegment: false,
-          setType: (data.setType as any) ?? "DROP_SET",
+          exerciseLogId: data.exerciseLog,
+          setNumber: data.setNumber,
+          targetReps: data.targetReps !== undefined ? String(data.targetReps) : "0",
+          actualReps: data.actualReps ?? 0,
+          weight: data.weight ?? 0,
+          setType: data.setType ?? "NORMAL",
+          segmentIndex,
+          isIntermediateSegment: data.isIntermediateSegment ?? false,
+          isFinalSegment: data.isFinalSegment ?? true,
+          startedAt: new Date(),
+          completedAt: isCompleted ? new Date() : null,
+          completed: isCompleted,
         },
       });
-    }
 
-    const isCompleted = data.completed ?? false;
+      const isExerciseCompleted = await this.evaluateExerciseCompletion(
+        exerciseLog.id,
+        effectiveTargetSets,
+        tx,
+      );
 
-    const setLog = await prisma.workoutSetLog.create({
-      data: {
-        exerciseLogId: data.exerciseLog,
-        setNumber: data.setNumber,
-        targetReps: data.targetReps !== undefined ? String(data.targetReps) : "0",
-        actualReps: data.actualReps ?? 0,
-        weight: data.weight ?? 0,
-        setType: data.setType ?? "NORMAL",
-        segmentIndex,
-        isIntermediateSegment: data.isIntermediateSegment ?? false,
-        isFinalSegment: data.isFinalSegment ?? true,
-        startedAt: new Date(),
-        completedAt: isCompleted ? new Date() : null,
-        completed: isCompleted,
-      },
+      await tx.workoutExerciseLog.update({
+        where: { id: exerciseLog.id },
+        data: { completed: isExerciseCompleted },
+      });
+
+      await this.updateSessionStats(exerciseLog.sessionId, tx);
+
+      return created;
     });
-
-    const isExerciseCompleted = await this.evaluateExerciseCompletion(
-      exerciseLog.id,
-      exerciseLog.targetSets,
-    );
-
-    await prisma.workoutExerciseLog.update({
-      where: { id: exerciseLog.id },
-      data: { completed: isExerciseCompleted },
-    });
-
-    await this.updateSessionStats(exerciseLog.sessionId);
 
     return setLog;
   }
@@ -243,39 +260,48 @@ class WorkoutSetService {
       throw new AppError("Workout session already finished.", 400);
     }
 
-    const isCompleted =
-      data.completed !== undefined ? data.completed : setLog.completed;
+    if (exerciseLog.isRemoved) {
+      throw new AppError("Cannot modify sets of a removed exercise.", 400);
+    }
 
-    const updatedSetLog = await prisma.workoutSetLog.update({
-      where: { id },
-      data: {
-        ...(data.weight !== undefined && { weight: data.weight }),
-        ...(data.actualReps !== undefined && { actualReps: data.actualReps }),
-        ...(data.restDuration !== undefined && { restDuration: data.restDuration }),
-        ...(data.setType !== undefined && { setType: data.setType }),
-        ...(data.segmentIndex !== undefined && { segmentIndex: data.segmentIndex }),
-        ...(data.isIntermediateSegment !== undefined && {
-          isIntermediateSegment: data.isIntermediateSegment,
-        }),
-        ...(data.isFinalSegment !== undefined && {
-          isFinalSegment: data.isFinalSegment,
-        }),
-        completed: isCompleted,
-        completedAt: isCompleted ? (setLog.completedAt ?? new Date()) : null,
-      },
+    const updatedSetLog = await prisma.$transaction(async (tx) => {
+      const isCompleted =
+        data.completed !== undefined ? data.completed : setLog.completed;
+
+      const updated = await tx.workoutSetLog.update({
+        where: { id },
+        data: {
+          ...(data.weight !== undefined && { weight: data.weight }),
+          ...(data.actualReps !== undefined && { actualReps: data.actualReps }),
+          ...(data.restDuration !== undefined && { restDuration: data.restDuration }),
+          ...(data.setType !== undefined && { setType: data.setType }),
+          ...(data.segmentIndex !== undefined && { segmentIndex: data.segmentIndex }),
+          ...(data.isIntermediateSegment !== undefined && {
+            isIntermediateSegment: data.isIntermediateSegment,
+          }),
+          ...(data.isFinalSegment !== undefined && {
+            isFinalSegment: data.isFinalSegment,
+          }),
+          completed: isCompleted,
+          completedAt: isCompleted ? (setLog.completedAt ?? new Date()) : null,
+        },
+      });
+
+      const isExerciseCompleted = await this.evaluateExerciseCompletion(
+        exerciseLog.id,
+        exerciseLog.targetSets,
+        tx,
+      );
+
+      await tx.workoutExerciseLog.update({
+        where: { id: exerciseLog.id },
+        data: { completed: isExerciseCompleted },
+      });
+
+      await this.updateSessionStats(session.id, tx);
+
+      return updated;
     });
-
-    const isExerciseCompleted = await this.evaluateExerciseCompletion(
-      exerciseLog.id,
-      exerciseLog.targetSets,
-    );
-
-    await prisma.workoutExerciseLog.update({
-      where: { id: exerciseLog.id },
-      data: { completed: isExerciseCompleted },
-    });
-
-    await this.updateSessionStats(session.id);
 
     return updatedSetLog;
   }
@@ -309,94 +335,119 @@ class WorkoutSetService {
       throw new AppError("Workout session already finished.", 400);
     }
 
-    const isParentSet = (setLog.segmentIndex ?? 0) === 0;
-
-    if (isParentSet) {
-      // Cascading removal: delete the parent set and all child break sets belonging to this setNumber
-      await prisma.workoutSetLog.deleteMany({
-        where: {
-          exerciseLogId: exerciseLog.id,
-          setNumber: setLog.setNumber,
-        },
-      });
-
-      // Renumber subsequent sets in the exercise to keep continuous sequence (1, 2, 3...)
-      const allRemainingSets = await prisma.workoutSetLog.findMany({
-        where: { exerciseLogId: exerciseLog.id },
-        orderBy: [{ setNumber: "asc" }, { segmentIndex: "asc" }],
-      });
-
-      const uniqueSetNumbers = Array.from(
-        new Set(allRemainingSets.map((s) => s.setNumber)),
-      ).sort((a, b) => a - b);
-
-      for (let i = 0; i < uniqueSetNumbers.length; i++) {
-        const currentSetNum = uniqueSetNumbers[i];
-        const targetSetNum = i + 1;
-        if (currentSetNum !== targetSetNum) {
-          await prisma.workoutSetLog.updateMany({
-            where: {
-              exerciseLogId: exerciseLog.id,
-              setNumber: currentSetNum,
-            },
-            data: {
-              setNumber: targetSetNum,
-            },
-          });
-        }
-      }
-    } else {
-      // Child Break Set removal: delete only this child stage
-      await prisma.workoutSetLog.delete({
-        where: { id },
-      });
-
-      // Renumber remaining stages under this parent setNumber to keep segmentIndex contiguous (0, 1, 2...)
-      const remainingStages = await prisma.workoutSetLog.findMany({
-        where: {
-          exerciseLogId: exerciseLog.id,
-          setNumber: setLog.setNumber,
-        },
-        orderBy: { segmentIndex: "asc" },
-      });
-
-      for (let i = 0; i < remainingStages.length; i++) {
-        const stage = remainingStages[i];
-        const isLast = i === remainingStages.length - 1;
-        const isIntermediate = !isLast;
-        const isFinal = isLast;
-        const newSetType = remainingStages.length === 1 ? "NORMAL" : stage.setType;
-
-        if (
-          stage.segmentIndex !== i ||
-          stage.isIntermediateSegment !== isIntermediate ||
-          stage.isFinalSegment !== isFinal ||
-          (remainingStages.length === 1 && stage.setType === "DROP_SET")
-        ) {
-          await prisma.workoutSetLog.update({
-            where: { id: stage.id },
-            data: {
-              segmentIndex: i,
-              isIntermediateSegment: isIntermediate,
-              isFinalSegment: isFinal,
-              setType: newSetType,
-            },
-          });
-        }
-      }
+    if (exerciseLog.isRemoved) {
+      throw new AppError("Cannot delete sets of a removed exercise.", 400);
     }
 
-    const isExerciseCompleted = await this.evaluateExerciseCompletion(
-      exerciseLog.id,
-      exerciseLog.targetSets,
-    );
+    await prisma.$transaction(async (tx) => {
+      const isParentSet = (setLog.segmentIndex ?? 0) === 0;
 
-    await prisma.workoutExerciseLog.update({
-      where: { id: exerciseLog.id },
-      data: { completed: isExerciseCompleted },
+      if (isParentSet) {
+        // Cascading removal: delete the parent set and all child break sets belonging to this setNumber
+        await tx.workoutSetLog.deleteMany({
+          where: {
+            exerciseLogId: exerciseLog.id,
+            setNumber: setLog.setNumber,
+          },
+        });
+
+        // Renumber subsequent sets in the exercise to keep continuous sequence (1, 2, 3...)
+        const allRemainingSets = await tx.workoutSetLog.findMany({
+          where: { exerciseLogId: exerciseLog.id },
+          orderBy: [{ setNumber: "asc" }, { segmentIndex: "asc" }],
+        });
+
+        const uniqueSetNumbers = Array.from(
+          new Set(allRemainingSets.map((s: any) => s.setNumber)),
+        ).sort((a: any, b: any) => a - b);
+
+        for (let i = 0; i < uniqueSetNumbers.length; i++) {
+          const currentSetNum = uniqueSetNumbers[i];
+          const targetSetNum = i + 1;
+          if (currentSetNum !== targetSetNum) {
+            await tx.workoutSetLog.updateMany({
+              where: {
+                exerciseLogId: exerciseLog.id,
+                setNumber: currentSetNum,
+              },
+              data: {
+                setNumber: targetSetNum,
+              },
+            });
+          }
+        }
+
+        // Authoritative update: update targetSets to match the remaining unique parent sets count
+        const updatedTargetSets = uniqueSetNumbers.length;
+        await tx.workoutExerciseLog.update({
+          where: { id: exerciseLog.id },
+          data: { targetSets: updatedTargetSets },
+        });
+
+        const isExerciseCompleted = await this.evaluateExerciseCompletion(
+          exerciseLog.id,
+          updatedTargetSets,
+          tx,
+        );
+
+        await tx.workoutExerciseLog.update({
+          where: { id: exerciseLog.id },
+          data: { completed: isExerciseCompleted },
+        });
+      } else {
+        // Child Break Set removal: delete only this child stage
+        await tx.workoutSetLog.delete({
+          where: { id },
+        });
+
+        // Renumber remaining stages under this parent setNumber to keep segmentIndex contiguous (0, 1, 2...)
+        const remainingStages = await tx.workoutSetLog.findMany({
+          where: {
+            exerciseLogId: exerciseLog.id,
+            setNumber: setLog.setNumber,
+          },
+          orderBy: { segmentIndex: "asc" },
+        });
+
+        for (let i = 0; i < remainingStages.length; i++) {
+          const stage = remainingStages[i];
+          const isLast = i === remainingStages.length - 1;
+          const isIntermediate = !isLast;
+          const isFinal = isLast;
+          const newSetType = remainingStages.length === 1 ? "NORMAL" : stage.setType;
+
+          if (
+            stage.segmentIndex !== i ||
+            stage.isIntermediateSegment !== isIntermediate ||
+            stage.isFinalSegment !== isFinal ||
+            (remainingStages.length === 1 && stage.setType === "DROP_SET")
+          ) {
+            await tx.workoutSetLog.update({
+              where: { id: stage.id },
+              data: {
+                segmentIndex: i,
+                isIntermediateSegment: isIntermediate,
+                isFinalSegment: isFinal,
+                setType: newSetType,
+              },
+            });
+          }
+        }
+
+        const isExerciseCompleted = await this.evaluateExerciseCompletion(
+          exerciseLog.id,
+          exerciseLog.targetSets,
+          tx,
+        );
+
+        await tx.workoutExerciseLog.update({
+          where: { id: exerciseLog.id },
+          data: { completed: isExerciseCompleted },
+        });
+      }
+
+      await this.updateSessionStats(exerciseLog.sessionId, tx);
     });
-
-    await this.updateSessionStats(exerciseLog.sessionId);
 
     return { message: "Set deleted successfully" };
   }

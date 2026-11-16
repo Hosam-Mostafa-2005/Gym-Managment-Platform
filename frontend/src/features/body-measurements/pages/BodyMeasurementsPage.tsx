@@ -18,10 +18,14 @@ import { MeasurementsError } from "../components/states/MeasurementsError";
 import type { BodyMeasurement } from "../types/body-measurements.types";
 
 const BodyMeasurementsPage: React.FC = () => {
-  const { memberId: routeMemberId } = useParams<{ memberId?: string }>();
+  const { memberId: routeMemberId, id: routeId } = useParams<{
+    memberId?: string;
+    id?: string;
+  }>();
   const { data: user } = useCurrentUser();
   
-  const effectiveMemberId = routeMemberId || user?.id || (user as any)?._id || "";
+  const effectiveMemberId =
+    routeMemberId || routeId || user?.id || (user as any)?._id || "";
   const trainerId = user?.role?.toUpperCase() === "TRAINER" ? (user?.id || (user as any)?._id || "") : "";
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);

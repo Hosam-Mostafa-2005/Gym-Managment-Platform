@@ -16,6 +16,8 @@ import {
   Calendar,
   UserCheck,
   X,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -24,6 +26,8 @@ import { useTranslation } from "react-i18next";
 import { useAssignments } from "@/features/assignments/hooks/useAssignments";
 import { useMyAssignments } from "@/features/assignments/hooks/useMyAssignments";
 import { useDeleteAssignment } from "@/features/assignments/hooks/useDeleteAssignment";
+import { useArchiveAssignment } from "@/features/assignments/hooks/useArchiveAssignment";
+import { useUnarchiveAssignment } from "@/features/assignments/hooks/useUnarchiveAssignment";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { ROLES } from "@/constants/roles";
 
@@ -66,6 +70,7 @@ export default function AssignmentsPage() {
     null,
   );
   const [selectedTrainer, setSelectedTrainer] = useState<string>("ALL");
+  const [memberViewFilter, setMemberViewFilter] = useState<"ACTIVE" | "ARCHIVED">("ACTIVE");
   const [page, setPage] = useState<number>(1);
   const limit = 10;
 
@@ -87,9 +92,13 @@ export default function AssignmentsPage() {
     canManage,
   );
   const { data: memberAssignments = [], isLoading: isMemberLoading } =
-    useMyAssignments(isMember);
+    useMyAssignments(isMember, memberViewFilter === "ARCHIVED" ? true : false);
   const { mutate: deleteAssignment, isPending: isDeleting } =
     useDeleteAssignment();
+  const { mutate: archiveAssignmentMutation, isPending: isArchiving } =
+    useArchiveAssignment();
+  const { mutate: unarchiveAssignmentMutation, isPending: isUnarchiving } =
+    useUnarchiveAssignment();
 
   const isLoading = isUserLoading || (isMember ? isMemberLoading : isAdminLoading);
 
@@ -325,6 +334,39 @@ export default function AssignmentsPage() {
             <h2 className="text-[11px] font-bold tracking-widest text-[#6B7280] uppercase">
               {t("records.sectionTitle", "Assignment Records")}
             </h2>
+
+            {isMember && (
+              <div className="flex items-center gap-1 rounded-xl border border-[#1E2329] bg-[#101418] p-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMemberViewFilter("ACTIVE");
+                    setPage(1);
+                  }}
+                  className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                    memberViewFilter === "ACTIVE"
+                      ? "bg-[#5BE584] text-[#090B0F]"
+                      : "text-[#9CA3AF] hover:text-white"
+                  }`}
+                >
+                  {t("records.tabs.active", "Active")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMemberViewFilter("ARCHIVED");
+                    setPage(1);
+                  }}
+                  className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                    memberViewFilter === "ARCHIVED"
+                      ? "bg-[#16291D] text-[#5BE584] border border-[#23422E]"
+                      : "text-[#9CA3AF] hover:text-white"
+                  }`}
+                >
+                  {t("records.tabs.archived", "Archived")}
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="rounded-xl border border-[#1E2329] bg-[#101418]/50 overflow-hidden backdrop-blur-sm">
@@ -767,6 +809,28 @@ export default function AssignmentsPage() {
                                         "Go to Sessions",
                                       )}
                                     </DropdownMenuItem>
+
+                                    <DropdownMenuSeparator className="bg-[#1E2329]" />
+
+                                    {item.isArchived ? (
+                                      <DropdownMenuItem
+                                        onClick={() => unarchiveAssignmentMutation(item.id)}
+                                        disabled={isUnarchiving}
+                                        className="cursor-pointer text-xs font-medium text-blue-400 hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-blue-300"
+                                      >
+                                        <ArchiveRestore className="me-2 h-3.5 w-3.5 text-blue-400" />
+                                        {t("records.actions.unarchive", "Unarchive Assignment")}
+                                      </DropdownMenuItem>
+                                    ) : (
+                                      <DropdownMenuItem
+                                        onClick={() => archiveAssignmentMutation(item.id)}
+                                        disabled={isArchiving}
+                                        className="cursor-pointer text-xs font-medium text-amber-400 hover:bg-[#1E2329] focus:bg-[#1E2329] focus:text-amber-300"
+                                      >
+                                        <Archive className="me-2 h-3.5 w-3.5 text-amber-400" />
+                                        {t("records.actions.archive", "Archive Assignment")}
+                                      </DropdownMenuItem>
+                                    )}
                                   </>
                                 )}
                               </DropdownMenuContent>

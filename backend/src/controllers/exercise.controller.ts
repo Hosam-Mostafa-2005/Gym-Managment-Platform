@@ -77,9 +77,19 @@ export const getAll: RequestHandler = catchAsync(async (req, res) => {
     req.user?.role as Role,
   );
 
+  const page = Math.max(Number(req.query.page) || 1, 1);
+  const limit = Math.max(Number(req.query.limit) || 10, 1);
+  const totalPages = Math.ceil(result.totalResults / limit) || 1;
+
   res.status(200).json({
     status: "success",
     results: result.totalResults,
+    pagination: {
+      page,
+      limit,
+      totalResults: result.totalResults,
+      totalPages,
+    },
     data: {
       exercises: result.exercises,
     },

@@ -335,9 +335,17 @@ class MemberInsightsService {
     const sessionWhere: any = { memberId, isActive: true };
     const measurementWhere: any = { memberId, isActive: true };
 
-    if (isCoachViewing && !canAccessHistory && relationshipStartDate) {
-      sessionWhere.startedAt = { gte: relationshipStartDate };
-      measurementWhere.measuredAt = { gte: relationshipStartDate };
+    if (isCoachViewing && !canAccessHistory) {
+      if (relationshipStartDate) {
+        sessionWhere.startedAt = { gte: relationshipStartDate };
+        measurementWhere.OR = [
+          { trainerId: userId },
+          { measuredAt: { gte: relationshipStartDate } },
+        ];
+      } else {
+        sessionWhere.assignment = { trainerId: userId };
+        measurementWhere.trainerId = userId;
+      }
     }
 
     const [stats, measurements, sessions, assignments] = await Promise.all([
@@ -367,7 +375,11 @@ class MemberInsightsService {
       }),
 
       prisma.assignment.findMany({
-        where: { memberId, isActive: true },
+        where: {
+          memberId,
+          isActive: true,
+          ...(isCoachViewing ? { trainerId: userId } : {}),
+        },
         select: {
           status: true,
           createdAt: true,

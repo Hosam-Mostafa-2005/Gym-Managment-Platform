@@ -15,6 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { formatLocalDateKey } from "@/utils/formatDate";
 import type {
   ScheduledWorkout,
   CoachingAppointment,
@@ -75,14 +76,14 @@ export default function CalendarAgendaView({
     }> = [];
 
     const groupMap = new Map<string, AgendaEvent[]>();
-    const todayStr = new Date().toISOString().split("T")[0];
+    const todayStr = formatLocalDateKey(new Date());
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().split("T")[0];
+    const tomorrowStr = formatLocalDateKey(tomorrow);
 
     for (const item of list) {
-      const dateKey = new Date(item.sortTime).toISOString().split("T")[0];
+      const dateKey = formatLocalDateKey(item.sortTime);
       if (!groupMap.has(dateKey)) groupMap.set(dateKey, []);
       groupMap.get(dateKey)!.push(item);
     }

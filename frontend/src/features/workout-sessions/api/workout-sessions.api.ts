@@ -158,3 +158,15 @@ export const addExerciseToSession = async (
   const rawSession = data.data.session ?? data.data;
   return mapWorkoutSessionDetails(rawSession);
 };
+
+export const removeExerciseFromSession = async (
+  sessionId: string,
+  exerciseLogId: string,
+): Promise<WorkoutSessionDetails> => {
+  const { data } = await api.delete(
+    `/workout-sessions/${sessionId}/exercises/${exerciseLogId}`,
+  );
+
+  const rawSession = data.data.session ?? data.data;
+  return mapWorkoutSessionDetails(rawSession);
+};

@@ -4,6 +4,7 @@ import catchAsync from "../utils/catchAsync.js";
 import { nutritionService } from "../services/nutrition.service.js";
 import { foodCatalogService } from "../services/food-catalog.service.js";
 import { Roles } from "../constants/roles.js";
+import prisma from "../config/prisma.js";
 
 // ==========================================
 // MEMBER ENDPOINTS
@@ -233,6 +234,25 @@ export const getMemberNutritionForCoach: RequestHandler = catchAsync(async (req,
     nutritionService.getMemberProfile(memberId),
   ]);
 
+  let suggestedMeasurement = profileData.suggestedMeasurement;
+  if (!isAdmin && suggestedMeasurement) {
+    const relationship = await prisma.coachMemberRelationship.findFirst({
+      where: {
+        trainerId: coachId,
+        memberId,
+        status: "ACTIVE",
+        isActive: true,
+      },
+    });
+    const canAccess =
+      relationship?.historySharingConsent === "GRANTED" ||
+      (relationship?.startedAt &&
+        new Date(suggestedMeasurement.measuredAt) >= new Date(relationship.startedAt));
+    if (!canAccess) {
+      suggestedMeasurement = null;
+    }
+  }
+
   res.status(200).json({
     status: "success",
     data: {
@@ -240,7 +260,7 @@ export const getMemberNutritionForCoach: RequestHandler = catchAsync(async (req,
       history,
       profile: profileData.profile,
       user: profileData.user,
-      suggestedMeasurement: profileData.suggestedMeasurement,
+      suggestedMeasurement,
     },
   });
 });

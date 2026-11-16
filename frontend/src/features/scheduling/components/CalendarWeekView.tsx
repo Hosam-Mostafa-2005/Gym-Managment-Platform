@@ -13,6 +13,7 @@ import {
   Play,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { formatLocalDateKey } from "@/utils/formatDate";
 import type {
   ScheduledWorkout,
   CoachingAppointment,
@@ -68,12 +69,12 @@ export default function CalendarWeekView({
       isToday: boolean;
     }> = [];
 
-    const todayStr = new Date().toISOString().split("T")[0];
+    const todayStr = formatLocalDateKey(new Date());
 
     for (let i = 0; i < 7; i++) {
       const current = new Date(monday);
       current.setDate(monday.getDate() + i);
-      const dateKey = current.toISOString().split("T")[0];
+      const dateKey = formatLocalDateKey(current);
       days.push({
         date: current,
         dateKey,
@@ -100,13 +101,13 @@ export default function CalendarWeekView({
     >();
 
     for (const sw of scheduledWorkouts) {
-      const key = new Date(sw.scheduledAt).toISOString().split("T")[0];
+      const key = formatLocalDateKey(sw.scheduledAt);
       if (!map.has(key)) map.set(key, { workouts: [], appointments: [] });
       map.get(key)!.workouts.push(sw);
     }
 
     for (const appt of coachingAppointments) {
-      const key = new Date(appt.startTime).toISOString().split("T")[0];
+      const key = formatLocalDateKey(appt.startTime);
       if (!map.has(key)) map.set(key, { workouts: [], appointments: [] });
       map.get(key)!.appointments.push(appt);
     }

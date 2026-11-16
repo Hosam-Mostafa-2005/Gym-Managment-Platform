@@ -525,29 +525,81 @@ class CoachMemberRelationshipService {
     }
 
     const now = new Date();
-    const updated = await prisma.coachMemberRelationship.update({
-      where: { id: relationshipId },
-      data: {
-        status: RELATIONSHIP_STATUS.REVOKED,
-        terminatedAt: now,
-      },
-      include: {
-        trainer: { select: { id: true, name: true, email: true } },
-        member: { select: { id: true, name: true, email: true } },
-      },
-    });
+    const updated = await prisma.$transaction(async (tx) => {
+      // 1. Terminate the active relationship
+      const rel = await tx.coachMemberRelationship.update({
+        where: { id: relationshipId },
+        data: {
+          status: RELATIONSHIP_STATUS.REVOKED,
+          terminatedAt: now,
+          isActive: false,
+        },
+        include: {
+          trainer: { select: { id: true, name: true, email: true } },
+          member: { select: { id: true, name: true, email: true } },
+        },
+      });
 
-    // Deactivate custom exercise access granted by this trainer to this member
-    await prisma.memberExerciseAccess.updateMany({
-      where: {
-        memberId: relationship.memberId,
-        grantedById: relationship.trainerId,
-        isActive: true,
-      },
-      data: {
-        isActive: false,
-        revokedAt: new Date(),
-      },
+      // 2. Cancel active assignments for this coach-member pair
+      await tx.assignment.updateMany({
+        where: {
+          trainerId: relationship.trainerId,
+          memberId: relationship.memberId,
+          status: "ACTIVE",
+          isActive: true,
+        },
+        data: {
+          status: "CANCELLED",
+          cancelledAt: now,
+          cancelReason: "Coaching relationship terminated",
+        },
+      });
+
+      // 3. Cancel upcoming coach-scheduled workouts
+      await tx.scheduledWorkout.updateMany({
+        where: {
+          trainerId: relationship.trainerId,
+          memberId: relationship.memberId,
+          status: "SCHEDULED",
+          scheduledAt: { gte: now },
+          isActive: true,
+        },
+        data: {
+          status: "CANCELLED",
+          notes: "Coaching relationship terminated",
+        },
+      });
+
+      // 4. Cancel upcoming coaching appointments
+      await tx.coachingAppointment.updateMany({
+        where: {
+          trainerId: relationship.trainerId,
+          memberId: relationship.memberId,
+          status: "SCHEDULED",
+          startTime: { gte: now },
+          isActive: true,
+        },
+        data: {
+          status: "CANCELLED",
+          cancellationReason: "Coaching relationship terminated",
+          cancelledBy: userId,
+        },
+      });
+
+      // 5. Deactivate custom exercise access granted by this trainer to this member
+      await tx.memberExerciseAccess.updateMany({
+        where: {
+          memberId: relationship.memberId,
+          grantedById: relationship.trainerId,
+          isActive: true,
+        },
+        data: {
+          isActive: false,
+          revokedAt: now,
+        },
+      });
+
+      return rel;
     });
 
     const isTerminatedByCoach = userId === relationship.trainerId;

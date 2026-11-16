@@ -139,7 +139,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
 
   return (
     <header
-      className={`hidden md:block relative z-10 w-full transition-all duration-200 ${
+      className={`relative z-30 w-full transition-all duration-200 ${
         scrolled
           ? "border-b border-[#2A3039] bg-[#090B0F]/95 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
           : "border-b border-[#2A3039]/60 bg-[#090B0F]/80 backdrop-blur-sm"
@@ -151,7 +151,7 @@ export const LandingNavbar: React.FC<LandingNavbarProps> = ({
         className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#5BE584]/20 to-transparent"
       />
 
-      <div className="mx-auto flex h-16 sm:h-20 max-w-[1280px] items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 sm:h-20 max-w-[1280px] items-center justify-between lg:justify-center px-4 sm:px-6 lg:px-8">
         {/* Desktop Navigation Links */}
         <nav
           aria-label={t("navbar.mobile.platformNavigation", { ns: "landing" })}
